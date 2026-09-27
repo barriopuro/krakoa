@@ -930,10 +930,14 @@ const base = import.meta.env.BASE_URL;
     color: #fff;
     font-size: 11px;
     font-weight: 700;
-    display: inline-flex;
+    display: none;
     align-items: center;
     justify-content: center;
     font-variant-numeric: tabular-nums;
+  }
+
+  .cart-count.is-visible {
+    display: inline-flex;
   }
 
   /* Cart drawer */
@@ -1450,9 +1454,9 @@ if (index === currentImageIndex) {
 
     if (total > 0) {
       cartCount.textContent = total;
-      cartCount.hidden = false;
+      cartCount.classList.add("is-visible");
     } else {
-      cartCount.hidden = true;
+      cartCount.classList.remove("is-visible");
     }
   }
 
