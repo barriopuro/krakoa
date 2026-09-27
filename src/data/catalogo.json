@@ -13,7 +13,7 @@
     {
       "id": "comics",
       "name": "Comics",
-      "color": "#E84393"
+      "color": "#e84393"
     },
     {
       "id": "deportes",
@@ -239,7 +239,7 @@
     },
     {
       "id": "el-señor-de-los-anillos",
-      "name": "El SeñOr De Los Anillos",
+      "name": "El Señor De Los Anillos",
       "category": "cine-series",
       "categoryName": "Cine y Series",
       "modelo": "/catalogo/cine-series/el-señor-de-los-anillos/modelo.webp",

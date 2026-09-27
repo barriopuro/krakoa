@@ -33,7 +33,7 @@ const categoryConfig = {
   
   comics: {
     name: "Comics",
-    color: "#E84393",
+    color: "#e84393",
   },
 
   "cine-series": {
@@ -67,7 +67,7 @@ function formatName(value) {
     .replace(/[-_]+/g, " ")
     .replace(/\s+/g, " ")
     .trim()
-    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+    .replace(/(^|\s)(\p{L})/gu, (_, prefix, letter) => prefix + letter.toUpperCase());
 }
 
 function findImage(directory, baseName) {
