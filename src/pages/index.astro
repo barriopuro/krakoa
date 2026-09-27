@@ -174,70 +174,143 @@ const base = import.meta.env.BASE_URL;
   <div class="modal-backdrop"></div>
 
   <div class="modal-content" role="dialog" aria-modal="true">
-    
+    <button
+      id="modal-close"
+      class="modal-close"
+      type="button"
+      aria-label="Cerrar"
+    >
+      ×
+    </button>
 
-   <div class="modal-title-wrapper">
-  <h3 id="modal-title"></h3>
+    <div class="modal-grid">
+      <!-- COLUMNA IZQUIERDA: GALERÍA -->
+      <div class="modal-gallery">
+        <div class="modal-image-area">
+          <button
+            id="modal-prev"
+            class="modal-arrow modal-prev"
+            type="button"
+            aria-label="Imagen anterior"
+          >
+            ‹
+          </button>
 
-  <button
-    id="modal-close"
-    class="modal-close"
-    type="button"
-    aria-label="Cerrar"
-  >
-    ×
-  </button>
-</div>
+          <div class="modal-image-wrapper">
+            <img id="modal-image" src="" alt="" />
+          </div>
 
-    <div class="modal-image-area">
-      <button
-        id="modal-prev"
-        class="modal-arrow modal-prev"
-        type="button"
-        aria-label="Imagen anterior"
-      >
-        ‹
-      </button>
+          <button
+            id="modal-next"
+            class="modal-arrow modal-next"
+            type="button"
+            aria-label="Imagen siguiente"
+          >
+            ›
+          </button>
 
-      <div class="modal-image-wrapper">
-        <img id="modal-image" src="" alt="" />
+          <div class="modal-image-overlay">
+            <span id="modal-image-label" class="modal-image-label">Modelo</span>
+            <span id="modal-image-counter" class="modal-image-counter">1 / 4</span>
+          </div>
+        </div>
+
+        <div id="modal-thumbs" class="modal-thumbs"></div>
       </div>
 
-      <button
-        id="modal-next"
-        class="modal-arrow modal-next"
-        type="button"
-        aria-label="Imagen siguiente"
-      >
-        ›
-      </button>
-    </div>
+      <!-- COLUMNA DERECHA: INFO + SELECTORES -->
+      <div class="modal-info">
+        <div class="modal-info-header">
+          <span id="modal-category" class="modal-category"></span>
+          <h2 id="modal-title"></h2>
+        </div>
 
-    <div class="modal-footer">
-      <div id="modal-dots" class="modal-dots"></div>
-
-      <div class="modal-actions">
-        <a
-          id="modal-whatsapp"
-          class="modal-whatsapp"
-          href="#"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Consultar por WhatsApp
-        </a>
-
-        <button
-          id="modal-share"
-          class="modal-share"
-          type="button"
-        >
-          Compartir
-        </button>
-      </div>
+        <div class="modal-info-body">
+          <!-- CORTE -->
+          <div class="modal-field">
+            <div class="modal-label-row">
+              <label class="modal-label">
+                <span class="modal-step">1.</span> Elegí el corte:
+              </label>
+              <button
+                id="modal-see-chart"
+                class="modal-link"
+                type="button"
+              >
+                Ver gráfico
+              </button>
             </div>
+            <div id="modal-fits" class="modal-fits"></div>
+          </div>
+
+          <!-- TALLE -->
+          <div class="modal-field">
+            <div class="modal-label-row">
+              <label class="modal-label">
+                <span class="modal-step">2.</span> Elegí el talle:
+              </label>
+              <span id="modal-size-cm" class="modal-size-cm"></span>
+            </div>
+            <div id="modal-sizes" class="modal-sizes"></div>
+          </div>
+
+          <!-- CANTIDAD -->
+          <div class="modal-field modal-quantity-row">
+            <label class="modal-label">Cantidad:</label>
+            <div class="modal-quantity">
+              <button
+                id="modal-qty-minus"
+                type="button"
+                aria-label="Restar uno"
+              >
+                −
+              </button>
+              <span id="modal-qty-value">1</span>
+              <button
+                id="modal-qty-plus"
+                type="button"
+                aria-label="Sumar uno"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          <!-- AVISO TELA -->
+          <div class="modal-note">
+            <strong>100% Algodón Peinado 24/1 Premium</strong>
+            <p>No encoge, cuello con rib reforzado y costuras de alta resistencia.</p>
+          </div>
+        </div>
+
+        <div class="modal-info-footer">
+          <button id="modal-add" class="modal-add" type="button">
+            Agregar al Pedido
+          </button>
+
+          <div class="modal-actions">
+            <button
+              id="modal-whatsapp"
+              class="modal-whatsapp"
+              type="button"
+            >
+              Consultar por WhatsApp
+            </button>
+
+            <button
+              id="modal-share"
+              class="modal-share"
+              type="button"
+              aria-label="Compartir"
+            >
+              Compartir
+            </button>
+          </div>
+        </div>
       </div>
     </div>
+  </div>
+</div>
 
     <div id="cart-drawer" class="cart-drawer" aria-hidden="true">
       <div class="cart-drawer-backdrop"></div>
@@ -600,15 +673,22 @@ const base = import.meta.env.BASE_URL;
   display: none;
 }
   }
-    .modal {
+      /* --------------------------- */
+  /* MODAL DE PRODUCTO (NUEVO)   */
+  /* --------------------------- */
+
+  .modal {
     position: fixed;
     inset: 0;
     z-index: 1000;
     display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
   }
 
   .modal.open {
-    display: block;
+    display: flex;
   }
 
   .modal-backdrop {
@@ -620,44 +700,57 @@ const base = import.meta.env.BASE_URL;
 
   .modal-content {
     position: relative;
-    width: min(94vw, 1100px);
-    height: min(94dvh, 900px);
-    margin: 3vh auto;
+    width: min(96vw, 1100px);
+    max-height: 92dvh;
+    background: #111;
+    border: 1px solid #242424;
+    border-radius: 16px;
+    overflow: hidden;
+    z-index: 1;
     display: flex;
     flex-direction: column;
-    z-index: 1;
   }
 
-    .modal-close {
+  .modal-close {
     position: absolute;
-    top: 50%;
-    right: 8px;
-    transform: translateY(-50%);
-    z-index: 3;
+    top: 14px;
+    right: 14px;
+    z-index: 5;
     width: 36px;
     height: 36px;
-    border: 0;
-    background: rgba(0, 0, 0, 0.65);
-    color: white;
-    font-size: 28px;
+    border: 1px solid #2a2a2a;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    font-size: 22px;
     line-height: 1;
     cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
   }
 
-    .modal-title-wrapper {
-    position: relative;
-    width: 100%;
-    flex-shrink: 0;
-    padding: 8px 55px 12px;
-    text-align: center;
+  .modal-close:hover {
+    background: #fff;
+    color: #111;
+    border-color: #fff;
   }
 
-  .modal-title-wrapper h3 {
-    margin: 0;
-    font-size: 24px;
-    font-weight: 700;
-    line-height: 1.15;
-    text-transform: uppercase;
+  .modal-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    max-height: 92dvh;
+    overflow: hidden;
+  }
+
+  /* GALERÍA */
+
+  .modal-gallery {
+    background: #0a0a0a;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    border-right: 1px solid #242424;
+    min-width: 0;
   }
 
   .modal-image-area {
@@ -667,16 +760,19 @@ const base = import.meta.env.BASE_URL;
     display: flex;
     align-items: center;
     justify-content: center;
+    background: #141414;
+    border-radius: 12px;
+    overflow: hidden;
+    aspect-ratio: 4 / 5;
   }
 
   .modal-image-wrapper {
     width: 100%;
     height: 100%;
-    min-height: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 55px;
+    padding: 16px;
   }
 
   .modal-image-wrapper img {
@@ -693,167 +789,489 @@ const base = import.meta.env.BASE_URL;
     top: 50%;
     transform: translateY(-50%);
     z-index: 3;
-    width: 48px;
-    height: 64px;
-    border: 0;
-    background: rgba(0, 0, 0, 0.55);
-    color: white;
-    font-size: 48px;
+    width: 38px;
+    height: 38px;
+    border: 1px solid #2a2a2a;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    font-size: 24px;
     line-height: 1;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, color 0.2s ease;
   }
 
-  .modal-arrow:hover,
-  .modal-close:hover {
-    background: rgba(255, 255, 255, 0.15);
+  .modal-arrow:hover {
+    background: #fff;
+    color: #111;
   }
 
   .modal-prev {
-    left: 0;
+    left: 12px;
   }
 
   .modal-next {
-    right: 0;
+    right: 12px;
   }
 
-  .modal-footer {
+  .modal-image-overlay {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    pointer-events: none;
+  }
+
+  .modal-image-label,
+  .modal-image-counter {
+    padding: 4px 9px;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.75);
+    color: #ddd;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  .modal-image-counter {
+    color: #999;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .modal-thumbs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
     flex-shrink: 0;
+    width: 100%;
+    height: 72px;
+  }
+
+  :global(.modal-thumb) {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 2px solid #242424;
+    border-radius: 8px;
+    background: #141414;
+    overflow: hidden;
+    cursor: pointer;
+    opacity: 0.55;
+    transition: opacity 0.2s ease, border-color 0.2s ease;
+  }
+
+  :global(.modal-thumb:hover) {
+    opacity: 0.9;
+    border-color: var(--category-color, #666);
+  }
+
+  :global(.modal-thumb.active) {
+    opacity: 1;
+    border-color: var(--category-color, #fff);
+    box-shadow: 0 0 10px -2px var(--category-color, #fff);
+  }
+
+  :global(.modal-thumb img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* INFO */
+
+  .modal-info {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 45px 15px;
+    min-height: 0;
+    min-width: 0;
+    background: #111;
   }
 
-  .modal-dots {
-    display: flex;
-    justify-content: center;
+  .modal-info-header {
+    padding: 22px 24px 14px;
+    border-bottom: 1px solid #242424;
+    flex-shrink: 0;
+  }
+
+  .modal-category {
+    display: inline-flex;
+    align-items: center;
     gap: 7px;
+    margin-bottom: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #999;
+  }
+
+  .modal-category::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--category-color, #888);
+    box-shadow: 0 0 8px var(--category-color, #888);
+  }
+
+  .modal-info-header h2 {
+    margin: 0;
+    font-size: clamp(22px, 3vw, 30px);
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+    line-height: 1.05;
+    padding-right: 30px;
+  }
+
+  .modal-info-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    min-height: 0;
+  }
+
+  .modal-field {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .modal-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .modal-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #ddd;
+  }
+
+  .modal-step {
+    color: var(--category-color, #fff);
+    font-weight: 900;
+  }
+
+  .modal-link {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: #888;
+    font-size: 11px;
+    text-decoration: underline;
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+
+  .modal-link:hover {
+    color: var(--category-color, #fff);
+  }
+
+  .modal-size-cm {
+    font-size: 11px;
+    color: #999;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* FITS */
+
+  .modal-fits {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  :global(.modal-fit) {
+    padding: 12px 14px;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    background: #0a0a0a;
+    color: #bbb;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+    font-family: inherit;
+    font-size: inherit;
+  }
+
+  :global(.modal-fit strong) {
+    display: block;
+    font-size: 13px;
+    color: #fff;
+    margin-bottom: 2px;
+  }
+
+  :global(.modal-fit span) {
+    font-size: 11px;
+    color: #888;
+    line-height: 1.35;
+  }
+
+  :global(.modal-fit:hover) {
+    border-color: #444;
+    background: #141414;
+  }
+
+  :global(.modal-fit.active) {
+    border-color: var(--category-color, #fff);
+    background: #181818;
+  }
+
+  :global(.modal-fit.active strong) {
+    color: var(--category-color, #fff);
+  }
+
+  /* SIZES */
+
+  .modal-sizes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  :global(.modal-size) {
+    min-width: 48px;
+    padding: 9px 12px;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    background: #0a0a0a;
+    color: #ccc;
+    font-family: monospace;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  :global(.modal-size:hover) {
+    border-color: #444;
+    background: #141414;
+  }
+
+  :global(.modal-size.active) {
+    border-color: var(--category-color, #fff);
+    background: var(--category-color, #fff);
+    color: #0a0a0a;
+  }
+
+  /* QUANTITY */
+
+  .modal-quantity-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modal-quantity {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #0a0a0a;
+  }
+
+  .modal-quantity button {
+    width: 34px;
+    height: 34px;
+    border: 0;
+    background: transparent;
+    color: #bbb;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .modal-quantity button:hover {
+    background: #1f1f1f;
+    color: #fff;
+  }
+
+  .modal-quantity span {
+    min-width: 34px;
+    padding: 0 6px;
+    text-align: center;
+    font-family: monospace;
+    font-size: 14px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* NOTE */
+
+  .modal-note {
+    padding: 12px 14px;
+    border: 1px solid #242424;
+    border-radius: 10px;
+    background: #0a0a0a;
+  }
+
+  .modal-note strong {
+    display: block;
+    font-size: 12px;
+    color: #ddd;
+    margin-bottom: 3px;
+  }
+
+  .modal-note p {
+    margin: 0;
+    font-size: 11px;
+    color: #777;
+    line-height: 1.4;
+  }
+
+  /* FOOTER */
+
+  .modal-info-footer {
+    border-top: 1px solid #242424;
+    padding: 16px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .modal-add {
+    width: 100%;
+    padding: 14px 18px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--category-color, #fff);
+    color: #0a0a0a;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: transform 0.15s ease, filter 0.2s ease;
+  }
+
+  .modal-add:hover {
+    filter: brightness(1.12);
+    transform: translateY(-1px);
+  }
+
+  .modal-add.is-added {
+    background: #25d366 !important;
+    color: #fff;
   }
 
   .modal-actions {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
+    gap: 8px;
   }
 
   .modal-whatsapp,
   .modal-share {
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease, border-color 0.2s ease;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 10px 16px;
-    border-radius: 6px;
-    color: white;
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
   }
 
   .modal-whatsapp {
     background: #25d366;
-    transition: background 0.2s ease, transform 0.2s ease;
+    color: #fff;
+    border: 1px solid #25d366;
   }
 
   .modal-whatsapp:hover {
     background: #35e276;
-    transform: translateY(-1px);
+    border-color: #35e276;
   }
 
   .modal-share {
-    border: 0;
-    background: #333;
-    transition: background 0.2s ease, transform 0.2s ease;
+    background: transparent;
+    color: #ddd;
+    border: 1px solid #2a2a2a;
   }
 
   .modal-share:hover {
-    background: #444;
-    transform: translateY(-1px);
-  }
-
-  :global(.modal-dot) {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    border: 0;
-    padding: 0;
-    background: #555;
-    cursor: pointer;
-  }
-
-  :global(.modal-dot.active) {
-    background: var(--category-color) !important;
-    box-shadow: 0 0 7px var(--category-color);
+    border-color: var(--category-color, #fff);
+    color: var(--category-color, #fff);
   }
 
   :global(body.modal-open) {
     overflow: hidden;
   }
 
-      @media (max-width: 700px) {
+  /* MODAL RESPONSIVE */
+
+  @media (max-width: 800px) {
+    .modal {
+      padding: 0;
+      align-items: stretch;
+    }
+
     .modal-content {
-      width: 100vw;
+      width: 100%;
+      max-height: 100dvh;
       height: 100dvh;
-      margin: 0;
-      overflow: hidden;
-      justify-content: center;
+      border-radius: 0;
+      border: 0;
     }
 
-    .modal-title-wrapper {
-      flex-shrink: 0;
-      padding: 8px 50px 8px;
+    .modal-grid {
+      grid-template-columns: 1fr;
+      max-height: 100dvh;
+      overflow-y: auto;
     }
 
-    .modal-title-wrapper h3 {
-      font-size: 20px;
-      line-height: 1.15;
+    .modal-gallery {
+      border-right: 0;
+      border-bottom: 1px solid #242424;
+      padding: 14px;
     }
 
     .modal-image-area {
-      flex: 0 1 auto;
-      min-height: 0;
-      width: 100%;
+      aspect-ratio: 1 / 1;
     }
 
-    .modal-image-wrapper {
-      width: 100%;
-      height: auto;
-      min-height: 0;
-      padding: 0 45px;
+    .modal-info-body {
+      padding: 16px;
     }
 
-    .modal-image-wrapper img {
-      max-width: 100%;
-      max-height: calc(100dvh - 170px);
-      width: auto;
-      height: auto;
+    .modal-info-header {
+      padding: 18px 16px 12px;
     }
 
-    .modal-arrow {
-      width: 38px;
-      height: 55px;
-      font-size: 40px;
+    .modal-info-footer {
+      padding: 14px 16px;
     }
 
-    .modal-footer {
-      flex-shrink: 0;
-      padding: 8px 20px 10px;
-      gap: 8px;
+    .modal-close {
+      top: 10px;
+      right: 10px;
     }
-
-    .modal-actions {
-      gap: 10px;
-    }
-
-    .modal-whatsapp,
-    .modal-share {
-      padding: 9px 14px;
-      font-size: 12px;
-    }
-
-    
   }
 
     .back-to-top {
@@ -1126,10 +1544,202 @@ const base = import.meta.env.BASE_URL;
     overflow: hidden;
   }
 
-  @media (max-width: 700px) {
+    @media (max-width: 700px) {
     .cart-drawer-panel {
       width: 100vw;
     }
+  }
+
+  /* Items del carrito */
+  :global(.cart-items-header) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #1f1f1f;
+  }
+
+  :global(.cart-clear) {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: #666;
+    font-size: 11px;
+    text-decoration: underline;
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+
+  :global(.cart-clear:hover) {
+    color: #f87171;
+  }
+
+  :global(.cart-items) {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  :global(.cart-item) {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    background: #0a0a0a;
+    border: 1px solid #242424;
+    border-radius: 10px;
+  }
+
+  :global(.cart-item-img) {
+    width: 60px;
+    height: 76px;
+    object-fit: cover;
+    background: #141414;
+    border-radius: 6px;
+    flex-shrink: 0;
+    border: 1px solid #242424;
+    display: block;
+  }
+
+  :global(.cart-item-info) {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  :global(.cart-item-top) {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  :global(.cart-item-top h4) {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  :global(.cart-item-remove) {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border: 0;
+    background: transparent;
+    color: #666;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.2s ease;
+  }
+
+  :global(.cart-item-remove:hover) {
+    color: #f87171;
+  }
+
+  :global(.cart-item-meta) {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 3px;
+    font-size: 11px;
+    color: #999;
+  }
+
+  :global(.cart-item-meta strong) {
+    color: #fff;
+    font-family: monospace;
+  }
+
+  :global(.cart-item-qty) {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    margin-top: 8px;
+    border: 1px solid #242424;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #111;
+  }
+
+  :global(.cart-item-qty button) {
+    width: 26px;
+    height: 26px;
+    border: 0;
+    background: transparent;
+    color: #999;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  :global(.cart-item-qty button:hover) {
+    background: #1f1f1f;
+    color: #fff;
+  }
+
+  :global(.cart-item-qty span) {
+    min-width: 26px;
+    padding: 0 4px;
+    text-align: center;
+    font-family: monospace;
+    font-size: 12px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Empty state (ahora también lo genera el JS, así que va en :global) */
+  :global(.cart-empty) {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #777;
+    padding: 20px;
+  }
+
+  :global(.cart-empty p) {
+    margin: 0;
+    font-size: 14px;
+    color: #ccc;
+    font-weight: 600;
+  }
+
+  :global(.cart-empty-hint) {
+    font-size: 12px !important;
+    color: #666 !important;
+    font-weight: 400 !important;
+    margin-top: 6px !important;
+    max-width: 260px;
+    line-height: 1.5;
+  }
+
+  :global(.cart-empty-cta) {
+    margin-top: 22px;
+    padding: 10px 16px;
+    border: 0;
+    border-radius: 8px;
+    background: #242424;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  :global(.cart-empty-cta:hover) {
+    background: #333;
   }
 </style>
 
@@ -1180,145 +1790,258 @@ const base = import.meta.env.BASE_URL;
   searchInput.addEventListener("input", filterProducts);
 
 
-  // -------------------------
+   // -------------------------
   // MODAL DE PRODUCTO
   // -------------------------
 
+  // Tabla de talles (alto x ancho en cm)
+  const SIZE_CHART = {
+    Oversize: [
+      { size: "S",   alto: 72, ancho: 55 },
+      { size: "M",   alto: 74, ancho: 57 },
+      { size: "L",   alto: 76, ancho: 59 },
+      { size: "XL",  alto: 78, ancho: 61 },
+      { size: "2XL", alto: 80, ancho: 63 },
+    ],
+    Regular: [
+      { size: "S",   alto: 65, ancho: 45 },
+      { size: "M",   alto: 67, ancho: 49 },
+      { size: "L",   alto: 69, ancho: 53 },
+      { size: "XL",  alto: 71, ancho: 56 },
+      { size: "2XL", alto: 74, ancho: 58 },
+      { size: "3XL", alto: 76, ancho: 58 },
+      { size: "4XL", alto: 78, ancho: 60 },
+      { size: "5XL", alto: 81, ancho: 62 },
+    ],
+  };
+
   const modal = document.querySelector("#product-modal");
   const modalImage = document.querySelector("#modal-image");
+  const modalImageLabel = document.querySelector("#modal-image-label");
+  const modalImageCounter = document.querySelector("#modal-image-counter");
   const modalTitle = document.querySelector("#modal-title");
+  const modalCategory = document.querySelector("#modal-category");
+  const modalThumbs = document.querySelector("#modal-thumbs");
+  const modalFits = document.querySelector("#modal-fits");
+  const modalSizes = document.querySelector("#modal-sizes");
+  const modalSizeCm = document.querySelector("#modal-size-cm");
+  const modalQtyValue = document.querySelector("#modal-qty-value");
+  const modalQtyMinus = document.querySelector("#modal-qty-minus");
+  const modalQtyPlus = document.querySelector("#modal-qty-plus");
+  const modalAdd = document.querySelector("#modal-add");
   const modalWhatsapp = document.querySelector("#modal-whatsapp");
   const modalShare = document.querySelector("#modal-share");
-  const modalDots = document.querySelector("#modal-dots");
   const modalClose = document.querySelector("#modal-close");
   const modalPrev = document.querySelector("#modal-prev");
   const modalNext = document.querySelector("#modal-next");
   const modalBackdrop = document.querySelector(".modal-backdrop");
+  const modalSeeChart = document.querySelector("#modal-see-chart");
 
   let currentImages = [];
   let currentImageIndex = 0;
+  let selectedFit = "Oversize";
+  let selectedSize = "L";
+  let currentQuantity = 1;
+  let currentProductName = "";
   let touchStartX = 0;
   let touchEndX = 0;
 
 
+  function getSizesForFit(fit) {
+    return SIZE_CHART[fit] || [];
+  }
+
+  function getMeasure(fit, size) {
+    return getSizesForFit(fit).find((item) => item.size === size) || null;
+  }
+
+
+  function renderThumbs() {
+    modalThumbs.innerHTML = "";
+
+    currentImages.forEach((image, index) => {
+      const thumb = document.createElement("button");
+      thumb.type = "button";
+      thumb.className = "modal-thumb";
+      if (index === currentImageIndex) thumb.classList.add("active");
+      thumb.setAttribute("aria-label", `Ver ${image.label}`);
+
+      const img = document.createElement("img");
+      img.src = image.src;
+      img.alt = image.label;
+      img.loading = "lazy";
+
+      thumb.appendChild(img);
+
+      thumb.addEventListener("click", () => {
+        currentImageIndex = index;
+        renderModalImage();
+      });
+
+      modalThumbs.appendChild(thumb);
+    });
+  }
+
+
+  function renderModalImage() {
+    const current = currentImages[currentImageIndex];
+    if (!current) return;
+
+    modalImage.src = current.src;
+    modalImage.alt = `${currentProductName} — ${current.label}`;
+    modalImageLabel.textContent = current.label;
+    modalImageCounter.textContent = `${currentImageIndex + 1} / ${currentImages.length}`;
+
+    // Refrescar el estado activo de las miniaturas sin redibujarlas todas.
+    const thumbs = modalThumbs.querySelectorAll(".modal-thumb");
+    thumbs.forEach((thumb, index) => {
+      thumb.classList.toggle("active", index === currentImageIndex);
+    });
+  }
+
+
+  function renderFits() {
+    modalFits.innerHTML = "";
+
+    ["Oversize", "Regular"].forEach((fit) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "modal-fit";
+      if (fit === selectedFit) btn.classList.add("active");
+
+      btn.innerHTML = fit === "Oversize"
+        ? `<strong>Oversize</strong><span>Hombros caídos, corte amplio</span>`
+        : `<strong>Regular Fit</strong><span>Corte tradicional al cuerpo</span>`;
+
+      btn.addEventListener("click", () => {
+        if (selectedFit === fit) return;
+        selectedFit = fit;
+
+        // Si el talle actual no existe en el nuevo corte, bajamos al más alto disponible.
+        const sizes = getSizesForFit(selectedFit);
+        const exists = sizes.some((item) => item.size === selectedSize);
+        if (!exists) {
+          selectedSize = sizes[sizes.length - 1].size;
+        }
+
+        renderFits();
+        renderSizes();
+        updateSizeCm();
+      });
+
+      modalFits.appendChild(btn);
+    });
+  }
+
+
+  function renderSizes() {
+    modalSizes.innerHTML = "";
+
+    const sizes = getSizesForFit(selectedFit);
+
+    sizes.forEach(({ size }) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "modal-size";
+      btn.textContent = size;
+      if (size === selectedSize) btn.classList.add("active");
+
+      btn.addEventListener("click", () => {
+        selectedSize = size;
+        renderSizes();
+        updateSizeCm();
+      });
+
+      modalSizes.appendChild(btn);
+    });
+  }
+
+
+  function updateSizeCm() {
+    const measure = getMeasure(selectedFit, selectedSize);
+    if (!measure) {
+      modalSizeCm.textContent = "";
+      return;
+    }
+    modalSizeCm.textContent = `${measure.alto} cm alto × ${measure.ancho} cm ancho`;
+  }
+
+
+  function renderQuantity() {
+    modalQtyValue.textContent = currentQuantity;
+  }
+
+
   function openModal(product) {
     const name = product.querySelector("h3")?.textContent ?? "";
-
     const category = product.querySelector(".product-category");
-const categoryColor =
-  category?.style.getPropertyValue("--category-color") ?? "#ffffff";
+    const categoryColor =
+      category?.style.getPropertyValue("--category-color") ?? "#ffffff";
+    const categoryName =
+      category?.textContent?.trim() ?? "";
 
-modal.style.setProperty("--category-color", categoryColor);
+    modal.style.setProperty("--category-color", categoryColor);
 
     const image = product.querySelector("img");
-
     if (!image) return;
 
     const modelo = image.getAttribute("src");
-
     const remera = modelo.replace("/modelo.", "/remera.");
 
-    
-
     currentImages = [
-      {
-        src: modelo,
-        label: "Modelo",
-      },
-      {
-        src: remera,
-        label: "Remera",
-      },
-      {
-        src: `${base}/talles/oversize.webp`,
-        label: "Talles Oversize",
-      },
-      {
-        src: `${base}/talles/regular.webp`,
-        label: "Talles Regular",
-      },
+      { src: modelo, label: "Modelo" },
+      { src: remera, label: "Remera" },
+      { src: `${base}/talles/oversize.webp`, label: "Talles Oversize" },
+      { src: `${base}/talles/regular.webp`, label: "Talles Regular" },
     ];
 
     currentImageIndex = 0;
+    currentProductName = name;
+    currentQuantity = 1;
+    selectedFit = "Oversize";
+    selectedSize = "L";
 
     modalTitle.textContent = name;
+    modalCategory.textContent = categoryName;
 
-    const message = `Hola! Quería consultar por la remera de ${name}.`;
-modalWhatsapp.href = `https://wa.me/5491132372306?text=${encodeURIComponent(message)}`;
+    renderThumbs();
+    renderModalImage();
+    renderFits();
+    renderSizes();
+    updateSizeCm();
+    renderQuantity();
+
+    modalAdd.classList.remove("is-added");
+    modalAdd.textContent = "Agregar al Pedido";
 
     modal.classList.add("open");
     modal.setAttribute("aria-hidden", "false");
-
     document.body.classList.add("modal-open");
-
-    renderModalImage();
   }
 
 
   function closeModal() {
     modal.classList.remove("open");
     modal.setAttribute("aria-hidden", "true");
-
     document.body.classList.remove("modal-open");
-  }
-
-
-  function renderModalImage() {
-    const current = currentImages[currentImageIndex];
-
-    if (!current) return;
-
-    modalImage.src = current.src;
-    modalImage.alt = `${modalTitle.textContent} — ${current.label}`;
-
-    
-    modalDots.innerHTML = "";
-
-    currentImages.forEach((image, index) => {
-  const dot = document.createElement("button");
-
-  dot.type = "button";
-dot.className = "modal-dot";
-
-if (index === currentImageIndex) {
-  dot.classList.add("active");
-}
-  dot.setAttribute(
-    "aria-label",
-    `Ver ${image.label}`
-  );
-
-  dot.addEventListener("click", () => {
-    currentImageIndex = index;
-    renderModalImage();
-  });
-
-  modalDots.appendChild(dot);
-});
   }
 
 
   function showPreviousImage() {
     currentImageIndex =
-      (currentImageIndex - 1 + currentImages.length) %
-      currentImages.length;
-
+      (currentImageIndex - 1 + currentImages.length) % currentImages.length;
     renderModalImage();
   }
 
 
   function showNextImage() {
-    currentImageIndex =
-      (currentImageIndex + 1) %
-      currentImages.length;
-
+    currentImageIndex = (currentImageIndex + 1) % currentImages.length;
     renderModalImage();
   }
 
 
   products.forEach((product) => {
     const button = product.querySelector(".product-button");
-
     button?.addEventListener("click", () => {
       openModal(product);
     });
@@ -1326,34 +2049,54 @@ if (index === currentImageIndex) {
 
 
   modalClose.addEventListener("click", closeModal);
-
   modalBackdrop.addEventListener("click", closeModal);
-
   modalPrev.addEventListener("click", showPreviousImage);
-
   modalNext.addEventListener("click", showNextImage);
 
-    modalImage.addEventListener("touchstart", (event) => {
-    touchStartX = event.changedTouches[0].screenX;
+  // Atajo: al tocar "Ver gráfico", salta a la miniatura del talle del corte actual.
+  modalSeeChart.addEventListener("click", () => {
+    currentImageIndex = selectedFit === "Oversize" ? 2 : 3;
+    renderModalImage();
   });
 
-  modalImage.addEventListener("touchend", (event) => {
-    touchEndX = event.changedTouches[0].screenX;
 
-    const difference = touchStartX - touchEndX;
-
-    if (Math.abs(difference) < 50) return;
-
-    if (difference > 0) {
-      showNextImage();
-    } else {
-      showPreviousImage();
+  modalQtyMinus.addEventListener("click", () => {
+    if (currentQuantity > 1) {
+      currentQuantity -= 1;
+      renderQuantity();
     }
   });
 
+  modalQtyPlus.addEventListener("click", () => {
+    if (currentQuantity < 20) {
+      currentQuantity += 1;
+      renderQuantity();
+    }
+  });
+
+
+  // En A3 este botón va a agregar al carrito de verdad.
+  // Por ahora solo da feedback visual.
+  modalAdd.addEventListener("click", () => {
+    modalAdd.classList.add("is-added");
+    modalAdd.textContent = "¡Agregado!";
+    setTimeout(() => {
+      modalAdd.classList.remove("is-added");
+      modalAdd.textContent = "Agregar al Pedido";
+    }, 1600);
+  });
+
+
+  modalWhatsapp.addEventListener("click", () => {
+    const message = `¡Hola KRAKOA! Quería consultar por la remera de *${currentProductName}* en corte *${selectedFit}*, talle *${selectedSize}*. ¿Tienen stock disponible?`;
+    const url = `https://wa.me/5491132372306?text=${encodeURIComponent(message)}`;
+    window.open(url, "_blank", "noopener,noreferrer");
+  });
+
+
   modalShare.addEventListener("click", async () => {
     const url = window.location.href;
-    const title = modalTitle.textContent;
+    const title = currentProductName;
 
     if (navigator.share) {
       try {
@@ -1363,13 +2106,12 @@ if (index === currentImageIndex) {
           url,
         });
       } catch (error) {
-        // El usuario canceló el menú de compartir.
+        // cancelado
       }
     } else {
       try {
         await navigator.clipboard.writeText(url);
         modalShare.textContent = "¡Enlace copiado!";
-
         setTimeout(() => {
           modalShare.textContent = "Compartir";
         }, 2000);
@@ -1379,35 +2121,28 @@ if (index === currentImageIndex) {
     }
   });
 
-  document.addEventListener("keydown", (event) => {
-    if (!modal.classList.contains("open")) return;
 
-    if (event.key === "Escape") {
-      closeModal();
-    }
+  modalImage.addEventListener("touchstart", (event) => {
+    touchStartX = event.changedTouches[0].screenX;
+  });
 
-    if (event.key === "ArrowLeft") {
+  modalImage.addEventListener("touchend", (event) => {
+    touchEndX = event.changedTouches[0].screenX;
+    const difference = touchStartX - touchEndX;
+    if (Math.abs(difference) < 50) return;
+    if (difference > 0) {
+      showNextImage();
+    } else {
       showPreviousImage();
     }
-
-    if (event.key === "ArrowRight") {
-      showNextImage();
-    }
   });
 
-    window.addEventListener("scroll", () => {
-    if (window.scrollY > 500) {
-      backToTop.classList.add("visible");
-    } else {
-      backToTop.classList.remove("visible");
-    }
-  });
 
-    backToTop.addEventListener("click", () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+  document.addEventListener("keydown", (event) => {
+    if (!modal.classList.contains("open")) return;
+    if (event.key === "Escape") closeModal();
+    if (event.key === "ArrowLeft") showPreviousImage();
+    if (event.key === "ArrowRight") showNextImage();
   });
 
 
@@ -1416,13 +2151,13 @@ if (index === currentImageIndex) {
   // -------------------------
 
   const CART_KEY = "krakoa_cart";
+  const WHATSAPP_NUMBER = "5491132372306";
 
   const cartToggle = document.querySelector("#cart-toggle");
   const cartCount = document.querySelector("#cart-count");
   const cartDrawer = document.querySelector("#cart-drawer");
   const cartDrawerClose = document.querySelector("#cart-drawer-close");
   const cartDrawerBackdrop = document.querySelector(".cart-drawer-backdrop");
-  const cartEmptyCta = document.querySelector("#cart-empty-cta");
   const cartDrawerCount = document.querySelector("#cart-drawer-count");
   const cartDrawerTotal = document.querySelector("#cart-drawer-total");
   const cartDrawerFooter = document.querySelector("#cart-drawer-footer");
@@ -1437,6 +2172,7 @@ if (index === currentImageIndex) {
     cartItems = [];
   }
 
+
   function saveCart() {
     try {
       localStorage.setItem(CART_KEY, JSON.stringify(cartItems));
@@ -1445,9 +2181,11 @@ if (index === currentImageIndex) {
     }
   }
 
+
   function getTotalCount() {
     return cartItems.reduce((acc, item) => acc + item.quantity, 0);
   }
+
 
   function updateCartBadge() {
     const total = getTotalCount();
@@ -1460,11 +2198,174 @@ if (index === currentImageIndex) {
     }
   }
 
+
+  function addToCart(product) {
+    const { name, image, fit, size, quantity, color } = product;
+    const key = `${name}__${fit}__${size}`;
+
+    const existing = cartItems.find((item) => item.key === key);
+
+    if (existing) {
+      existing.quantity += quantity;
+    } else {
+      cartItems.push({ key, name, image, fit, size, quantity, color });
+    }
+
+    saveCart();
+    updateCartBadge();
+    renderCartDrawer();
+  }
+
+
+  function removeFromCart(key) {
+    cartItems = cartItems.filter((item) => item.key !== key);
+    saveCart();
+    updateCartBadge();
+    renderCartDrawer();
+  }
+
+
+  function changeQuantity(key, delta) {
+    const item = cartItems.find((i) => i.key === key);
+    if (!item) return;
+
+    item.quantity += delta;
+
+    if (item.quantity <= 0) {
+      removeFromCart(key);
+      return;
+    }
+
+    saveCart();
+    updateCartBadge();
+    renderCartDrawer();
+  }
+
+
+  function clearCart() {
+    cartItems = [];
+    saveCart();
+    updateCartBadge();
+    renderCartDrawer();
+  }
+
+
+  function renderCartDrawer() {
+    const total = getTotalCount();
+
+    cartDrawerCount.textContent = total;
+    cartDrawerTotal.textContent = total;
+    cartDrawerFooter.hidden = total === 0;
+
+    if (cartItems.length === 0) {
+      cartDrawerBody.innerHTML = `
+        <div class="cart-empty">
+          <p>Tu lista de pedido está vacía</p>
+          <p class="cart-empty-hint">
+            Navegá por el catálogo y elegí corte, talle y cantidad.
+          </p>
+          <button id="cart-empty-cta" type="button" class="cart-empty-cta">
+            Explorar catálogo
+          </button>
+        </div>
+      `;
+      return;
+    }
+
+    const itemsHtml = cartItems
+      .map(
+        (item) => `
+        <div class="cart-item">
+          <img
+            class="cart-item-img"
+            src="${item.image}"
+            alt="${item.name}"
+            loading="lazy"
+          />
+          <div class="cart-item-info">
+            <div class="cart-item-top">
+              <h4>${item.name}</h4>
+              <button
+                type="button"
+                class="cart-item-remove"
+                data-action="remove"
+                data-key="${item.key}"
+                aria-label="Eliminar ${item.name}"
+              >
+                ×
+              </button>
+            </div>
+            <div class="cart-item-meta">
+              <span>${item.fit}</span>
+              <span>·</span>
+              <span>Talle <strong>${item.size}</strong></span>
+            </div>
+            <div class="cart-item-qty">
+              <button
+                type="button"
+                data-action="dec"
+                data-key="${item.key}"
+                aria-label="Restar uno"
+              >
+                −
+              </button>
+              <span>${item.quantity}</span>
+              <button
+                type="button"
+                data-action="inc"
+                data-key="${item.key}"
+                aria-label="Sumar uno"
+              >
+                +
+              </button>
+            </div>
+          </div>
+        </div>
+      `
+      )
+      .join("");
+
+    cartDrawerBody.innerHTML = `
+      <div class="cart-items-header">
+        <span>${cartItems.length} ${
+      cartItems.length === 1 ? "modelo" : "modelos"
+    }</span>
+        <button type="button" class="cart-clear" data-action="clear">
+          Vaciar lista
+        </button>
+      </div>
+      <div class="cart-items">
+        ${itemsHtml}
+      </div>
+    `;
+  }
+
+
+  function buildWhatsAppOrderMessage() {
+    const total = getTotalCount();
+
+    let text = `¡Hola KRAKOA! Quería encargar las siguientes remeras:\n\n`;
+
+    cartItems.forEach((item, index) => {
+      text += `${index + 1}. *Remera ${item.name}*\n`;
+      text += `   - Corte: *${item.fit}*\n`;
+      text += `   - Talle: *${item.size}*\n`;
+      text += `   - Cantidad: *${item.quantity}*\n\n`;
+    });
+
+    text += `Total de prendas: *${total}*\n\n`;
+    text += `¿Tienen disponibilidad y cómo coordinamos pago y envío? ¡Gracias!`;
+
+    return text;
+  }
+
+
   function openCartDrawer() {
     cartDrawer.classList.add("open");
     cartDrawer.setAttribute("aria-hidden", "false");
     document.body.classList.add("cart-open");
   }
+
 
   function closeCartDrawer() {
     cartDrawer.classList.remove("open");
@@ -1472,39 +2373,93 @@ if (index === currentImageIndex) {
     document.body.classList.remove("cart-open");
   }
 
-  function renderCartDrawer() {
-    const total = getTotalCount();
-
-    cartDrawerCount.textContent = total;
-    cartDrawerTotal.textContent = total;
-
-    if (total > 0) {
-      cartDrawerFooter.hidden = false;
-    } else {
-      cartDrawerFooter.hidden = true;
-    }
-
-    // El contenido de los items se completa en el paso A3.
-  }
 
   cartToggle?.addEventListener("click", openCartDrawer);
   cartDrawerClose?.addEventListener("click", closeCartDrawer);
   cartDrawerBackdrop?.addEventListener("click", closeCartDrawer);
-  cartEmptyCta?.addEventListener("click", closeCartDrawer);
 
   cartDrawerWhatsapp?.addEventListener("click", () => {
-    // Se completa en el paso A3.
+    if (cartItems.length === 0) return;
+    const message = buildWhatsAppOrderMessage();
+    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+      message
+    )}`;
+    window.open(url, "_blank", "noopener,noreferrer");
+  });
+
+  // Delegación de eventos dentro del carrito.
+  cartDrawerBody.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return;
+
+    const actionEl = target.closest("[data-action]");
+
+    if (actionEl) {
+      const action = actionEl.getAttribute("data-action");
+      const key = actionEl.getAttribute("data-key");
+
+      if (action === "remove" && key) {
+        removeFromCart(key);
+        return;
+      }
+      if (action === "dec" && key) {
+        changeQuantity(key, -1);
+        return;
+      }
+      if (action === "inc" && key) {
+        changeQuantity(key, +1);
+        return;
+      }
+      if (action === "clear") {
+        clearCart();
+        return;
+      }
+    }
+
+    if (target.id === "cart-empty-cta") {
+      closeCartDrawer();
+    }
   });
 
   document.addEventListener("keydown", (event) => {
-    if (
-      event.key === "Escape" &&
-      cartDrawer.classList.contains("open")
-    ) {
+    if (event.key === "Escape" && cartDrawer.classList.contains("open")) {
       closeCartDrawer();
     }
   });
 
   updateCartBadge();
   renderCartDrawer();
+
+
+  // -------------------------
+  // Conectar modal → carrito
+  // -------------------------
+
+  // Reemplazamos el listener anterior (que solo daba feedback visual)
+  // por uno que agrega de verdad al carrito.
+  const modalAddOld = modalAdd;
+  const modalAddClone = modalAddOld.cloneNode(true);
+  modalAddOld.parentNode.replaceChild(modalAddClone, modalAddOld);
+
+  modalAddClone.addEventListener("click", () => {
+    const imageSrc = currentImages[0]?.src || "";
+    const color = modal.style.getPropertyValue("--category-color") || "#ffffff";
+
+    addToCart({
+      name: currentProductName,
+      image: imageSrc,
+      fit: selectedFit,
+      size: selectedSize,
+      quantity: currentQuantity,
+      color,
+    });
+
+    modalAddClone.classList.add("is-added");
+    modalAddClone.textContent = "¡Agregado!";
+
+    setTimeout(() => {
+      modalAddClone.classList.remove("is-added");
+      modalAddClone.textContent = "Agregar al Pedido";
+    }, 1600);
+  });
 </script>
