@@ -137,4 +137,4 @@ cuente qué le gustó y qué no, y evaluar cómo integrarlo a la versión actual
   que una grande. Después de cada cambio, indicar cómo probarlo.
 - **No romper el flujo del `.bat`.** Es la parte más sensible del proyecto.
 - **Respetar la estructura de un solo archivo (`index.astro`).** No proponer
-  refactorizaciones grandes sin acordarlo antes.
+  refactorizaciones grandes sin acordarlo antes.  
