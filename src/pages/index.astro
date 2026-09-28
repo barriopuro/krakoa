@@ -1,10 +1,7 @@
 ---
 import catalogo from "../data/catalogo.json";
 
-const categories = [
-  { id: "todos", name: "Todos" },
-  ...catalogo.categories,
-];
+const categories = catalogo.categories;
 
 const base = import.meta.env.BASE_URL;
 
@@ -238,10 +235,7 @@ const marqueeText = [
       style={`--category-color: ${category.color ?? "#888888"}`}
     >
       <button
-        class:list={[
-          "category-button",
-          { active: category.id === "todos" },
-        ]}
+        class="category-button"
         data-category={category.id}
       >
         {category.name}
@@ -1228,8 +1222,7 @@ const marqueeText = [
 }
 
 /* Cuando el botón se despega, tiene que quedar por encima de los vecinos. */
-.category-wrap:hover,
-.category-wrap:focus-within {
+.category-wrap:hover {
   z-index: 5;
 }
 
@@ -1251,7 +1244,7 @@ const marqueeText = [
 
 /* Hover / focus: el botón se despega arriba-izquierda (como el original). */
 .category-wrap:hover .category-button:not(:active),
-.category-wrap:focus-within .category-button:not(:active) {
+.category-button:focus-visible {
   transform: translate(-14px, -14px);
   color: #fff;
 }
@@ -3068,33 +3061,43 @@ const marqueeText = [
   const categoryButtons = document.querySelectorAll(".category-button");
   const products = document.querySelectorAll(".product-card");
 
-  let activeCategory = "todos";
+  let activeCategory = null;
 
-  function filterProducts() {
-    const search = searchInput.value.toLowerCase().trim();
+function filterProducts() {
+  const search = searchInput.value.toLowerCase().trim();
 
-    products.forEach((product) => {
-      const name = product.dataset.name ?? "";
-      const category = product.dataset.category ?? "";
+  products.forEach((product) => {
+    const name = product.dataset.name ?? "";
+    const category = product.dataset.category ?? "";
 
-      const matchesSearch = name.includes(search);
-      const matchesCategory =
-        activeCategory === "todos" || category === activeCategory;
+    const matchesSearch = name.includes(search);
+    const matchesCategory =
+      activeCategory === null || category === activeCategory;
 
-      product.style.display =
-        matchesSearch && matchesCategory ? "" : "none";
-    });
-  }
+    product.style.display =
+      matchesSearch && matchesCategory ? "" : "none";
+  });
+}
 
-  categoryButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      categoryButtons.forEach((item) => item.classList.remove("active"));
+categoryButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const clickedCategory = button.dataset.category ?? "";
+    const isAlreadyActive = button.classList.contains("active");
+
+    // Apagamos todos primero.
+    categoryButtons.forEach((item) => item.classList.remove("active"));
+
+    // Si toqué el que ya estaba activo → quedo en "sin filtro".
+    // Si toqué otro → ese queda activo.
+    if (isAlreadyActive) {
+      activeCategory = null;
+    } else {
       button.classList.add("active");
+      activeCategory = clickedCategory;
+    }
 
-      activeCategory = button.dataset.category ?? "todos";
-
-      filterProducts();
-    });
+    filterProducts();
+  });
 
   // Botón "volver arriba"
   window.addEventListener("scroll", () => {
