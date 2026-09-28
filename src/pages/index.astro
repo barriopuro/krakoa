@@ -7,6 +7,15 @@ const categories = [
 ];
 
 const base = import.meta.env.BASE_URL;
+
+const marqueeText = [
+  "Envíos a todo el país",
+  "100% Algodón Peinado 24/1",
+  "Cortes Oversize y Regular Fit",
+  "Estampas DTF Premium",
+  "Pre-encogido Térmico",
+  "Atención personalizada por WhatsApp",
+];
 ---
 
 <!doctype html>
@@ -16,7 +25,7 @@ const base = import.meta.env.BASE_URL;
   <meta name="viewport" content="width=device-width" />
 
   <title>KRAKOA | REMERAS</title>
-<link rel="icon" type="image/png" href={`${base}/logos/krakoalogo-isotipo.png`} />
+<link rel="icon" type="image/png" href={`${base}/logos/krakoalogo-isotipo.webp`} />
   <meta
     name="description"
     content="KRAKOA — Catálogo de remeras inspiradas en anime, música, cine, series, deportes, videojuegos y cultura pop."
@@ -48,13 +57,13 @@ const base = import.meta.env.BASE_URL;
   <a href={`${base}/`} class="brand" aria-label="KRAKOA">
     <img
       class="logo-horizontal"
-      src={`${base}/logos/krakoalogo-horizontal.png`}
+      src={`${base}/logos/krakoalogo-horizontal.webp`}
       alt="KRAKOA"
     />
 
     <img
       class="logo-isotipo"
-      src={`${base}/logos/krakoalogo-isotipo.png`}
+      src={`${base}/logos/krakoalogo-isotipo.webp`}
       alt=""
       aria-hidden="true"
     />
@@ -183,8 +192,24 @@ const base = import.meta.env.BASE_URL;
 
     <main>
       <section class="hero">
-         <h1>CATALOGO.</h1>
-      </section>
+  <div class="hero-bg" aria-hidden="true"></div>
+  <div class="hero-content">
+    <h1>CATALOGO.</h1>
+  </div>
+</section>
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    {[1, 2].map(() =>
+      marqueeText.map((item) => (
+        <span class="marquee-item">
+          {item}
+          <i class="marquee-sep">·</i>
+        </span>
+      ))
+    )}
+  </div>
+</div>
 
       <section id="catalogo" class="catalog">
         <div class="catalog-header">
@@ -686,17 +711,48 @@ const base = import.meta.env.BASE_URL;
 
     </main>
 
-    <footer>
-      <span>KRAKOA</span>
+    <footer class="site-footer">
+  <div class="footer-particles" aria-hidden="true"></div>
 
+  <div class="footer-inner">
+    <div class="footer-col footer-col--brand">
+      <img
+        class="footer-logo"
+        src={`${base}/logos/krakoalogo-vertical.webp`}
+        alt="KRAKOA"
+      />
+    </div>
+
+    <div class="footer-col footer-col--text">
+      <p>
+        KRAKOA es una marca argentina de remeras inspiradas en anime,
+        música, cine, series, deportes y videojuegos. Trabajamos con
+        algodón peinado 24/1 premium, estampas DTF de alta durabilidad y
+        moldería propia en cortes Oversize y Regular Fit. Envíos a todo
+        el país.
+      </p>
+    </div>
+
+    <div class="footer-col footer-col--links">
+      <span class="footer-col-title">Navegación</span>
+      <a href="#catalogo">Catálogo</a>
+      <a href="#como-comprar">Cómo Comprar</a>
+      <a href="#calidad">Materiales</a>
       <a
         href="https://instagram.com/krakoa.sw"
         target="_blank"
         rel="noopener noreferrer"
       >
-        @krakoa.sw
+        Instagram ↗
       </a>
-    </footer>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <span>© 2026 KRAKOA powered by BARRIOPURO</span>
+   
+  </div>
+</footer>
   </body>
 </html>
 
@@ -991,8 +1047,109 @@ const base = import.meta.env.BASE_URL;
   }
 
  .hero {
-  padding: 55px 0 45px;
+  position: relative;
+  padding: 80px 0 60px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #141414;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+  :global(.hero-bg img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 1.4s ease, transform 9s ease-out;
+    will-change: opacity, transform;
+    transform: scale(1.02) translateX(-1.5%);
   }
+
+      :global(.hero-bg img.active) {
+    opacity: 0.32;
+    transform: scale(1.1) translateX(1.5%);
+  }
+
+  :global(.hero-bg img:nth-child(even)) {
+    transform: scale(1.02) translateX(1.5%);
+  }
+
+  :global(.hero-bg img:nth-child(even).active) {
+    opacity: 0.32;
+    transform: scale(1.1) translateX(-1.5%);
+  }
+
+  :global(.hero-bg img:nth-child(even).active) {
+    animation: heroZoomRight 9s ease-out forwards;
+  }
+
+ 
+
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    180deg,
+    rgba(11, 11, 11, 0.15) 0%,
+    rgba(11, 11, 11, 0.6) 100%
+  );
+  pointer-events: none;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+.marquee {
+  margin: 28px 0 40px;
+  padding: 16px 0;
+  overflow: hidden;
+  background: #0d0d0d;
+  border-radius: 12px;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+}
+
+.marquee-track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  animation: marqueeScroll 45s linear infinite;
+}
+
+.marquee-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 24px;
+  padding-right: 24px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #888;
+  white-space: nowrap;
+}
+
+.marquee-sep {
+  font-style: normal;
+  color: #444;
+}
+
+@keyframes marqueeScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
 
   .eyebrow {
     margin: 0 0 18px;
@@ -1156,18 +1313,133 @@ const base = import.meta.env.BASE_URL;
   flex-shrink: 0;
 }
 
-  footer {
-    padding: 30px 5vw;
+  :global(.site-footer) {
+    position: relative;
+    margin-top: 40px;
+    padding: 60px 5vw 30px;
     border-top: 1px solid #242424;
-    display: flex;
-    justify-content: space-between;
-    color: #666;
-    font-size: 12px;
+    background: #0a0a0a;
+    overflow: hidden;
   }
 
-  footer a {
+  .footer-particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  :global(.footer-particle) {
+    position: absolute;
+    bottom: -10px;
+    border-radius: 50%;
+    background: #fff;
+    opacity: 0;
+    animation: floatUp linear infinite;
+    will-change: transform, opacity;
+  }
+
+  @keyframes floatUp {
+    0% {
+      transform: translateY(0) translateX(0);
+      opacity: 0;
+    }
+    10% {
+      opacity: 0.22;
+    }
+    90% {
+      opacity: 0.22;
+    }
+    100% {
+      transform: translateY(-420px) translateX(24px);
+      opacity: 0;
+    }
+  }
+
+  :global(.footer-inner) {
+    position: relative;
+    z-index: 1;
+    width: min(1200px, 100%);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 100px 1fr 180px;
+    gap: 48px;
+    align-items: start;
+  }
+
+:global(.footer-col--brand) {
+    display: flex;
+    justify-content: flex-start;
+  }
+
+:global(.footer-logo) {
+    width: 70px;
+    height: auto;
+    display: block;
+    opacity: 0.9;
+  }
+
+:global(.footer-col--text p) {
+    margin: 0;
+    color: #888;
+    font-size: 12.5px;
+    line-height: 1.75;
+    text-align: justify;
+  }
+
+:global(.footer-col--links) {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+:global(.footer-col-title) {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #555;
+    margin-bottom: 4px;
+  }
+
+:global(.footer-col--links a) {
+    color: #999;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    width: fit-content;
+    transition: color 0.2s ease, transform 0.2s ease;
+  }
+
+:global(.footer-col--links a:hover) {
+    color: #fff;
+    transform: translateX(3px);
+  }
+
+:global(.footer-bottom) {
+    position: relative;
+    z-index: 1;
+    width: min(1200px, 100%);
+    margin: 40px auto 0;
+    padding-top: 22px;
+    border-top: 1px solid #1a1a1a;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #555;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+:global(.footer-bottom a) {
     color: inherit;
     text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+:global(.footer-bottom a:hover) {
+    color: #fff;
   }
 
   @media (max-width: 900px) {
@@ -2684,6 +2956,36 @@ const base = import.meta.env.BASE_URL;
     .care-grid {
       grid-template-columns: 1fr;
     }
+
+    :global(.site-footer) {
+      padding: 50px 5vw 24px;
+    }
+
+    :global(.footer-inner) {
+        grid-template-columns: 1fr;
+      gap: 30px;
+    }
+
+    :global(.footer-col--brand) {
+        justify-content: center;
+    }
+
+    :global(.footer-logo) {
+      width: 58px;
+    }
+
+    :global(.footer-col--links) {
+      align-items: center;
+      text-align: center;
+    }
+
+    :global(.footer-bottom) {
+      flex-direction: column;
+      gap: 8px;
+      text-align: center;
+      margin-top: 30px;
+    }
+
   }
 </style>
 
@@ -3586,4 +3888,78 @@ const base = import.meta.env.BASE_URL;
       closeMobileMenu();
     });
   });
+
+// -------------------------
+// HERO — imágenes rotando
+// -------------------------
+
+const heroBg = document.querySelector(".hero-bg");
+
+if (heroBg) {
+  const allSrcs = Array.from(
+    document.querySelectorAll(".product-card .product-image img")
+  )
+    .map((img) => img.getAttribute("src"))
+    .filter(Boolean);
+
+  function shuffleArray(arr) {
+    const copy = [...arr];
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
+  }
+
+  // Elegimos hasta 6 imágenes al azar por visita.
+  const picked = shuffleArray(allSrcs).slice(0, 6);
+
+  picked.forEach((src, index) => {
+    const img = document.createElement("img");
+    img.src = src;
+    img.alt = "";
+    img.setAttribute("aria-hidden", "true");
+    img.decoding = "async";
+    if (index === 0) img.classList.add("active");
+    heroBg.appendChild(img);
+  });
+
+  const heroImgs = heroBg.querySelectorAll("img");
+
+  if (heroImgs.length > 1) {
+    let heroIndex = 0;
+
+    setInterval(() => {
+      heroImgs[heroIndex].classList.remove("active");
+      heroIndex = (heroIndex + 1) % heroImgs.length;
+      heroImgs[heroIndex].classList.add("active");
+    }, 5500);
+  }
+}
+
+// -------------------------
+// FOOTER — partículas
+// -------------------------
+
+const footerParticles = document.querySelector(".footer-particles");
+
+if (footerParticles) {
+  const PARTICLE_COUNT = 22;
+
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    const p = document.createElement("span");
+    p.className = "footer-particle";
+
+    p.style.left = Math.random() * 100 + "%";
+    p.style.animationDelay = Math.random() * 14 + "s";
+    p.style.animationDuration = 10 + Math.random() * 10 + "s";
+
+    const size = 1.5 + Math.random() * 2.5;
+    p.style.width = size + "px";
+    p.style.height = size + "px";
+
+    footerParticles.appendChild(p);
+  }
+}
+
 </script>

@@ -158,6 +158,43 @@ for (const file of tallesFiles) {
   );
 }
 
+// -------------------------
+// LOGOS: PNG → WebP optimizado
+// -------------------------
+
+const logosDir = path.join(root, "public", "logos");
+
+if (fs.existsSync(logosDir)) {
+  const logoFiles = fs.readdirSync(logosDir);
+
+  for (const file of logoFiles) {
+    const sourcePath = path.join(logosDir, file);
+
+    if (!fs.statSync(sourcePath).isFile()) continue;
+
+    const extension = path.extname(file).toLowerCase();
+
+    // Solo procesamos PNGs. .svg, .ico y .jpg quedan como están.
+    if (extension !== ".png") continue;
+
+    const webpFile = file.replace(/\.png$/i, ".webp");
+    const destinationPath = path.join(logosDir, webpFile);
+
+    await sharp(sourcePath)
+      .resize({
+        width: 400,
+        withoutEnlargement: true,
+      })
+      .webp({
+        quality: 88,
+        effort: 6,
+      })
+      .toFile(destinationPath);
+
+    console.log(`Logo optimizado: ${file} → ${webpFile}`);
+  }
+}
+
 fs.mkdirSync(outputDir, { recursive: true });
 
 const categories = [];
