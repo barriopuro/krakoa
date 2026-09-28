@@ -46,12 +46,108 @@
       "remera": "/catalogo/anime/akira/remera.webp"
     },
     {
+      "id": "aku-samurai-jack",
+      "name": "Aku Samurai Jack",
+      "category": "cine-series",
+      "categoryName": "Cine y Series",
+      "modelo": "/catalogo/cine-series/aku-samurai-jack/modelo.webp",
+      "remera": "/catalogo/cine-series/aku-samurai-jack/remera.webp"
+    },
+    {
+      "id": "deadpool",
+      "name": "Deadpool",
+      "category": "comics",
+      "categoryName": "Comics",
+      "modelo": "/catalogo/comics/deadpool/modelo.webp",
+      "remera": "/catalogo/comics/deadpool/remera.webp"
+    },
+    {
+      "id": "ayrton-senna",
+      "name": "Ayrton Senna",
+      "category": "deportes",
+      "categoryName": "Deportes",
+      "modelo": "/catalogo/deportes/ayrton-senna/modelo.webp",
+      "remera": "/catalogo/deportes/ayrton-senna/remera.webp"
+    },
+    {
+      "id": "a-perfect-circle",
+      "name": "A Perfect Circle",
+      "category": "musica",
+      "categoryName": "Música",
+      "modelo": "/catalogo/musica/a-perfect-circle/modelo.webp",
+      "remera": "/catalogo/musica/a-perfect-circle/remera.webp"
+    },
+    {
+      "id": "las-malvinas-son-argentinas",
+      "name": "Las Malvinas Son Argentinas",
+      "category": "otros",
+      "categoryName": "Otros",
+      "modelo": "/catalogo/otros/las-malvinas-son-argentinas/modelo.webp",
+      "remera": "/catalogo/otros/las-malvinas-son-argentinas/remera.webp"
+    },
+    {
+      "id": "god-of-war",
+      "name": "God Of War",
+      "category": "videojuegos",
+      "categoryName": "Videojuegos",
+      "modelo": "/catalogo/videojuegos/god-of-war/modelo.webp",
+      "remera": "/catalogo/videojuegos/god-of-war/remera.webp"
+    },
+    {
       "id": "akira-2",
       "name": "Akira 2",
       "category": "anime",
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/akira-2/modelo.webp",
       "remera": "/catalogo/anime/akira-2/remera.webp"
+    },
+    {
+      "id": "coraje-el-perro-cobarde",
+      "name": "Coraje El Perro Cobarde",
+      "category": "cine-series",
+      "categoryName": "Cine y Series",
+      "modelo": "/catalogo/cine-series/coraje-el-perro-cobarde/modelo.webp",
+      "remera": "/catalogo/cine-series/coraje-el-perro-cobarde/remera.webp"
+    },
+    {
+      "id": "dr-doom",
+      "name": "Dr Doom",
+      "category": "comics",
+      "categoryName": "Comics",
+      "modelo": "/catalogo/comics/dr-doom/modelo.webp",
+      "remera": "/catalogo/comics/dr-doom/remera.webp"
+    },
+    {
+      "id": "kobe-bryant",
+      "name": "Kobe Bryant",
+      "category": "deportes",
+      "categoryName": "Deportes",
+      "modelo": "/catalogo/deportes/kobe-bryant/modelo.webp",
+      "remera": "/catalogo/deportes/kobe-bryant/remera.webp"
+    },
+    {
+      "id": "alice-in-chains",
+      "name": "Alice In Chains",
+      "category": "musica",
+      "categoryName": "Música",
+      "modelo": "/catalogo/musica/alice-in-chains/modelo.webp",
+      "remera": "/catalogo/musica/alice-in-chains/remera.webp"
+    },
+    {
+      "id": "pulpo",
+      "name": "Pulpo",
+      "category": "otros",
+      "categoryName": "Otros",
+      "modelo": "/catalogo/otros/pulpo/modelo.webp",
+      "remera": "/catalogo/otros/pulpo/remera.webp"
+    },
+    {
+      "id": "raiden-mortal-kombat",
+      "name": "Raiden Mortal Kombat",
+      "category": "videojuegos",
+      "categoryName": "Videojuegos",
+      "modelo": "/catalogo/videojuegos/raiden-mortal-kombat/modelo.webp",
+      "remera": "/catalogo/videojuegos/raiden-mortal-kombat/remera.webp"
     },
     {
       "id": "death-note",
@@ -62,12 +158,92 @@
       "remera": "/catalogo/anime/death-note/remera.webp"
     },
     {
+      "id": "darth-vader-star-wars",
+      "name": "Darth Vader Star Wars",
+      "category": "cine-series",
+      "categoryName": "Cine y Series",
+      "modelo": "/catalogo/cine-series/darth-vader-star-wars/modelo.webp",
+      "remera": "/catalogo/cine-series/darth-vader-star-wars/remera.webp"
+    },
+    {
+      "id": "the-joker",
+      "name": "The Joker",
+      "category": "comics",
+      "categoryName": "Comics",
+      "modelo": "/catalogo/comics/the-joker/modelo.webp",
+      "remera": "/catalogo/comics/the-joker/remera.webp"
+    },
+    {
+      "id": "kobe-bryant-2",
+      "name": "Kobe Bryant 2",
+      "category": "deportes",
+      "categoryName": "Deportes",
+      "modelo": "/catalogo/deportes/kobe-bryant-2/modelo.webp",
+      "remera": "/catalogo/deportes/kobe-bryant-2/remera.webp"
+    },
+    {
+      "id": "cypress-hill",
+      "name": "Cypress Hill",
+      "category": "musica",
+      "categoryName": "Música",
+      "modelo": "/catalogo/musica/cypress-hill/modelo.webp",
+      "remera": "/catalogo/musica/cypress-hill/remera.webp"
+    },
+    {
+      "id": "ramen-godzilla",
+      "name": "Ramen Godzilla",
+      "category": "otros",
+      "categoryName": "Otros",
+      "modelo": "/catalogo/otros/ramen-godzilla/modelo.webp",
+      "remera": "/catalogo/otros/ramen-godzilla/remera.webp"
+    },
+    {
+      "id": "sub-zero-mortal-kombat",
+      "name": "Sub Zero Mortal Kombat",
+      "category": "videojuegos",
+      "categoryName": "Videojuegos",
+      "modelo": "/catalogo/videojuegos/sub-zero-mortal-kombat/modelo.webp",
+      "remera": "/catalogo/videojuegos/sub-zero-mortal-kombat/remera.webp"
+    },
+    {
       "id": "death-note-2",
       "name": "Death Note 2",
       "category": "anime",
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/death-note-2/modelo.webp",
       "remera": "/catalogo/anime/death-note-2/remera.webp"
+    },
+    {
+      "id": "ed-edd-y-eddy",
+      "name": "Ed Edd Y Eddy",
+      "category": "cine-series",
+      "categoryName": "Cine y Series",
+      "modelo": "/catalogo/cine-series/ed-edd-y-eddy/modelo.webp",
+      "remera": "/catalogo/cine-series/ed-edd-y-eddy/remera.webp"
+    },
+    {
+      "id": "x-men",
+      "name": "X Men",
+      "category": "comics",
+      "categoryName": "Comics",
+      "modelo": "/catalogo/comics/x-men/modelo.webp",
+      "remera": "/catalogo/comics/x-men/remera.webp"
+    },
+    {
+      "id": "manu-ginobili",
+      "name": "Manu Ginobili",
+      "category": "deportes",
+      "categoryName": "Deportes",
+      "modelo": "/catalogo/deportes/manu-ginobili/modelo.webp",
+      "remera": "/catalogo/deportes/manu-ginobili/remera.webp"
+    },
+    {
+      "id": "dano",
+      "name": "Dano",
+      "category": "musica",
+      "categoryName": "Música",
+      "modelo": "/catalogo/musica/dano/modelo.webp",
+      "remera": "/catalogo/musica/dano/remera.webp"
     },
     {
       "id": "demon-slayer",
@@ -78,12 +254,60 @@
       "remera": "/catalogo/anime/demon-slayer/remera.webp"
     },
     {
+      "id": "el-señor-de-los-anillos",
+      "name": "El Señor De Los Anillos",
+      "category": "cine-series",
+      "categoryName": "Cine y Series",
+      "modelo": "/catalogo/cine-series/el-señor-de-los-anillos/modelo.webp",
+      "remera": "/catalogo/cine-series/el-señor-de-los-anillos/remera.webp"
+    },
+    {
+      "id": "maradona",
+      "name": "Maradona",
+      "category": "deportes",
+      "categoryName": "Deportes",
+      "modelo": "/catalogo/deportes/maradona/modelo.webp",
+      "remera": "/catalogo/deportes/maradona/remera.webp"
+    },
+    {
+      "id": "foo-fighters",
+      "name": "Foo Fighters",
+      "category": "musica",
+      "categoryName": "Música",
+      "modelo": "/catalogo/musica/foo-fighters/modelo.webp",
+      "remera": "/catalogo/musica/foo-fighters/remera.webp"
+    },
+    {
       "id": "demon-slayer-2",
       "name": "Demon Slayer 2",
       "category": "anime",
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/demon-slayer-2/modelo.webp",
       "remera": "/catalogo/anime/demon-slayer-2/remera.webp"
+    },
+    {
+      "id": "it",
+      "name": "It",
+      "category": "cine-series",
+      "categoryName": "Cine y Series",
+      "modelo": "/catalogo/cine-series/it/modelo.webp",
+      "remera": "/catalogo/cine-series/it/remera.webp"
+    },
+    {
+      "id": "maradona-2",
+      "name": "Maradona 2",
+      "category": "deportes",
+      "categoryName": "Deportes",
+      "modelo": "/catalogo/deportes/maradona-2/modelo.webp",
+      "remera": "/catalogo/deportes/maradona-2/remera.webp"
+    },
+    {
+      "id": "gorillaz",
+      "name": "Gorillaz",
+      "category": "musica",
+      "categoryName": "Música",
+      "modelo": "/catalogo/musica/gorillaz/modelo.webp",
+      "remera": "/catalogo/musica/gorillaz/remera.webp"
     },
     {
       "id": "erosenin-naruto",
@@ -94,12 +318,60 @@
       "remera": "/catalogo/anime/erosenin-naruto/remera.webp"
     },
     {
+      "id": "joker-batman-dark-knight",
+      "name": "Joker Batman Dark Knight",
+      "category": "cine-series",
+      "categoryName": "Cine y Series",
+      "modelo": "/catalogo/cine-series/joker-batman-dark-knight/modelo.webp",
+      "remera": "/catalogo/cine-series/joker-batman-dark-knight/remera.webp"
+    },
+    {
+      "id": "messi",
+      "name": "Messi",
+      "category": "deportes",
+      "categoryName": "Deportes",
+      "modelo": "/catalogo/deportes/messi/modelo.webp",
+      "remera": "/catalogo/deportes/messi/remera.webp"
+    },
+    {
+      "id": "gustavo-cerati",
+      "name": "Gustavo Cerati",
+      "category": "musica",
+      "categoryName": "Música",
+      "modelo": "/catalogo/musica/gustavo-cerati/modelo.webp",
+      "remera": "/catalogo/musica/gustavo-cerati/remera.webp"
+    },
+    {
       "id": "evangelion",
       "name": "Evangelion",
       "category": "anime",
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/evangelion/modelo.webp",
       "remera": "/catalogo/anime/evangelion/remera.webp"
+    },
+    {
+      "id": "karate-kid",
+      "name": "Karate Kid",
+      "category": "cine-series",
+      "categoryName": "Cine y Series",
+      "modelo": "/catalogo/cine-series/karate-kid/modelo.webp",
+      "remera": "/catalogo/cine-series/karate-kid/remera.webp"
+    },
+    {
+      "id": "messi-2",
+      "name": "Messi 2",
+      "category": "deportes",
+      "categoryName": "Deportes",
+      "modelo": "/catalogo/deportes/messi-2/modelo.webp",
+      "remera": "/catalogo/deportes/messi-2/remera.webp"
+    },
+    {
+      "id": "indio-solari",
+      "name": "Indio Solari",
+      "category": "musica",
+      "categoryName": "Música",
+      "modelo": "/catalogo/musica/indio-solari/modelo.webp",
+      "remera": "/catalogo/musica/indio-solari/remera.webp"
     },
     {
       "id": "evangelion-2",
@@ -110,12 +382,52 @@
       "remera": "/catalogo/anime/evangelion-2/remera.webp"
     },
     {
+      "id": "monstars-space-jam",
+      "name": "Monstars Space Jam",
+      "category": "cine-series",
+      "categoryName": "Cine y Series",
+      "modelo": "/catalogo/cine-series/monstars-space-jam/modelo.webp",
+      "remera": "/catalogo/cine-series/monstars-space-jam/remera.webp"
+    },
+    {
+      "id": "nicolino-locche",
+      "name": "Nicolino Locche",
+      "category": "deportes",
+      "categoryName": "Deportes",
+      "modelo": "/catalogo/deportes/nicolino-locche/modelo.webp",
+      "remera": "/catalogo/deportes/nicolino-locche/remera.webp"
+    },
+    {
+      "id": "jimi-hendrix",
+      "name": "Jimi Hendrix",
+      "category": "musica",
+      "categoryName": "Música",
+      "modelo": "/catalogo/musica/jimi-hendrix/modelo.webp",
+      "remera": "/catalogo/musica/jimi-hendrix/remera.webp"
+    },
+    {
       "id": "evangelion-3",
       "name": "Evangelion 3",
       "category": "anime",
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/evangelion-3/modelo.webp",
       "remera": "/catalogo/anime/evangelion-3/remera.webp"
+    },
+    {
+      "id": "mumm-rah-thundercats",
+      "name": "Mumm Rah Thundercats",
+      "category": "cine-series",
+      "categoryName": "Cine y Series",
+      "modelo": "/catalogo/cine-series/mumm-rah-thundercats/modelo.webp",
+      "remera": "/catalogo/cine-series/mumm-rah-thundercats/remera.webp"
+    },
+    {
+      "id": "lemmy-kilmister",
+      "name": "Lemmy Kilmister",
+      "category": "musica",
+      "categoryName": "Música",
+      "modelo": "/catalogo/musica/lemmy-kilmister/modelo.webp",
+      "remera": "/catalogo/musica/lemmy-kilmister/remera.webp"
     },
     {
       "id": "gohan-dragon-ball-z",
@@ -126,12 +438,44 @@
       "remera": "/catalogo/anime/gohan-dragon-ball-z/remera.webp"
     },
     {
+      "id": "star-wars",
+      "name": "Star Wars",
+      "category": "cine-series",
+      "categoryName": "Cine y Series",
+      "modelo": "/catalogo/cine-series/star-wars/modelo.webp",
+      "remera": "/catalogo/cine-series/star-wars/remera.webp"
+    },
+    {
+      "id": "linkin-park",
+      "name": "Linkin Park",
+      "category": "musica",
+      "categoryName": "Música",
+      "modelo": "/catalogo/musica/linkin-park/modelo.webp",
+      "remera": "/catalogo/musica/linkin-park/remera.webp"
+    },
+    {
       "id": "goku-dragon-ball",
       "name": "Goku Dragon Ball",
       "category": "anime",
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/goku-dragon-ball/modelo.webp",
       "remera": "/catalogo/anime/goku-dragon-ball/remera.webp"
+    },
+    {
+      "id": "stranger-things",
+      "name": "Stranger Things",
+      "category": "cine-series",
+      "categoryName": "Cine y Series",
+      "modelo": "/catalogo/cine-series/stranger-things/modelo.webp",
+      "remera": "/catalogo/cine-series/stranger-things/remera.webp"
+    },
+    {
+      "id": "michael-jackson",
+      "name": "Michael Jackson",
+      "category": "musica",
+      "categoryName": "Música",
+      "modelo": "/catalogo/musica/michael-jackson/modelo.webp",
+      "remera": "/catalogo/musica/michael-jackson/remera.webp"
     },
     {
       "id": "hellsing",
@@ -142,12 +486,28 @@
       "remera": "/catalogo/anime/hellsing/remera.webp"
     },
     {
+      "id": "michael-jackson-2",
+      "name": "Michael Jackson 2",
+      "category": "musica",
+      "categoryName": "Música",
+      "modelo": "/catalogo/musica/michael-jackson-2/modelo.webp",
+      "remera": "/catalogo/musica/michael-jackson-2/remera.webp"
+    },
+    {
       "id": "luffy-one-piece",
       "name": "Luffy One Piece",
       "category": "anime",
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/luffy-one-piece/modelo.webp",
       "remera": "/catalogo/anime/luffy-one-piece/remera.webp"
+    },
+    {
+      "id": "the-beatles",
+      "name": "The Beatles",
+      "category": "musica",
+      "categoryName": "Música",
+      "modelo": "/catalogo/musica/the-beatles/modelo.webp",
+      "remera": "/catalogo/musica/the-beatles/remera.webp"
     },
     {
       "id": "one-piece",
@@ -158,12 +518,28 @@
       "remera": "/catalogo/anime/one-piece/remera.webp"
     },
     {
+      "id": "tyk",
+      "name": "Tyk",
+      "category": "musica",
+      "categoryName": "Música",
+      "modelo": "/catalogo/musica/tyk/modelo.webp",
+      "remera": "/catalogo/musica/tyk/remera.webp"
+    },
+    {
       "id": "piccoro-dragon-ball-z",
       "name": "Piccoro Dragon Ball Z",
       "category": "anime",
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/piccoro-dragon-ball-z/modelo.webp",
       "remera": "/catalogo/anime/piccoro-dragon-ball-z/remera.webp"
+    },
+    {
+      "id": "wu-tang",
+      "name": "Wu Tang",
+      "category": "musica",
+      "categoryName": "Música",
+      "modelo": "/catalogo/musica/wu-tang/modelo.webp",
+      "remera": "/catalogo/musica/wu-tang/remera.webp"
     },
     {
       "id": "slam-dunk",
@@ -204,382 +580,6 @@
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/vegeta-dragon-ball-z/modelo.webp",
       "remera": "/catalogo/anime/vegeta-dragon-ball-z/remera.webp"
-    },
-    {
-      "id": "aku-samurai-jack",
-      "name": "Aku Samurai Jack",
-      "category": "cine-series",
-      "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/aku-samurai-jack/modelo.webp",
-      "remera": "/catalogo/cine-series/aku-samurai-jack/remera.webp"
-    },
-    {
-      "id": "coraje-el-perro-cobarde",
-      "name": "Coraje El Perro Cobarde",
-      "category": "cine-series",
-      "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/coraje-el-perro-cobarde/modelo.webp",
-      "remera": "/catalogo/cine-series/coraje-el-perro-cobarde/remera.webp"
-    },
-    {
-      "id": "darth-vader-star-wars",
-      "name": "Darth Vader Star Wars",
-      "category": "cine-series",
-      "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/darth-vader-star-wars/modelo.webp",
-      "remera": "/catalogo/cine-series/darth-vader-star-wars/remera.webp"
-    },
-    {
-      "id": "ed-edd-y-eddy",
-      "name": "Ed Edd Y Eddy",
-      "category": "cine-series",
-      "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/ed-edd-y-eddy/modelo.webp",
-      "remera": "/catalogo/cine-series/ed-edd-y-eddy/remera.webp"
-    },
-    {
-      "id": "el-señor-de-los-anillos",
-      "name": "El Señor De Los Anillos",
-      "category": "cine-series",
-      "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/el-señor-de-los-anillos/modelo.webp",
-      "remera": "/catalogo/cine-series/el-señor-de-los-anillos/remera.webp"
-    },
-    {
-      "id": "it",
-      "name": "It",
-      "category": "cine-series",
-      "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/it/modelo.webp",
-      "remera": "/catalogo/cine-series/it/remera.webp"
-    },
-    {
-      "id": "joker-batman-dark-knight",
-      "name": "Joker Batman Dark Knight",
-      "category": "cine-series",
-      "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/joker-batman-dark-knight/modelo.webp",
-      "remera": "/catalogo/cine-series/joker-batman-dark-knight/remera.webp"
-    },
-    {
-      "id": "karate-kid",
-      "name": "Karate Kid",
-      "category": "cine-series",
-      "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/karate-kid/modelo.webp",
-      "remera": "/catalogo/cine-series/karate-kid/remera.webp"
-    },
-    {
-      "id": "monstars-space-jam",
-      "name": "Monstars Space Jam",
-      "category": "cine-series",
-      "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/monstars-space-jam/modelo.webp",
-      "remera": "/catalogo/cine-series/monstars-space-jam/remera.webp"
-    },
-    {
-      "id": "mumm-rah-thundercats",
-      "name": "Mumm Rah Thundercats",
-      "category": "cine-series",
-      "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/mumm-rah-thundercats/modelo.webp",
-      "remera": "/catalogo/cine-series/mumm-rah-thundercats/remera.webp"
-    },
-    {
-      "id": "star-wars",
-      "name": "Star Wars",
-      "category": "cine-series",
-      "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/star-wars/modelo.webp",
-      "remera": "/catalogo/cine-series/star-wars/remera.webp"
-    },
-    {
-      "id": "stranger-things",
-      "name": "Stranger Things",
-      "category": "cine-series",
-      "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/stranger-things/modelo.webp",
-      "remera": "/catalogo/cine-series/stranger-things/remera.webp"
-    },
-    {
-      "id": "deadpool",
-      "name": "Deadpool",
-      "category": "comics",
-      "categoryName": "Comics",
-      "modelo": "/catalogo/comics/deadpool/modelo.webp",
-      "remera": "/catalogo/comics/deadpool/remera.webp"
-    },
-    {
-      "id": "dr-doom",
-      "name": "Dr Doom",
-      "category": "comics",
-      "categoryName": "Comics",
-      "modelo": "/catalogo/comics/dr-doom/modelo.webp",
-      "remera": "/catalogo/comics/dr-doom/remera.webp"
-    },
-    {
-      "id": "the-joker",
-      "name": "The Joker",
-      "category": "comics",
-      "categoryName": "Comics",
-      "modelo": "/catalogo/comics/the-joker/modelo.webp",
-      "remera": "/catalogo/comics/the-joker/remera.webp"
-    },
-    {
-      "id": "x-men",
-      "name": "X Men",
-      "category": "comics",
-      "categoryName": "Comics",
-      "modelo": "/catalogo/comics/x-men/modelo.webp",
-      "remera": "/catalogo/comics/x-men/remera.webp"
-    },
-    {
-      "id": "ayrton-senna",
-      "name": "Ayrton Senna",
-      "category": "deportes",
-      "categoryName": "Deportes",
-      "modelo": "/catalogo/deportes/ayrton-senna/modelo.webp",
-      "remera": "/catalogo/deportes/ayrton-senna/remera.webp"
-    },
-    {
-      "id": "kobe-bryant",
-      "name": "Kobe Bryant",
-      "category": "deportes",
-      "categoryName": "Deportes",
-      "modelo": "/catalogo/deportes/kobe-bryant/modelo.webp",
-      "remera": "/catalogo/deportes/kobe-bryant/remera.webp"
-    },
-    {
-      "id": "kobe-bryant-2",
-      "name": "Kobe Bryant 2",
-      "category": "deportes",
-      "categoryName": "Deportes",
-      "modelo": "/catalogo/deportes/kobe-bryant-2/modelo.webp",
-      "remera": "/catalogo/deportes/kobe-bryant-2/remera.webp"
-    },
-    {
-      "id": "manu-ginobili",
-      "name": "Manu Ginobili",
-      "category": "deportes",
-      "categoryName": "Deportes",
-      "modelo": "/catalogo/deportes/manu-ginobili/modelo.webp",
-      "remera": "/catalogo/deportes/manu-ginobili/remera.webp"
-    },
-    {
-      "id": "maradona",
-      "name": "Maradona",
-      "category": "deportes",
-      "categoryName": "Deportes",
-      "modelo": "/catalogo/deportes/maradona/modelo.webp",
-      "remera": "/catalogo/deportes/maradona/remera.webp"
-    },
-    {
-      "id": "maradona-2",
-      "name": "Maradona 2",
-      "category": "deportes",
-      "categoryName": "Deportes",
-      "modelo": "/catalogo/deportes/maradona-2/modelo.webp",
-      "remera": "/catalogo/deportes/maradona-2/remera.webp"
-    },
-    {
-      "id": "messi",
-      "name": "Messi",
-      "category": "deportes",
-      "categoryName": "Deportes",
-      "modelo": "/catalogo/deportes/messi/modelo.webp",
-      "remera": "/catalogo/deportes/messi/remera.webp"
-    },
-    {
-      "id": "messi-2",
-      "name": "Messi 2",
-      "category": "deportes",
-      "categoryName": "Deportes",
-      "modelo": "/catalogo/deportes/messi-2/modelo.webp",
-      "remera": "/catalogo/deportes/messi-2/remera.webp"
-    },
-    {
-      "id": "nicolino-locche",
-      "name": "Nicolino Locche",
-      "category": "deportes",
-      "categoryName": "Deportes",
-      "modelo": "/catalogo/deportes/nicolino-locche/modelo.webp",
-      "remera": "/catalogo/deportes/nicolino-locche/remera.webp"
-    },
-    {
-      "id": "a-perfect-circle",
-      "name": "A Perfect Circle",
-      "category": "musica",
-      "categoryName": "Música",
-      "modelo": "/catalogo/musica/a-perfect-circle/modelo.webp",
-      "remera": "/catalogo/musica/a-perfect-circle/remera.webp"
-    },
-    {
-      "id": "alice-in-chains",
-      "name": "Alice In Chains",
-      "category": "musica",
-      "categoryName": "Música",
-      "modelo": "/catalogo/musica/alice-in-chains/modelo.webp",
-      "remera": "/catalogo/musica/alice-in-chains/remera.webp"
-    },
-    {
-      "id": "cypress-hill",
-      "name": "Cypress Hill",
-      "category": "musica",
-      "categoryName": "Música",
-      "modelo": "/catalogo/musica/cypress-hill/modelo.webp",
-      "remera": "/catalogo/musica/cypress-hill/remera.webp"
-    },
-    {
-      "id": "dano",
-      "name": "Dano",
-      "category": "musica",
-      "categoryName": "Música",
-      "modelo": "/catalogo/musica/dano/modelo.webp",
-      "remera": "/catalogo/musica/dano/remera.webp"
-    },
-    {
-      "id": "foo-fighters",
-      "name": "Foo Fighters",
-      "category": "musica",
-      "categoryName": "Música",
-      "modelo": "/catalogo/musica/foo-fighters/modelo.webp",
-      "remera": "/catalogo/musica/foo-fighters/remera.webp"
-    },
-    {
-      "id": "gorillaz",
-      "name": "Gorillaz",
-      "category": "musica",
-      "categoryName": "Música",
-      "modelo": "/catalogo/musica/gorillaz/modelo.webp",
-      "remera": "/catalogo/musica/gorillaz/remera.webp"
-    },
-    {
-      "id": "gustavo-cerati",
-      "name": "Gustavo Cerati",
-      "category": "musica",
-      "categoryName": "Música",
-      "modelo": "/catalogo/musica/gustavo-cerati/modelo.webp",
-      "remera": "/catalogo/musica/gustavo-cerati/remera.webp"
-    },
-    {
-      "id": "indio-solari",
-      "name": "Indio Solari",
-      "category": "musica",
-      "categoryName": "Música",
-      "modelo": "/catalogo/musica/indio-solari/modelo.webp",
-      "remera": "/catalogo/musica/indio-solari/remera.webp"
-    },
-    {
-      "id": "jimi-hendrix",
-      "name": "Jimi Hendrix",
-      "category": "musica",
-      "categoryName": "Música",
-      "modelo": "/catalogo/musica/jimi-hendrix/modelo.webp",
-      "remera": "/catalogo/musica/jimi-hendrix/remera.webp"
-    },
-    {
-      "id": "lemmy-kilmister",
-      "name": "Lemmy Kilmister",
-      "category": "musica",
-      "categoryName": "Música",
-      "modelo": "/catalogo/musica/lemmy-kilmister/modelo.webp",
-      "remera": "/catalogo/musica/lemmy-kilmister/remera.webp"
-    },
-    {
-      "id": "linkin-park",
-      "name": "Linkin Park",
-      "category": "musica",
-      "categoryName": "Música",
-      "modelo": "/catalogo/musica/linkin-park/modelo.webp",
-      "remera": "/catalogo/musica/linkin-park/remera.webp"
-    },
-    {
-      "id": "michael-jackson",
-      "name": "Michael Jackson",
-      "category": "musica",
-      "categoryName": "Música",
-      "modelo": "/catalogo/musica/michael-jackson/modelo.webp",
-      "remera": "/catalogo/musica/michael-jackson/remera.webp"
-    },
-    {
-      "id": "michael-jackson-2",
-      "name": "Michael Jackson 2",
-      "category": "musica",
-      "categoryName": "Música",
-      "modelo": "/catalogo/musica/michael-jackson-2/modelo.webp",
-      "remera": "/catalogo/musica/michael-jackson-2/remera.webp"
-    },
-    {
-      "id": "the-beatles",
-      "name": "The Beatles",
-      "category": "musica",
-      "categoryName": "Música",
-      "modelo": "/catalogo/musica/the-beatles/modelo.webp",
-      "remera": "/catalogo/musica/the-beatles/remera.webp"
-    },
-    {
-      "id": "tyk",
-      "name": "Tyk",
-      "category": "musica",
-      "categoryName": "Música",
-      "modelo": "/catalogo/musica/tyk/modelo.webp",
-      "remera": "/catalogo/musica/tyk/remera.webp"
-    },
-    {
-      "id": "wu-tang",
-      "name": "Wu Tang",
-      "category": "musica",
-      "categoryName": "Música",
-      "modelo": "/catalogo/musica/wu-tang/modelo.webp",
-      "remera": "/catalogo/musica/wu-tang/remera.webp"
-    },
-    {
-      "id": "las-malvinas-son-argentinas",
-      "name": "Las Malvinas Son Argentinas",
-      "category": "otros",
-      "categoryName": "Otros",
-      "modelo": "/catalogo/otros/las-malvinas-son-argentinas/modelo.webp",
-      "remera": "/catalogo/otros/las-malvinas-son-argentinas/remera.webp"
-    },
-    {
-      "id": "pulpo",
-      "name": "Pulpo",
-      "category": "otros",
-      "categoryName": "Otros",
-      "modelo": "/catalogo/otros/pulpo/modelo.webp",
-      "remera": "/catalogo/otros/pulpo/remera.webp"
-    },
-    {
-      "id": "ramen-godzilla",
-      "name": "Ramen Godzilla",
-      "category": "otros",
-      "categoryName": "Otros",
-      "modelo": "/catalogo/otros/ramen-godzilla/modelo.webp",
-      "remera": "/catalogo/otros/ramen-godzilla/remera.webp"
-    },
-    {
-      "id": "god-of-war",
-      "name": "God Of War",
-      "category": "videojuegos",
-      "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/god-of-war/modelo.webp",
-      "remera": "/catalogo/videojuegos/god-of-war/remera.webp"
-    },
-    {
-      "id": "raiden-mortal-kombat",
-      "name": "Raiden Mortal Kombat",
-      "category": "videojuegos",
-      "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/raiden-mortal-kombat/modelo.webp",
-      "remera": "/catalogo/videojuegos/raiden-mortal-kombat/remera.webp"
-    },
-    {
-      "id": "sub-zero-mortal-kombat",
-      "name": "Sub Zero Mortal Kombat",
-      "category": "videojuegos",
-      "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/sub-zero-mortal-kombat/modelo.webp",
-      "remera": "/catalogo/videojuegos/sub-zero-mortal-kombat/remera.webp"
     }
   ]
 }

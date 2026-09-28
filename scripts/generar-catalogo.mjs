@@ -256,6 +256,27 @@ remera: `/catalogo/${categoryId}/${productId}/${remera.replace(/\.[^.]+$/, ".web
   }
 }
 
+// Intercalar productos por categoría (round-robin) para que al ver
+// "Todos" aparezca variedad desde el principio, en vez de todos los
+// de anime, después todos los de comics, etc.
+// El orden de las categorías sigue el de `categories` (alfabético,
+// respetando el locale "es").
+const queuesByCategory = categories.map((cat) =>
+  products.filter((product) => product.category === cat.id)
+);
+
+const maxLen = Math.max(0, ...queuesByCategory.map((q) => q.length));
+const interleaved = [];
+
+for (let i = 0; i < maxLen; i++) {
+  for (const queue of queuesByCategory) {
+    if (i < queue.length) interleaved.push(queue[i]);
+  }
+}
+
+products.length = 0;
+products.push(...interleaved);
+
 const catalog = {
   categories,
   products,

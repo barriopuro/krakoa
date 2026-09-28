@@ -35,10 +35,13 @@ a `main` (`.github/workflows/deploy.yml`). El Source de Pages está en
 ├── public/ ← lo que se sirve en el sitio
 │ ├── catalogo/<categoria>/<modelo>/.webp (generado automáticamente)
 │ ├── talles/.webp (generado automáticamente)
-│ ├── logos/
-│ │ ├── krakoalogo-horizontal.png / .webp (webp generado automáticamente)
-│ │ ├── krakoalogo-isotipo.png / .webp (webp generado automáticamente)
-│ │ └── krakoalogo-vertical.png / .webp (webp generado automáticamente)
+│   ├── logos/
+│   │   ├── krakoalogo-horizontal.webp
+│   │   ├── krakoalogo-isotipo.webp
+│   │   └── krakoalogo-vertical.webp
+│   │       (los PNG fuente NO viven en el repo. Si hay que
+│   │        regenerar los .webp: copiar temporalmente el PNG a
+│   │        public/logos/, correr el .bat, y volver a borrarlo.)
 │ ├── favicon.ico / favicon.svg
 │ └── og-image.jpg
 │
@@ -330,6 +333,11 @@ el <footer> está fuera de <main> y Astro no le asigna el data-astro-cid.
 Secciones de la página
 Orden de arriba a abajo:
 
+#krakoa-loader — overlay de carga inicial (fade in del isotipo).
+                  Va en el <body> antes del header. Estilos inline
+                  críticos para evitar FOUC. Ver Sesión 7.
+
+
 <header class="site-header">
 
 #mobile-menu (drawer, oculto por defecto)
@@ -357,19 +365,15 @@ estampado, moldería, pre-encogido) + guía de cuidado (4 items, sin números).
 
 #back-to-top — botón flotante "↑".
 
-Secciones pendientes (plan original)
+## Secciones pendientes (plan original)
+
 C1: Botón "Modelo / Remera" en cada tarjeta del catálogo (cambia la
 foto sin abrir el modal). Inspirado en la versión de Google AI Studio.
 El usuario pidió PAUSARLO por ahora, lo va a pensar mejor.
 
-D3: Loader con el logo que va apareciendo a medida que carga la página
-(idea del usuario, no está en la versión de Google AI). Es el único
-pendiente "en firme" del plan original.
+D3: ~~Loader con el logo apareciendo~~ ✅ **HECHO en Sesión 7**
 
 Ideas futuras / deuda técnica
-Mover los PNG fuente de logos fuera de public/ (a una carpeta
-logos-fuente/ hermana de catalogo/) para no inflar el repo con
-archivos que igual no se sirven. No urgente.
 
 Referencia: hay una versión alternativa hecha con Google AI Studio
 (React + Vite + Tailwind, componentes separados) en
@@ -400,13 +404,39 @@ Regular tiene 8 talles (S, M, L, XL, 2XL, 3XL, 4XL, 5XL).
 Oversize tiene 5 talles (S, M, L, XL, 2XL).
 
 Los logos se optimizan a WebP automáticamente desde el script (400px de
-ancho máximo, quality 88, effort 6). Los PNG originales se conservan
-como fuente.
+ancho máximo, quality 88, effort 6). Los PNG originales NO están en el
+repo: el usuario los guarda en una carpeta aparte, fuera de la web. Si
+hay que regenerar algún .webp, copiar temporalmente el PNG a
+public/logos/, correr el .bat, y borrarlo de nuevo.
 
 Las tarjetas del catálogo usan object-fit: cover (con contain, la
 foto no llenaba el contenedor y las esquinas redondeadas no se veían).
 
 Historial de cambios (más reciente arriba)
+Sesión 7 — Fix back-to-top + Loader inicial (D3)
+Fix del botón "volver arriba" (#back-to-top): el botón ya existía
+en el HTML y tenía su CSS con :global(), pero el <script> declaraba
+la variable backToTop y nunca le agregaba la clase .visible. Se
+agregó el listener de scroll (aparece al pasar los 600px de scrollY)
+y el handler del click (scrollTo top con behavior smooth).
+
+D3 implementado: loader de carga inicial con fade in del isotipo
+krakoalogo-isotipo.webp sobre fondo oscuro (#0a0a0a). Se ve en
+cada carga de página (no se guarda en localStorage). Duración
+mínima 700ms (MIN_TIME). Al terminar, se desvanece (0.45s) y se
+borra del DOM.
+
+Fix crítico del loader: la primera versión mostraba un flash del
+logo en la esquina superior derecha por menos de un frame (FOUC,
+flash of unstyled content). El navegador dibujaba el HTML antes de
+aplicar el CSS que lo posicionaba. Solución: estilos críticos
+inline en el style="" del div y del img (posición, fondo, opacity:0).
+El JS no usa clases para mostrar/ocultar, setea style.opacity
+directo. Regla para el futuro: los loaders (y cualquier cosa que
+deba estar oculta desde el primer frame) NO deben depender del
+CSS externo para esconderse; usar estilos inline.
+
+
 Sesión 6 — Ajustes de estilo, Hero con imágenes rotando, Footer completo
 Ícono + título en la misma línea en los 4 pilares de "Materiales"
 (wrapper .quality-pillar-head con flex).
@@ -419,6 +449,14 @@ D1: Hero con fondo de imágenes del catálogo que rotan cada ~5.5s con
 zoom + paneo alternado (izq/der). Las imágenes se eligen al azar en cada
 visita desde los .webp del catálogo (hasta 6). Se agregó marquesina
 debajo del hero con keywords.
+
+Limpieza: se borraron los PNG fuente de logos de public/logos/
+(krakoalogo-horizontal.png, -isotipo.png, -vertical.png). El usuario
+los guarda en una carpeta aparte, fuera del repo. Los .webp generados
+siguen en public/logos/ y el sitio funciona igual. Si en el futuro hay
+que regenerar algún .webp, hay que copiar temporalmente el PNG a
+public/logos/, correr el script, y volver a borrarlo.
+
 
 Fix del salto del hero: se reemplazó animation por transition sobre
 transform, así la imagen saliente no se "centra" antes del fade.
