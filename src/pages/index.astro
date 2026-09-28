@@ -392,6 +392,7 @@ const base = import.meta.env.BASE_URL;
 
           <div class="quality-pillars">
             <div class="quality-pillar">
+              <div class="quality-pillar-head">
               <div class="quality-icon quality-icon--green">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
@@ -399,6 +400,7 @@ const base = import.meta.env.BASE_URL;
                 </svg>
               </div>
               <h3>100% Algodón Peinado 24/1</h3>
+              </div>
               <p>
                 Hilado premium de fibra larga, de tacto suave pero con gramaje pesado
                 (220-240 g) para lograr una caída con cuerpo sin traslucir.
@@ -406,12 +408,14 @@ const base = import.meta.env.BASE_URL;
             </div>
 
             <div class="quality-pillar">
+              <div class="quality-pillar-head">
               <div class="quality-icon quality-icon--amber">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
                 </svg>
               </div>
               <h3>Estampa DTF Premium</h3>
+              </div>
               <p>
                 Pigmentos de alta fidelidad cromática con curado térmico.
                 No se desprenden ni pierden viveza con el uso cotidiano.
@@ -419,6 +423,7 @@ const base = import.meta.env.BASE_URL;
             </div>
 
             <div class="quality-pillar">
+              <div class="quality-pillar-head">
               <div class="quality-icon quality-icon--sky">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <circle cx="6" cy="6" r="3"/>
@@ -429,6 +434,7 @@ const base = import.meta.env.BASE_URL;
                 </svg>
               </div>
               <h3>Moldería Propia Oversize y Regular Fit</h3>
+              </div>
               <p>
                 Patron exclusivo con cuello de rib elastizado reforzado de 3 cm
                 y sisas con doble despunte para mantener la forma original.
@@ -436,6 +442,7 @@ const base = import.meta.env.BASE_URL;
             </div>
 
             <div class="quality-pillar">
+              <div class="quality-pillar-head">
               <div class="quality-icon quality-icon--indigo">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"/>
@@ -443,6 +450,7 @@ const base = import.meta.env.BASE_URL;
                 </svg>
               </div>
               <h3>Pre-encogido Térmico</h3>
+              </div>
               <p>
                 La tela pasa por un proceso de pre-lavado y vaporizado para
                 asegurar que las medidas en centímetros se conserven con los lavados.
@@ -456,25 +464,21 @@ const base = import.meta.env.BASE_URL;
 
             <div class="care-grid">
               <div class="care-item">
-                <span class="care-num">01.</span>
                 <strong>Lavar con agua fría</strong>
                 <p>Ciclo suave, del revés (estampa hacia adentro), a un máximo de 30°C.</p>
               </div>
 
               <div class="care-item">
-                <span class="care-num">02.</span>
                 <strong>No planchar la estampa</strong>
                 <p>Planchar la prenda del revés o con un paño intermedio a temperatura media.</p>
               </div>
 
               <div class="care-item">
-                <span class="care-num">03.</span>
                 <strong>Secado a la sombra</strong>
                 <p>No usar secarropas por calor ni centrifugar a altas revoluciones.</p>
               </div>
 
               <div class="care-item">
-                <span class="care-num">04.</span>
                 <strong>No usar lavandina</strong>
                 <p>Evitar blanqueadores o productos abrasivos para proteger el color profundo.</p>
               </div>
@@ -1111,12 +1115,13 @@ const base = import.meta.env.BASE_URL;
     aspect-ratio: 1 / 1.18;
     background: #141414;
     overflow: hidden;
+    border-radius: 15px;
   }
 
   .product-image img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
     display: block;
     transition: transform 0.35s ease;
   }
@@ -2550,16 +2555,23 @@ const base = import.meta.env.BASE_URL;
     transform: translateY(-2px);
   }
 
+  .quality-pillar-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  }
+
   .quality-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    background: #1a1a1a;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 16px;
-    border: 1px solid #232323;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #1a1a1a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #232323;
+  flex-shrink: 0;
   }
 
   .quality-icon svg {
@@ -2573,11 +2585,11 @@ const base = import.meta.env.BASE_URL;
   .quality-icon--indigo svg { color: #818cf8; }
 
   .quality-pillar h3 {
-    margin: 0 0 8px;
-    font-size: 15.5px;
-    font-weight: 800;
-    color: #fff;
-    letter-spacing: -0.01em;
+  margin: 0;
+  font-size: 15.5px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.01em;
   }
 
   .quality-pillar p {
