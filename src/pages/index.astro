@@ -3535,10 +3535,42 @@ const base = import.meta.env.BASE_URL;
   mobileMenuClose?.addEventListener("click", closeMobileMenu);
   mobileMenuBackdrop?.addEventListener("click", closeMobileMenu);
 
-  // Al tocar un link del menú, cerramos y dejamos que el scroll suave
-  // del CSS (# como-comprar, etc.) haga su trabajo.
+  // Al tocar un link interno del menú (#seccion), interceptamos:
+  //  - reemplazamos la entrada del menú por la del hash (no se agrega una nueva),
+  //  - liberamos el lock sin history.back(),
+  //  - cerramos el menú,
+  //  - hacemos scroll suave nosotros.
+  // Así el "atrás" del celular vuelve a la posición anterior real.
   mobileMenuLinks.forEach((link) => {
-    link.addEventListener("click", () => {
+    link.addEventListener("click", (event) => {
+      const href = link.getAttribute("href") || "";
+
+      // Link interno (#algo): interceptamos.
+      if (href.startsWith("#")) {
+        event.preventDefault();
+
+        // Reemplazamos la entrada del menú (pushState) por la del hash.
+        history.replaceState(null, "", href);
+
+        // El lock ya está "resuelto": no hay que hacer back.
+        historyLock = null;
+
+        // Cerramos el menú sin disparar releaseHistory.
+        closeMobileMenuDirect();
+
+        // Scroll suave a la sección (con un pequeño margen superior).
+        const target = document.querySelector(href);
+        if (target) {
+          const top =
+            target.getBoundingClientRect().top +
+            window.scrollY -
+            20;
+          window.scrollTo({ top, behavior: "smooth" });
+        }
+        return;
+      }
+
+      // Link externo (Instagram): solo cerramos el menú normalmente.
       closeMobileMenu();
     });
   });
