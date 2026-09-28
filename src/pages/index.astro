@@ -232,20 +232,23 @@ const marqueeText = [
 
         <nav class="categories" aria-label="Categorías">
           {
-            categories.map((category) => (
-              <button
-  class:list={[
-    "category-button",
-    { active: category.id === "todos" },
-  ]}
-  data-category={category.id}
-  style={`--category-color: ${category.color ?? "#888888"}`}
->
-  <span class="category-dot"></span>
-  {category.name}
-</button>
-            ))
-          }
+  categories.map((category) => (
+    <span
+      class="category-wrap"
+      style={`--category-color: ${category.color ?? "#888888"}`}
+    >
+      <button
+        class:list={[
+          "category-button",
+          { active: category.id === "todos" },
+        ]}
+        data-category={category.id}
+      >
+        {category.name}
+      </button>
+    </span>
+  ))
+}
         </nav>
 
         <div id="products" class="products">
@@ -1217,36 +1220,47 @@ const marqueeText = [
     margin-bottom: 35px;
   }
 
- .category-button {
-  border: 1px solid #333;
-  background: transparent;
-  color: #999;
-  padding: 9px 15px;
-  cursor: pointer;
-  font-size: 13px;
-  transition: 0.2s ease;
-
+.category-wrap {
+  position: relative;
+  z-index: 1;
   display: inline-flex;
-  align-items: center;
-  gap: 8px;
+  background: var(--category-color, #888);
 }
 
-.category-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--category-color);
-  flex-shrink: 0;
+/* Cuando el botón se despega, tiene que quedar por encima de los vecinos. */
+.category-wrap:hover,
+.category-wrap:focus-within {
+  z-index: 5;
 }
 
-.category-button:hover,
+.category-button {
+  padding: 12px 20px;
+  border: 3px solid #333;
+  border-radius: 0;
+  background: #111;
+  color: #ccc;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  font-family: inherit;
+  transform: translate(0, 0);
+  transition: transform 0.22s ease, color 0.2s ease, border-color 0.2s ease;
+  will-change: transform;
+}
+
+/* Hover / focus: el botón se despega arriba-izquierda (como el original). */
+.category-wrap:hover .category-button:not(:active),
+.category-wrap:focus-within .category-button:not(:active) {
+  transform: translate(-14px, -14px);
+  color: #fff;
+}
+
+/* Activo: queda despegado permanentemente, con borde del color. */
 .category-button.active {
-  border-color: var(--category-color);
-  color: white;
-}
-
-.category-button.active .category-dot {
-  box-shadow: 0 0 8px var(--category-color);
+  transform: translate(-14px, -14px);
+  color: #fff;
+  border-color: var(--category-color, #888);
 }
 
   
@@ -1515,15 +1529,25 @@ const marqueeText = [
     }
 
     .categories {
-      overflow-x: auto;
-      flex-wrap: nowrap;
-      padding-bottom: 5px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      margin-inline: -5vw;
+      padding: 12px 5vw;
+      background: #0b0b0b;
+      border-bottom: 1px solid #1f1f1f;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 25px;
     }
 
     .category-button {
-      white-space: nowrap;
+      padding: 9px 14px;
+      font-size: 12.5px;
+      border-radius: 8px;
     }
 
+    
   }
       /* --------------------------- */
   /* MODAL DE PRODUCTO (NUEVO)   */
