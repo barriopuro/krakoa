@@ -94,12 +94,12 @@
       "remera": "/catalogo/videojuegos/god-of-war/remera.webp"
     },
     {
-      "id": "akira-2",
-      "name": "Akira 2",
+      "id": "akira-kaneda-tetsuo",
+      "name": "Akira Kaneda Tetsuo",
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/akira-2/modelo.webp",
-      "remera": "/catalogo/anime/akira-2/remera.webp"
+      "modelo": "/catalogo/anime/akira-kaneda-tetsuo/modelo.webp",
+      "remera": "/catalogo/anime/akira-kaneda-tetsuo/remera.webp"
     },
     {
       "id": "coraje-el-perro-cobarde",
@@ -206,12 +206,12 @@
       "remera": "/catalogo/videojuegos/sub-zero-mortal-kombat/remera.webp"
     },
     {
-      "id": "death-note-2",
-      "name": "Death Note 2",
+      "id": "death-note-light",
+      "name": "Death Note Light",
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/death-note-2/modelo.webp",
-      "remera": "/catalogo/anime/death-note-2/remera.webp"
+      "modelo": "/catalogo/anime/death-note-light/modelo.webp",
+      "remera": "/catalogo/anime/death-note-light/remera.webp"
     },
     {
       "id": "ed-edd-y-eddy",
@@ -278,12 +278,12 @@
       "remera": "/catalogo/musica/foo-fighters/remera.webp"
     },
     {
-      "id": "demon-slayer-2",
-      "name": "Demon Slayer 2",
+      "id": "erosenin-naruto",
+      "name": "Erosenin Naruto",
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/demon-slayer-2/modelo.webp",
-      "remera": "/catalogo/anime/demon-slayer-2/remera.webp"
+      "modelo": "/catalogo/anime/erosenin-naruto/modelo.webp",
+      "remera": "/catalogo/anime/erosenin-naruto/remera.webp"
     },
     {
       "id": "it",
@@ -310,12 +310,12 @@
       "remera": "/catalogo/musica/gorillaz/remera.webp"
     },
     {
-      "id": "erosenin-naruto",
-      "name": "Erosenin Naruto",
+      "id": "eva 01-evangelion",
+      "name": "Eva 01 Evangelion",
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/erosenin-naruto/modelo.webp",
-      "remera": "/catalogo/anime/erosenin-naruto/remera.webp"
+      "modelo": "/catalogo/anime/eva 01-evangelion/modelo.webp",
+      "remera": "/catalogo/anime/eva 01-evangelion/remera.webp"
     },
     {
       "id": "joker-batman-dark-knight",
@@ -342,12 +342,12 @@
       "remera": "/catalogo/musica/gustavo-cerati/remera.webp"
     },
     {
-      "id": "evangelion",
-      "name": "Evangelion",
+      "id": "eva 01-longinyus-evangelion",
+      "name": "Eva 01 Longinyus Evangelion",
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/evangelion/modelo.webp",
-      "remera": "/catalogo/anime/evangelion/remera.webp"
+      "modelo": "/catalogo/anime/eva 01-longinyus-evangelion/modelo.webp",
+      "remera": "/catalogo/anime/eva 01-longinyus-evangelion/remera.webp"
     },
     {
       "id": "karate-kid",
@@ -374,12 +374,12 @@
       "remera": "/catalogo/musica/indio-solari/remera.webp"
     },
     {
-      "id": "evangelion-2",
-      "name": "Evangelion 2",
+      "id": "evangelion",
+      "name": "Evangelion",
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/evangelion-2/modelo.webp",
-      "remera": "/catalogo/anime/evangelion-2/remera.webp"
+      "modelo": "/catalogo/anime/evangelion/modelo.webp",
+      "remera": "/catalogo/anime/evangelion/remera.webp"
     },
     {
       "id": "monstars-space-jam",
@@ -406,12 +406,12 @@
       "remera": "/catalogo/musica/jimi-hendrix/remera.webp"
     },
     {
-      "id": "evangelion-3",
-      "name": "Evangelion 3",
+      "id": "gohan-dragon-ball-z",
+      "name": "Gohan Dragon Ball Z",
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/evangelion-3/modelo.webp",
-      "remera": "/catalogo/anime/evangelion-3/remera.webp"
+      "modelo": "/catalogo/anime/gohan-dragon-ball-z/modelo.webp",
+      "remera": "/catalogo/anime/gohan-dragon-ball-z/remera.webp"
     },
     {
       "id": "mumm-rah-thundercats",
@@ -430,12 +430,12 @@
       "remera": "/catalogo/musica/lemmy-kilmister/remera.webp"
     },
     {
-      "id": "gohan-dragon-ball-z",
-      "name": "Gohan Dragon Ball Z",
+      "id": "goku-dragon-ball",
+      "name": "Goku Dragon Ball",
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/gohan-dragon-ball-z/modelo.webp",
-      "remera": "/catalogo/anime/gohan-dragon-ball-z/remera.webp"
+      "modelo": "/catalogo/anime/goku-dragon-ball/modelo.webp",
+      "remera": "/catalogo/anime/goku-dragon-ball/remera.webp"
     },
     {
       "id": "star-wars",
@@ -454,12 +454,12 @@
       "remera": "/catalogo/musica/linkin-park/remera.webp"
     },
     {
-      "id": "goku-dragon-ball",
-      "name": "Goku Dragon Ball",
+      "id": "hellsing",
+      "name": "Hellsing",
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/goku-dragon-ball/modelo.webp",
-      "remera": "/catalogo/anime/goku-dragon-ball/remera.webp"
+      "modelo": "/catalogo/anime/hellsing/modelo.webp",
+      "remera": "/catalogo/anime/hellsing/remera.webp"
     },
     {
       "id": "stranger-things",
@@ -478,22 +478,6 @@
       "remera": "/catalogo/musica/michael-jackson/remera.webp"
     },
     {
-      "id": "hellsing",
-      "name": "Hellsing",
-      "category": "anime",
-      "categoryName": "Anime",
-      "modelo": "/catalogo/anime/hellsing/modelo.webp",
-      "remera": "/catalogo/anime/hellsing/remera.webp"
-    },
-    {
-      "id": "michael-jackson-2",
-      "name": "Michael Jackson 2",
-      "category": "musica",
-      "categoryName": "Música",
-      "modelo": "/catalogo/musica/michael-jackson-2/modelo.webp",
-      "remera": "/catalogo/musica/michael-jackson-2/remera.webp"
-    },
-    {
       "id": "luffy-one-piece",
       "name": "Luffy One Piece",
       "category": "anime",
@@ -502,12 +486,12 @@
       "remera": "/catalogo/anime/luffy-one-piece/remera.webp"
     },
     {
-      "id": "the-beatles",
-      "name": "The Beatles",
+      "id": "michael-jackson-smooth-criminal",
+      "name": "Michael Jackson Smooth Criminal",
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/the-beatles/modelo.webp",
-      "remera": "/catalogo/musica/the-beatles/remera.webp"
+      "modelo": "/catalogo/musica/michael-jackson-smooth-criminal/modelo.webp",
+      "remera": "/catalogo/musica/michael-jackson-smooth-criminal/remera.webp"
     },
     {
       "id": "one-piece",
@@ -518,12 +502,12 @@
       "remera": "/catalogo/anime/one-piece/remera.webp"
     },
     {
-      "id": "tyk",
-      "name": "Tyk",
+      "id": "the-beatles",
+      "name": "The Beatles",
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/tyk/modelo.webp",
-      "remera": "/catalogo/musica/tyk/remera.webp"
+      "modelo": "/catalogo/musica/the-beatles/modelo.webp",
+      "remera": "/catalogo/musica/the-beatles/remera.webp"
     },
     {
       "id": "piccoro-dragon-ball-z",
@@ -534,12 +518,12 @@
       "remera": "/catalogo/anime/piccoro-dragon-ball-z/remera.webp"
     },
     {
-      "id": "wu-tang",
-      "name": "Wu Tang",
+      "id": "tyk",
+      "name": "Tyk",
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/wu-tang/modelo.webp",
-      "remera": "/catalogo/musica/wu-tang/remera.webp"
+      "modelo": "/catalogo/musica/tyk/modelo.webp",
+      "remera": "/catalogo/musica/tyk/remera.webp"
     },
     {
       "id": "slam-dunk",
@@ -550,12 +534,28 @@
       "remera": "/catalogo/anime/slam-dunk/remera.webp"
     },
     {
+      "id": "wu-tang",
+      "name": "Wu Tang",
+      "category": "musica",
+      "categoryName": "Música",
+      "modelo": "/catalogo/musica/wu-tang/modelo.webp",
+      "remera": "/catalogo/musica/wu-tang/remera.webp"
+    },
+    {
       "id": "squarturtle-pokemon",
       "name": "Squarturtle Pokemon",
       "category": "anime",
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/squarturtle-pokemon/modelo.webp",
       "remera": "/catalogo/anime/squarturtle-pokemon/remera.webp"
+    },
+    {
+      "id": "tanjiro-demon-slayer",
+      "name": "Tanjiro Demon Slayer",
+      "category": "anime",
+      "categoryName": "Anime",
+      "modelo": "/catalogo/anime/tanjiro-demon-slayer/modelo.webp",
+      "remera": "/catalogo/anime/tanjiro-demon-slayer/remera.webp"
     },
     {
       "id": "tao-pai-pai-dragon-ball",
