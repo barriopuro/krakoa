@@ -60,14 +60,35 @@ const base = import.meta.env.BASE_URL;
     />
   </a>
 
+  <nav class="desktop-nav" aria-label="Navegación principal">
+    <a href="#catalogo">Catálogo</a>
+    <a href="#como-comprar">Cómo Comprar</a>
+    <a href="#calidad">Materiales</a>
+  </nav>
+
   <div class="header-actions">
     <a
       href="https://instagram.com/krakoa.sw"
       target="_blank"
       rel="noopener noreferrer"
-      class="instagram"
+      class="instagram-btn"
+      aria-label="Instagram de KRAKOA"
     >
-      Instagram
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+      </svg>
+      <span class="instagram-label">@krakoa.sw</span>
     </a>
 
     <button
@@ -92,15 +113,80 @@ const base = import.meta.env.BASE_URL;
       </svg>
       <span id="cart-count" class="cart-count" hidden>0</span>
     </button>
+
+    <button
+      id="menu-toggle"
+      class="menu-toggle"
+      type="button"
+      aria-label="Abrir menú"
+      aria-expanded="false"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.4"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
   </div>
 </header>
+
+  <!-- MENÚ MOBILE -->
+  <div id="mobile-menu" class="mobile-menu" aria-hidden="true">
+    <div class="mobile-menu-backdrop"></div>
+
+    <aside
+      class="mobile-menu-panel"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Menú de navegación"
+    >
+      <header class="mobile-menu-header">
+        <span class="mobile-menu-title">Menú</span>
+        <button
+          id="mobile-menu-close"
+          class="mobile-menu-close"
+          type="button"
+          aria-label="Cerrar menú"
+        >
+          ×
+        </button>
+      </header>
+
+      <nav class="mobile-menu-nav" aria-label="Secciones">
+        <a href="#catalogo" data-menu-link>Catálogo</a>
+        <a href="#como-comprar" data-menu-link>Cómo Comprar</a>
+        <a href="#calidad" data-menu-link>Materiales</a>
+        <a
+          href="https://instagram.com/krakoa.sw"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Instagram
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14" aria-hidden="true">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+        </a>
+      </nav>
+    </aside>
+  </div>
 
     <main>
       <section class="hero">
          <h1>CATALOGO.</h1>
       </section>
 
-      <section class="catalog">
+      <section id="catalogo" class="catalog">
         <div class="catalog-header">
         
 
@@ -628,50 +714,272 @@ const base = import.meta.env.BASE_URL;
 
   .site-header {
     width: 100%;
-    padding: 22px 5vw;
+    padding: 18px 5vw;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 24px;
     border-bottom: 1px solid #242424;
   }
 
- .brand {
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-}
+  .brand {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    flex-shrink: 0;
+  }
 
-.logo-horizontal {
-  display: block;
-  width: 150px;
-  height: auto;
-}
+  .logo-horizontal {
+    display: block;
+    width: 175px;
+    height: auto;
+  }
 
-.logo-isotipo {
-  display: none;
-  width: 34px;
-  height: 34px;
-  object-fit: contain;
-}
+  .logo-isotipo {
+    display: none;
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+  }
 
-  .instagram {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 16px;
-  border-radius: 6px;
-  background: linear-gradient(135deg, #833ab4, #c13584, #e1306c, #f77737, #fcaf45);
-  color: white;
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 700;
-  transition: transform 0.2s ease, filter 0.2s ease;
-}
+  /* Navegación desktop */
+  .desktop-nav {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    margin-left: auto;
+    margin-right: 12px;
+  }
 
-.instagram:hover {
-  filter: brightness(1.1);
-  transform: translateY(-1px);
-}
+  .desktop-nav a {
+    color: #999;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    transition: color 0.2s ease;
+    padding: 6px 2px;
+  }
+
+  .desktop-nav a:hover {
+    color: #fff;
+  }
+
+  /* Acciones del header */
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .instagram-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 14px;
+    border: 1px solid #242424;
+    border-radius: 8px;
+    background: transparent;
+    color: #ddd;
+    text-decoration: none;
+    font-size: 12.5px;
+    font-weight: 600;
+    transition: border-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+  }
+
+  .instagram-btn svg {
+    width: 15px;
+    height: 15px;
+    color: #e1306c;
+    flex-shrink: 0;
+  }
+
+  .instagram-btn:hover {
+    border-color: #3a3a3a;
+    color: #fff;
+    transform: translateY(-1px);
+  }
+
+  .cart-button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 8px;
+    background: #fff;
+    color: #111;
+    border: 0;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+  }
+
+  .cart-button:hover {
+    background: #e5e5e5;
+    transform: translateY(-1px);
+  }
+
+  .cart-button svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .cart-count {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: #111;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cart-count.is-visible {
+    display: inline-flex;
+  }
+
+  /* Botón hamburguesa (solo mobile) */
+  .menu-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border: 1px solid #242424;
+    border-radius: 8px;
+    background: transparent;
+    color: #ddd;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .menu-toggle:hover {
+    background: #1a1a1a;
+    border-color: #3a3a3a;
+    color: #fff;
+  }
+
+  .menu-toggle svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Menú mobile (drawer) */
+  .mobile-menu {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    display: none;
+  }
+
+  .mobile-menu.open {
+    display: block;
+  }
+
+  .mobile-menu-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+  }
+
+  .mobile-menu-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: min(320px, 85vw);
+    height: 100%;
+    background: #111;
+    border-left: 1px solid #242424;
+    display: flex;
+    flex-direction: column;
+    animation: slideInRight 0.28s ease;
+  }
+
+  .mobile-menu-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 22px;
+    border-bottom: 1px solid #242424;
+  }
+
+  .mobile-menu-title {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #888;
+  }
+
+  .mobile-menu-close {
+    width: 34px;
+    height: 34px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: #999;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .mobile-menu-close:hover {
+    background: #242424;
+    color: #fff;
+  }
+
+  .mobile-menu-nav {
+    display: flex;
+    flex-direction: column;
+    padding: 12px 0;
+    flex: 1;
+  }
+
+  .mobile-menu-nav a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 24px;
+    color: #ddd;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+    border-bottom: 1px solid #1a1a1a;
+    transition: background 0.2s ease, color 0.2s ease, padding-left 0.2s ease;
+  }
+
+  .mobile-menu-nav a:hover {
+    background: #1a1a1a;
+    color: #fff;
+    padding-left: 28px;
+  }
+
+  .mobile-menu-nav a svg {
+    color: #666;
+  }
+
+  :global(body.menu-open) {
+    overflow: hidden;
+  }
+
+  /* Scroll suave con margen en las secciones ancla */
+  #catalogo,
+  #como-comprar,
+  #calidad {
+    scroll-margin-top: 20px;
+  }
 
   main {
     width: min(1400px, 90vw);
@@ -865,7 +1173,48 @@ const base = import.meta.env.BASE_URL;
 
   @media (max-width: 700px) {
     .site-header {
-      padding: 18px 5vw;
+      padding: 14px 4vw;
+      gap: 10px;
+    }
+
+    .desktop-nav {
+      display: none;
+    }
+
+    .menu-toggle {
+      display: inline-flex;
+    }
+
+    .logo-horizontal {
+      width: 135px;
+    }
+
+    .instagram-btn {
+      padding: 0;
+      width: 42px;
+      height: 42px;
+      justify-content: center;
+      border-radius: 8px;
+      border-color: #242424;
+    }
+
+    .instagram-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .instagram-label {
+      display: none;
+    }
+
+    .header-actions {
+      gap: 8px;
+    }
+
+    .cart-button,
+    .menu-toggle {
+      width: 40px;
+      height: 40px;
     }
 
     .hero {
@@ -892,13 +1241,7 @@ const base = import.meta.env.BASE_URL;
     .category-button {
       white-space: nowrap;
     }
-	.logo-horizontal {
-  display: block;
-}
 
-.logo-isotipo {
-  display: none;
-}
   }
       /* --------------------------- */
   /* MODAL DE PRODUCTO (NUEVO)   */
@@ -1554,59 +1897,6 @@ const base = import.meta.env.BASE_URL;
     background: #555;
   }
 
-  /* Header actions + cart button */
-  .header-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .cart-button {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 42px;
-    height: 42px;
-    border-radius: 8px;
-    background: #fff;
-    color: #111;
-    border: 0;
-    cursor: pointer;
-    transition: background 0.2s ease, transform 0.15s ease;
-  }
-
-  .cart-button:hover {
-    background: #e5e5e5;
-    transform: translateY(-1px);
-  }
-
-  .cart-button svg {
-    width: 20px;
-    height: 20px;
-  }
-
-  .cart-count {
-    position: absolute;
-    top: -6px;
-    right: -6px;
-    min-width: 20px;
-    height: 20px;
-    padding: 0 6px;
-    border-radius: 999px;
-    background: #111;
-    color: #fff;
-    font-size: 11px;
-    font-weight: 700;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .cart-count.is-visible {
-    display: inline-flex;
-  }
 
   /* Cart drawer */
   .cart-drawer {
@@ -2860,6 +3150,9 @@ const base = import.meta.env.BASE_URL;
     } else if (historyLock === "cart") {
       historyLock = null;
       closeCartDrawerDirect();
+    } else if (historyLock === "mobile-menu") {
+      historyLock = null;
+      closeMobileMenuDirect();
     }
   });
 
@@ -3200,6 +3493,53 @@ const base = import.meta.env.BASE_URL;
         answer.style.maxHeight = answer.scrollHeight + "px";
         question.setAttribute("aria-expanded", "true");
       }
+    });
+  });
+
+    // -------------------------
+  // MENÚ MOBILE
+  // -------------------------
+
+  const menuToggle = document.querySelector("#menu-toggle");
+  const mobileMenu = document.querySelector("#mobile-menu");
+  const mobileMenuClose = document.querySelector("#mobile-menu-close");
+  const mobileMenuBackdrop = document.querySelector(".mobile-menu-backdrop");
+  const mobileMenuLinks = document.querySelectorAll("[data-menu-link]");
+
+  function openMobileMenu() {
+    mobileMenu.classList.add("open");
+    mobileMenu.setAttribute("aria-hidden", "false");
+    menuToggle.setAttribute("aria-expanded", "true");
+    document.body.classList.add("menu-open");
+
+    if (historyLock === "mobile-menu") return;
+    lockHistory("mobile-menu");
+  }
+
+  function closeMobileMenu() {
+    if (historyLock === "mobile-menu") {
+      releaseHistory();
+      return;
+    }
+    closeMobileMenuDirect();
+  }
+
+  function closeMobileMenuDirect() {
+    mobileMenu.classList.remove("open");
+    mobileMenu.setAttribute("aria-hidden", "true");
+    menuToggle.setAttribute("aria-expanded", "false");
+    document.body.classList.remove("menu-open");
+  }
+
+  menuToggle?.addEventListener("click", openMobileMenu);
+  mobileMenuClose?.addEventListener("click", closeMobileMenu);
+  mobileMenuBackdrop?.addEventListener("click", closeMobileMenu);
+
+  // Al tocar un link del menú, cerramos y dejamos que el scroll suave
+  // del CSS (# como-comprar, etc.) haga su trabajo.
+  mobileMenuLinks.forEach((link) => {
+    link.addEventListener("click", () => {
+      closeMobileMenu();
     });
   });
 </script>
