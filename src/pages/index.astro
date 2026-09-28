@@ -2144,7 +2144,7 @@ const marqueeText = [
     }
   }
 
-    .back-to-top {
+    :global(.back-to-top) {
     position: fixed;
     right: 24px;
     bottom: 24px;
@@ -2164,13 +2164,13 @@ const marqueeText = [
     transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
   }
 
-  .back-to-top.visible {
+  :global(.back-to-top.visible) {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
   }
 
-    .back-to-top:hover {
+    :global(.back-to-top:hover) {
     background: #555;
   }
 
@@ -3031,6 +3031,20 @@ const marqueeText = [
 
       filterProducts();
     });
+
+  // Botón "volver arriba"
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > 600) {
+      backToTop.classList.add("visible");
+    } else {
+      backToTop.classList.remove("visible");
+    }
+  });
+
+  backToTop.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
   });
 
   searchInput.addEventListener("input", filterProducts);

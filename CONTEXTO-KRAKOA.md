@@ -15,6 +15,7 @@ a `main` (`.github/workflows/deploy.yml`). El Source de Pages está en
 "GitHub Actions" (NO en "Deploy from a branch").
 
 ## Estructura de archivos relevantes
+
 /
 ├── ACTUALIZAR WEB.bat ← script de publicación (doble click)
 ├── astro.config.mjs ← config Astro (site + base)
@@ -35,17 +36,18 @@ a `main` (`.github/workflows/deploy.yml`). El Source de Pages está en
 │ ├── catalogo/<categoria>/<modelo>/.webp (generado automáticamente)
 │ ├── talles/.webp (generado automáticamente)
 │ ├── logos/
+│ │ ├── krakoalogo-horizontal.png / .webp (webp generado automáticamente)
+│ │ ├── krakoalogo-isotipo.png / .webp (webp generado automáticamente)
+│ │ └── krakoalogo-vertical.png / .webp (webp generado automáticamente)
 │ ├── favicon.ico / favicon.svg
 │ └── og-image.jpg
 │
 ├── scripts/
-│ └── generar-catalogo.mjs ← convierte jpg→webp y regenera catalogo.json
+│ └── generar-catalogo.mjs ← convierte jpg→webp, optimiza logos PNG→WebP, regenera catalogo.json
 │
 └── src/
 ├── data/catalogo.json ← generado automáticamente
 └── pages/index.astro ← TODA la web (HTML + CSS + JS en un solo archivo)
-
-text
 
 **Importante:** todo el sitio vive en `src/pages/index.astro`. No hay
 componentes separados ni layouts en uso.
@@ -90,13 +92,25 @@ quedan sin estilo (fondo blanco, letra negra, etc. = estilo por defecto).
 `innerHTML = ...`, etc.) debe tener sus reglas CSS envueltas en
 `:global(selector)`.
 
+**Ampliación importante (Sesión 6):** además del JS, algunos elementos
+ESTÁTICOS del HTML también pueden necesitar `:global()`. Caso concreto:
+el `<footer class="site-footer">` quedó fuera de `<main>`, y Astro no le
+asignó el atributo `data-astro-cid-...`. Resultado: el CSS no le llegaba
+(el logo aparecía gigante y el texto sin estilo). Solución: envolver los
+selectores del footer en `:global(...)`. Regla general: si un bloque
+estático del HTML se ve "sin estilo" y no está dentro de `<main>`,
+probarlo con `:global()`.
+
 Ejemplos ya resueltos así en el proyecto:
 - `.modal-thumb`, `.modal-thumb:hover`, `.modal-thumb.active`, `.modal-thumb img`
 - `.modal-fit`, `.modal-fit strong`, `.modal-fit span`, `.modal-fit:hover`, `.modal-fit.active`, `.modal-fit.active strong`
 - `.modal-size`, `.modal-size:hover`, `.modal-size.active`
 - Todas las reglas de `.cart-item*`, `.cart-items*`, `.cart-empty*`, `.cart-clear`
+- Todas las reglas del `.site-footer` y sus hijos (footer)
+- `.hero-bg img` y `.hero-bg img.active` (imágenes del hero que crea el JS)
+- `.footer-particle` (partículas que crea el JS)
 
-Si en el futuro algo dinámico se ve "sin estilo", es esto.
+Si en el futuro algo dinámico o fuera de `<main>` se ve "sin estilo", es esto.
 
 ## Cómo funciona el carrito
 
@@ -264,6 +278,55 @@ Derecha: botón Instagram (solo ícono) + botón carrito + botón hamburguesa.
 Al tocar la hamburguesa se abre el menú mobile (drawer desde la derecha)
 con links: Catálogo, Cómo Comprar, Materiales, Instagram (con flechita ↗).
 
+Hero con imágenes rotando (D1)
+El .hero tiene fondo con imágenes del catálogo que rotan cada ~5.5s.
+
+Las imágenes se eligen al azar en cada visita desde los .webp del catálogo
+(hasta 6, barajadas con shuffleArray).
+
+Cada imagen hace un zoom lento + paneo hacia un costado. Las pares (nth-child(even))
+panean hacia el otro lado para dar variedad.
+
+Se usa transition sobre transform, NO animation. Con animation,
+al sacar la clase .active el navegador borraba la animación y la imagen
+"saltaba" al centro antes del fade. Con transition sale suave.
+
+Opacidad de las fotos: 0.32 (configurable).
+
+Debajo del hero hay una marquesina con keywords que se desplaza
+infinitamente. El array de textos está en marqueeText en el frontmatter.
+
+Valores para calibrar rápido
+Opacidad: opacity: 0.32 en .hero-bg img.active.
+
+Cantidad de fotos: .slice(0, 6) en el JS del hero.
+
+Velocidad de rotación: el 5500 en el setInterval.
+
+Velocidad de la marquesina: el 45s en animation: marqueeScroll.
+
+Intensidad del zoom: scale(1.1) en las transiciones del hero.
+
+Paneo lateral: translateX(±1.5%) en las transiciones del hero.
+
+Footer completo (D2)
+Tres columnas:
+
+Logo vertical (krakoalogo-vertical.webp) a 70px (desktop) / 58px (mobile).
+
+Texto institucional (SEO) justificado.
+
+Menú vertical con links: Catálogo, Cómo Comprar, Materiales, Instagram.
+
+Abajo: línea fina con "© KRAKOA" y "@krakoa.sw".
+
+Fondo: partículas blancas tenues que suben lentamente (creadas por JS, con
+:global(.footer-particle)). Cantidad: 22 partículas. Velocidad y delays
+randomizados. El @keyframes floatUp hace que suban ~420px y se desvanezcan.
+
+IMPORTANTE: todas las reglas CSS del footer van con :global() porque
+el <footer> está fuera de <main> y Astro no le asigna el data-astro-cid.
+
 Secciones de la página
 Orden de arriba a abajo:
 
@@ -273,7 +336,9 @@ Orden de arriba a abajo:
 
 <main>
 
-<section class="hero"> — solo tiene <h1>CATALOGO.</h1>
+<section class="hero"> — con fondo de imágenes rotando + título CATALOGO.
+
+<div class="marquee"> — cinta con keywords
 
 <section id="catalogo" class="catalog"> — buscador, categorías, grilla.
 
@@ -282,31 +347,31 @@ Orden de arriba a abajo:
 bloque "¿Tenés una consulta especial?" con botón WhatsApp.
 
 <section id="calidad" class="quality-section"> — 4 pilares (algodón,
-estampado, moldería, pre-encogido) + guía de cuidado (4 items numerados).
+estampado, moldería, pre-encogido) + guía de cuidado (4 items, sin números).
 
 #product-modal — modal de producto.
 
 #cart-drawer — drawer del carrito.
 
-<footer> — barra simple con "KRAKOA" + @krakoa.sw.
+<footer class="site-footer"> — footer completo con 3 columnas + partículas.
 
 #back-to-top — botón flotante "↑".
 
 Secciones pendientes (plan original)
 C1: Botón "Modelo / Remera" en cada tarjeta del catálogo (cambia la
 foto sin abrir el modal). Inspirado en la versión de Google AI Studio.
-
-D1: Hero con imágenes rotando (fondo con zoom suave) + marquesina
-debajo del hero con keywords ("Envíos a todo el país / 100% algodón /
-Cortes Oversize y Regular / ...").
-
-D2: Footer completo con columnas (brand, categorías, info) + puntitos
-animados de fondo.
+El usuario pidió PAUSARLO por ahora, lo va a pensar mejor.
 
 D3: Loader con el logo que va apareciendo a medida que carga la página
-(idea del usuario, no está en la versión de Google AI).
+(idea del usuario, no está en la versión de Google AI). Es el único
+pendiente "en firme" del plan original.
 
-Referencias: hay una versión alternativa hecha con Google AI Studio
+Ideas futuras / deuda técnica
+Mover los PNG fuente de logos fuera de public/ (a una carpeta
+logos-fuente/ hermana de catalogo/) para no inflar el repo con
+archivos que igual no se sirven. No urgente.
+
+Referencia: hay una versión alternativa hecha con Google AI Studio
 (React + Vite + Tailwind, componentes separados) en
 https://sensational-faloodeh-68f992.netlify.app — el usuario tiene los
 archivos fuente por si hacen falta. NO copiar código de ahí (es otro stack),
@@ -324,7 +389,8 @@ simplicidad. Si en el futuro crece mucho, se puede refactorizar.
 
 define:vars para pasar base al script. Es la forma oficial de Astro.
 
-:global() para todo lo que cree el JS. (Ver advertencia más arriba.)
+:global() para todo lo que cree el JS, y también para elementos estáticos
+fuera de <main> (ver footer). (Ver advertencia más arriba.)
 
 El carrito se guarda en localStorage. Decisión del usuario: que
 persista entre visitas es lo más cómodo.
@@ -333,7 +399,46 @@ Talles Regular Fit hasta 5XL. Oversize hasta 2XL.
 Regular tiene 8 talles (S, M, L, XL, 2XL, 3XL, 4XL, 5XL).
 Oversize tiene 5 talles (S, M, L, XL, 2XL).
 
+Los logos se optimizan a WebP automáticamente desde el script (400px de
+ancho máximo, quality 88, effort 6). Los PNG originales se conservan
+como fuente.
+
+Las tarjetas del catálogo usan object-fit: cover (con contain, la
+foto no llenaba el contenedor y las esquinas redondeadas no se veían).
+
 Historial de cambios (más reciente arriba)
+Sesión 6 — Ajustes de estilo, Hero con imágenes rotando, Footer completo
+Ícono + título en la misma línea en los 4 pilares de "Materiales"
+(wrapper .quality-pillar-head con flex).
+
+Se borraron los números 01, 02, 03, 04 de la "Guía de Cuidado".
+
+Tarjetas del catálogo con border-radius: 15px + object-fit: cover.
+
+D1: Hero con fondo de imágenes del catálogo que rotan cada ~5.5s con
+zoom + paneo alternado (izq/der). Las imágenes se eligen al azar en cada
+visita desde los .webp del catálogo (hasta 6). Se agregó marquesina
+debajo del hero con keywords.
+
+Fix del salto del hero: se reemplazó animation por transition sobre
+transform, así la imagen saliente no se "centra" antes del fade.
+
+D2: Footer completo (3 columnas: logo vertical | texto institucional
+justificado | menú vertical) + partículas blancas tenues animadas
+subiendo lentamente (creadas por JS con :global).
+
+Fix crítico del footer: los selectores CSS necesitaban :global() porque
+el <footer> está fuera de <main> y Astro no le asignaba el
+data-astro-cid. Ver "ADVERTENCIA CRÍTICA" más arriba.
+
+Logo del footer cambiado a krakoalogo-vertical.png (luego .webp).
+
+Script: se agregó optimización de logos PNG → WebP. Los .webp se generan
+a 400px de ancho (sin agrandar) y quality 88, effort 6. Los PNG originales
+se quedan en public/logos/ como fuente, no se borran.
+
+Rutas del HTML actualizadas a .webp para todos los logos.
+
 Sesión 5 — Header con menú + fix del botón atrás en mobile
 Header desktop: logo a 175px, nav central con 3 links, Instagram
 con ícono, botón carrito.
@@ -391,7 +496,8 @@ workflow_dispatch), así que hay que hacer un cambio real y correr el
 
 Sesión 1 — Limpieza y des-hardcodeo
 A1: Borrados archivos basura: src/components/Welcome.astro,
-src/layouts/Layout.astro, src/assets/astro.svg, src/assets/background.svg.
+src/layouts/Layout.astro, src/assets/astro.svg,
+src/assets/background.svg.
 
 A2: Arreglado formatName() en generar-catalogo.mjs para que maneje
 correctamente la "ñ" y letras acentuadas (antes "El Señor" salía "El SeñOr").
@@ -428,6 +534,12 @@ innecesarios; explicar lo técnico con analogías cuando haga falta.
 El usuario no programa. No asumir conocimientos de terminal, git, npm,
 etc. Dar pasos concretos y verificables.
 
+Al dar instrucciones de edición: indicar claramente el archivo,
+qué línea buscar (o el texto distintivo más corto posible) y qué
+reemplazar o agregar. EVITAR espacios al inicio de los bloques al
+decir "buscá esto", porque el buscador de VS Code es literal y no
+encuentra nada. Mejor dar una línea corta y distintiva.
+
 Cambios chicos y verificables. Preferir varias iteraciones cortas antes
 que una grande. Después de cada cambio, indicar cómo probarlo.
 
@@ -441,3 +553,6 @@ para DevTools y Ctrl+Shift+M para modo dispositivo (mobile).
 
 El usuario tiene buen ojo. Detecta detalles finos (colores, espaciados,
 comportamientos raros). Vale la pena escucharlo.
+
+Si algo se ve "sin estilo" de golpe, la primera sospecha es el scoping
+de Astro: probar :global(). (Ver ADVERTENCIA CRÍTICA.)
