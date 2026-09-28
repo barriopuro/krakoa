@@ -2040,10 +2040,22 @@ const base = import.meta.env.BASE_URL;
     modal.classList.add("open");
     modal.setAttribute("aria-hidden", "false");
     document.body.classList.add("modal-open");
+
+    lockHistory("modal");
   }
 
 
   function closeModal() {
+    // Si hay candado de historial, soltamos por ahí para que el "atrás"
+    // no quede "colgado" una vez que el usuario cierre con la X.
+    if (historyLock === "modal") {
+      releaseHistory();
+      return;
+    }
+    closeModalDirect();
+  }
+
+  function closeModalDirect() {
     modal.classList.remove("open");
     modal.setAttribute("aria-hidden", "true");
     document.body.classList.remove("modal-open");
@@ -2194,6 +2206,43 @@ const base = import.meta.env.BASE_URL;
   } catch (error) {
     cartItems = [];
   }
+
+
+  // -------------------------
+  // HISTORY LOCK (botón atrás)
+  // -------------------------
+
+  // Cuando abrimos el modal o el carrito, empujamos una entrada falsa
+  // al historial para que el botón "atrás" del celular cierre el overlay
+  // en vez de navegar hacia atrás.
+
+  let historyLock = null; // null | "modal" | "cart"
+
+  function lockHistory(kind) {
+    if (historyLock) {
+      // Ya hay un overlay abierto: solo actualizamos el tipo.
+      historyLock = kind;
+      return;
+    }
+    history.pushState({ krakoaOverlay: kind }, "");
+    historyLock = kind;
+  }
+
+  function releaseHistory() {
+    if (!historyLock) return;
+    // history.back() dispara el popstate, que hace el cierre real.
+    history.back();
+  }
+
+  window.addEventListener("popstate", () => {
+    if (historyLock === "modal") {
+      historyLock = null;
+      closeModalDirect();
+    } else if (historyLock === "cart") {
+      historyLock = null;
+      closeCartDrawerDirect();
+    }
+  });
 
 
   function saveCart() {
@@ -2387,10 +2436,20 @@ const base = import.meta.env.BASE_URL;
     cartDrawer.classList.add("open");
     cartDrawer.setAttribute("aria-hidden", "false");
     document.body.classList.add("cart-open");
+
+    lockHistory("cart");
   }
 
 
   function closeCartDrawer() {
+    if (historyLock === "cart") {
+      releaseHistory();
+      return;
+    }
+    closeCartDrawerDirect();
+  }
+
+  function closeCartDrawerDirect() {
     cartDrawer.classList.remove("open");
     cartDrawer.setAttribute("aria-hidden", "true");
     document.body.classList.remove("cart-open");
