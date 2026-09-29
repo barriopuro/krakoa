@@ -213,19 +213,18 @@ const marqueeText = [
   </div>
 </div>
 
-      <section id="catalogo" class="catalog">
-        <div class="catalog-header">
-        
+      <div class="search-bar">
+        <input
+          id="search"
+          type="search"
+          placeholder="Buscar diseño..."
+          autocomplete="off"
+        />
+      </div>
 
-          <div class="search-wrapper">
-            <input
-              id="search"
-              type="search"
-              placeholder="Buscar diseño..."
-              autocomplete="off"
-            />
-          </div>
-        </div>
+      <section id="catalogo" class="catalog">
+        <div class="catalog-tint" id="catalogTintA" aria-hidden="true"></div>
+        <div class="catalog-tint" id="catalogTintB" aria-hidden="true"></div>
 
         <nav class="categories" aria-label="Categorías">
           {
@@ -772,6 +771,7 @@ const marqueeText = [
     background: #0b0b0b;
     color: #f2f2f2;
     font-family: Arial, Helvetica, sans-serif;
+    overflow-x: clip;
   }
 
   .site-header {
@@ -1175,15 +1175,54 @@ const marqueeText = [
   }
 
   .catalog {
+    position: relative;
+    isolation: isolate;
     padding-bottom: 100px;
   }
 
-  .catalog-header {
+  .catalog-tint {
+    position: absolute;
+    top: -13;
+    bottom: 0;
+    left: 50%;
+    width: 100vw;
+    transform: translateX(-50%);
+    z-index: -1;
+    pointer-events: none;
+    background: var(--tint-color, #888888);
+    opacity: 0.16;
+    clip-path: inset(0 0 0 100%);
+    transition: clip-path 0.55s ease;
+  }
+
+  .catalog-tint.visible {
+    clip-path: inset(0 0 0 0);
+  }
+
+  .catalog-tint.leaving {
+    clip-path: inset(0 100% 0 0);
+  }
+
+  :global(.search-bar) {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 30px;
-    margin-bottom: 25px;
+    justify-content: center;
+    margin: 0 0 30px;
+  }
+
+  :global(.search-bar input) {
+    width: min(420px, 100%);
+    padding: 12px 18px;
+    border: 1px solid #333;
+    border-radius: 8px;
+    outline: none;
+    background: #111;
+    color: #fff;
+    font-size: 14px;
+    transition: border-color 0.2s ease;
+  }
+
+  :global(.search-bar input:focus) {
+    border-color: #777;
   }
 
   h2 {
@@ -1510,14 +1549,7 @@ const marqueeText = [
       padding: 40px 0 35px;
     }
 
-    .catalog-header {
-      align-items: flex-start;
-      flex-direction: column;
-      gap: 18px;
-    }
-
-    .search-wrapper,
-    .search-wrapper input {
+    :global(.search-bar input) {
       width: 100%;
     }
 
@@ -3057,7 +3089,56 @@ const marqueeText = [
   })();
 
   const searchInput = document.querySelector("#search");
-    const backToTop = document.querySelector("#back-to-top");
+  const tintLayers = [
+  document.querySelector("#catalogTintA"),
+  document.querySelector("#catalogTintB"),
+];
+let tintIndex = 0;
+let tintTimer = null;
+
+function commitTintSwap() {
+  if (!tintTimer) return;
+  clearTimeout(tintTimer);
+  tintTimer = null;
+  const old = tintLayers[tintIndex];
+  tintIndex = 1 - tintIndex;
+  old.classList.remove("visible", "leaving");
+}
+
+function showTint(color) {
+  // Si había un swap en curso, lo cerramos ya.
+  if (tintTimer) commitTintSwap();
+
+  const active = tintLayers[tintIndex];
+  const next = tintLayers[1 - tintIndex];
+
+  // Primer tinte: no había nada visible, solo entra la capa activa.
+  if (!active.classList.contains("visible")) {
+    active.style.setProperty("--tint-color", color);
+    active.classList.add("visible");
+    return;
+  }
+
+  // Cambio de categoría: capa nueva entra desde la derecha,
+  // capa vieja sale hacia la izquierda.
+  next.style.setProperty("--tint-color", color);
+  next.classList.remove("visible", "leaving");
+  void next.offsetWidth; // forzar reflow
+  next.classList.add("visible");
+  active.classList.add("leaving");
+
+  tintTimer = setTimeout(() => {
+    tintTimer = null;
+    tintIndex = 1 - tintIndex;
+    active.classList.remove("visible", "leaving");
+  }, 600);
+}
+
+function hideTint() {
+  if (tintTimer) commitTintSwap();
+  tintLayers[tintIndex].classList.remove("visible");
+}
+  const backToTop = document.querySelector("#back-to-top");
   const categoryButtons = document.querySelectorAll(".category-button");
   const products = document.querySelectorAll(".product-card");
 
@@ -3091,9 +3172,18 @@ categoryButtons.forEach((button) => {
     // Si toqué otro → ese queda activo.
     if (isAlreadyActive) {
       activeCategory = null;
+      hideTint();
     } else {
       button.classList.add("active");
       activeCategory = clickedCategory;
+
+      // Sacamos el color del category-wrap (el span que envuelve al botón).
+      const wrap = button.closest(".category-wrap");
+      const color =
+        wrap?.style.getPropertyValue("--category-color")?.trim() ||
+        "#888888";
+
+      showTint(color);
     }
 
     filterProducts();

@@ -7,12 +7,17 @@ con un asistente de IA. Actualizarlo cuando haya cambios importantes.
 
 Sitio web de catálogo de remeras de la marca KRAKOA.
 Stack: Astro 7, HTML + CSS + JavaScript vanilla (sin frameworks).
-Deploy: GitHub Pages (repo `barriopuro/krakoa-web`).
-URL actual: https://barriopuro.github.io/krakoa-web
+Deploy: GitHub Pages (repo `barriopuro/krakoa`).
+URL actual: https://barriopuro.github.io/krakoa
 
 El deploy se hace con un workflow de GitHub Actions que corre en cada push
 a `main` (`.github/workflows/deploy.yml`). El Source de Pages está en
 "GitHub Actions" (NO en "Deploy from a branch").
+
+Nota: existe un segundo repo `barriopuro/krakoa-web` que solo contiene
+un index.html con un redirect automático a la URL nueva. Es para que
+los links viejos que se hayan compartido sigan funcionando. No tiene
+código del sitio.
 
 ## Estructura de archivos relevantes
 
@@ -189,7 +194,7 @@ Talles Regular — ${base}/talles/regular.webp
 
 Las rutas de talles se construyen con base (de import.meta.env.BASE_URL)
 que se pasa al <script> con define:vars={{ base }}.
-NO hardcodear /krakoa-web/... en el script.
+NO hardcodear /krakoa/... en el script.
 
 Selectores
 Corte: Oversize / Regular Fit. Cambiar de corte puede resetear el talle
@@ -348,7 +353,8 @@ Orden de arriba a abajo:
 
 <div class="marquee"> — cinta con keywords
 
-<section id="catalogo" class="catalog"> — buscador, categorías, grilla.
+<section id="catalogo" class="catalog"> — buscador, barra de categorías
+sticky en mobile (toggle, sin botón "Todos"), grilla.
 
 <section id="como-comprar" class="faq-section"> — acordeón con 5 preguntas
 
@@ -413,6 +419,49 @@ Las tarjetas del catálogo usan object-fit: cover (con contain, la
 foto no llenaba el contenedor y las esquinas redondeadas no se veían).
 
 Historial de cambios (más reciente arriba)
+
+Sesión 8 — Catálogo variado, barra de categorías rediseñada, URL nueva
+Catálogo: en `generar-catalogo.mjs` se agregó un intercalado
+round-robin de productos por categoría (antes salían todos los de
+anime, después todos los de comics, etc.). Ahora al ver "Todos" hay
+variedad desde el primer modelo. El orden es determinístico (no
+aleatorio), sigue el orden alfabético de categorías.
+
+Barra de categorías: rediseño completo inspirado en el CodePen
+"shadow-button-set" de Adam Argyle.
+- Se eliminó el botón "Todos" y los puntos de color en cada botón.
+- El color de cada categoría ahora es el FONDO del botón (visible
+  cuando el botón se "despega").
+- Al hacer hover o al estar activo, el botón se desplaza en diagonal
+  arriba-izquierda (translate(-14px, -14px)), dejando ver el color
+  de la categoría detrás. Efecto "despegue".
+- El activo queda despegado permanentemente.
+- Toggle: tocar el botón ya activo lo desactiva y vuelve a mostrar
+  todo (activeCategory = null).
+- Sin `:focus-within` (que dejaba el botón pegado después del click);
+  se usa `:focus-visible` para accesibilidad por teclado.
+- Bordes rectos (sin border-radius), borde de 3px.
+- HTML: cada botón va envuelto en un `<span class="category-wrap">`
+  que tiene el color de la categoría como fondo.
+
+Mobile: la barra de categorías es sticky (`position: sticky; top: 0`).
+- Se pega al tope cuando el scroll la empuja, queda siempre visible.
+- z-index: 100, así el modal (1000) y el carrito (1100) quedan por
+  encima cuando se abren.
+- Sin scroll horizontal: los botones van en 2 filas si no entran.
+- El fondo de la barra llega hasta los bordes (margin-inline: -5vw
+  + padding: 12px 5vw para compensar).
+
+Migración de URL: el repo se renombró de `krakoa-web` a `krakoa`.
+- `astro.config.mjs`: `base: '/krakoa-web'` → `base: '/krakoa'`.
+- El `site` no cambió (sigue `https://barriopuro.github.io`).
+- El `.bat` y el workflow `deploy.yml` NO tenían nada hardcodeado,
+  no hicieron falta cambios ahí.
+- Se creó un repo nuevo `barriopuro/krakoa-web` con un `index.html`
+  que redirige (meta refresh) a la URL nueva, para no romper links
+  viejos compartidos.
+
+
 Sesión 7 — Fix back-to-top + Loader inicial (D3)
 Fix del botón "volver arriba" (#back-to-top): el botón ya existía
 en el HTML y tenía su CSS con :global(), pero el <script> declaraba
