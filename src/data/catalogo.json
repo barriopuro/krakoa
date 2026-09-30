@@ -342,12 +342,12 @@
       "remera": "/catalogo/musica/gorillaz/remera.webp"
     },
     {
-      "id": "zelda-hyrule-icons",
-      "name": "Zelda Hyrule Icons",
+      "id": "super-mario-bros",
+      "name": "Super Mario Bros",
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/zelda-hyrule-icons/modelo.webp",
-      "remera": "/catalogo/videojuegos/zelda-hyrule-icons/remera.webp"
+      "modelo": "/catalogo/videojuegos/super-mario-bros/modelo.webp",
+      "remera": "/catalogo/videojuegos/super-mario-bros/remera.webp"
     },
     {
       "id": "dragon-ball-goku",
@@ -388,6 +388,14 @@
       "categoryName": "Música",
       "modelo": "/catalogo/musica/gustavo-cerati/modelo.webp",
       "remera": "/catalogo/musica/gustavo-cerati/remera.webp"
+    },
+    {
+      "id": "zelda-hyrule-icons",
+      "name": "Zelda Hyrule Icons",
+      "category": "videojuegos",
+      "categoryName": "Videojuegos",
+      "modelo": "/catalogo/videojuegos/zelda-hyrule-icons/modelo.webp",
+      "remera": "/catalogo/videojuegos/zelda-hyrule-icons/remera.webp"
     },
     {
       "id": "dragon-ball-tao-pai-pai",
