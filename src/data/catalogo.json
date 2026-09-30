@@ -310,12 +310,12 @@
       "remera": "/catalogo/anime/demon-slayer-tanjiro/remera.webp"
     },
     {
-      "id": "joker-batman-dark-knight",
-      "name": "Joker Batman Dark Knight",
+      "id": "jason-friday-13th",
+      "name": "Jason Friday 13th",
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/joker-batman-dark-knight/modelo.webp",
-      "remera": "/catalogo/cine-series/joker-batman-dark-knight/remera.webp"
+      "modelo": "/catalogo/cine-series/jason-friday-13th/modelo.webp",
+      "remera": "/catalogo/cine-series/jason-friday-13th/remera.webp"
     },
     {
       "id": "the-joker",
@@ -358,12 +358,12 @@
       "remera": "/catalogo/anime/dragon-ball-goku/remera.webp"
     },
     {
-      "id": "karate-kid",
-      "name": "Karate Kid",
+      "id": "joker-batman-dark-knight",
+      "name": "Joker Batman Dark Knight",
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/karate-kid/modelo.webp",
-      "remera": "/catalogo/cine-series/karate-kid/remera.webp"
+      "modelo": "/catalogo/cine-series/joker-batman-dark-knight/modelo.webp",
+      "remera": "/catalogo/cine-series/joker-batman-dark-knight/remera.webp"
     },
     {
       "id": "the-punisher",
@@ -398,12 +398,12 @@
       "remera": "/catalogo/anime/dragon-ball-tao-pai-pai/remera.webp"
     },
     {
-      "id": "monstars-space-jam",
-      "name": "Monstars Space Jam",
+      "id": "karate-kid",
+      "name": "Karate Kid",
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/monstars-space-jam/modelo.webp",
-      "remera": "/catalogo/cine-series/monstars-space-jam/remera.webp"
+      "modelo": "/catalogo/cine-series/karate-kid/modelo.webp",
+      "remera": "/catalogo/cine-series/karate-kid/remera.webp"
     },
     {
       "id": "x-men",
@@ -438,12 +438,12 @@
       "remera": "/catalogo/anime/dragon-ball-z-gohan/remera.webp"
     },
     {
-      "id": "mumm-rah-thundercats",
-      "name": "Mumm Rah Thundercats",
+      "id": "monstars-space-jam",
+      "name": "Monstars Space Jam",
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/mumm-rah-thundercats/modelo.webp",
-      "remera": "/catalogo/cine-series/mumm-rah-thundercats/remera.webp"
+      "modelo": "/catalogo/cine-series/monstars-space-jam/modelo.webp",
+      "remera": "/catalogo/cine-series/monstars-space-jam/remera.webp"
     },
     {
       "id": "x-men-uncanny",
@@ -478,12 +478,12 @@
       "remera": "/catalogo/anime/dragon-ball-z-piccoro/remera.webp"
     },
     {
-      "id": "star-wars",
-      "name": "Star Wars",
+      "id": "mumm-rah-thundercats",
+      "name": "Mumm Rah Thundercats",
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/star-wars/modelo.webp",
-      "remera": "/catalogo/cine-series/star-wars/remera.webp"
+      "modelo": "/catalogo/cine-series/mumm-rah-thundercats/modelo.webp",
+      "remera": "/catalogo/cine-series/mumm-rah-thundercats/remera.webp"
     },
     {
       "id": "x-men-wolverine",
@@ -510,12 +510,12 @@
       "remera": "/catalogo/anime/dragon-ball-z-vegeta/remera.webp"
     },
     {
-      "id": "star-wars-darth-vader",
-      "name": "Star Wars Darth Vader",
+      "id": "star-wars",
+      "name": "Star Wars",
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/star-wars-darth-vader/modelo.webp",
-      "remera": "/catalogo/cine-series/star-wars-darth-vader/remera.webp"
+      "modelo": "/catalogo/cine-series/star-wars/modelo.webp",
+      "remera": "/catalogo/cine-series/star-wars/remera.webp"
     },
     {
       "id": "linkin-park",
@@ -534,12 +534,12 @@
       "remera": "/catalogo/anime/eva 01-complementado-evangelion/remera.webp"
     },
     {
-      "id": "stranger-things",
-      "name": "Stranger Things",
+      "id": "star-wars-darth-vader",
+      "name": "Star Wars Darth Vader",
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/stranger-things/modelo.webp",
-      "remera": "/catalogo/cine-series/stranger-things/remera.webp"
+      "modelo": "/catalogo/cine-series/star-wars-darth-vader/modelo.webp",
+      "remera": "/catalogo/cine-series/star-wars-darth-vader/remera.webp"
     },
     {
       "id": "michael-jackson",
@@ -556,6 +556,14 @@
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/eva 01-evangelion/modelo.webp",
       "remera": "/catalogo/anime/eva 01-evangelion/remera.webp"
+    },
+    {
+      "id": "stranger-things",
+      "name": "Stranger Things",
+      "category": "cine-series",
+      "categoryName": "Cine y Series",
+      "modelo": "/catalogo/cine-series/stranger-things/modelo.webp",
+      "remera": "/catalogo/cine-series/stranger-things/remera.webp"
     },
     {
       "id": "michael-jackson-smooth-criminal",
