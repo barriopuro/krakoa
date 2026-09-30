@@ -246,6 +246,14 @@
       "remera": "/catalogo/musica/dano/remera.webp"
     },
     {
+      "id": "zelda-hyrule-icons",
+      "name": "Zelda Hyrule Icons",
+      "category": "videojuegos",
+      "categoryName": "Videojuegos",
+      "modelo": "/catalogo/videojuegos/zelda-hyrule-icons/modelo.webp",
+      "remera": "/catalogo/videojuegos/zelda-hyrule-icons/remera.webp"
+    },
+    {
       "id": "demon-slayer",
       "name": "Demon Slayer",
       "category": "anime",
