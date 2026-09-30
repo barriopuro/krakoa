@@ -166,12 +166,12 @@
       "remera": "/catalogo/cine-series/ed-edd-y-eddy/remera.webp"
     },
     {
-      "id": "spiderman-black-suit",
-      "name": "Spiderman Black Suit",
+      "id": "spawn",
+      "name": "Spawn",
       "category": "comics",
       "categoryName": "Comics",
-      "modelo": "/catalogo/comics/spiderman-black-suit/modelo.webp",
-      "remera": "/catalogo/comics/spiderman-black-suit/remera.webp"
+      "modelo": "/catalogo/comics/spawn/modelo.webp",
+      "remera": "/catalogo/comics/spawn/remera.webp"
     },
     {
       "id": "kobe-bryant-black-mamba",
@@ -222,12 +222,12 @@
       "remera": "/catalogo/cine-series/el-señor-de-los-anillos/remera.webp"
     },
     {
-      "id": "spiderman-venom",
-      "name": "Spiderman Venom",
+      "id": "spiderman-black-suit",
+      "name": "Spiderman Black Suit",
       "category": "comics",
       "categoryName": "Comics",
-      "modelo": "/catalogo/comics/spiderman-venom/modelo.webp",
-      "remera": "/catalogo/comics/spiderman-venom/remera.webp"
+      "modelo": "/catalogo/comics/spiderman-black-suit/modelo.webp",
+      "remera": "/catalogo/comics/spiderman-black-suit/remera.webp"
     },
     {
       "id": "manu-ginobili",
@@ -270,12 +270,12 @@
       "remera": "/catalogo/cine-series/it/remera.webp"
     },
     {
-      "id": "the-joker",
-      "name": "The Joker",
+      "id": "spiderman-venom",
+      "name": "Spiderman Venom",
       "category": "comics",
       "categoryName": "Comics",
-      "modelo": "/catalogo/comics/the-joker/modelo.webp",
-      "remera": "/catalogo/comics/the-joker/remera.webp"
+      "modelo": "/catalogo/comics/spiderman-venom/modelo.webp",
+      "remera": "/catalogo/comics/spiderman-venom/remera.webp"
     },
     {
       "id": "maradona",
@@ -294,12 +294,12 @@
       "remera": "/catalogo/musica/foo-fighters/remera.webp"
     },
     {
-      "id": "zelda-hyrule-icons",
-      "name": "Zelda Hyrule Icons",
+      "id": "splatterhouse",
+      "name": "Splatterhouse",
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/zelda-hyrule-icons/modelo.webp",
-      "remera": "/catalogo/videojuegos/zelda-hyrule-icons/remera.webp"
+      "modelo": "/catalogo/videojuegos/splatterhouse/modelo.webp",
+      "remera": "/catalogo/videojuegos/splatterhouse/remera.webp"
     },
     {
       "id": "demon-slayer-tanjiro",
@@ -318,12 +318,12 @@
       "remera": "/catalogo/cine-series/joker-batman-dark-knight/remera.webp"
     },
     {
-      "id": "x-men",
-      "name": "X Men",
+      "id": "the-joker",
+      "name": "The Joker",
       "category": "comics",
       "categoryName": "Comics",
-      "modelo": "/catalogo/comics/x-men/modelo.webp",
-      "remera": "/catalogo/comics/x-men/remera.webp"
+      "modelo": "/catalogo/comics/the-joker/modelo.webp",
+      "remera": "/catalogo/comics/the-joker/remera.webp"
     },
     {
       "id": "maradona-pelusa",
@@ -342,6 +342,14 @@
       "remera": "/catalogo/musica/gorillaz/remera.webp"
     },
     {
+      "id": "zelda-hyrule-icons",
+      "name": "Zelda Hyrule Icons",
+      "category": "videojuegos",
+      "categoryName": "Videojuegos",
+      "modelo": "/catalogo/videojuegos/zelda-hyrule-icons/modelo.webp",
+      "remera": "/catalogo/videojuegos/zelda-hyrule-icons/remera.webp"
+    },
+    {
       "id": "dragon-ball-goku",
       "name": "Dragon Ball Goku",
       "category": "anime",
@@ -358,12 +366,12 @@
       "remera": "/catalogo/cine-series/karate-kid/remera.webp"
     },
     {
-      "id": "xmen-uncanny",
-      "name": "Xmen Uncanny",
+      "id": "the-punisher",
+      "name": "The Punisher",
       "category": "comics",
       "categoryName": "Comics",
-      "modelo": "/catalogo/comics/xmen-uncanny/modelo.webp",
-      "remera": "/catalogo/comics/xmen-uncanny/remera.webp"
+      "modelo": "/catalogo/comics/the-punisher/modelo.webp",
+      "remera": "/catalogo/comics/the-punisher/remera.webp"
     },
     {
       "id": "messi",
@@ -398,6 +406,14 @@
       "remera": "/catalogo/cine-series/monstars-space-jam/remera.webp"
     },
     {
+      "id": "x-men",
+      "name": "X Men",
+      "category": "comics",
+      "categoryName": "Comics",
+      "modelo": "/catalogo/comics/x-men/modelo.webp",
+      "remera": "/catalogo/comics/x-men/remera.webp"
+    },
+    {
       "id": "messi-10",
       "name": "Messi 10",
       "category": "deportes",
@@ -430,6 +446,14 @@
       "remera": "/catalogo/cine-series/mumm-rah-thundercats/remera.webp"
     },
     {
+      "id": "x-men-uncanny",
+      "name": "X Men Uncanny",
+      "category": "comics",
+      "categoryName": "Comics",
+      "modelo": "/catalogo/comics/x-men-uncanny/modelo.webp",
+      "remera": "/catalogo/comics/x-men-uncanny/remera.webp"
+    },
+    {
       "id": "nicolino-locche",
       "name": "Nicolino Locche",
       "category": "deportes",
@@ -460,6 +484,14 @@
       "categoryName": "Cine y Series",
       "modelo": "/catalogo/cine-series/star-wars/modelo.webp",
       "remera": "/catalogo/cine-series/star-wars/remera.webp"
+    },
+    {
+      "id": "x-men-wolverine",
+      "name": "X Men Wolverine",
+      "category": "comics",
+      "categoryName": "Comics",
+      "modelo": "/catalogo/comics/x-men-wolverine/modelo.webp",
+      "remera": "/catalogo/comics/x-men-wolverine/remera.webp"
     },
     {
       "id": "lemmy-kilmister",
