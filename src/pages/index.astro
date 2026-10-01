@@ -634,11 +634,11 @@ const marqueeText = [
 
           <div class="modal-actions">
             <button
-              id="modal-whatsapp"
-              class="modal-whatsapp"
+              id="modal-see-cart"
+              class="modal-see-cart"
               type="button"
             >
-              Consultar por WhatsApp
+              Ver carrito
             </button>
 
             <button
@@ -2088,7 +2088,7 @@ const marqueeText = [
     gap: 8px;
   }
 
-  .modal-whatsapp,
+  .modal-see-cart,
   .modal-share {
     flex: 1;
     padding: 10px 12px;
@@ -2103,15 +2103,15 @@ const marqueeText = [
     justify-content: center;
   }
 
-  .modal-whatsapp {
-    background: #25d366;
-    color: #fff;
-    border: 1px solid #25d366;
+  .modal-see-cart {
+    background: var(--category-color, #fff);
+    color: #0a0a0a;
+    border: 1px solid var(--category-color, #fff);
   }
 
-  .modal-whatsapp:hover {
-    background: #35e276;
-    border-color: #35e276;
+  .modal-see-cart:hover {
+    filter: brightness(1.12);
+    border-color: var(--category-color, #fff);
   }
 
   .modal-share {
@@ -3260,7 +3260,7 @@ categoryButtons.forEach((button) => {
   const modalQtyMinus = document.querySelector("#modal-qty-minus");
   const modalQtyPlus = document.querySelector("#modal-qty-plus");
   const modalAdd = document.querySelector("#modal-add");
-  const modalWhatsapp = document.querySelector("#modal-whatsapp");
+  const modalSeeCart = document.querySelector("#modal-see-cart");
   const modalShare = document.querySelector("#modal-share");
   const modalClose = document.querySelector("#modal-close");
   const modalPrev = document.querySelector("#modal-prev");
@@ -3560,10 +3560,8 @@ categoryButtons.forEach((button) => {
   });
 
 
-  modalWhatsapp.addEventListener("click", () => {
-    const message = `¡Hola KRAKOA! Quería consultar por la remera de *${currentProductName}* en corte *${selectedFit}*, talle *${selectedSize}*. ¿Tienen stock disponible?`;
-    const url = `https://wa.me/5491132372306?text=${encodeURIComponent(message)}`;
-    window.open(url, "_blank", "noopener,noreferrer");
+  modalSeeCart.addEventListener("click", () => {
+    openCartDrawer();
   });
 
 
@@ -3880,7 +3878,12 @@ categoryButtons.forEach((button) => {
     cartDrawer.setAttribute("aria-hidden", "false");
     document.body.classList.add("cart-open");
 
-    lockHistory("cart");
+    // Si el modal ya tiene el lock del historial, no lo pisamos:
+    // así al cerrar el carrito, el "atrás" del celu cierra el modal
+    // (que es lo que el usuario espera).
+    if (historyLock !== "modal") {
+      lockHistory("cart");
+    }
   }
 
 
