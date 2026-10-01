@@ -1114,7 +1114,7 @@ const marqueeText = [
 }
 
 .marquee {
-  margin: 28px 0 40px;
+  margin: 0px 0 0px;
   padding: 16px 0;
   overflow: hidden;
   background: #0d0d0d;
@@ -3164,7 +3164,9 @@ function filterProducts() {
 }
 
 categoryButtons.forEach((button) => {
-  button.addEventListener("click", () => {
+  const wrap = button.closest(".category-wrap");
+
+  const handleClick = () => {
     const clickedCategory = button.dataset.category ?? "";
     const isAlreadyActive = button.classList.contains("active");
 
@@ -3181,7 +3183,6 @@ categoryButtons.forEach((button) => {
       activeCategory = clickedCategory;
 
       // Sacamos el color del category-wrap (el span que envuelve al botón).
-      const wrap = button.closest(".category-wrap");
       const color =
         wrap?.style.getPropertyValue("--category-color")?.trim() ||
         "#888888";
@@ -3190,7 +3191,18 @@ categoryButtons.forEach((button) => {
     }
 
     filterProducts();
+  };
+
+  // Click en el botón: frena la propagación para no disparar también el del wrap.
+  button.addEventListener("click", (event) => {
+    event.stopPropagation();
+    handleClick();
   });
+
+  // Click en el wrap (la "sombra" de color que queda cuando el botón se despega):
+  // dispara el mismo handler.
+  wrap?.addEventListener("click", handleClick);
+});
 
   // Botón "volver arriba"
   window.addEventListener("scroll", () => {
@@ -3203,8 +3215,6 @@ categoryButtons.forEach((button) => {
 
   backToTop.addEventListener("click", () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
-  });
-
   });
 
   searchInput.addEventListener("input", filterProducts);
