@@ -251,6 +251,7 @@ const marqueeText = [
                 class="product-card"
                 data-name={product.name.toLowerCase()}
                 data-category={product.category}
+                data-id={product.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}
               >
                 <button class="product-button" type="button">
                   <div class="product-image">
@@ -3273,6 +3274,8 @@ categoryButtons.forEach((button) => {
   let selectedSize = "L";
   let currentQuantity = 1;
   let currentProductName = "";
+  let currentProductId = "";
+  let openingFromHash = false;
   let touchStartX = 0;
   let touchEndX = 0;
 
@@ -3427,6 +3430,7 @@ categoryButtons.forEach((button) => {
 
     currentImageIndex = 0;
     currentProductName = name;
+    currentProductId = product.dataset.id || "";
     currentQuantity = 1;
     selectedFit = "Oversize";
     selectedSize = "L";
@@ -3448,7 +3452,12 @@ categoryButtons.forEach((button) => {
     modal.setAttribute("aria-hidden", "false");
     document.body.classList.add("modal-open");
 
-    lockHistory("modal");
+    // Si el modal se abrió porque la URL traía un #hash (link compartido),
+    // NO bloqueamos el historial. El usuario entró directo acá, no navegó
+    // desde la página. Bloquear el historial dejaría el botón atrás colgado.
+    if (!openingFromHash) {
+      lockHistory("modal");
+    }
   }
 
 
@@ -3488,6 +3497,28 @@ categoryButtons.forEach((button) => {
       openModal(product);
     });
   });
+
+  // Si la URL trae un hash tipo #remera-naruto, abrimos ese producto solo.
+  function openProductFromHash() {
+    const hash = window.location.hash.replace(/^#/, "");
+    if (!hash) return;
+
+    const target = Array.from(products).find(
+      (product) => product.dataset.id === hash
+    );
+
+    if (target) {
+      openingFromHash = true;
+      openModal(target);
+      openingFromHash = false;
+    }
+  }
+
+  // Al cargar la página.
+  openProductFromHash();
+
+  // Y si el usuario cambia el hash sin recargar (ej: pega la URL en la misma pestaña).
+  window.addEventListener("hashchange", openProductFromHash);
 
 
   modalClose.addEventListener("click", closeModal);
@@ -3537,7 +3568,9 @@ categoryButtons.forEach((button) => {
 
 
   modalShare.addEventListener("click", async () => {
-    const url = window.location.href;
+    // Armamos la URL con el hash del producto (ej: .../#remera-naruto).
+    const baseUrl = window.location.origin + window.location.pathname;
+    const url = currentProductId ? `${baseUrl}#${currentProductId}` : baseUrl;
     const title = currentProductName;
 
     if (navigator.share) {
