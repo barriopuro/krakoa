@@ -646,12 +646,12 @@
       "remera": "/catalogo/cine-series/stranger-things/remera.webp"
     },
     {
-      "id": "the-beatles",
-      "name": "The Beatles",
+      "id": "slipknot",
+      "name": "Slipknot",
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/the-beatles/modelo.webp",
-      "remera": "/catalogo/musica/the-beatles/remera.webp"
+      "modelo": "/catalogo/musica/slipknot/modelo.webp",
+      "remera": "/catalogo/musica/slipknot/remera.webp"
     },
     {
       "id": "hellsing",
@@ -670,12 +670,12 @@
       "remera": "/catalogo/cine-series/street-sharks/remera.webp"
     },
     {
-      "id": "tyk",
-      "name": "Tyk",
+      "id": "the-beatles",
+      "name": "The Beatles",
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/tyk/modelo.webp",
-      "remera": "/catalogo/musica/tyk/remera.webp"
+      "modelo": "/catalogo/musica/the-beatles/modelo.webp",
+      "remera": "/catalogo/musica/the-beatles/remera.webp"
     },
     {
       "id": "naruto-erosenin",
@@ -686,12 +686,12 @@
       "remera": "/catalogo/anime/naruto-erosenin/remera.webp"
     },
     {
-      "id": "wu-tang",
-      "name": "Wu Tang",
+      "id": "tyk",
+      "name": "Tyk",
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/wu-tang/modelo.webp",
-      "remera": "/catalogo/musica/wu-tang/remera.webp"
+      "modelo": "/catalogo/musica/tyk/modelo.webp",
+      "remera": "/catalogo/musica/tyk/remera.webp"
     },
     {
       "id": "naruto-uchiha-clan",
@@ -700,6 +700,14 @@
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/naruto-uchiha-clan/modelo.webp",
       "remera": "/catalogo/anime/naruto-uchiha-clan/remera.webp"
+    },
+    {
+      "id": "wu-tang",
+      "name": "Wu Tang",
+      "category": "musica",
+      "categoryName": "Música",
+      "modelo": "/catalogo/musica/wu-tang/modelo.webp",
+      "remera": "/catalogo/musica/wu-tang/remera.webp"
     },
     {
       "id": "one-piece",
@@ -724,6 +732,14 @@
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/pokemon-squarturtle/modelo.webp",
       "remera": "/catalogo/anime/pokemon-squarturtle/remera.webp"
+    },
+    {
+      "id": "saint-seiya-ikki",
+      "name": "Saint Seiya Ikki",
+      "category": "anime",
+      "categoryName": "Anime",
+      "modelo": "/catalogo/anime/saint-seiya-ikki/modelo.webp",
+      "remera": "/catalogo/anime/saint-seiya-ikki/remera.webp"
     },
     {
       "id": "slam-dunk",
