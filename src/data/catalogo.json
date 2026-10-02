@@ -102,12 +102,12 @@
       "remera": "/catalogo/anime/akira-kaneda-tetsuo/remera.webp"
     },
     {
-      "id": "chicas-superpoderosas",
-      "name": "Chicas Superpoderosas",
+      "id": "bruce-lee-enter-the-dragon",
+      "name": "Bruce Lee Enter The Dragon",
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/chicas-superpoderosas/modelo.webp",
-      "remera": "/catalogo/cine-series/chicas-superpoderosas/remera.webp"
+      "modelo": "/catalogo/cine-series/bruce-lee-enter-the-dragon/modelo.webp",
+      "remera": "/catalogo/cine-series/bruce-lee-enter-the-dragon/remera.webp"
     },
     {
       "id": "dr-doom",
@@ -158,12 +158,12 @@
       "remera": "/catalogo/anime/death-note/remera.webp"
     },
     {
-      "id": "coraje-el-perro-cobarde",
-      "name": "Coraje El Perro Cobarde",
+      "id": "cazafantasmas",
+      "name": "Cazafantasmas",
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/coraje-el-perro-cobarde/modelo.webp",
-      "remera": "/catalogo/cine-series/coraje-el-perro-cobarde/remera.webp"
+      "modelo": "/catalogo/cine-series/cazafantasmas/modelo.webp",
+      "remera": "/catalogo/cine-series/cazafantasmas/remera.webp"
     },
     {
       "id": "spawn",
@@ -214,12 +214,12 @@
       "remera": "/catalogo/anime/death-note-light/remera.webp"
     },
     {
-      "id": "ed-edd-y-eddy",
-      "name": "Ed Edd Y Eddy",
+      "id": "chicas-superpoderosas",
+      "name": "Chicas Superpoderosas",
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/ed-edd-y-eddy/modelo.webp",
-      "remera": "/catalogo/cine-series/ed-edd-y-eddy/remera.webp"
+      "modelo": "/catalogo/cine-series/chicas-superpoderosas/modelo.webp",
+      "remera": "/catalogo/cine-series/chicas-superpoderosas/remera.webp"
     },
     {
       "id": "spiderman-black-suit",
@@ -262,12 +262,12 @@
       "remera": "/catalogo/anime/demon-slayer/remera.webp"
     },
     {
-      "id": "el-señor-de-los-anillos",
-      "name": "El Señor De Los Anillos",
+      "id": "coraje-el-perro-cobarde",
+      "name": "Coraje El Perro Cobarde",
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/el-señor-de-los-anillos/modelo.webp",
-      "remera": "/catalogo/cine-series/el-señor-de-los-anillos/remera.webp"
+      "modelo": "/catalogo/cine-series/coraje-el-perro-cobarde/modelo.webp",
+      "remera": "/catalogo/cine-series/coraje-el-perro-cobarde/remera.webp"
     },
     {
       "id": "spiderman-venom",
@@ -310,12 +310,12 @@
       "remera": "/catalogo/anime/demon-slayer-tanjiro/remera.webp"
     },
     {
-      "id": "it",
-      "name": "It",
+      "id": "ed-edd-y-eddy",
+      "name": "Ed Edd Y Eddy",
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/it/modelo.webp",
-      "remera": "/catalogo/cine-series/it/remera.webp"
+      "modelo": "/catalogo/cine-series/ed-edd-y-eddy/modelo.webp",
+      "remera": "/catalogo/cine-series/ed-edd-y-eddy/remera.webp"
     },
     {
       "id": "the-joker",
@@ -358,12 +358,12 @@
       "remera": "/catalogo/anime/dragon-ball-goku/remera.webp"
     },
     {
-      "id": "jason-friday-13th",
-      "name": "Jason Friday 13th",
+      "id": "el-señor-de-los-anillos",
+      "name": "El Señor De Los Anillos",
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/jason-friday-13th/modelo.webp",
-      "remera": "/catalogo/cine-series/jason-friday-13th/remera.webp"
+      "modelo": "/catalogo/cine-series/el-señor-de-los-anillos/modelo.webp",
+      "remera": "/catalogo/cine-series/el-señor-de-los-anillos/remera.webp"
     },
     {
       "id": "the-punisher",
@@ -406,12 +406,12 @@
       "remera": "/catalogo/anime/dragon-ball-tao-pai-pai/remera.webp"
     },
     {
-      "id": "joker-batman-dark-knight",
-      "name": "Joker Batman Dark Knight",
+      "id": "it",
+      "name": "It",
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/joker-batman-dark-knight/modelo.webp",
-      "remera": "/catalogo/cine-series/joker-batman-dark-knight/remera.webp"
+      "modelo": "/catalogo/cine-series/it/modelo.webp",
+      "remera": "/catalogo/cine-series/it/remera.webp"
     },
     {
       "id": "tortugas-ninja",
@@ -454,12 +454,12 @@
       "remera": "/catalogo/anime/dragon-ball-z-gohan/remera.webp"
     },
     {
-      "id": "karate-kid",
-      "name": "Karate Kid",
+      "id": "jason-friday-13th",
+      "name": "Jason Friday 13th",
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/karate-kid/modelo.webp",
-      "remera": "/catalogo/cine-series/karate-kid/remera.webp"
+      "modelo": "/catalogo/cine-series/jason-friday-13th/modelo.webp",
+      "remera": "/catalogo/cine-series/jason-friday-13th/remera.webp"
     },
     {
       "id": "tortugas-ninja-shredder",
@@ -502,12 +502,12 @@
       "remera": "/catalogo/anime/dragon-ball-z-piccoro/remera.webp"
     },
     {
-      "id": "monstars-space-jam",
-      "name": "Monstars Space Jam",
+      "id": "joker-batman-dark-knight",
+      "name": "Joker Batman Dark Knight",
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/monstars-space-jam/modelo.webp",
-      "remera": "/catalogo/cine-series/monstars-space-jam/remera.webp"
+      "modelo": "/catalogo/cine-series/joker-batman-dark-knight/modelo.webp",
+      "remera": "/catalogo/cine-series/joker-batman-dark-knight/remera.webp"
     },
     {
       "id": "x-men",
@@ -542,12 +542,12 @@
       "remera": "/catalogo/anime/dragon-ball-z-vegeta/remera.webp"
     },
     {
-      "id": "mumm-rah-thundercats",
-      "name": "Mumm Rah Thundercats",
+      "id": "karate-kid",
+      "name": "Karate Kid",
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/mumm-rah-thundercats/modelo.webp",
-      "remera": "/catalogo/cine-series/mumm-rah-thundercats/remera.webp"
+      "modelo": "/catalogo/cine-series/karate-kid/modelo.webp",
+      "remera": "/catalogo/cine-series/karate-kid/remera.webp"
     },
     {
       "id": "x-men-uncanny",
@@ -582,12 +582,12 @@
       "remera": "/catalogo/anime/eva 01-complementado-evangelion/remera.webp"
     },
     {
-      "id": "star-wars",
-      "name": "Star Wars",
+      "id": "monstars-space-jam",
+      "name": "Monstars Space Jam",
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/star-wars/modelo.webp",
-      "remera": "/catalogo/cine-series/star-wars/remera.webp"
+      "modelo": "/catalogo/cine-series/monstars-space-jam/modelo.webp",
+      "remera": "/catalogo/cine-series/monstars-space-jam/remera.webp"
     },
     {
       "id": "x-men-wolverine",
@@ -614,12 +614,12 @@
       "remera": "/catalogo/anime/eva 01-evangelion/remera.webp"
     },
     {
-      "id": "star-wars-darth-vader",
-      "name": "Star Wars Darth Vader",
+      "id": "mumm-rah-thundercats",
+      "name": "Mumm Rah Thundercats",
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/star-wars-darth-vader/modelo.webp",
-      "remera": "/catalogo/cine-series/star-wars-darth-vader/remera.webp"
+      "modelo": "/catalogo/cine-series/mumm-rah-thundercats/modelo.webp",
+      "remera": "/catalogo/cine-series/mumm-rah-thundercats/remera.webp"
     },
     {
       "id": "michael-jackson-smooth-criminal",
@@ -638,12 +638,12 @@
       "remera": "/catalogo/anime/eva 01-longinus-evangelion/remera.webp"
     },
     {
-      "id": "stranger-things",
-      "name": "Stranger Things",
+      "id": "quien-engañó-a-roger-rabbit",
+      "name": "Quien Engañó A Roger Rabbit",
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/stranger-things/modelo.webp",
-      "remera": "/catalogo/cine-series/stranger-things/remera.webp"
+      "modelo": "/catalogo/cine-series/quien-engañó-a-roger-rabbit/modelo.webp",
+      "remera": "/catalogo/cine-series/quien-engañó-a-roger-rabbit/remera.webp"
     },
     {
       "id": "slipknot",
@@ -662,12 +662,12 @@
       "remera": "/catalogo/anime/hellsing/remera.webp"
     },
     {
-      "id": "street-sharks",
-      "name": "Street Sharks",
+      "id": "star-wars",
+      "name": "Star Wars",
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/street-sharks/modelo.webp",
-      "remera": "/catalogo/cine-series/street-sharks/remera.webp"
+      "modelo": "/catalogo/cine-series/star-wars/modelo.webp",
+      "remera": "/catalogo/cine-series/star-wars/remera.webp"
     },
     {
       "id": "the-beatles",
@@ -686,6 +686,14 @@
       "remera": "/catalogo/anime/naruto-erosenin/remera.webp"
     },
     {
+      "id": "star-wars-darth-vader",
+      "name": "Star Wars Darth Vader",
+      "category": "cine-series",
+      "categoryName": "Cine y Series",
+      "modelo": "/catalogo/cine-series/star-wars-darth-vader/modelo.webp",
+      "remera": "/catalogo/cine-series/star-wars-darth-vader/remera.webp"
+    },
+    {
       "id": "tyk",
       "name": "Tyk",
       "category": "musica",
@@ -702,6 +710,14 @@
       "remera": "/catalogo/anime/naruto-uchiha-clan/remera.webp"
     },
     {
+      "id": "stranger-things",
+      "name": "Stranger Things",
+      "category": "cine-series",
+      "categoryName": "Cine y Series",
+      "modelo": "/catalogo/cine-series/stranger-things/modelo.webp",
+      "remera": "/catalogo/cine-series/stranger-things/remera.webp"
+    },
+    {
       "id": "wu-tang",
       "name": "Wu Tang",
       "category": "musica",
@@ -716,6 +732,14 @@
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/one-piece/modelo.webp",
       "remera": "/catalogo/anime/one-piece/remera.webp"
+    },
+    {
+      "id": "street-sharks",
+      "name": "Street Sharks",
+      "category": "cine-series",
+      "categoryName": "Cine y Series",
+      "modelo": "/catalogo/cine-series/street-sharks/modelo.webp",
+      "remera": "/catalogo/cine-series/street-sharks/remera.webp"
     },
     {
       "id": "one-piece-luffy",
