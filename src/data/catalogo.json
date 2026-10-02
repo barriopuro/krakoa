@@ -198,12 +198,12 @@
       "remera": "/catalogo/otros/ramen-godzilla/remera.webp"
     },
     {
-      "id": "mortal-kombat-raiden",
-      "name": "Mortal Kombat Raiden",
+      "id": "king-of-fighters-iori-yagami",
+      "name": "King Of Fighters Iori Yagami",
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/mortal-kombat-raiden/modelo.webp",
-      "remera": "/catalogo/videojuegos/mortal-kombat-raiden/remera.webp"
+      "modelo": "/catalogo/videojuegos/king-of-fighters-iori-yagami/modelo.webp",
+      "remera": "/catalogo/videojuegos/king-of-fighters-iori-yagami/remera.webp"
     },
     {
       "id": "death-note-light",
@@ -246,12 +246,12 @@
       "remera": "/catalogo/musica/dano/remera.webp"
     },
     {
-      "id": "mortal-kombat-sub-zero",
-      "name": "Mortal Kombat Sub Zero",
+      "id": "mortal-kombat-raiden",
+      "name": "Mortal Kombat Raiden",
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/mortal-kombat-sub-zero/modelo.webp",
-      "remera": "/catalogo/videojuegos/mortal-kombat-sub-zero/remera.webp"
+      "modelo": "/catalogo/videojuegos/mortal-kombat-raiden/modelo.webp",
+      "remera": "/catalogo/videojuegos/mortal-kombat-raiden/remera.webp"
     },
     {
       "id": "demon-slayer",
@@ -294,12 +294,12 @@
       "remera": "/catalogo/musica/foo-fighters/remera.webp"
     },
     {
-      "id": "resident-evil-nemesis",
-      "name": "Resident Evil Nemesis",
+      "id": "mortal-kombat-sub-zero",
+      "name": "Mortal Kombat Sub Zero",
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/resident-evil-nemesis/modelo.webp",
-      "remera": "/catalogo/videojuegos/resident-evil-nemesis/remera.webp"
+      "modelo": "/catalogo/videojuegos/mortal-kombat-sub-zero/modelo.webp",
+      "remera": "/catalogo/videojuegos/mortal-kombat-sub-zero/remera.webp"
     },
     {
       "id": "demon-slayer-tanjiro",
@@ -342,12 +342,12 @@
       "remera": "/catalogo/musica/gorillaz/remera.webp"
     },
     {
-      "id": "splatterhouse",
-      "name": "Splatterhouse",
+      "id": "resident-evil-nemesis",
+      "name": "Resident Evil Nemesis",
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/splatterhouse/modelo.webp",
-      "remera": "/catalogo/videojuegos/splatterhouse/remera.webp"
+      "modelo": "/catalogo/videojuegos/resident-evil-nemesis/modelo.webp",
+      "remera": "/catalogo/videojuegos/resident-evil-nemesis/remera.webp"
     },
     {
       "id": "dragon-ball-goku",
@@ -390,12 +390,12 @@
       "remera": "/catalogo/musica/gustavo-cerati/remera.webp"
     },
     {
-      "id": "super-mario-bros",
-      "name": "Super Mario Bros",
+      "id": "splatterhouse",
+      "name": "Splatterhouse",
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/super-mario-bros/modelo.webp",
-      "remera": "/catalogo/videojuegos/super-mario-bros/remera.webp"
+      "modelo": "/catalogo/videojuegos/splatterhouse/modelo.webp",
+      "remera": "/catalogo/videojuegos/splatterhouse/remera.webp"
     },
     {
       "id": "dragon-ball-tao-pai-pai",
@@ -438,12 +438,12 @@
       "remera": "/catalogo/musica/indio-solari/remera.webp"
     },
     {
-      "id": "zelda-hyrule-icons",
-      "name": "Zelda Hyrule Icons",
+      "id": "street-fighter-dhalsim",
+      "name": "Street Fighter Dhalsim",
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/zelda-hyrule-icons/modelo.webp",
-      "remera": "/catalogo/videojuegos/zelda-hyrule-icons/remera.webp"
+      "modelo": "/catalogo/videojuegos/street-fighter-dhalsim/modelo.webp",
+      "remera": "/catalogo/videojuegos/street-fighter-dhalsim/remera.webp"
     },
     {
       "id": "dragon-ball-z-gohan",
@@ -486,6 +486,14 @@
       "remera": "/catalogo/musica/jimi-hendrix/remera.webp"
     },
     {
+      "id": "super-mario-bros",
+      "name": "Super Mario Bros",
+      "category": "videojuegos",
+      "categoryName": "Videojuegos",
+      "modelo": "/catalogo/videojuegos/super-mario-bros/modelo.webp",
+      "remera": "/catalogo/videojuegos/super-mario-bros/remera.webp"
+    },
+    {
       "id": "dragon-ball-z-piccoro",
       "name": "Dragon Ball Z Piccoro",
       "category": "anime",
@@ -516,6 +524,14 @@
       "categoryName": "Música",
       "modelo": "/catalogo/musica/lemmy-kilmister/modelo.webp",
       "remera": "/catalogo/musica/lemmy-kilmister/remera.webp"
+    },
+    {
+      "id": "zelda-hyrule-icons",
+      "name": "Zelda Hyrule Icons",
+      "category": "videojuegos",
+      "categoryName": "Videojuegos",
+      "modelo": "/catalogo/videojuegos/zelda-hyrule-icons/modelo.webp",
+      "remera": "/catalogo/videojuegos/zelda-hyrule-icons/remera.webp"
     },
     {
       "id": "dragon-ball-z-vegeta",
@@ -612,6 +628,14 @@
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/eva 01-longinus-evangelion/modelo.webp",
       "remera": "/catalogo/anime/eva 01-longinus-evangelion/remera.webp"
+    },
+    {
+      "id": "street-sharks",
+      "name": "Street Sharks",
+      "category": "cine-series",
+      "categoryName": "Cine y Series",
+      "modelo": "/catalogo/cine-series/street-sharks/modelo.webp",
+      "remera": "/catalogo/cine-series/street-sharks/remera.webp"
     },
     {
       "id": "the-beatles",
