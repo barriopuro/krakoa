@@ -3745,11 +3745,16 @@ categoryButtons.forEach((button) => {
   });
 
 
-  modalImage.addEventListener("touchstart", (event) => {
+  // El swipe ahora va sobre el contenedor de las dos imágenes, porque la imagen
+  // "activa" va cambiando entre la capa A y la B. Escuchar en el wrapper evita
+  // tener que reconectar el listener cada vez.
+  const modalImageWrapper = document.querySelector(".modal-image-wrapper");
+
+  modalImageWrapper.addEventListener("touchstart", (event) => {
     touchStartX = event.changedTouches[0].screenX;
   });
 
-  modalImage.addEventListener("touchend", (event) => {
+  modalImageWrapper.addEventListener("touchend", (event) => {
     touchEndX = event.changedTouches[0].screenX;
     const difference = touchStartX - touchEndX;
     if (Math.abs(difference) < 50) return;
