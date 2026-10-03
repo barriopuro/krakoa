@@ -3681,22 +3681,19 @@ categoryButtons.forEach((button) => {
     );
 
     if (target) {
-      // Truco: si vinimos por un link compartido (#producto), "canjeamos"
-      // la entrada del historial por dos entradas: una sin hash (la home)
-      // y otra con el hash (donde estamos). Así, al tocar "atrás",
-      // el usuario vuelve a la home SIN salir de la web.
-      const baseUrl = window.location.pathname;
-      history.replaceState(null, "", baseUrl);
+      // Si el modal ya está abierto (por ejemplo, porque el usuario cambió
+      // el hash sin recargar), no hacemos nada más.
+      if (modal.getAttribute("aria-hidden") === "false") return;
+
+      // Para que el botón "atrás" cierre el modal (y no salga de la web),
+      // metemos una entrada extra en el historial. Es el mismo mecanismo
+      // que usa openModal cuando el modal se abre con click en una tarjeta.
       history.pushState({ krakoaOverlay: "modal" }, "", `#${hash}`);
+      historyLock = "modal";
 
       openingFromHash = true;
       openModal(target);
       openingFromHash = false;
-
-      // Ahora SÍ tenemos una entrada "abajo" que el "atrás" puede consumir.
-      // Le decimos al lock que estamos "con el modal abierto" así el popstate
-      // cierra el modal y no hace nada raro.
-      historyLock = "modal";
     }
   }
 
@@ -4069,10 +4066,17 @@ categoryButtons.forEach((button) => {
     cartDrawer.setAttribute("aria-hidden", "false");
     document.body.classList.add("cart-open");
 
-    // Si el modal ya tiene el lock del historial, no lo pisamos:
-    // así al cerrar el carrito, el "atrás" del celu cierra el modal
-    // (que es lo que el usuario espera).
-    if (historyLock !== "modal") {
+    // Si ya hay algo abierto (modal, o el propio carrito), metemos una
+    // entrada extra al historial para que el "atrás" cierre el carrito
+    // PRIMERO, y el modal después.
+    if (historyLock === "modal") {
+      // Estamos sobre el modal: pusheamos otra entrada y cambiamos el tipo.
+      history.pushState({ krakoaOverlay: "cart" }, "");
+      historyLock = "cart";
+    } else if (historyLock === "cart") {
+      // El carrito ya está abierto. No hacemos nada.
+    } else {
+      // No hay nada abierto: comportamiento normal.
       lockHistory("cart");
     }
   }
@@ -4090,6 +4094,17 @@ categoryButtons.forEach((button) => {
     cartDrawer.classList.remove("open");
     cartDrawer.setAttribute("aria-hidden", "true");
     document.body.classList.remove("cart-open");
+
+    // Si el modal está abierto debajo del carrito, el lock del historial
+    // debe volver a "modal". Así, el próximo "atrás" cierra el modal
+    // en vez de salir de la web.
+    if (modal.getAttribute("aria-hidden") === "false") {
+      // Reafirmamos el lock del modal.
+      // OJO: no hacemos pushState, solo cambiamos el tipo. La entrada
+      // que ya habíamos pusheado cuando abrimos el carrito se va a consumir
+      // sola cuando el usuario toque "atrás".
+      historyLock = "modal";
+    }
   }
 
 
