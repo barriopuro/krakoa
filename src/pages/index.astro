@@ -1052,9 +1052,11 @@ const marqueeText = [
  .hero {
   position: relative;
   padding: 80px 0 60px;
-  border-radius: 20px;
   overflow: hidden;
   background: #141414;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
 }
 
 .hero-bg {
@@ -1112,6 +1114,8 @@ const marqueeText = [
 .hero-content {
   position: relative;
   z-index: 2;
+  width: min(1400px, 90vw);
+  margin: 0 auto;
 }
 
 .marquee {
