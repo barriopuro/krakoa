@@ -2199,13 +2199,17 @@ const marqueeText = [
       border-radius: 0;
       border: 0;
       overflow: hidden;
-      transform: translateY(100%);
-      transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-      will-change: transform;
+      /* En mobile: fade puro, sin transform.
+         El slide se veía trabado en muchos celus por el costo del
+         re-layout del contenido grande del modal. El fade es lo más
+         liviano que existe y no se traba nunca. */
+      transform: none;
+      transition: opacity 0.3s ease;
+      will-change: opacity;
     }
 
     .modal.open .modal-content {
-      transform: translateY(0);
+      opacity: 1;
     }
 
     /* En mobile el modal-grid pasa a ser el ÚNICO scroller:
@@ -3628,7 +3632,10 @@ categoryButtons.forEach((button) => {
   }
 
   function closeModalDirect() {
-    if (!modal.classList.contains("open")) return;
+    // Si ya está cerrado (aria-hidden="true"), no hacemos nada.
+    // Usamos aria-hidden en vez de la clase .open porque .open se agrega
+    // dentro de un requestAnimationFrame, y el popstate puede llegar antes.
+    if (modal.getAttribute("aria-hidden") === "true") return;
 
     modal.classList.remove("open");
     modal.setAttribute("aria-hidden", "true");
