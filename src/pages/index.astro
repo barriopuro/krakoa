@@ -2220,6 +2220,8 @@ const marqueeText = [
       overflow-y: auto;
       overflow-x: hidden;
       -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+      contain: layout;
     }
 
     .modal-gallery {
@@ -3599,17 +3601,20 @@ categoryButtons.forEach((button) => {
     modalAdd.classList.remove("is-added");
     modalAdd.textContent = "Agregar al Pedido";
 
-    modal.classList.add("open");
     modal.setAttribute("aria-hidden", "false");
     lockScroll();
 
-    // Si el modal se abrió porque la URL traía un #hash (link compartido),
-    // NO bloqueamos el historial. El usuario entró directo acá, no navegó
-    // desde la página. Bloquear el historial dejaría el botón atrás colgado.
-    if (!openingFromHash) {
-      lockHistory("modal");
-    }
+    // Separamos el "pintar el modal" (que existe, pero invisible) del
+    // "animar el modal" (agregar .open). Así el navegador tiene un frame
+    // completo para calcular layout antes de arrancar la animación.
+    // Esto reduce mucho el "tirón" en mobile, especialmente la primera vez.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        modal.classList.add("open");
+      });
+    });
   }
+  
 
 
   function closeModal() {
