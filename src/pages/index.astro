@@ -541,7 +541,8 @@ const marqueeText = [
           </button>
 
           <div class="modal-image-wrapper">
-            <img id="modal-image" src="" alt="" />
+            <img id="modal-image-a" class="modal-image-el active" src="" alt="" />
+            <img id="modal-image-b" class="modal-image-el" src="" alt="" />
           </div>
 
           <button
@@ -1590,14 +1591,19 @@ const marqueeText = [
     position: fixed;
     inset: 0;
     z-index: 1000;
-    display: none;
+    display: flex;
     align-items: center;
     justify-content: center;
     padding: 20px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.28s ease, visibility 0s linear 0.28s;
   }
 
   .modal.open {
-    display: flex;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.28s ease, visibility 0s linear 0s;
   }
 
   .modal-backdrop {
@@ -1618,6 +1624,14 @@ const marqueeText = [
     z-index: 1;
     display: flex;
     flex-direction: column;
+    transform: translateY(40px);
+    opacity: 0;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease;
+  }
+
+  .modal.open .modal-content {
+    transform: translateY(0);
+    opacity: 1;
   }
 
   .modal-close {
@@ -1676,6 +1690,7 @@ const marqueeText = [
   }
 
   .modal-image-wrapper {
+    position: relative;
     width: 100%;
     height: 100%;
     display: flex;
@@ -1684,13 +1699,48 @@ const marqueeText = [
     padding: 16px;
   }
 
-  .modal-image-wrapper img {
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
+  :global(.modal-image-el) {
+    position: absolute;
+    inset: 16px;
+    width: calc(100% - 32px);
+    height: calc(100% - 32px);
     object-fit: contain;
     display: block;
+    opacity: 0;
+    transform: translateX(0) scale(1);
+    transition: opacity 0.32s ease, transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  :global(.modal-image-el.active) {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    pointer-events: auto;
+  }
+
+  :global(.modal-image-el.enter-from-right) {
+    transform: translateX(30px) scale(0.98);
+  }
+  :global(.modal-image-el.enter-from-left) {
+    transform: translateX(-30px) scale(0.98);
+  }
+  :global(.modal-image-el.leave-to-left) {
+    opacity: 0;
+    transform: translateX(-30px) scale(0.98);
+  }
+  :global(.modal-image-el.leave-to-right) {
+    opacity: 0;
+    transform: translateX(30px) scale(0.98);
+  }
+
+  :global(.modal-image-el.enter-fade) {
+    transform: translateX(0) scale(1);
+  }
+  :global(.modal-image-el.leave-fade) {
+    opacity: 0;
+    transform: translateX(0) scale(1);
   }
 
   .modal-arrow {
@@ -2148,6 +2198,11 @@ const marqueeText = [
       border-radius: 0;
       border: 0;
       overflow: hidden;
+      transform: translateY(100%);
+    }
+
+    .modal.open .modal-content {
+      transform: translateY(0);
     }
 
     /* En mobile el modal-grid pasa a ser el ÚNICO scroller:
@@ -3251,7 +3306,9 @@ categoryButtons.forEach((button) => {
   };
 
   const modal = document.querySelector("#product-modal");
-  const modalImage = document.querySelector("#modal-image");
+  const modalImageA = document.querySelector("#modal-image-a");
+  const modalImageB = document.querySelector("#modal-image-b");
+  let modalImageActive = modalImageA; // cuál de las dos está visible ahora
   const modalImageLabel = document.querySelector("#modal-image-label");
   const modalImageCounter = document.querySelector("#modal-image-counter");
   const modalTitle = document.querySelector("#modal-title");
@@ -3311,8 +3368,9 @@ categoryButtons.forEach((button) => {
       thumb.appendChild(img);
 
       thumb.addEventListener("click", () => {
+        const direction = index > currentImageIndex ? "next" : "prev";
         currentImageIndex = index;
-        renderModalImage();
+        renderModalImage(direction);
       });
 
       modalThumbs.appendChild(thumb);
@@ -3320,19 +3378,77 @@ categoryButtons.forEach((button) => {
   }
 
 
-  function renderModalImage() {
+  // Renderiza la imagen del modal con una transición direccional.
+  // direction: "next" (entra desde la derecha), "prev" (entra desde la izquierda),
+  // "fade" (sin desplazamiento, para saltos como "Ver gráfico").
+  function renderModalImage(direction = "next") {
     const current = currentImages[currentImageIndex];
     if (!current) return;
 
-    modalImage.src = current.src;
-    modalImage.alt = `${currentProductName} — ${current.label}`;
+    // Sincronizamos label, contador y miniatura siempre.
     modalImageLabel.textContent = current.label;
     modalImageCounter.textContent = `${currentImageIndex + 1} / ${currentImages.length}`;
 
-    // Refrescar el estado activo de las miniaturas sin redibujarlas todas.
     const thumbs = modalThumbs.querySelectorAll(".modal-thumb");
     thumbs.forEach((thumb, index) => {
       thumb.classList.toggle("active", index === currentImageIndex);
+    });
+
+    // La capa visible y la capa oculta.
+    const visible = modalImageActive;
+    const hidden = visible === modalImageA ? modalImageB : modalImageA;
+
+    // ¿Es el primer render (no hay nada visible todavía)?
+    const isFirstRender = !visible.src;
+
+    if (isFirstRender) {
+      // Primer render: solo aparecemos la capa A, sin animación.
+      visible.src = current.src;
+      visible.alt = `${currentProductName} — ${current.label}`;
+      visible.classList.add("active");
+      return;
+    }
+
+    // Las clases de animación según la dirección.
+    let enterClass, leaveClass;
+    if (direction === "next") {
+      enterClass = "enter-from-right";
+      leaveClass = "leave-to-left";
+    } else if (direction === "prev") {
+      enterClass = "enter-from-left";
+      leaveClass = "leave-to-right";
+    } else {
+      // "fade"
+      enterClass = "enter-fade";
+      leaveClass = "leave-fade";
+    }
+
+    // 1) Preparamos la capa oculta: src nuevo, posición inicial, sin transición.
+    hidden.src = current.src;
+    hidden.alt = `${currentProductName} — ${current.label}`;
+    hidden.classList.remove("active", "enter-from-right", "enter-from-left", "enter-fade");
+    hidden.classList.add(enterClass);
+    // Forzamos reflow para que el navegador registre la posición inicial
+    // antes de animar hacia la posición final.
+    void hidden.offsetWidth;
+
+    // 2) Disparamos la animación.
+    requestAnimationFrame(() => {
+      hidden.classList.remove(enterClass);
+      hidden.classList.add("active");
+
+      visible.classList.remove("active");
+      visible.classList.add(leaveClass);
+
+      // Cuando termina la transición, limpiamos y swapeamos el rol.
+      const cleanup = () => {
+        visible.classList.remove(leaveClass);
+        visible.classList.remove("active");
+        // La que era "visible" pasa a ser la oculta (se queda con el src viejo
+        // hasta el próximo render).
+        modalImageActive = hidden;
+      };
+      setTimeout(cleanup, 340); // 320ms de transición + 20ms de margen
     });
   }
 
@@ -3408,6 +3524,25 @@ categoryButtons.forEach((button) => {
     modalQtyValue.textContent = currentQuantity;
   }
 
+  // Calcula el ancho de la barra de scroll y lo guarda en una variable CSS.
+  // Sirve para compensar el "salto" que hace el layout cuando se oculta la barra.
+  function getScrollbarWidth() {
+    return window.innerWidth - document.documentElement.clientWidth;
+  }
+
+  function lockScroll() {
+    const scrollbarWidth = getScrollbarWidth();
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
+    document.body.classList.add("modal-open");
+  }
+
+  function unlockScroll() {
+    document.body.style.paddingRight = "";
+    document.body.classList.remove("modal-open");
+  }
+
 
   function openModal(product) {
     const name = product.querySelector("h3")?.textContent ?? "";
@@ -3436,6 +3571,14 @@ categoryButtons.forEach((button) => {
     currentProductName = name;
     currentProductId = product.dataset.id || "";
     currentQuantity = 1;
+
+    // Reseteamos las dos capas de imagen para que el próximo modal
+    // arranque limpio (sin restos del producto anterior).
+    modalImageActive = modalImageA;
+    modalImageA.classList.remove("active", "enter-from-right", "enter-from-left", "enter-fade", "leave-to-left", "leave-to-right", "leave-fade");
+    modalImageB.classList.remove("active", "enter-from-right", "enter-from-left", "enter-fade", "leave-to-left", "leave-to-right", "leave-fade");
+    modalImageA.src = "";
+    modalImageB.src = "";
     selectedFit = "Oversize";
     selectedSize = "L";
 
@@ -3454,7 +3597,7 @@ categoryButtons.forEach((button) => {
 
     modal.classList.add("open");
     modal.setAttribute("aria-hidden", "false");
-    document.body.classList.add("modal-open");
+    lockScroll();
 
     // Si el modal se abrió porque la URL traía un #hash (link compartido),
     // NO bloqueamos el historial. El usuario entró directo acá, no navegó
@@ -3476,22 +3619,24 @@ categoryButtons.forEach((button) => {
   }
 
   function closeModalDirect() {
+    if (!modal.classList.contains("open")) return;
+
     modal.classList.remove("open");
     modal.setAttribute("aria-hidden", "true");
-    document.body.classList.remove("modal-open");
+    unlockScroll();
   }
 
 
   function showPreviousImage() {
     currentImageIndex =
       (currentImageIndex - 1 + currentImages.length) % currentImages.length;
-    renderModalImage();
+    renderModalImage("prev");
   }
 
 
   function showNextImage() {
     currentImageIndex = (currentImageIndex + 1) % currentImages.length;
-    renderModalImage();
+    renderModalImage("next");
   }
 
 
@@ -3533,7 +3678,7 @@ categoryButtons.forEach((button) => {
   // Atajo: al tocar "Ver gráfico", salta a la miniatura del talle del corte actual.
   modalSeeChart.addEventListener("click", () => {
     currentImageIndex = selectedFit === "Oversize" ? 2 : 3;
-    renderModalImage();
+    renderModalImage("fade");
   });
 
 
