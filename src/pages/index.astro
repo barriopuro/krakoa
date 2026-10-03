@@ -3672,7 +3672,11 @@ categoryButtons.forEach((button) => {
   });
 
   // Si la URL trae un hash tipo #remera-naruto, abrimos ese producto solo.
+  let hashHandled = false;
+
   function openProductFromHash() {
+    if (hashHandled) return;
+
     const hash = window.location.hash.replace(/^#/, "");
     if (!hash) return;
 
@@ -3681,27 +3685,33 @@ categoryButtons.forEach((button) => {
     );
 
     if (target) {
-      // Si el modal ya está abierto (por ejemplo, porque el usuario cambió
-      // el hash sin recargar), no hacemos nada más.
-      if (modal.getAttribute("aria-hidden") === "false") return;
+      hashHandled = true;
 
-      // Para que el botón "atrás" cierre el modal (y no salga de la web),
-      // metemos una entrada extra en el historial. Es el mismo mecanismo
-      // que usa openModal cuando el modal se abre con click en una tarjeta.
+      // Canjeamos la entrada actual (con hash) por dos entradas:
+      //   1) la home sin hash  → queda "abajo"
+      //   2) la home con hash  → es donde estamos ahora
+      // Así, al tocar "atrás", el usuario vuelve a la home SIN salir de la web.
+      const baseUrl = window.location.pathname;
+      history.replaceState(null, "", baseUrl);
       history.pushState({ krakoaOverlay: "modal" }, "", `#${hash}`);
-      historyLock = "modal";
 
+      // El modal se abre con click "normal". No bloqueamos el historial
+      // porque ya lo bloqueamos acá arriba a mano.
       openingFromHash = true;
       openModal(target);
       openingFromHash = false;
+
+      // Ahora sí: hay una entrada "abajo" que el "atrás" puede consumir.
+      historyLock = "modal";
     }
   }
 
   // Al cargar la página.
   openProductFromHash();
 
-  // Y si el usuario cambia el hash sin recargar (ej: pega la URL en la misma pestaña).
-  window.addEventListener("hashchange", openProductFromHash);
+  // Nota: no escuchamos "hashchange". Antes lo hacíamos, pero generaba
+  // bucles raros cuando el propio openProductFromHash hacía pushState.
+  // Si el usuario cambia el hash a mano, recarga y listo.
 
 
   modalClose.addEventListener("click", closeModal);
