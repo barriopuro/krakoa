@@ -3687,27 +3687,36 @@ categoryButtons.forEach((button) => {
     if (target) {
       hashHandled = true;
 
-      // Canjeamos la entrada actual (con hash) por dos entradas:
-      //   1) la home sin hash  → queda "abajo"
-      //   2) la home con hash  → es donde estamos ahora
-      // Así, al tocar "atrás", el usuario vuelve a la home SIN salir de la web.
-      const baseUrl = window.location.pathname;
-      history.replaceState(null, "", baseUrl);
-      history.pushState({ krakoaOverlay: "modal" }, "", `#${hash}`);
-
-      // El modal se abre con click "normal". No bloqueamos el historial
-      // porque ya lo bloqueamos acá arriba a mano.
+      // OJO: abrimos el modal PRIMERO, y después tocamos el historial.
+      // Así, si el pushState falla por algún motivo, el modal ya está abierto
+      // y todos los botones siguen funcionando.
       openingFromHash = true;
       openModal(target);
       openingFromHash = false;
 
-      // Ahora sí: hay una entrada "abajo" que el "atrás" puede consumir.
-      historyLock = "modal";
+      // Ahora hacemos el truco del historial. Si algo falla acá,
+      // el modal ya está abierto y no se rompe nada más.
+      try {
+        const baseUrl = window.location.pathname;
+        history.replaceState(null, "", baseUrl);
+        history.pushState({ krakoaOverlay: "modal" }, "", `#${hash}`);
+        historyLock = "modal";
+      } catch (error) {
+        console.error("[KRAKOA] Error manipulando el historial:", error);
+      }
     }
   }
 
-  // Al cargar la página.
-  openProductFromHash();
+  // Al cargar la página. Lo diferimos con setTimeout para asegurarnos de que
+  // TODO el resto del script ya se registró (por si openProductFromHash
+  // tira algún error que antes rompía la ejecución del script entero).
+  setTimeout(() => {
+    try {
+      openProductFromHash();
+    } catch (error) {
+      console.error("[KRAKOA] Error abriendo producto desde el hash:", error);
+    }
+  }, 0);
 
   // Nota: no escuchamos "hashchange". Antes lo hacíamos, pero generaba
   // bucles raros cuando el propio openProductFromHash hacía pushState.
