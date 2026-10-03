@@ -622,6 +622,14 @@
       "remera": "/catalogo/cine-series/mumm-rah-thundercats/remera.webp"
     },
     {
+      "id": "x-men-x-factor-x-force-apocalipsis",
+      "name": "X Men X Factor X Force Apocalipsis",
+      "category": "comics",
+      "categoryName": "Comics",
+      "modelo": "/catalogo/comics/x-men-x-factor-x-force-apocalipsis/modelo.webp",
+      "remera": "/catalogo/comics/x-men-x-factor-x-force-apocalipsis/remera.webp"
+    },
+    {
       "id": "michael-jackson-smooth-criminal",
       "name": "Michael Jackson Smooth Criminal",
       "category": "musica",
@@ -646,12 +654,12 @@
       "remera": "/catalogo/cine-series/quien-engañó-a-roger-rabbit/remera.webp"
     },
     {
-      "id": "slipknot",
-      "name": "Slipknot",
+      "id": "sepultura",
+      "name": "Sepultura",
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/slipknot/modelo.webp",
-      "remera": "/catalogo/musica/slipknot/remera.webp"
+      "modelo": "/catalogo/musica/sepultura/modelo.webp",
+      "remera": "/catalogo/musica/sepultura/remera.webp"
     },
     {
       "id": "hellsing",
@@ -660,6 +668,30 @@
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/hellsing/modelo.webp",
       "remera": "/catalogo/anime/hellsing/remera.webp"
+    },
+    {
+      "id": "scooby-doo",
+      "name": "Scooby Doo",
+      "category": "cine-series",
+      "categoryName": "Cine y Series",
+      "modelo": "/catalogo/cine-series/scooby-doo/modelo.webp",
+      "remera": "/catalogo/cine-series/scooby-doo/remera.webp"
+    },
+    {
+      "id": "slipknot",
+      "name": "Slipknot",
+      "category": "musica",
+      "categoryName": "Música",
+      "modelo": "/catalogo/musica/slipknot/modelo.webp",
+      "remera": "/catalogo/musica/slipknot/remera.webp"
+    },
+    {
+      "id": "naruto-erosenin",
+      "name": "Naruto Erosenin",
+      "category": "anime",
+      "categoryName": "Anime",
+      "modelo": "/catalogo/anime/naruto-erosenin/modelo.webp",
+      "remera": "/catalogo/anime/naruto-erosenin/remera.webp"
     },
     {
       "id": "star-wars",
@@ -678,12 +710,12 @@
       "remera": "/catalogo/musica/the-beatles/remera.webp"
     },
     {
-      "id": "naruto-erosenin",
-      "name": "Naruto Erosenin",
+      "id": "naruto-uchiha-clan",
+      "name": "Naruto Uchiha Clan",
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/naruto-erosenin/modelo.webp",
-      "remera": "/catalogo/anime/naruto-erosenin/remera.webp"
+      "modelo": "/catalogo/anime/naruto-uchiha-clan/modelo.webp",
+      "remera": "/catalogo/anime/naruto-uchiha-clan/remera.webp"
     },
     {
       "id": "star-wars-darth-vader",
@@ -702,12 +734,12 @@
       "remera": "/catalogo/musica/tyk/remera.webp"
     },
     {
-      "id": "naruto-uchiha-clan",
-      "name": "Naruto Uchiha Clan",
+      "id": "one-piece",
+      "name": "One Piece",
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/naruto-uchiha-clan/modelo.webp",
-      "remera": "/catalogo/anime/naruto-uchiha-clan/remera.webp"
+      "modelo": "/catalogo/anime/one-piece/modelo.webp",
+      "remera": "/catalogo/anime/one-piece/remera.webp"
     },
     {
       "id": "stranger-things",
@@ -726,12 +758,12 @@
       "remera": "/catalogo/musica/wu-tang/remera.webp"
     },
     {
-      "id": "one-piece",
-      "name": "One Piece",
+      "id": "one-piece-luffy",
+      "name": "One Piece Luffy",
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/one-piece/modelo.webp",
-      "remera": "/catalogo/anime/one-piece/remera.webp"
+      "modelo": "/catalogo/anime/one-piece-luffy/modelo.webp",
+      "remera": "/catalogo/anime/one-piece-luffy/remera.webp"
     },
     {
       "id": "street-sharks",
@@ -740,14 +772,6 @@
       "categoryName": "Cine y Series",
       "modelo": "/catalogo/cine-series/street-sharks/modelo.webp",
       "remera": "/catalogo/cine-series/street-sharks/remera.webp"
-    },
-    {
-      "id": "one-piece-luffy",
-      "name": "One Piece Luffy",
-      "category": "anime",
-      "categoryName": "Anime",
-      "modelo": "/catalogo/anime/one-piece-luffy/modelo.webp",
-      "remera": "/catalogo/anime/one-piece-luffy/remera.webp"
     },
     {
       "id": "pokemon-squarturtle",
