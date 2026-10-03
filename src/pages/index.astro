@@ -3608,6 +3608,14 @@ categoryButtons.forEach((button) => {
     modal.setAttribute("aria-hidden", "false");
     lockScroll();
 
+    // Bloqueamos el historial para que el botón "atrás" del celular cierre
+    // el modal en vez de salir de la página. Si el modal se abrió porque
+    // la URL traía un hash (link compartido), NO bloqueamos: el usuario
+    // entró directo, no navegó desde la página.
+    if (!openingFromHash) {
+      lockHistory("modal");
+    }
+
     // Separamos el "pintar el modal" (que existe, pero invisible) del
     // "animar el modal" (agregar .open). Así el navegador tiene un frame
     // completo para calcular layout antes de arrancar la animación.
@@ -3673,9 +3681,22 @@ categoryButtons.forEach((button) => {
     );
 
     if (target) {
+      // Truco: si vinimos por un link compartido (#producto), "canjeamos"
+      // la entrada del historial por dos entradas: una sin hash (la home)
+      // y otra con el hash (donde estamos). Así, al tocar "atrás",
+      // el usuario vuelve a la home SIN salir de la web.
+      const baseUrl = window.location.pathname;
+      history.replaceState(null, "", baseUrl);
+      history.pushState({ krakoaOverlay: "modal" }, "", `#${hash}`);
+
       openingFromHash = true;
       openModal(target);
       openingFromHash = false;
+
+      // Ahora SÍ tenemos una entrada "abajo" que el "atrás" puede consumir.
+      // Le decimos al lock que estamos "con el modal abierto" así el popstate
+      // cierra el modal y no hace nada raro.
+      historyLock = "modal";
     }
   }
 
