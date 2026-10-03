@@ -1597,13 +1597,13 @@ const marqueeText = [
     padding: 20px;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.28s ease, visibility 0s linear 0.28s;
+    transition: opacity 0.42s ease, visibility 0s linear 0.42s;
   }
 
   .modal.open {
     opacity: 1;
     visibility: visible;
-    transition: opacity 0.28s ease, visibility 0s linear 0s;
+    transition: opacity 0.42s ease, visibility 0s linear 0s;
   }
 
   .modal-backdrop {
@@ -1624,13 +1624,14 @@ const marqueeText = [
     z-index: 1;
     display: flex;
     flex-direction: column;
-    transform: translateY(40px);
+    transform: translateY(60px) scale(0.97);
     opacity: 0;
-    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease;
+    transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.42s ease;
+    will-change: transform, opacity;
   }
 
   .modal.open .modal-content {
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
     opacity: 1;
   }
 
@@ -2199,6 +2200,8 @@ const marqueeText = [
       border: 0;
       overflow: hidden;
       transform: translateY(100%);
+      transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+      will-change: transform;
     }
 
     .modal.open .modal-content {
