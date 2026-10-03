@@ -710,12 +710,12 @@
       "remera": "/catalogo/musica/the-beatles/remera.webp"
     },
     {
-      "id": "naruto-uchiha-clan",
-      "name": "Naruto Uchiha Clan",
+      "id": "naruto-rock-lee",
+      "name": "Naruto Rock Lee",
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/naruto-uchiha-clan/modelo.webp",
-      "remera": "/catalogo/anime/naruto-uchiha-clan/remera.webp"
+      "modelo": "/catalogo/anime/naruto-rock-lee/modelo.webp",
+      "remera": "/catalogo/anime/naruto-rock-lee/remera.webp"
     },
     {
       "id": "scooby-doo",
@@ -734,12 +734,12 @@
       "remera": "/catalogo/musica/tyk/remera.webp"
     },
     {
-      "id": "one-piece",
-      "name": "One Piece",
+      "id": "naruto-uchiha-clan",
+      "name": "Naruto Uchiha Clan",
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/one-piece/modelo.webp",
-      "remera": "/catalogo/anime/one-piece/remera.webp"
+      "modelo": "/catalogo/anime/naruto-uchiha-clan/modelo.webp",
+      "remera": "/catalogo/anime/naruto-uchiha-clan/remera.webp"
     },
     {
       "id": "south-park",
@@ -758,12 +758,12 @@
       "remera": "/catalogo/musica/wu-tang/remera.webp"
     },
     {
-      "id": "one-piece-luffy",
-      "name": "One Piece Luffy",
+      "id": "one-piece",
+      "name": "One Piece",
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/one-piece-luffy/modelo.webp",
-      "remera": "/catalogo/anime/one-piece-luffy/remera.webp"
+      "modelo": "/catalogo/anime/one-piece/modelo.webp",
+      "remera": "/catalogo/anime/one-piece/remera.webp"
     },
     {
       "id": "star-wars",
@@ -774,12 +774,12 @@
       "remera": "/catalogo/cine-series/star-wars/remera.webp"
     },
     {
-      "id": "pokemon-squarturtle",
-      "name": "Pokemon Squarturtle",
+      "id": "one-piece-luffy",
+      "name": "One Piece Luffy",
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/pokemon-squarturtle/modelo.webp",
-      "remera": "/catalogo/anime/pokemon-squarturtle/remera.webp"
+      "modelo": "/catalogo/anime/one-piece-luffy/modelo.webp",
+      "remera": "/catalogo/anime/one-piece-luffy/remera.webp"
     },
     {
       "id": "star-wars-darth-vader",
@@ -790,12 +790,12 @@
       "remera": "/catalogo/cine-series/star-wars-darth-vader/remera.webp"
     },
     {
-      "id": "saint-seiya-ikki",
-      "name": "Saint Seiya Ikki",
+      "id": "pokemon-squarturtle",
+      "name": "Pokemon Squarturtle",
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/saint-seiya-ikki/modelo.webp",
-      "remera": "/catalogo/anime/saint-seiya-ikki/remera.webp"
+      "modelo": "/catalogo/anime/pokemon-squarturtle/modelo.webp",
+      "remera": "/catalogo/anime/pokemon-squarturtle/remera.webp"
     },
     {
       "id": "stranger-things",
@@ -806,12 +806,12 @@
       "remera": "/catalogo/cine-series/stranger-things/remera.webp"
     },
     {
-      "id": "slam-dunk",
-      "name": "Slam Dunk",
+      "id": "saint-seiya-ikki",
+      "name": "Saint Seiya Ikki",
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/slam-dunk/modelo.webp",
-      "remera": "/catalogo/anime/slam-dunk/remera.webp"
+      "modelo": "/catalogo/anime/saint-seiya-ikki/modelo.webp",
+      "remera": "/catalogo/anime/saint-seiya-ikki/remera.webp"
     },
     {
       "id": "street-sharks",
@@ -820,6 +820,14 @@
       "categoryName": "Cine y Series",
       "modelo": "/catalogo/cine-series/street-sharks/modelo.webp",
       "remera": "/catalogo/cine-series/street-sharks/remera.webp"
+    },
+    {
+      "id": "slam-dunk",
+      "name": "Slam Dunk",
+      "category": "anime",
+      "categoryName": "Anime",
+      "modelo": "/catalogo/anime/slam-dunk/modelo.webp",
+      "remera": "/catalogo/anime/slam-dunk/remera.webp"
     }
   ]
 }
