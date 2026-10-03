@@ -3429,8 +3429,9 @@ categoryButtons.forEach((button) => {
     hidden.classList.remove("active", "enter-from-right", "enter-from-left", "enter-fade");
     hidden.classList.add(enterClass);
     // Forzamos reflow para que el navegador registre la posición inicial
-    // antes de animar hacia la posición final.
-    void hidden.offsetWidth;
+    // antes de animar hacia la posición final. Sin esto, a veces el navegador
+    // agrupa los cambios de clase y saltea la animación.
+    hidden.getBoundingClientRect();
 
     // 2) Disparamos la animación.
     requestAnimationFrame(() => {
