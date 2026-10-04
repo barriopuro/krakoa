@@ -117,6 +117,15 @@ ESTÁTICOS del HTML también pueden necesitar `:global()`. Casos concretos:
 **Regla general:** si un bloque del HTML se ve "sin estilo" y no está
 dentro de `<main>` (o sus clases las maneja el JS), probarlo con `:global()`.
 
+**Regla rápida:** todo lo que esté dentro del `<footer>`, del modal,
+del carrito o del menú mobile necesita `:global()`. Astro saca esos
+elementos del scope (no les asigna el `data-astro-cid-...`), así que
+el CSS normal no los agarra. Si algo "no toma estilo" y vive en uno
+de esos bloques, envolvelo en `:global()` antes de investigar otra cosa.
+
+Casos nuevos confirmados:
+- el botón "Ver tabla de talles" (`.modal-chart-button`).
+
 ## Cómo funciona el carrito
 
 ### Estado y persistencia
@@ -535,6 +544,33 @@ https://sensational-faloodeh-68f992.netlify.app — el usuario tiene los
 archivos fuente por si hacen falta. NO copiar código de ahí (es otro stack),
 solo inspirarse en ideas.
 
+## Decisiones tomadas (no implementadas)
+
+### Nombres de productos con caracteres especiales
+
+Se evaluó agregar un mapeo de nombres (`PRODUCT_NAME_OVERRIDES`) en
+`generar-catalogo.mjs` para que productos como "X-Men" o "A Perfect
+Circle" aparezcan con su grafía exacta (guiones internos, mayúsculas
+especiales, símbolos como &, /, ?).
+
+**Decisión: NO implementar por ahora.** El problema es cosmético
+("X Men" en lugar de "X-MEN") y el costo de mantener una tabla
+actualizada por producto no lo justifica. Si en el futuro hay muchos
+productos con nombres que se vean mal, reevaluar.
+
+Los nombres de carpeta siguen la regla actual: guiones en lugar de
+espacios, sin caracteres raros de Windows.
+
+### Búsqueda por categoría en el buscador
+
+Se evaluó que el buscador también matchee contra el nombre de la
+categoría (escribir "anime" filtra por esa categoría). **Decisión:
+NO implementar.** La barra de categorías está visible y sticky a 15
+píxeles del buscador, así que es redundante. Si en el futuro hay
+muchas categorías (que la barra se haga scrolleable) o se agregan
+tags secundarios (ofertas, ediciones limitadas), reevaluar.
+
+
 Decisiones técnicas ya tomadas
 No migrar el .bat a npm scripts. Funciona bien, el usuario no domina
 terminal, y "si algo anda no se toca".
@@ -568,7 +604,70 @@ translateX), para no romper el position: sticky de las categorías.
 El body tiene overflow-x: clip (no hidden, para no romper el sticky).
 
 Historial de cambios (más reciente arriba)
-Sesión 10 — Tinte por categoría, buscador afuera, animaciones del modal
+### Sesión 11 — Optimización (mejoras concretas) + "Ver tabla de talles"
+
+Se hizo una tanda de mejoras de optimización y limpieza, tras un
+análisis con PageSpeed (79 mobile / 93 desktop, sin urgencia).
+Ninguna feature nueva.
+
+**Imágenes y performance:**
+
+- `fetchPriority` en el hero: la primera imagen (la LCP) lleva
+  `fetchPriority="high"` y `loading="eager"`; las otras 5 llevan
+  `fetchPriority="low"` y `loading="lazy"`. Esto bajó el LCP.
+- `decoding="async"` agregado a las `<img>` del modal (`#modal-image-a`
+  y `#modal-image-b`) y a las que se generan dinámicamente en
+  `renderModalImage`.
+- `will-change: opacity, transform` movido de `.hero-bg img` (todas)
+  a `.hero-bg img.active` (solo la que está animando). Antes había 6
+  capas de GPU vivas, ahora solo 1. Libera memoria de video en mobile.
+- `og:image:width` (1200) y `og:image:height` (630) agregados al
+  `<head>`. Con esto **por fin funciona la miniatura en WhatsApp**
+  (era el bug histórico). El `og-image.jpg` ya estaba en 1200x630.
+
+**Limpieza de código:**
+
+- Eliminado el parche `modalAddClone` (se clonaba el botón "Agregar
+  al Pedido" para pisar el listener viejo). Ahora hay un solo
+  listener directo sobre `modalAdd`.
+- `--category-color` se setea al final de `openModal`, justo antes
+  de `aria-hidden="false"`. Antes se seteaba arriba, lo que dejaba
+  el color del producto anterior pegado si algo fallaba en el medio.
+- `filterProducts` ahora tiene debounce de 150ms en el input del
+  buscador. Con 99 productos no se nota, pero escala.
+- Borrado el CSS muerto `.care-num` (no se usaba en el HTML).
+- `box-sizing: border-box` aplicado también a `*::before` y
+  `*::after`, no solo a `*`.
+
+**Cambio estético:**
+
+- El botón "Ver gráfico" se movió de al lado de "Elegí el corte"
+  a **abajo de los botones de talle**.
+- Se renombró a **"Ver tabla de talles"**.
+- Ahora tiene estilo de botón (borde, fondo oscuro, hover con
+  `--category-color`), ya no es un link subrayado.
+- Clase nueva: `.modal-chart-button` (con `:global()`, obvio).
+- El `id` sigue siendo `#modal-see-chart`, así que el JS no se tocó.
+
+**Decisiones de NO hacer (con criterio):**
+
+- Búsqueda por categoría en el buscador: descartada, redundante con
+  la barra de categorías visible.
+- Mapeo de nombres de producto (`PRODUCT_NAME_OVERRIDES`): descartada,
+  el problema ("X Men" vs "X-MEN") es cosmético y no justifica el
+  costo de mantenimiento.
+
+**Pendientes anotados para el futuro (si alguna vez se quiere):**
+
+- Regenerar `krakoalogo-isotipo.webp` a ~180px de ancho (hoy está
+  a 400px y se muestra a 158px, pesa de más).
+- `width` y `height` explícitos en las `<img>` del catálogo (evita
+  el salto de layout al cargar).
+- Vista rápida en cada tarjeta (mini-modal sin abrir el modal grande).
+- Productos relacionados en el modal (4 productos de la misma
+  categoría, abajo de todo).
+
+### Sesión 10 — Tinte por categoría, buscador afuera, animaciones del modal
 Fondo tintado por categoría:
 
 Nuevo fondo en la sección #catalogo que se pinta con el color de la
@@ -634,14 +733,14 @@ History lock:
 Arreglado para el caso del modal por hash (se hace replaceState +
 pushState extra para que "atrás" quede en la web).
 
-Arreglado para el carrito sobre modal: openCartDrawer pushea una
-entrada extra y cambia el lock a "cart". Al cerrar el carrito, si el
-modal sigue abierto, el lock vuelve a "modal".
+Arreglado para el caso del carrito sobre modal: openCartDrawer pushea
+una entrada extra y cambia el lock a "cart". Al cerrar el carrito, si
+el modal sigue abierto, el lock vuelve a "modal".
 
 Se eliminó el listener de hashchange (generaba bucles con el
 pushState).
 
-Sesión 9 — Fondo dinámico por categoría + fix de remote
+### Sesión 9 — Fondo dinámico por categoría + fix de remote
 Nuevo fondo tintado en la sección catálogo, con slide de derecha a
 izquierda, color según la categoría activa. Dos capas apiladas para que
 el cambio entre categorías también sea slide (no fade).
@@ -655,7 +754,7 @@ Fix: el remote de git local apuntaba a krakoa-web (que ahora es el
 repo del redirect). Se cambió a barriopuro/krakoa con
 git remote set-url origin.
 
-Sesión 8 — Catálogo variado, barra de categorías rediseñada, URL nueva
+### Sesión 8 — Catálogo variado, barra de categorías rediseñada, URL nueva
 Catálogo con intercalado round-robin por categoría (no todos los de
 una categoría juntos).
 
@@ -668,14 +767,14 @@ Barra de categorías sticky en mobile.
 
 Migración de URL: repo renombrado de krakoa-web a krakoa.
 
-Sesión 7 — Fix back-to-top + Loader inicial (D3)
+### Sesión 7 — Fix back-to-top + Loader inicial (D3)
 Fix del botón "volver arriba" (le faltaba el listener de scroll).
 
 Loader de carga inicial con fade in del isotipo sobre fondo oscuro.
 
 Fix crítico del loader: estilos inline para evitar FOUC.
 
-Sesión 6 — Ajustes, Hero con imágenes rotando, Footer completo
+### Sesión 6 — Ajustes, Hero con imágenes rotando, Footer completo
 Ícono + título en la misma línea en los 4 pilares.
 
 Tarjetas del catálogo con border-radius: 15px + object-fit: cover.
@@ -686,19 +785,19 @@ Footer completo con 3 columnas + partículas.
 
 Fix crítico del footer con :global().
 
-Sesión 5 — Header con menú + fix del botón atrás en mobile
+### Sesión 5 — Header con menú + fix del botón atrás en mobile
 Header desktop y mobile rediseñados.
 
 Menú mobile (drawer).
 
 Fix de los links del menú mobile con history.replaceState.
 
-Sesión 4 — Secciones "Cómo Comprar" y "Calidad y Materiales"
+### Sesión 4 — Secciones "Cómo Comprar" y "Calidad y Materiales"
 Acordeón de 5 preguntas + bloque de consulta con WhatsApp.
 
 4 pilares + guía de cuidado.
 
-Sesión 3 — Carrito + modal nuevo (Bloque A completo)
+### Sesión 3 — Carrito + modal nuevo (Bloque A completo)
 Carrito con localStorage, drawer, badge.
 
 Modal rediseñado con 2 columnas, miniaturas, selectores.
@@ -707,10 +806,10 @@ History lock para modal y carrito.
 
 Nombres de corte: "Oversize" y "Regular Fit".
 
-Sesión 2 — Deploy fix
+### Sesión 2 — Deploy fix
 Cambio de Source de Pages a "GitHub Actions".
 
-Sesión 1 — Limpieza y des-hardcodeo
+### Sesión 1 — Limpieza y des-hardcodeo
 Borrados archivos basura.
 
 Fix de formatName() para la "ñ" y acentos.

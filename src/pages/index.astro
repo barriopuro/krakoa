@@ -672,6 +672,20 @@ const marqueeText = [
   </div>
 </div>
 
+<!-- ZOOM DE IMAGEN -->
+<div id="image-zoom" class="image-zoom" aria-hidden="true">
+  <button
+    id="image-zoom-close"
+    class="image-zoom-close"
+    type="button"
+    aria-label="Cerrar zoom"
+  >
+    ×
+  </button>
+  <img id="image-zoom-img" class="image-zoom-img" src="" alt="" />
+</div>
+
+
     <div id="cart-drawer" class="cart-drawer" aria-hidden="true">
       <div class="cart-drawer-backdrop"></div>
 
@@ -3135,7 +3149,107 @@ const marqueeText = [
 
   }
 
- 
+ /* --------------------------- */
+/* ZOOM DE IMAGEN              */
+/* --------------------------- */
+
+:global(.image-zoom) {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.93);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.22s ease, visibility 0s linear 0.22s;
+  cursor: zoom-out;
+}
+
+:global(.image-zoom.open) {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.22s ease, visibility 0s linear 0s;
+}
+
+:global(.image-zoom-img) {
+  max-width: 92vw;
+  max-height: 92vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  border-radius: 6px;
+  /* Permite pinch-to-zoom nativo en mobile */
+  touch-action: pinch-zoom;
+  /* El click sobre la imagen también cierra (por consistencia) */
+  cursor: zoom-out;
+  user-select: none;
+}
+
+:global(.image-zoom-close) {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 1;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+:global(.image-zoom-close:hover) {
+  background: #fff;
+  color: #111;
+  border-color: #fff;
+}
+
+/* Cursor zoom-in sobre la imagen del carrusel del modal.
+   Solo aplica cuando el slide activo es zoomeable (lo maneja el JS
+   con la clase .is-zoomable en el wrapper). */
+:global(.modal-image-wrapper.is-zoomable) {
+  cursor: zoom-in;
+}
+
+/* Ícono de lupa en mobile, en la esquina inferior derecha de la imagen.
+   Solo se muestra si el wrapper es zoomeable. */
+:global(.modal-image-wrapper.is-zoomable)::after {
+  content: "";
+  position: absolute;
+  right: 22px;
+  bottom: 22px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.6);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='7'/><line x1='21' y1='21' x2='16.65' y2='16.65'/><line x1='11' y1='8' x2='11' y2='14'/><line x1='8' y1='11' x2='14' y2='11'/></svg>");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 18px 18px;
+  pointer-events: none;
+  opacity: 0.85;
+  transition: opacity 0.2s ease;
+}
+
+/* En desktop no hace falta el ícono (ya está el cursor zoom-in). */
+@media (min-width: 801px) {
+  :global(.modal-image-wrapper.is-zoomable)::after {
+    display: none;
+  }
+}
+
+
 </style>
 
 <button
@@ -3384,6 +3498,14 @@ categoryButtons.forEach((button) => {
   let touchStartX = 0;
   let touchEndX = 0;
 
+  const imageZoom = document.querySelector("#image-zoom");
+  const imageZoomImg = document.querySelector("#image-zoom-img");
+  const imageZoomClose = document.querySelector("#image-zoom-close");
+  const modalImageWrapper = document.querySelector(".modal-image-wrapper");
+
+  // Índices de slides que son zoomeables (0 = modelo, 1 = remera).
+  // Los de tablas de talles (2 y 3) NO lo son.
+  const ZOOMABLE_SLIDES = [true, true, false, false];
 
   function getSizesForFit(fit) {
     return SIZE_CHART[fit] || [];
@@ -3432,6 +3554,12 @@ categoryButtons.forEach((button) => {
     // Sincronizamos label, contador y miniatura siempre.
     modalImageLabel.textContent = current.label;
     modalImageCounter.textContent = `${currentImageIndex + 1} / ${currentImages.length}`;
+    // Marcamos el wrapper como zoomeable solo si el slide actual es una foto.
+    modalImageWrapper.classList.toggle(
+      "is-zoomable",
+      ZOOMABLE_SLIDES[currentImageIndex] === true
+    );
+
 
     const thumbs = modalThumbs.querySelectorAll(".modal-thumb");
     thumbs.forEach((thumb, index) => {
@@ -3645,12 +3773,12 @@ hidden.decoding = "async";
     modal.setAttribute("aria-hidden", "false");
     lockScroll();
 
-    // Bloqueamos el historial para que el botón "atrás" del celular cierre
-    // el modal en vez de salir de la página. Si el modal se abrió porque
-    // la URL traía un hash (link compartido), NO bloqueamos: el usuario
-    // entró directo, no navegó desde la página.
+    // Empujamos el modal a la pila del historial para que el botón "atrás"
+    // del celular lo cierre en vez de salir de la página. Si el modal se
+    // abrió porque la URL traía un hash (link compartido), NO lo hacemos:
+    // el usuario entró directo, no navegó desde la página.
     if (!openingFromHash) {
-      lockHistory("modal");
+      pushHistory("modal");
     }
 
     // Separamos el "pintar el modal" (que existe, pero invisible) del
@@ -3667,10 +3795,11 @@ hidden.decoding = "async";
 
 
   function closeModal() {
-    // Si hay candado de historial, soltamos por ahí para que el "atrás"
-    // no quede "colgado" una vez que el usuario cierre con la X.
-    if (historyLock === "modal") {
-      releaseHistory();
+    // Si el modal está en la pila, lo sacamos por ahí: history.back()
+    // dispara el popstate, que hace el cierre real. Así el "atrás" del
+    // celular y el click en la X quedan perfectamente sincronizados.
+    if (isTopOfHistory("modal")) {
+      popHistory();
       return;
     }
     closeModalDirect();
@@ -3685,6 +3814,40 @@ hidden.decoding = "async";
     modal.classList.remove("open");
     modal.setAttribute("aria-hidden", "true");
     unlockScroll();
+  }
+
+  // -------------------------
+  // ZOOM DE IMAGEN
+  // -------------------------
+
+  function openImageZoom(src, alt) {
+    imageZoomImg.src = src;
+    imageZoomImg.alt = alt || "";
+    imageZoom.setAttribute("aria-hidden", "false");
+    imageZoom.classList.add("open");
+    pushHistory("image-zoom");
+  }
+
+  function closeImageZoom() {
+    if (isTopOfHistory("image-zoom")) {
+      popHistory();
+      return;
+    }
+    closeImageZoomDirect();
+  }
+
+  function closeImageZoomDirect() {
+    if (imageZoom.getAttribute("aria-hidden") === "true") return;
+    imageZoom.classList.remove("open");
+    imageZoom.setAttribute("aria-hidden", "true");
+
+    // Limpiamos la src para que no quede la imagen colgada en memoria.
+    // La hacemos después de la transición.
+    setTimeout(() => {
+      if (!imageZoom.classList.contains("open")) {
+        imageZoomImg.src = "";
+      }
+    }, 260);
   }
 
 
@@ -3737,7 +3900,7 @@ hidden.decoding = "async";
         const baseUrl = window.location.pathname;
         history.replaceState(null, "", baseUrl);
         history.pushState({ krakoaOverlay: "modal" }, "", `#${hash}`);
-        historyLock = "modal";
+        historyStack.push("modal");
       } catch (error) {
         console.error("[KRAKOA] Error manipulando el historial:", error);
       }
@@ -3828,7 +3991,6 @@ hidden.decoding = "async";
   // El swipe ahora va sobre el contenedor de las dos imágenes, porque la imagen
   // "activa" va cambiando entre la capa A y la B. Escuchar en el wrapper evita
   // tener que reconectar el listener cada vez.
-  const modalImageWrapper = document.querySelector(".modal-image-wrapper");
 
   modalImageWrapper.addEventListener("touchstart", (event) => {
     touchStartX = event.changedTouches[0].screenX;
@@ -3845,8 +4007,88 @@ hidden.decoding = "async";
     }
   });
 
+  // -------------------------
+  // ZOOM DE IMAGEN — listeners
+  // -------------------------
+
+  // Abrir el zoom al hacer click/tap sobre la imagen del carrusel,
+  // solo si el slide activo es una foto (no tabla de talles).
+  let zoomTouchStartX = 0;
+  let zoomTouchStartY = 0;
+  let zoomMoved = false;
+
+  modalImageWrapper.addEventListener("touchstart", (event) => {
+    zoomTouchStartX = event.changedTouches[0].screenX;
+    zoomTouchStartY = event.changedTouches[0].screenY;
+    zoomMoved = false;
+  });
+
+  modalImageWrapper.addEventListener("touchmove", (event) => {
+    const dx = Math.abs(event.changedTouches[0].screenX - zoomTouchStartX);
+    const dy = Math.abs(event.changedTouches[0].screenY - zoomTouchStartY);
+    if (dx > 8 || dy > 8) zoomMoved = true;
+  });
+
+  modalImageWrapper.addEventListener("click", (event) => {
+    // Si en mobile el usuario hizo swipe, no disparamos el zoom.
+    if (zoomMoved) {
+      zoomMoved = false;
+      return;
+    }
+    if (!ZOOMABLE_SLIDES[currentImageIndex]) return;
+    const current = currentImages[currentImageIndex];
+    if (!current) return;
+    openImageZoom(current.src, `${currentProductName} — ${current.label}`);
+  });
+
+  // Cerrar el zoom: click en cualquier parte del overlay (incluye la ×).
+  // Usamos pointerdown + pointerup para evitar cierres accidentales
+  // cuando el toque empieza sobre la imagen y termina afuera (o al revés).
+  // La × se maneja aparte (ver más abajo) y NO debe gatillar este handler.
+  let zoomPointerDownOnImage = false;
+
+  imageZoom.addEventListener("pointerdown", (event) => {
+    // Ignoramos si el pointerdown fue sobre la ×.
+    if (imageZoomClose.contains(event.target)) return;
+    zoomPointerDownOnImage = event.target === imageZoomImg;
+  });
+
+  imageZoom.addEventListener("pointerup", (event) => {
+    // Ignoramos si el pointerup fue sobre la × (ella maneja su propio click).
+    if (imageZoomClose.contains(event.target)) return;
+
+    const upOnImage = event.target === imageZoomImg;
+    // Si empezó y terminó sobre la imagen, NO cerramos
+    // (es un tap sobre la foto, probablemente queriendo hacer pinch-zoom).
+    if (zoomPointerDownOnImage && upOnImage) {
+      zoomPointerDownOnImage = false;
+      return;
+    }
+    zoomPointerDownOnImage = false;
+    closeImageZoom();
+  });
+
+  // La × cierra sola, sin que el overlay se entere.
+  imageZoomClose.addEventListener("click", (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+    closeImageZoom();
+  });
+
 
   document.addEventListener("keydown", (event) => {
+    // Primero, si el zoom está abierto, Escape lo cierra solo a él.
+    // stopImmediatePropagation es CLAVE: evita que el otro listener de
+    // keydown (el del modal, registrado más abajo) también reaccione al
+    // mismo Escape y dispare un segundo history.back().
+    if (
+      event.key === "Escape" &&
+      imageZoom.getAttribute("aria-hidden") === "false"
+    ) {
+      event.stopImmediatePropagation();
+      closeImageZoom();
+      return;
+    }
     if (!modal.classList.contains("open")) return;
     if (event.key === "Escape") closeModal();
     if (event.key === "ArrowLeft") showPreviousImage();
@@ -3882,42 +4124,50 @@ hidden.decoding = "async";
 
 
   // -------------------------
-  // HISTORY LOCK (botón atrás)
+  // HISTORY STACK (botón atrás)
   // -------------------------
 
-  // Cuando abrimos el modal o el carrito, empujamos una entrada falsa
-  // al historial para que el botón "atrás" del celular cierre el overlay
-  // en vez de navegar hacia atrás.
+  // Pila de overlays abiertos. El último es el que está arriba de todo.
+  // Cuando el usuario toca "atrás", sacamos el último y lo cerramos.
+  // Así no hay casos particulares: zoom sobre modal, carrito sobre modal,
+  // menú sobre lo que sea, todo se resuelve igual.
+  let historyStack = [];
 
-  let historyLock = null; // null | "modal" | "cart"
-
-  function lockHistory(kind) {
-    if (historyLock) {
-      // Ya hay un overlay abierto: solo actualizamos el tipo.
-      historyLock = kind;
-      return;
-    }
-    history.pushState({ krakoaOverlay: kind }, "");
-    historyLock = kind;
+  // ¿El overlay "kind" es el que está arriba de todo?
+  function isTopOfHistory(kind) {
+    return historyStack[historyStack.length - 1] === kind;
   }
 
-  function releaseHistory() {
-    if (!historyLock) return;
-    // history.back() dispara el popstate, que hace el cierre real.
+  // Empuja un overlay a la pila y al historial del navegador.
+  function pushHistory(kind) {
+    history.pushState({ krakoaOverlay: kind }, "");
+    historyStack.push(kind);
+  }
+
+  // Saca el overlay de arriba. Dispara history.back(), que a su vez
+  // dispara el popstate, que hace el cierre real.
+  function popHistory() {
+    if (historyStack.length === 0) return;
     history.back();
   }
 
-  window.addEventListener("popstate", () => {
-    if (historyLock === "modal") {
-      historyLock = null;
+  // Cierra el overlay que está en el tope de la pila, sin tocar el historial.
+  // La usa el popstate (que ya viene del back del navegador).
+  function closeTopOverlay() {
+    const top = historyStack.pop();
+    if (top === "modal") {
       closeModalDirect();
-    } else if (historyLock === "cart") {
-      historyLock = null;
+    } else if (top === "cart") {
       closeCartDrawerDirect();
-    } else if (historyLock === "mobile-menu") {
-      historyLock = null;
+    } else if (top === "image-zoom") {
+      closeImageZoomDirect();
+    } else if (top === "mobile-menu") {
       closeMobileMenuDirect();
     }
+  }
+
+  window.addEventListener("popstate", () => {
+    closeTopOverlay();
   });
 
 
@@ -4109,29 +4359,22 @@ hidden.decoding = "async";
 
 
   function openCartDrawer() {
+    // Si el carrito ya está abierto, no hacemos nada.
+    if (cartDrawer.classList.contains("open")) return;
+
     cartDrawer.classList.add("open");
     cartDrawer.setAttribute("aria-hidden", "false");
     document.body.classList.add("cart-open");
 
-    // Si ya hay algo abierto (modal, o el propio carrito), metemos una
-    // entrada extra al historial para que el "atrás" cierre el carrito
-    // PRIMERO, y el modal después.
-    if (historyLock === "modal") {
-      // Estamos sobre el modal: pusheamos otra entrada y cambiamos el tipo.
-      history.pushState({ krakoaOverlay: "cart" }, "");
-      historyLock = "cart";
-    } else if (historyLock === "cart") {
-      // El carrito ya está abierto. No hacemos nada.
-    } else {
-      // No hay nada abierto: comportamiento normal.
-      lockHistory("cart");
-    }
+    // Lo empujamos a la pila. Si había un modal debajo, la pila queda
+    // ["modal", "cart"], y el primer "atrás" cierra el carrito.
+    pushHistory("cart");
   }
 
 
   function closeCartDrawer() {
-    if (historyLock === "cart") {
-      releaseHistory();
+    if (isTopOfHistory("cart")) {
+      popHistory();
       return;
     }
     closeCartDrawerDirect();
@@ -4141,17 +4384,6 @@ hidden.decoding = "async";
     cartDrawer.classList.remove("open");
     cartDrawer.setAttribute("aria-hidden", "true");
     document.body.classList.remove("cart-open");
-
-    // Si el modal está abierto debajo del carrito, el lock del historial
-    // debe volver a "modal". Así, el próximo "atrás" cierra el modal
-    // en vez de salir de la web.
-    if (modal.getAttribute("aria-hidden") === "false") {
-      // Reafirmamos el lock del modal.
-      // OJO: no hacemos pushState, solo cambiamos el tipo. La entrada
-      // que ya habíamos pusheado cuando abrimos el carrito se va a consumir
-      // sola cuando el usuario toque "atrás".
-      historyLock = "modal";
-    }
   }
 
 
@@ -4288,18 +4520,17 @@ hidden.decoding = "async";
   const mobileMenuLinks = document.querySelectorAll("[data-menu-link]");
 
   function openMobileMenu() {
+    if (mobileMenu.classList.contains("open")) return;
     mobileMenu.classList.add("open");
     mobileMenu.setAttribute("aria-hidden", "false");
     menuToggle.setAttribute("aria-expanded", "true");
     document.body.classList.add("menu-open");
-
-    if (historyLock === "mobile-menu") return;
-    lockHistory("mobile-menu");
+    pushHistory("mobile-menu");
   }
 
   function closeMobileMenu() {
-    if (historyLock === "mobile-menu") {
-      releaseHistory();
+    if (isTopOfHistory("mobile-menu")) {
+      popHistory();
       return;
     }
     closeMobileMenuDirect();
@@ -4333,10 +4564,11 @@ hidden.decoding = "async";
         // Reemplazamos la entrada del menú (pushState) por la del hash.
         history.replaceState(null, "", href);
 
-        // El lock ya está "resuelto": no hay que hacer back.
-        historyLock = null;
+        // Sacamos el menú de la pila sin hacer back (ya lo reemplazamos).
+        const idx = historyStack.lastIndexOf("mobile-menu");
+        if (idx !== -1) historyStack.splice(idx, 1);
 
-        // Cerramos el menú sin disparar releaseHistory.
+        // Cerramos el menú sin disparar popHistory.
         closeMobileMenuDirect();
 
         // Scroll suave a la sección (con un pequeño margen superior).
