@@ -682,7 +682,28 @@ const marqueeText = [
   >
     ×
   </button>
-  <img id="image-zoom-img" class="image-zoom-img" src="" alt="" />
+
+  <div class="image-zoom-stage">
+    <button
+      id="image-zoom-prev"
+      class="image-zoom-arrow image-zoom-prev"
+      type="button"
+      aria-label="Foto anterior"
+    >
+      ‹
+    </button>
+
+    <img id="image-zoom-img" class="image-zoom-img" src="" alt="" />
+
+    <button
+      id="image-zoom-next"
+      class="image-zoom-arrow image-zoom-next"
+      type="button"
+      aria-label="Foto siguiente"
+    >
+      ›
+    </button>
+  </div>
 </div>
 
 
@@ -3174,26 +3195,79 @@ const marqueeText = [
   transition: opacity 0.22s ease, visibility 0s linear 0s;
 }
 
+
+
+/* El overlay del zoom centra el stage. */
+:global(.image-zoom) {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.93);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.22s ease, visibility 0s linear 0.22s;
+  cursor: zoom-out;
+}
+
+/* El stage se achica al contenido: imagen + flechas pegadas a sus lados.
+   position: relative para que las flechas se posicionen respecto a ÉL
+   y no respecto a la pantalla. */
+:global(.image-zoom-stage) {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  max-width: 100%;
+  max-height: 100%;
+}
+
 :global(.image-zoom-img) {
-  max-width: 92vw;
+  max-width: 78vw;
   max-height: 92vh;
   width: auto;
   height: auto;
   object-fit: contain;
   display: block;
   border-radius: 6px;
-  /* Permite pinch-to-zoom nativo en mobile */
   touch-action: pinch-zoom;
-  /* El click sobre la imagen también cierra (por consistencia) */
   cursor: zoom-out;
   user-select: none;
+}
+
+:global(.image-zoom-arrow) {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 30px;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  user-select: none;
+}
+
+:global(.image-zoom-arrow:hover) {
+  background: #fff;
+  color: #111;
+  border-color: #fff;
 }
 
 :global(.image-zoom-close) {
   position: absolute;
   top: 18px;
   right: 18px;
-  z-index: 1;
+  z-index: 3;
   width: 40px;
   height: 40px;
   border: 1px solid rgba(255, 255, 255, 0.18);
@@ -3213,6 +3287,26 @@ const marqueeText = [
   background: #fff;
   color: #111;
   border-color: #fff;
+}
+
+@media (max-width: 700px) {
+  :global(.image-zoom) {
+    padding: 12px;
+  }
+
+  :global(.image-zoom-stage) {
+    gap: 8px;
+  }
+
+  :global(.image-zoom-arrow) {
+    width: 38px;
+    height: 38px;
+    font-size: 22px;
+  }
+
+  :global(.image-zoom-img) {
+    max-width: 74vw;
+  }
 }
 
 /* Cursor zoom-in sobre la imagen del carrusel del modal.
@@ -3296,6 +3390,90 @@ const marqueeText = [
   })();
 
   const searchInput = document.querySelector("#search");
+
+  // -------------------------
+  // ALEATORIZAR EL CATÁLOGO
+  // -------------------------
+  // Mezcla round-robin aleatoria: mantiene variedad de categorías
+  // (no todos los de anime juntos) pero cambia el orden en cada visita.
+  // Se hace ANTES de que el hero lea las imágenes, así el hero también
+  // agarra un set distinto cada vez.
+  (() => {
+    const productsGrid = document.querySelector("#products");
+    if (!productsGrid) return;
+
+    const cards = Array.from(productsGrid.querySelectorAll(".product-card"));
+    if (cards.length < 2) return;
+
+    // Agrupamos por categoría.
+    const byCategory = new Map();
+    cards.forEach((card) => {
+      const cat = card.dataset.category || "otros";
+      if (!byCategory.has(cat)) byCategory.set(cat, []);
+      byCategory.get(cat).push(card);
+    });
+
+    // Fisher-Yates shuffle para mezclar un array in-place.
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    // Mezclamos cada categoría internamente.
+    const groups = Array.from(byCategory.values());
+    groups.forEach((group) => shuffle(group));
+
+    // También mezclamos el orden de las categorías, para que no arranque
+    // siempre con la misma.
+    shuffle(groups);
+
+    // Armamos el orden final con round-robin: uno de cada categoría,
+    // rotando, hasta agotar todas.
+    const ordered = [];
+    let maxLen = Math.max(...groups.map((g) => g.length));
+    for (let i = 0; i < maxLen; i++) {
+      groups.forEach((group) => {
+        if (group[i]) ordered.push(group[i]);
+      });
+    }
+
+    // Reinsertamos en el DOM en el orden nuevo. DocumentFragment evita
+    // reflows intermedios (mucho más rápido con 99 productos).
+    const fragment = document.createDocumentFragment();
+    ordered.forEach((card) => fragment.appendChild(card));
+    productsGrid.appendChild(fragment);
+
+    // Guardamos el orden aleatorio para poder restaurarlo cuando el
+    // usuario saque el filtro de categoría.
+    window.__krakoaRandomOrder = ordered.slice();
+
+    // Exponemos una función para reordenar el DOM según un criterio.
+    // La usa filterProducts cuando hay categoría activa (orden alfabético).
+    window.__krakoaReorderProducts = (mode) => {
+      const grid = document.querySelector("#products");
+      if (!grid) return;
+
+      let newOrder;
+      if (mode === "alpha") {
+        // Orden alfabético por data-name (que ya está en minúsculas).
+        newOrder = Array.from(grid.querySelectorAll(".product-card")).sort(
+          (a, b) =>
+            (a.dataset.name || "").localeCompare(b.dataset.name || "", "es")
+        );
+      } else {
+        // Restaurar el orden aleatorio original.
+        newOrder = window.__krakoaRandomOrder || [];
+        if (newOrder.length === 0) return;
+      }
+
+      const frag = document.createDocumentFragment();
+      newOrder.forEach((card) => frag.appendChild(card));
+      grid.appendChild(frag);
+    };
+  })();
   const tintLayers = [
   document.querySelector("#catalogTintA"),
   document.querySelector("#catalogTintB"),
@@ -3365,6 +3543,13 @@ function filterProducts() {
     product.style.display =
       matchesSearch && matchesCategory ? "" : "none";
   });
+
+  // Reordenamos el DOM según el modo:
+  //  - Con categoría activa: alfabético (para que se vea ordenado).
+  //  - Sin categoría (home): el orden aleatorio original.
+  if (typeof window.__krakoaReorderProducts === "function") {
+    window.__krakoaReorderProducts(activeCategory === null ? "random" : "alpha");
+  }
 }
 
 categoryButtons.forEach((button) => {
@@ -3501,11 +3686,23 @@ categoryButtons.forEach((button) => {
   const imageZoom = document.querySelector("#image-zoom");
   const imageZoomImg = document.querySelector("#image-zoom-img");
   const imageZoomClose = document.querySelector("#image-zoom-close");
+  const imageZoomPrev = document.querySelector("#image-zoom-prev");
+  const imageZoomNext = document.querySelector("#image-zoom-next");
   const modalImageWrapper = document.querySelector(".modal-image-wrapper");
 
   // Índices de slides que son zoomeables (0 = modelo, 1 = remera).
   // Los de tablas de talles (2 y 3) NO lo son.
   const ZOOMABLE_SLIDES = [true, true, false, false];
+
+  // Índice del slide que está mostrándose en el zoom (dentro de
+  // currentImages). Guardamos esto para poder navegar entre fotos
+  // zoomeables sin cerrar el zoom.
+  let zoomImageIndex = 0;
+
+  // Lista de índices zoomeables (ej: [0, 1]).
+  const zoomableIndices = ZOOMABLE_SLIDES
+    .map((isZoomable, index) => (isZoomable ? index : -1))
+    .filter((index) => index !== -1);
 
   function getSizesForFit(fit) {
     return SIZE_CHART[fit] || [];
@@ -3820,12 +4017,39 @@ hidden.decoding = "async";
   // ZOOM DE IMAGEN
   // -------------------------
 
-  function openImageZoom(src, alt) {
-    imageZoomImg.src = src;
-    imageZoomImg.alt = alt || "";
+  // Renderiza la imagen del zoom según zoomImageIndex.
+  // Se usa tanto al abrir como al navegar entre fotos zoomeables.
+  function renderImageZoom() {
+    const current = currentImages[zoomImageIndex];
+    if (!current) return;
+    imageZoomImg.src = current.src;
+    imageZoomImg.alt = `${currentProductName} — ${current.label}`;
+  }
+
+  // Abre el zoom apuntando al slide "startIndex".
+  function openImageZoom(startIndex) {
+    zoomImageIndex = startIndex;
+    renderImageZoom();
     imageZoom.setAttribute("aria-hidden", "false");
     imageZoom.classList.add("open");
     pushHistory("image-zoom");
+  }
+
+  // Salta a la foto zoomeable anterior / siguiente (con wrap).
+  function showZoomPrev() {
+    const pos = zoomableIndices.indexOf(zoomImageIndex);
+    if (pos === -1) return;
+    const prevPos = (pos - 1 + zoomableIndices.length) % zoomableIndices.length;
+    zoomImageIndex = zoomableIndices[prevPos];
+    renderImageZoom();
+  }
+
+  function showZoomNext() {
+    const pos = zoomableIndices.indexOf(zoomImageIndex);
+    if (pos === -1) return;
+    const nextPos = (pos + 1) % zoomableIndices.length;
+    zoomImageIndex = zoomableIndices[nextPos];
+    renderImageZoom();
   }
 
   function closeImageZoom() {
@@ -4036,9 +4260,7 @@ hidden.decoding = "async";
       return;
     }
     if (!ZOOMABLE_SLIDES[currentImageIndex]) return;
-    const current = currentImages[currentImageIndex];
-    if (!current) return;
-    openImageZoom(current.src, `${currentProductName} — ${current.label}`);
+    openImageZoom(currentImageIndex);
   });
 
   // Cerrar el zoom: click en cualquier parte del overlay (incluye la ×).
@@ -4048,14 +4270,18 @@ hidden.decoding = "async";
   let zoomPointerDownOnImage = false;
 
   imageZoom.addEventListener("pointerdown", (event) => {
-    // Ignoramos si el pointerdown fue sobre la ×.
+    // Ignoramos si el pointerdown fue sobre la × o sobre las flechas.
     if (imageZoomClose.contains(event.target)) return;
+    if (imageZoomPrev.contains(event.target)) return;
+    if (imageZoomNext.contains(event.target)) return;
     zoomPointerDownOnImage = event.target === imageZoomImg;
   });
 
   imageZoom.addEventListener("pointerup", (event) => {
-    // Ignoramos si el pointerup fue sobre la × (ella maneja su propio click).
+    // Ignoramos si el pointerup fue sobre la × o sobre las flechas.
     if (imageZoomClose.contains(event.target)) return;
+    if (imageZoomPrev.contains(event.target)) return;
+    if (imageZoomNext.contains(event.target)) return;
 
     const upOnImage = event.target === imageZoomImg;
     // Si empezó y terminó sobre la imagen, NO cerramos
@@ -4075,19 +4301,65 @@ hidden.decoding = "async";
     closeImageZoom();
   });
 
+  // Flechas del zoom. Usamos pointerdown con stopPropagation porque el
+  // overlay tiene su propio listener de pointerdown/pointerup para cerrar.
+  // Sin esto, el pointerup del overlay agarraba el click en la flecha y
+  // cerraba el zoom.
+  imageZoomPrev.addEventListener("pointerdown", (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+    showZoomPrev();
+  });
+
+  imageZoomNext.addEventListener("pointerdown", (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+    showZoomNext();
+  });
+
+  // Swipe en mobile sobre el overlay del zoom.
+  let zoomSwipeStartX = 0;
+  let zoomSwipeStartY = 0;
+
+  imageZoom.addEventListener("touchstart", (event) => {
+    zoomSwipeStartX = event.changedTouches[0].screenX;
+    zoomSwipeStartY = event.changedTouches[0].screenY;
+  }, { passive: true });
+
+  imageZoom.addEventListener("touchend", (event) => {
+    const dx = event.changedTouches[0].screenX - zoomSwipeStartX;
+    const dy = event.changedTouches[0].screenY - zoomSwipeStartY;
+    // Si el movimiento fue más vertical que horizontal, no es swipe.
+    if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy)) return;
+    if (dx < 0) {
+      showZoomNext();
+    } else {
+      showZoomPrev();
+    }
+  }, { passive: true });
+
 
   document.addEventListener("keydown", (event) => {
     // Primero, si el zoom está abierto, Escape lo cierra solo a él.
     // stopImmediatePropagation es CLAVE: evita que el otro listener de
     // keydown (el del modal, registrado más abajo) también reaccione al
     // mismo Escape y dispare un segundo history.back().
-    if (
-      event.key === "Escape" &&
-      imageZoom.getAttribute("aria-hidden") === "false"
-    ) {
-      event.stopImmediatePropagation();
-      closeImageZoom();
-      return;
+    if (imageZoom.getAttribute("aria-hidden") === "false") {
+      if (event.key === "Escape") {
+        event.stopImmediatePropagation();
+        closeImageZoom();
+        return;
+      }
+      if (event.key === "ArrowLeft") {
+        event.stopImmediatePropagation();
+        showZoomPrev();
+        return;
+      }
+      if (event.key === "ArrowRight") {
+        event.stopImmediatePropagation();
+        showZoomNext();
+        return;
+      }
     }
     if (!modal.classList.contains("open")) return;
     if (event.key === "Escape") closeModal();

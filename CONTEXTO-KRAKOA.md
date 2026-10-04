@@ -118,13 +118,15 @@ ESTÁTICOS del HTML también pueden necesitar `:global()`. Casos concretos:
 dentro de `<main>` (o sus clases las maneja el JS), probarlo con `:global()`.
 
 **Regla rápida:** todo lo que esté dentro del `<footer>`, del modal,
-del carrito o del menú mobile necesita `:global()`. Astro saca esos
-elementos del scope (no les asigna el `data-astro-cid-...`), así que
-el CSS normal no los agarra. Si algo "no toma estilo" y vive en uno
+del carrito, del menú mobile o del zoom de imagen necesita `:global()`.
+Astro saca esos elementos del scope (no les asigna el `data-astro-cid-...`),
+así que el CSS normal no los agarra. Si algo "no toma estilo" y vive en uno
 de esos bloques, envolvelo en `:global()` antes de investigar otra cosa.
 
 Casos nuevos confirmados:
 - el botón "Ver tabla de talles" (`.modal-chart-button`).
+- todo el overlay del zoom de imagen (`.image-zoom`, `.image-zoom-img`,
+  `.image-zoom-close`, `.modal-image-wrapper.is-zoomable`).
 
 ## Cómo funciona el carrito
 
@@ -185,6 +187,8 @@ Carrito: 1100 (por encima del modal).
 
 Menú mobile: 1200.
 
+Zoom de imagen: 1300 (arriba de todo).
+
 Barra de categorías sticky en mobile: 100.
 
 El carrito se puede abrir desde el modal (botón "Ver carrito") y queda
@@ -207,31 +211,26 @@ Carrusel de imágenes
 Son 4 slides siempre:
 
 Modelo — ${base}/catalogo/.../modelo.webp
-
 Remera — ${base}/catalogo/.../remera.webp
-
 Talles Oversize — ${base}/talles/oversize.webp
-
 Talles Regular — ${base}/talles/regular.webp
-
 Hay dos <img> apiladas (#modal-image-a y #modal-image-b) para
 poder animar la transición. La variable modalImageActive indica cuál
 está visible.
 
-Transición direccional entre imágenes:
-
+Transición direccional entre imágenes
 renderModalImage(direction) recibe "next", "prev" o "fade".
 
 "next" → la nueva entra desde la derecha, la vieja sale hacia la izquierda.
 
 "prev" → al revés.
 
-"fade" → solo crossfade, sin desplazamiento (lo usa "Ver gráfico").
+"fade" → solo crossfade, sin desplazamiento (lo usa "Ver tabla de talles").
 
 Duración 0.32s, curva cubic-bezier(0.22, 1, 0.36, 1).
 
 Todas las formas de cambiar imagen (flechas, teclado, swipe, miniaturas,
-"Ver gráfico") pasan por renderModalImage con la dirección correcta.
+"Ver tabla de talles") pasan por renderModalImage con la dirección correcta.
 
 El swipe se escucha en .modal-image-wrapper (no en cada img).
 
@@ -261,9 +260,10 @@ está en las imágenes de las tablas.
 Colores de categoría
 Al abrir el modal, se lee --category-color del .product-category de la
 tarjeta y se setea como variable CSS en .modal-content.
+
 Ese color se aplica a: borde de la miniatura activa, botón de corte activo,
 botón de talle activo, número "1." y "2." de los labels, botón
-"Agregar al Pedido", botón "Ver carrito", subrayado de "Ver gráfico", etc.
+"Agregar al Pedido", botón "Ver carrito", subrayado de "Ver tabla de talles", etc.
 
 Animación de apertura/cierre
 Desktop: el modal entra con translateY(60px) scale(0.97) → 0/1
@@ -282,8 +282,9 @@ visibility con delay).
 Compensación de scrollbar
 Cuando el modal se abre, el body pierde la barra de scroll (por
 overflow: hidden en body.modal-open). Para que el layout no salte,
-lockScroll() calcula el ancho de la barra (window.innerWidth - document.documentElement.clientWidth) y lo aplica como padding-right
-al body. unlockScroll() lo limpia al cerrar.
+lockScroll() calcula el ancho de la barra
+(window.innerWidth - document.documentElement.clientWidth) y lo aplica
+como padding-right al body. unlockScroll() lo limpia al cerrar.
 
 Botones del modal
 "Agregar al Pedido" (arriba del todo).
@@ -310,52 +311,133 @@ NO hay listener de hashchange: antes lo había y generaba bucles
 raros con el propio pushState. Si el usuario cambia el hash a mano,
 recarga y listo.
 
-History lock (botón atrás)
-Cuando se abre el modal, el carrito o el menú mobile, se empuja una
-entrada falsa al historial (history.pushState). Así el botón "atrás" del
-celular cierra el overlay en vez de navegar hacia atrás.
+Caso conocido: si el usuario entra por un link compartido con hash
+y toca "atrás", el navegador lo saca de la web (vuelve al sitio de
+donde vino). Es el comportamiento esperado, no un bug: el usuario que
+llegó por link probablemente quiera volver. Cerrar con X o click afuera
+funciona perfecto.
 
-Variables:
+ZOOM DE IMAGEN (nuevo)
+Qué es
+Overlay a pantalla completa con la foto del modal agrandada, para que el
+usuario pueda ver el detalle. Reemplaza la idea original de "lupa al pasar
+el mouse" (que era más compleja y requería imágenes de más resolución).
 
-historyLock puede valer null, "modal", "cart" o "mobile-menu".
+Cómo funciona
+Se abre con click/tap sobre la imagen grande del carrusel del modal
+(no sobre las miniaturas, no sobre las tablas de talles).
 
-lockHistory(kind) — hace pushState si no había lock, o actualiza el tipo.
+La imagen se agranda lo máximo posible respetando proporción (max 92vw
+x 92vh).
 
-releaseHistory() — hace history.back() (dispara el popstate).
+En mobile se permite pinch-to-zoom nativo (touch-action: pinch-zoom).
 
-window.addEventListener("popstate", ...) — cierra el overlay
-correspondiente y pone historyLock = null.
+En desktop no hay zoom extra programado.
 
-Caso particular: carrito sobre modal
-Cuando se abre el carrito desde el modal, openCartDrawer hace un
-pushState extra y cambia historyLock a "cart". Así el primer
-"atrás" cierra el carrito, no el modal.
+Fondo negro al 93%.
 
-Al cerrar el carrito (closeCartDrawerDirect), si el modal sigue
-abierto, historyLock vuelve a "modal". Así el siguiente "atrás"
-cierra el modal.
+Transición de fade corta (220ms).
+
+Indicadores visuales
+Desktop: cursor zoom-in sobre las fotos del modal.
+
+Mobile: ícono de lupa semitransparente en la esquina inferior derecha
+de la foto (armado con ::after y un SVG inline como data URI).
+
+Slides zoomeables
+Solo los slides de fotos (modelo, remera). No las tablas de talles.
+
+Se controla con el array ZOOMABLE_SLIDES = [true, true, false, false]
+y la clase .is-zoomable en .modal-image-wrapper (se togglea en
+renderModalImage).
+
+Formas de cerrar
+Click/tap en cualquier parte del overlay (con lógica de pointerdown +
+pointerup para evitar cierres accidentales si el toque empieza sobre
+la imagen y termina afuera, o al revés).
+
+Botón × en la esquina superior derecha.
+
+Tecla Escape.
+
+Botón atrás del celular (vía la pila del historial).
+
+Evitar que el click de zoom se dispare al hacer swipe
+En mobile, el usuario puede estar haciendo swipe en el carrusel.
+
+Se usa un flag zoomMoved que se activa si el dedo se movió más de 8px
+en touchstart → touchmove. Si se movió, el click no abre el zoom.
+
+Funciones
+openImageZoom(src, alt) — abre el overlay y hace pushHistory("image-zoom").
+
+closeImageZoom() — cierra vía popHistory() si está en el tope de
+la pila, o directo si no.
+
+closeImageZoomDirect() — cierre real (la llama el popstate).
+
+History stack (botón atrás) — REFACTOR IMPORTANTE
+Qué es
+Sistema que hace que el botón "atrás" del celular cierre el overlay que
+está arriba de todo (modal, carrito, zoom, menú) en vez de salir de la web.
+
+Cómo funciona
+historyStack es un array de strings (no una variable única).
+
+Cada overlay que se abre hace pushHistory("modal" | "cart" | "image-zoom" | "mobile-menu"), que hace history.pushState(...) y
+agrega el tipo al final del array.
+
+Cuando el usuario toca "atrás", el popstate llama a closeTopOverlay(),
+que saca el último de la pila y cierra ese overlay.
+
+Cuando el usuario cierra un overlay con la X o Escape, se llama a
+popHistory() (que hace history.back()) → dispara el popstate →
+cierra. Nunca se cierra el overlay directamente sin pasar por el
+popstate, así el "atrás" del celular y el click en la X quedan
+sincronizados.
+
+Ventaja sobre el sistema viejo
+El sistema viejo tenía una variable única (historyLock) y casos
+particulares ("si el modal está abierto y se abre el carrito, cambiar
+el lock a cart y después volver a modal..."). Eso generaba bugs cuando
+se apilaban overlays (zoom sobre modal, etc.).
+
+Con la pila no hay casos particulares: el "atrás" siempre cierra el de
+arriba. Zoom sobre modal → ["modal", "image-zoom"] → primer atrás
+cierra zoom → ["modal"] → segundo atrás cierra modal → [].
+
+Funciones
+isTopOfHistory(kind) — ¿el overlay "kind" es el que está arriba?
+
+pushHistory(kind) — agrega a la pila + pushState.
+
+popHistory() — history.back() (dispara el popstate).
+
+closeTopOverlay() — la usa el popstate. Saca el último de la pila
+y llama al closeXDirect() correspondiente.
+
+Cada overlay tiene 2 funciones de cierre:
+
+closeX() — chequea si está en el tope de la pila → popHistory();
+si no, closeXDirect().
+
+closeXDirect() — cierra sin tocar el historial (la usa el popstate).
 
 Caso particular: links del menú mobile
-Al tocar un link del menú mobile (#catalogo, #calidad, etc.), NO se
-hace releaseHistory(). En cambio:
+Al tocar un link del menú mobile (#catalogo, #calidad, etc.),
+NO se hace popHistory(). En cambio:
 
-history.replaceState(null, "", href) — reemplaza la entrada del menú
-por la del hash.
+history.replaceState(null, "", href) — reemplaza la entrada del
+menú por la del hash.
 
-historyLock = null — libera sin hacer back.
+Se saca "mobile-menu" de historyStack con splice.
 
-closeMobileMenuDirect() — cierra el menú.
+closeMobileMenuDirect() — cierra el menú sin tocar el historial.
 
 window.scrollTo({top, behavior: "smooth"}) — scroll suave.
 
-Esto es para que el "atrás" del Android después del scroll vuelva al header
-(y no saque al usuario del navegador).
-
-Cada overlay tiene 2 funciones de cierre
-closeX() — llama a releaseHistory() si tiene el lock (para que el
-atrás no quede colgado cuando el usuario cierra con la X).
-
-closeXDirect() — cierra sin tocar el historial (la usa el popstate).
+Esto es para que el "atrás" del Android después del scroll vuelva al
+header (y no saque al usuario del navegador).
 
 Header y navegación
 Desktop (≥ 701px)
@@ -390,8 +472,9 @@ Opacidad de las fotos: 0.32.
 
 Ancho completo: el hero sale de <main> con left: 50%,
 width: 100vw, transform: translateX(-50%). No tiene border-radius.
-El contenido interno (.hero-content) sí está limitado a min(1400px, 90vw)
-para alinear con el resto.
+
+El contenido interno (.hero-content) sí está limitado a
+min(1400px, 90vw) para alinear con el resto.
 
 Debajo del hero hay una marquesina con keywords que se desplaza
 infinitamente. El array de textos está en marqueeText en el frontmatter.
@@ -409,7 +492,7 @@ Intensidad del zoom: scale(1.1) en las transiciones del hero.
 
 Paneo lateral: translateX(±1.5%).
 
-Fondo tintado por categoría (novedad importante)
+Fondo tintado por categoría
 Cuando el usuario selecciona una categoría, el fondo de la sección
 #catalogo se pinta con el color de esa categoría.
 
@@ -459,6 +542,8 @@ Ancho del input: min(420px, 100%). En mobile es 100%.
 
 Filtra por nombre (product.dataset.name) en tiempo real.
 
+Tiene debounce de 150ms.
+
 Barra de categorías
 Botones envueltos en <span class="category-wrap"> con el color de la
 categoría como background.
@@ -482,11 +567,8 @@ Footer completo
 Tres columnas:
 
 Logo vertical (krakoalogo-vertical.webp) a 70px (desktop) / 58px (mobile).
-
 Texto institucional (SEO) justificado.
-
 Menú vertical con links: Catálogo, Cómo Comprar, Materiales, Instagram.
-
 Abajo: línea fina con "© 2026 KRAKOA powered by BARRIOPURO".
 
 Fondo: partículas blancas tenues que suben lentamente (creadas por JS, con
@@ -526,6 +608,8 @@ estampado, moldería, pre-encogido) + guía de cuidado (4 items).
 
 #product-modal — modal de producto.
 
+#image-zoom — overlay de zoom de imagen (nuevo).
+
 #cart-drawer — drawer del carrito.
 
 <footer class="site-footer"> — footer completo con 3 columnas + partículas.
@@ -538,22 +622,97 @@ foto sin abrir el modal). Inspirado en la versión de Google AI Studio.
 El usuario pidió PAUSARLO por ahora, lo va a pensar mejor.
 
 Ideas futuras / deuda técnica
-Referencia: hay una versión alternativa hecha con Google AI Studio
-(React + Vite + Tailwind, componentes separados) en
+Fotos extra por producto (charlado, no implementado)
+Algunos modelos pueden necesitar más de 2 fotos (estampa extra atrás,
+detalle lateral, etc.).
+
+Plan acordado: cualquier .jpg extra en la carpeta del modelo
+(catalogo/<categoria>/<modelo>/) se toma como foto extra y se agrega
+al carrusel del modal, entre la remera y las tablas de talles.
+
+Convención de nombres: extra-1.jpg, extra-2.jpg, extra-3.jpg, etc.
+(predecible, no depende de que el usuario recuerde nombres específicos).
+
+Cambios necesarios:
+
+generar-catalogo.mjs: escanear la carpeta y armar un array extras: [...].
+
+index.astro: el carrusel arma los slides dinámicamente a partir de
+ese array, en vez de tener los 4 hardcodeados.
+
+El contador de slides y las miniaturas se generan solos.
+
+Las fotos extra son zoomeables (mismo sistema que las fotos base).
+
+No afecta a los productos que solo tienen las 2 fotos de siempre.
+
+Selector de color de tela (charlado, no implementado)
+Algunos modelos pueden tener la opción de elegir color de tela
+(blanco, negro, y alguno más). Máximo 3-4 colores por producto, y solo
+en modelos puntuales.
+
+Plan acordado: subcarpetas por color dentro de la carpeta del modelo:
+
+text
+catalogo/anime/naruto/
+├── negro/
+│   ├── modelo.jpg
+│   └── remera.jpg
+├── blanco/
+│   ├── modelo.jpg
+│   └── remera.jpg
+└── gris/
+    ├── modelo.jpg
+    └── remera.jpg
+El "color principal" (el que se ve en la tarjeta del catálogo) sería el
+primero de la lista o uno marcado como default.
+
+Cambios necesarios:
+
+generar-catalogo.mjs: detectar si la carpeta del modelo tiene
+subcarpetas de color. Si sí, armar colors: { negro: {...}, blanco: {...} }.
+Si no, formato actual (un solo color implícito).
+
+index.astro: si product.colors tiene más de uno, mostrar el
+selector de color arriba del de corte. Cambiar de color reemplaza las
+URLs de las imágenes (con la animación direccional que ya existe).
+
+La tarjeta del catálogo usa el color default.
+
+El key del carrito tendría que incluir el color: "Naruto negro
+talle M" y "Naruto blanco talle M" son items distintos. Esto rompe
+el formato de localStorage viejo (no es grave, pero decidirlo).
+
+Para nombres lindos de color ("Negro azabache", "Off-white"): mapeo
+COLOR_NAMES en el script.
+
+Otras deudas técnicas
+Regenerar krakoalogo-isotipo.webp a ~180px de ancho (hoy está
+a 400px y se muestra a 158px, pesa de más).
+
+width y height explícitos en las <img> del catálogo (evita
+el salto de layout al cargar).
+
+Vista rápida en cada tarjeta (mini-modal sin abrir el modal grande).
+
+Productos relacionados en el modal (4 productos de la misma
+categoría, abajo de todo).
+
+Referencia externa
+Hay una versión alternativa hecha con Google AI Studio (React + Vite +
+Tailwind, componentes separados) en
 https://sensational-faloodeh-68f992.netlify.app — el usuario tiene los
-archivos fuente por si hacen falta. NO copiar código de ahí (es otro stack),
-solo inspirarse en ideas.
+archivos fuente por si hacen falta. NO copiar código de ahí (es otro
+stack), solo inspirarse en ideas.
 
-## Decisiones tomadas (no implementadas)
-
-### Nombres de productos con caracteres especiales
-
-Se evaluó agregar un mapeo de nombres (`PRODUCT_NAME_OVERRIDES`) en
-`generar-catalogo.mjs` para que productos como "X-Men" o "A Perfect
+Decisiones tomadas (no implementadas)
+Nombres de productos con caracteres especiales
+Se evaluó agregar un mapeo de nombres (PRODUCT_NAME_OVERRIDES) en
+generar-catalogo.mjs para que productos como "X-Men" o "A Perfect
 Circle" aparezcan con su grafía exacta (guiones internos, mayúsculas
 especiales, símbolos como &, /, ?).
 
-**Decisión: NO implementar por ahora.** El problema es cosmético
+Decisión: NO implementar por ahora. El problema es cosmético
 ("X Men" en lugar de "X-MEN") y el costo de mantener una tabla
 actualizada por producto no lo justifica. Si en el futuro hay muchos
 productos con nombres que se vean mal, reevaluar.
@@ -561,15 +720,21 @@ productos con nombres que se vean mal, reevaluar.
 Los nombres de carpeta siguen la regla actual: guiones en lugar de
 espacios, sin caracteres raros de Windows.
 
-### Búsqueda por categoría en el buscador
-
+Búsqueda por categoría en el buscador
 Se evaluó que el buscador también matchee contra el nombre de la
-categoría (escribir "anime" filtra por esa categoría). **Decisión:
-NO implementar.** La barra de categorías está visible y sticky a 15
+categoría (escribir "anime" filtra por esa categoría). Decisión:
+NO implementar. La barra de categorías está visible y sticky a 15
 píxeles del buscador, así que es redundante. Si en el futuro hay
 muchas categorías (que la barra se haga scrolleable) o se agregan
 tags secundarios (ofertas, ediciones limitadas), reevaluar.
 
+Lupa con seguimiento del mouse en desktop
+Se evaluó hacer zoom con una lupa que sigue el cursor (estilo Zara,
+Nike) en desktop. Decisión: NO implementar. Requiere imágenes de
+alta resolución (las actuales no dan para un zoom 2x sin pixelarse),
+es complicado de que se sienta bien en mobile, y agrega bastante JS.
+Se implementó en su lugar un overlay a pantalla completa (ver sección
+"ZOOM DE IMAGEN").
 
 Decisiones técnicas ya tomadas
 No migrar el .bat a npm scripts. Funciona bien, el usuario no domina
@@ -603,71 +768,136 @@ translateX), para no romper el position: sticky de las categorías.
 
 El body tiene overflow-x: clip (no hidden, para no romper el sticky).
 
-Historial de cambios (más reciente arriba)
-### Sesión 11 — Optimización (mejoras concretas) + "Ver tabla de talles"
+El sistema de historial usa una pila (historyStack), no una
+variable única. Ver sección "History stack".
 
+Historial de cambios (más reciente arriba)
+Sesión 12 — Zoom de imagen + refactor del history lock a pila
+Zoom de imagen (feature nueva):
+
+Overlay a pantalla completa con la foto del modal agrandada.
+
+Se abre con click/tap sobre la foto grande del carrusel (modelo o
+remera). No sobre las tablas de talles. No desde las tarjetas del
+catálogo.
+
+Cierra con: click/tap afuera, botón ×, Escape, o botón atrás del celu.
+
+En mobile se permite pinch-to-zoom nativo; en desktop no hay zoom extra.
+
+Desktop: cursor zoom-in sobre las fotos. Mobile: ícono de lupa
+discreto en la esquina inferior derecha.
+
+Fondo negro al 93%, transición de fade corta (220ms).
+
+Se evita que el click de zoom se dispare al hacer swipe (flag
+zoomMoved con umbral de 8px).
+
+Refactor del history lock → history stack (importante):
+
+El sistema viejo usaba una variable única (historyLock) con casos
+particulares ("si el modal está abierto y se abre el carrito, cambiar
+el lock a cart y después volver a modal"). Eso generaba bugs cuando
+se apilaban overlays (zoom sobre modal).
+
+Se reemplazó por una pila (historyStack = []). Cada overlay que
+se abre hace pushHistory(kind). El popstate saca el último de la
+pila y cierra ese overlay. Sin casos particulares.
+
+Funciones nuevas: isTopOfHistory(kind), pushHistory(kind),
+popHistory(), closeTopOverlay().
+
+Los closeX() de cada overlay ahora chequean isTopOfHistory(kind)
+→ popHistory() → history.back() → popstate → closeXDirect().
+
+Los closeXDirect() ya no tocan el historial (los llama el popstate).
+
+Esto resolvió los bugs de sincronización del botón atrás con overlays
+apilados.
+
+Caso conocido: los links compartidos con hash te sacan de la web al
+apretar "atrás". Es el comportamiento esperado del navegador (el
+usuario llegó desde otro sitio y probablemente quiera volver). No se
+va a arreglar.
+
+Sesión 11 — Optimización (mejoras concretas) + "Ver tabla de talles"
 Se hizo una tanda de mejoras de optimización y limpieza, tras un
 análisis con PageSpeed (79 mobile / 93 desktop, sin urgencia).
 Ninguna feature nueva.
 
-**Imágenes y performance:**
+Imágenes y performance:
 
-- `fetchPriority` en el hero: la primera imagen (la LCP) lleva
-  `fetchPriority="high"` y `loading="eager"`; las otras 5 llevan
-  `fetchPriority="low"` y `loading="lazy"`. Esto bajó el LCP.
-- `decoding="async"` agregado a las `<img>` del modal (`#modal-image-a`
-  y `#modal-image-b`) y a las que se generan dinámicamente en
-  `renderModalImage`.
-- `will-change: opacity, transform` movido de `.hero-bg img` (todas)
-  a `.hero-bg img.active` (solo la que está animando). Antes había 6
-  capas de GPU vivas, ahora solo 1. Libera memoria de video en mobile.
-- `og:image:width` (1200) y `og:image:height` (630) agregados al
-  `<head>`. Con esto **por fin funciona la miniatura en WhatsApp**
-  (era el bug histórico). El `og-image.jpg` ya estaba en 1200x630.
+fetchPriority en el hero: la primera imagen (la LCP) lleva
+fetchPriority="high" y loading="eager"; las otras 5 llevan
+fetchPriority="low" y loading="lazy". Esto bajó el LCP.
 
-**Limpieza de código:**
+decoding="async" agregado a las <img> del modal (#modal-image-a
+y #modal-image-b) y a las que se generan dinámicamente en
+renderModalImage.
 
-- Eliminado el parche `modalAddClone` (se clonaba el botón "Agregar
-  al Pedido" para pisar el listener viejo). Ahora hay un solo
-  listener directo sobre `modalAdd`.
-- `--category-color` se setea al final de `openModal`, justo antes
-  de `aria-hidden="false"`. Antes se seteaba arriba, lo que dejaba
-  el color del producto anterior pegado si algo fallaba en el medio.
-- `filterProducts` ahora tiene debounce de 150ms en el input del
-  buscador. Con 99 productos no se nota, pero escala.
-- Borrado el CSS muerto `.care-num` (no se usaba en el HTML).
-- `box-sizing: border-box` aplicado también a `*::before` y
-  `*::after`, no solo a `*`.
+will-change: opacity, transform movido de .hero-bg img (todas)
+a .hero-bg img.active (solo la que está animando). Antes había 6
+capas de GPU vivas, ahora solo 1. Libera memoria de video en mobile.
 
-**Cambio estético:**
+og:image:width (1200) y og:image:height (630) agregados al
+<head>. Con esto por fin funciona la miniatura en WhatsApp
+(era el bug histórico). El og-image.jpg ya estaba en 1200x630.
 
-- El botón "Ver gráfico" se movió de al lado de "Elegí el corte"
-  a **abajo de los botones de talle**.
-- Se renombró a **"Ver tabla de talles"**.
-- Ahora tiene estilo de botón (borde, fondo oscuro, hover con
-  `--category-color`), ya no es un link subrayado.
-- Clase nueva: `.modal-chart-button` (con `:global()`, obvio).
-- El `id` sigue siendo `#modal-see-chart`, así que el JS no se tocó.
+Limpieza de código:
 
-**Decisiones de NO hacer (con criterio):**
+Eliminado el parche modalAddClone (se clonaba el botón "Agregar
+al Pedido" para pisar el listener viejo). Ahora hay un solo
+listener directo sobre modalAdd.
 
-- Búsqueda por categoría en el buscador: descartada, redundante con
-  la barra de categorías visible.
-- Mapeo de nombres de producto (`PRODUCT_NAME_OVERRIDES`): descartada,
-  el problema ("X Men" vs "X-MEN") es cosmético y no justifica el
-  costo de mantenimiento.
+--category-color se setea al final de openModal, justo antes
+de aria-hidden="false". Antes se seteaba arriba, lo que dejaba
+el color del producto anterior pegado si algo fallaba en el medio.
 
-**Pendientes anotados para el futuro (si alguna vez se quiere):**
+filterProducts ahora tiene debounce de 150ms en el input del
+buscador. Con 99 productos no se nota, pero escala.
 
-- Regenerar `krakoalogo-isotipo.webp` a ~180px de ancho (hoy está
-  a 400px y se muestra a 158px, pesa de más).
-- `width` y `height` explícitos en las `<img>` del catálogo (evita
-  el salto de layout al cargar).
-- Vista rápida en cada tarjeta (mini-modal sin abrir el modal grande).
-- Productos relacionados en el modal (4 productos de la misma
-  categoría, abajo de todo).
+Borrado el CSS muerto .care-num (no se usaba en el HTML).
 
-### Sesión 10 — Tinte por categoría, buscador afuera, animaciones del modal
+box-sizing: border-box aplicado también a *::before y
+*::after, no solo a *.
+
+Cambio estético:
+
+El botón "Ver gráfico" se movió de al lado de "Elegí el corte"
+a abajo de los botones de talle.
+
+Se renombró a "Ver tabla de talles".
+
+Ahora tiene estilo de botón (borde, fondo oscuro, hover con
+--category-color), ya no es un link subrayado.
+
+Clase nueva: .modal-chart-button (con :global(), obvio).
+
+El id sigue siendo #modal-see-chart, así que el JS no se tocó.
+
+Decisiones de NO hacer (con criterio):
+
+Búsqueda por categoría en el buscador: descartada, redundante con
+la barra de categorías visible.
+
+Mapeo de nombres de producto (PRODUCT_NAME_OVERRIDES): descartada,
+el problema ("X Men" vs "X-MEN") es cosmético y no justifica el
+costo de mantenimiento.
+
+Pendientes anotados para el futuro (si alguna vez se quiere):
+
+Regenerar krakoalogo-isotipo.webp a ~180px de ancho (hoy está
+a 400px y se muestra a 158px, pesa de más).
+
+width y height explícitos en las <img> del catálogo (evita
+el salto de layout al cargar).
+
+Vista rápida en cada tarjeta (mini-modal sin abrir el modal grande).
+
+Productos relacionados en el modal (4 productos de la misma
+categoría, abajo de todo).
+
+Sesión 10 — Tinte por categoría, buscador afuera, animaciones del modal
 Fondo tintado por categoría:
 
 Nuevo fondo en la sección #catalogo que se pinta con el color de la
@@ -740,7 +970,7 @@ el modal sigue abierto, el lock vuelve a "modal".
 Se eliminó el listener de hashchange (generaba bucles con el
 pushState).
 
-### Sesión 9 — Fondo dinámico por categoría + fix de remote
+Sesión 9 — Fondo dinámico por categoría + fix de remote
 Nuevo fondo tintado en la sección catálogo, con slide de derecha a
 izquierda, color según la categoría activa. Dos capas apiladas para que
 el cambio entre categorías también sea slide (no fade).
@@ -754,7 +984,7 @@ Fix: el remote de git local apuntaba a krakoa-web (que ahora es el
 repo del redirect). Se cambió a barriopuro/krakoa con
 git remote set-url origin.
 
-### Sesión 8 — Catálogo variado, barra de categorías rediseñada, URL nueva
+Sesión 8 — Catálogo variado, barra de categorías rediseñada, URL nueva
 Catálogo con intercalado round-robin por categoría (no todos los de
 una categoría juntos).
 
@@ -767,14 +997,14 @@ Barra de categorías sticky en mobile.
 
 Migración de URL: repo renombrado de krakoa-web a krakoa.
 
-### Sesión 7 — Fix back-to-top + Loader inicial (D3)
+Sesión 7 — Fix back-to-top + Loader inicial (D3)
 Fix del botón "volver arriba" (le faltaba el listener de scroll).
 
 Loader de carga inicial con fade in del isotipo sobre fondo oscuro.
 
 Fix crítico del loader: estilos inline para evitar FOUC.
 
-### Sesión 6 — Ajustes, Hero con imágenes rotando, Footer completo
+Sesión 6 — Ajustes, Hero con imágenes rotando, Footer completo
 Ícono + título en la misma línea en los 4 pilares.
 
 Tarjetas del catálogo con border-radius: 15px + object-fit: cover.
@@ -785,19 +1015,19 @@ Footer completo con 3 columnas + partículas.
 
 Fix crítico del footer con :global().
 
-### Sesión 5 — Header con menú + fix del botón atrás en mobile
+Sesión 5 — Header con menú + fix del botón atrás en mobile
 Header desktop y mobile rediseñados.
 
 Menú mobile (drawer).
 
 Fix de los links del menú mobile con history.replaceState.
 
-### Sesión 4 — Secciones "Cómo Comprar" y "Calidad y Materiales"
+Sesión 4 — Secciones "Cómo Comprar" y "Calidad y Materiales"
 Acordeón de 5 preguntas + bloque de consulta con WhatsApp.
 
 4 pilares + guía de cuidado.
 
-### Sesión 3 — Carrito + modal nuevo (Bloque A completo)
+Sesión 3 — Carrito + modal nuevo (Bloque A completo)
 Carrito con localStorage, drawer, badge.
 
 Modal rediseñado con 2 columnas, miniaturas, selectores.
@@ -806,10 +1036,10 @@ History lock para modal y carrito.
 
 Nombres de corte: "Oversize" y "Regular Fit".
 
-### Sesión 2 — Deploy fix
+Sesión 2 — Deploy fix
 Cambio de Source de Pages a "GitHub Actions".
 
-### Sesión 1 — Limpieza y des-hardcodeo
+Sesión 1 — Limpieza y des-hardcodeo
 Borrados archivos basura.
 
 Fix de formatName() para la "ñ" y acentos.
@@ -843,4 +1073,10 @@ El usuario no programa
 No asumir conocimientos de terminal, git, npm, etc. Dar pasos concretos
 y verificables.
 
-Cuando el usuario dice "no entendí", simplificar. No debatir opciones
+Cuando el usuario dice "no entendí", simplificar. No debatir opciones.
+
+Formato de los cambios de código
+Cuando haya que modificar código, dar los cambios en formato
+"buscá X / reemplazá por Y" con bloques de código completos y
+claros. El usuario copia y pega, no edita a mano. No dar instrucciones
+ambiguas tipo "agregá una línea después de la función X".
