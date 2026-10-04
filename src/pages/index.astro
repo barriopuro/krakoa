@@ -40,6 +40,8 @@ const marqueeText = [
   <meta property="og:site_name" content="KRAKOA" />
   <meta property="og:image" content={`${base}/og-image.jpg`} />
   <meta property="og:image:url" content={`${base}/og-image.jpg`} />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="KRAKOA | Remeras" />
@@ -589,13 +591,7 @@ const marqueeText = [
               <label class="modal-label">
                 <span class="modal-step">1.</span> Elegí el corte:
               </label>
-              <button
-                id="modal-see-chart"
-                class="modal-link"
-                type="button"
-              >
-                Ver gráfico
-              </button>
+              
             </div>
             <div id="modal-fits" class="modal-fits"></div>
           </div>
@@ -609,6 +605,13 @@ const marqueeText = [
               <span id="modal-size-cm" class="modal-size-cm"></span>
             </div>
             <div id="modal-sizes" class="modal-sizes"></div>
+            <button
+                id="modal-see-chart"
+                class="modal-chart-button"
+                type="button"
+              >
+                Ver tabla de talles
+              </button>
           </div>
 
           <!-- CANTIDAD -->
@@ -1946,19 +1949,30 @@ const marqueeText = [
     font-weight: 900;
   }
 
-  .modal-link {
-    background: none;
-    border: 0;
-    padding: 0;
-    color: #888;
-    font-size: 11px;
-    text-decoration: underline;
+  :global(.modal-chart-button) {
+    align-self: flex-start;
+    margin-top: 4px;
+    padding: 9px 14px;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    background: #0a0a0a;
+    color: #ccc;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
     cursor: pointer;
-    transition: color 0.2s ease;
+    transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
   }
 
-  .modal-link:hover {
+  :global(.modal-chart-button:hover) {
+    border-color: var(--category-color, #fff);
     color: var(--category-color, #fff);
+    background: #141414;
+  }
+
+  :global(.modal-chart-button:active) {
+    transform: translateY(1px);
   }
 
   .modal-size-cm {
