@@ -70,6 +70,35 @@ function formatName(value) {
     .replace(/(^|\s)(\p{L})/gu, (_, prefix, letter) => prefix + letter.toUpperCase());
 }
 
+// Parsea el nombre de la carpeta de un producto para separar el nombre
+// visible de los tags de búsqueda.
+//
+// Convención:
+//   "maradona"                          → name: "maradona", tags: []
+//   "maradona _(pelusa, futbol)"        → name: "maradona", tags: ["pelusa", "futbol"]
+//   "maradona-(edicion-limitada) _(pelusa)"
+//                                       → name: "maradona-(edicion-limitada)",
+//                                         tags: ["pelusa"]
+//
+// El separador es " _(...)" (espacio opcional, guión bajo, paréntesis).
+// El "(...)" debe estar al final del nombre.
+// Los paréntesis que están ANTES del " _(" se consideran parte del nombre.
+function parseProductFolder(folderName) {
+  const match = folderName.match(/^(.*?)\s*_\(([^)]*)\)\s*$/);
+
+  if (!match) {
+    return { name: folderName, tags: [] };
+  }
+
+  const cleanName = match[1].trim();
+  const tags = match[2]
+    .split(",")
+    .map((tag) => tag.trim().toLowerCase())
+    .filter(Boolean);
+
+  return { name: cleanName, tags };
+}
+
 function findImage(directory, baseName) {
   for (const extension of imageExtensions) {
     const file = `${baseName}${extension}`;
@@ -106,15 +135,42 @@ async function processCatalogoImages() {
       continue;
     }
 
+    // Estructura esperada: <categoria>/<modelo>/<archivo>.<ext>
+    // El segundo segmento (el modelo) puede tener tags: "maradona _(pelusa)"
+    // En ese caso, guardamos la imagen en un path SIN los tags:
+    //   <categoria>/<modelo-limpio>/<archivo>.webp
+    const segments = relativeFile.split(path.sep);
+
+    if (segments.length >= 3) {
+      const [category, modelFolder, ...rest] = segments;
+      const { name: cleanModel } = parseProductFolder(modelFolder);
+
+      // Reemplazamos el nombre de la carpeta del modelo por el limpio.
+      const cleanRelative = path.join(category, cleanModel, ...rest);
+
+      const relativeWebp = cleanRelative.replace(
+        new RegExp(`${extension}$`, "i"),
+        ".webp"
+      );
+
+      const destinationPath = path.join(publicCatalogoDir, relativeWebp);
+
+      fs.mkdirSync(path.dirname(destinationPath), {
+        recursive: true,
+      });
+
+      await optimizeImage(sourcePath, destinationPath);
+      continue;
+    }
+
+    // Fallback: si por algún motivo hay archivos sueltos (no debería),
+    // los copiamos como antes.
     const relativeWebp = relativeFile.replace(
       new RegExp(`${extension}$`, "i"),
       ".webp"
     );
 
-    const destinationPath = path.join(
-      publicCatalogoDir,
-      relativeWebp
-    );
+    const destinationPath = path.join(publicCatalogoDir, relativeWebp);
 
     fs.mkdirSync(path.dirname(destinationPath), {
       recursive: true,
@@ -223,15 +279,26 @@ categories.push({
     .sort((a, b) => a.name.localeCompare(b.name, "es"));
 
   for (const productFolder of productFolders) {
-    const productId = productFolder.name;
-    const productDirectory = path.join(categoryDirectory, productId);
+    const rawFolderName = productFolder.name;
+    const productDirectory = path.join(categoryDirectory, rawFolderName);
+
+    // Separamos el nombre visible de los tags.
+    const { name: cleanName, tags } = parseProductFolder(rawFolderName);
+
+    // El "id" para el hash de compartir. Se calcula desde el nombre visible
+    // (después de formatName) para que quede lindo y predecible.
+    const productName = formatName(cleanName);
+    const productId = productName
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
 
     const modelo = findImage(productDirectory, "modelo");
     const remera = findImage(productDirectory, "remera");
 
     if (!modelo || !remera) {
       console.warn(
-        `ADVERTENCIA: "${formatName(productId)}" no tiene todas las imágenes necesarias.`
+        `ADVERTENCIA: "${productName}" no tiene todas las imágenes necesarias.`
       );
 
       if (!modelo) {
@@ -245,13 +312,18 @@ categories.push({
       continue;
     }
 
+    // OJO: en el path usamos el nombre LIMPIO (sin tags), porque así
+    // es como processCatalogoImages() guardó las imágenes optimizadas.
+    // En la carpeta original (catalogo/) el nombre es rawFolderName
+    // (con tags), pero en public/catalogo/ está limpio.
     products.push({
       id: productId,
-      name: formatName(productId),
+      name: productName,
+      tags,
       category: categoryId,
       categoryName: config?.name ?? formatName(categoryId),
-      modelo: `/catalogo/${categoryId}/${productId}/${modelo.replace(/\.[^.]+$/, ".webp")}`,
-remera: `/catalogo/${categoryId}/${productId}/${remera.replace(/\.[^.]+$/, ".webp")}`,
+      modelo: `/catalogo/${categoryId}/${cleanName}/${modelo.replace(/\.[^.]+$/, ".webp")}`,
+      remera: `/catalogo/${categoryId}/${cleanName}/${remera.replace(/\.[^.]+$/, ".webp")}`,
     });
   }
 }

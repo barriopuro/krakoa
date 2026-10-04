@@ -252,8 +252,9 @@ const marqueeText = [
               <article
                 class="product-card"
                 data-name={product.name.toLowerCase()}
+                data-tags={(product.tags || []).join(" ")}
                 data-category={product.category}
-                data-id={product.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}
+                data-id={product.id}
               >
                 <button class="product-button" type="button">
                   <div class="product-image">
@@ -3530,13 +3531,21 @@ function hideTint() {
   let activeCategory = null;
 
 function filterProducts() {
-  const search = searchInput.value.toLowerCase().trim();
+  const raw = searchInput.value.toLowerCase().trim();
+  // Partimos la búsqueda por espacios: cada palabra se busca por separado.
+  // Así "dragon ball" matchea "dragon ball z" y también el tag "dragon".
+  const terms = raw.split(/\s+/).filter(Boolean);
 
   products.forEach((product) => {
     const name = product.dataset.name ?? "";
+    const tags = (product.dataset.tags ?? "").toLowerCase();
     const category = product.dataset.category ?? "";
 
-    const matchesSearch = name.includes(search);
+    // Cada término debe aparecer en el nombre O en algún tag.
+    const matchesSearch =
+      terms.length === 0 ||
+      terms.every((term) => name.includes(term) || tags.includes(term));
+
     const matchesCategory =
       activeCategory === null || category === activeCategory;
 

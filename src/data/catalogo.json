@@ -40,6 +40,7 @@
     {
       "id": "akira",
       "name": "Akira",
+      "tags": [],
       "category": "anime",
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/akira/modelo.webp",
@@ -48,6 +49,7 @@
     {
       "id": "aku-samurai-jack",
       "name": "Aku Samurai Jack",
+      "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
       "modelo": "/catalogo/cine-series/aku-samurai-jack/modelo.webp",
@@ -56,6 +58,7 @@
     {
       "id": "deadpool",
       "name": "Deadpool",
+      "tags": [],
       "category": "comics",
       "categoryName": "Comics",
       "modelo": "/catalogo/comics/deadpool/modelo.webp",
@@ -64,6 +67,7 @@
     {
       "id": "ayrton-senna",
       "name": "Ayrton Senna",
+      "tags": [],
       "category": "deportes",
       "categoryName": "Deportes",
       "modelo": "/catalogo/deportes/ayrton-senna/modelo.webp",
@@ -72,6 +76,7 @@
     {
       "id": "a-perfect-circle",
       "name": "A Perfect Circle",
+      "tags": [],
       "category": "musica",
       "categoryName": "Música",
       "modelo": "/catalogo/musica/a-perfect-circle/modelo.webp",
@@ -80,6 +85,7 @@
     {
       "id": "las-malvinas-son-argentinas",
       "name": "Las Malvinas Son Argentinas",
+      "tags": [],
       "category": "otros",
       "categoryName": "Otros",
       "modelo": "/catalogo/otros/las-malvinas-son-argentinas/modelo.webp",
@@ -88,6 +94,7 @@
     {
       "id": "god-of-war",
       "name": "God Of War",
+      "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
       "modelo": "/catalogo/videojuegos/god-of-war/modelo.webp",
@@ -96,6 +103,7 @@
     {
       "id": "akira-kaneda-tetsuo",
       "name": "Akira Kaneda Tetsuo",
+      "tags": [],
       "category": "anime",
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/akira-kaneda-tetsuo/modelo.webp",
@@ -104,6 +112,7 @@
     {
       "id": "bruce-lee-enter-the-dragon",
       "name": "Bruce Lee Enter The Dragon",
+      "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
       "modelo": "/catalogo/cine-series/bruce-lee-enter-the-dragon/modelo.webp",
@@ -112,6 +121,7 @@
     {
       "id": "dr-doom",
       "name": "Dr Doom",
+      "tags": [],
       "category": "comics",
       "categoryName": "Comics",
       "modelo": "/catalogo/comics/dr-doom/modelo.webp",
@@ -120,6 +130,10 @@
     {
       "id": "kobe-bryant",
       "name": "Kobe Bryant",
+      "tags": [
+        "basquet",
+        "basket"
+      ],
       "category": "deportes",
       "categoryName": "Deportes",
       "modelo": "/catalogo/deportes/kobe-bryant/modelo.webp",
@@ -128,6 +142,7 @@
     {
       "id": "alice-in-chains",
       "name": "Alice In Chains",
+      "tags": [],
       "category": "musica",
       "categoryName": "Música",
       "modelo": "/catalogo/musica/alice-in-chains/modelo.webp",
@@ -136,6 +151,7 @@
     {
       "id": "pulpo",
       "name": "Pulpo",
+      "tags": [],
       "category": "otros",
       "categoryName": "Otros",
       "modelo": "/catalogo/otros/pulpo/modelo.webp",
@@ -144,6 +160,7 @@
     {
       "id": "hollow-knight",
       "name": "Hollow Knight",
+      "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
       "modelo": "/catalogo/videojuegos/hollow-knight/modelo.webp",
@@ -152,6 +169,7 @@
     {
       "id": "death-note",
       "name": "Death Note",
+      "tags": [],
       "category": "anime",
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/death-note/modelo.webp",
@@ -160,6 +178,7 @@
     {
       "id": "cazafantasmas",
       "name": "Cazafantasmas",
+      "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
       "modelo": "/catalogo/cine-series/cazafantasmas/modelo.webp",
@@ -168,6 +187,7 @@
     {
       "id": "spawn",
       "name": "Spawn",
+      "tags": [],
       "category": "comics",
       "categoryName": "Comics",
       "modelo": "/catalogo/comics/spawn/modelo.webp",
@@ -176,6 +196,10 @@
     {
       "id": "kobe-bryant-black-mamba",
       "name": "Kobe Bryant Black Mamba",
+      "tags": [
+        "basquet",
+        "basket"
+      ],
       "category": "deportes",
       "categoryName": "Deportes",
       "modelo": "/catalogo/deportes/kobe-bryant-black-mamba/modelo.webp",
@@ -184,6 +208,7 @@
     {
       "id": "cypress-hill",
       "name": "Cypress Hill",
+      "tags": [],
       "category": "musica",
       "categoryName": "Música",
       "modelo": "/catalogo/musica/cypress-hill/modelo.webp",
@@ -192,6 +217,7 @@
     {
       "id": "ramen-godzilla",
       "name": "Ramen Godzilla",
+      "tags": [],
       "category": "otros",
       "categoryName": "Otros",
       "modelo": "/catalogo/otros/ramen-godzilla/modelo.webp",
@@ -200,6 +226,7 @@
     {
       "id": "king-of-fighters-iori-yagami",
       "name": "King Of Fighters Iori Yagami",
+      "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
       "modelo": "/catalogo/videojuegos/king-of-fighters-iori-yagami/modelo.webp",
@@ -208,6 +235,7 @@
     {
       "id": "death-note-light",
       "name": "Death Note Light",
+      "tags": [],
       "category": "anime",
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/death-note-light/modelo.webp",
@@ -216,6 +244,7 @@
     {
       "id": "chicas-superpoderosas",
       "name": "Chicas Superpoderosas",
+      "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
       "modelo": "/catalogo/cine-series/chicas-superpoderosas/modelo.webp",
@@ -224,6 +253,7 @@
     {
       "id": "spiderman-black-suit",
       "name": "Spiderman Black Suit",
+      "tags": [],
       "category": "comics",
       "categoryName": "Comics",
       "modelo": "/catalogo/comics/spiderman-black-suit/modelo.webp",
@@ -232,6 +262,10 @@
     {
       "id": "manu-ginobili",
       "name": "Manu Ginobili",
+      "tags": [
+        "basquet",
+        "basket"
+      ],
       "category": "deportes",
       "categoryName": "Deportes",
       "modelo": "/catalogo/deportes/manu-ginobili/modelo.webp",
@@ -240,6 +274,7 @@
     {
       "id": "dano",
       "name": "Dano",
+      "tags": [],
       "category": "musica",
       "categoryName": "Música",
       "modelo": "/catalogo/musica/dano/modelo.webp",
@@ -248,6 +283,7 @@
     {
       "id": "megaman",
       "name": "Megaman",
+      "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
       "modelo": "/catalogo/videojuegos/megaman/modelo.webp",
@@ -256,6 +292,7 @@
     {
       "id": "demon-slayer",
       "name": "Demon Slayer",
+      "tags": [],
       "category": "anime",
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/demon-slayer/modelo.webp",
@@ -264,6 +301,7 @@
     {
       "id": "coraje-el-perro-cobarde",
       "name": "Coraje El Perro Cobarde",
+      "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
       "modelo": "/catalogo/cine-series/coraje-el-perro-cobarde/modelo.webp",
@@ -272,6 +310,7 @@
     {
       "id": "spiderman-venom",
       "name": "Spiderman Venom",
+      "tags": [],
       "category": "comics",
       "categoryName": "Comics",
       "modelo": "/catalogo/comics/spiderman-venom/modelo.webp",
@@ -280,6 +319,9 @@
     {
       "id": "maradona",
       "name": "Maradona",
+      "tags": [
+        "futbol"
+      ],
       "category": "deportes",
       "categoryName": "Deportes",
       "modelo": "/catalogo/deportes/maradona/modelo.webp",
@@ -288,6 +330,7 @@
     {
       "id": "foo-fighters",
       "name": "Foo Fighters",
+      "tags": [],
       "category": "musica",
       "categoryName": "Música",
       "modelo": "/catalogo/musica/foo-fighters/modelo.webp",
@@ -296,6 +339,7 @@
     {
       "id": "mortal-kombat-raiden",
       "name": "Mortal Kombat Raiden",
+      "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
       "modelo": "/catalogo/videojuegos/mortal-kombat-raiden/modelo.webp",
@@ -304,6 +348,7 @@
     {
       "id": "demon-slayer-tanjiro",
       "name": "Demon Slayer Tanjiro",
+      "tags": [],
       "category": "anime",
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/demon-slayer-tanjiro/modelo.webp",
@@ -312,6 +357,7 @@
     {
       "id": "ed-edd-y-eddy",
       "name": "Ed Edd Y Eddy",
+      "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
       "modelo": "/catalogo/cine-series/ed-edd-y-eddy/modelo.webp",
@@ -320,6 +366,7 @@
     {
       "id": "the-joker",
       "name": "The Joker",
+      "tags": [],
       "category": "comics",
       "categoryName": "Comics",
       "modelo": "/catalogo/comics/the-joker/modelo.webp",
@@ -328,6 +375,9 @@
     {
       "id": "maradona-pelusa",
       "name": "Maradona Pelusa",
+      "tags": [
+        "futbol"
+      ],
       "category": "deportes",
       "categoryName": "Deportes",
       "modelo": "/catalogo/deportes/maradona-pelusa/modelo.webp",
@@ -336,6 +386,7 @@
     {
       "id": "gorillaz",
       "name": "Gorillaz",
+      "tags": [],
       "category": "musica",
       "categoryName": "Música",
       "modelo": "/catalogo/musica/gorillaz/modelo.webp",
@@ -344,6 +395,7 @@
     {
       "id": "mortal-kombat-sub-zero",
       "name": "Mortal Kombat Sub Zero",
+      "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
       "modelo": "/catalogo/videojuegos/mortal-kombat-sub-zero/modelo.webp",
@@ -352,14 +404,16 @@
     {
       "id": "dragon-ball-goku",
       "name": "Dragon Ball Goku",
+      "tags": [],
       "category": "anime",
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/dragon-ball-goku/modelo.webp",
       "remera": "/catalogo/anime/dragon-ball-goku/remera.webp"
     },
     {
-      "id": "el-señor-de-los-anillos",
+      "id": "el-se-or-de-los-anillos",
       "name": "El Señor De Los Anillos",
+      "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
       "modelo": "/catalogo/cine-series/el-señor-de-los-anillos/modelo.webp",
@@ -368,6 +422,7 @@
     {
       "id": "the-punisher",
       "name": "The Punisher",
+      "tags": [],
       "category": "comics",
       "categoryName": "Comics",
       "modelo": "/catalogo/comics/the-punisher/modelo.webp",
@@ -376,6 +431,9 @@
     {
       "id": "messi",
       "name": "Messi",
+      "tags": [
+        "futbol"
+      ],
       "category": "deportes",
       "categoryName": "Deportes",
       "modelo": "/catalogo/deportes/messi/modelo.webp",
@@ -384,6 +442,7 @@
     {
       "id": "gustavo-cerati",
       "name": "Gustavo Cerati",
+      "tags": [],
       "category": "musica",
       "categoryName": "Música",
       "modelo": "/catalogo/musica/gustavo-cerati/modelo.webp",
@@ -392,6 +451,7 @@
     {
       "id": "resident-evil-nemesis",
       "name": "Resident Evil Nemesis",
+      "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
       "modelo": "/catalogo/videojuegos/resident-evil-nemesis/modelo.webp",
@@ -400,6 +460,7 @@
     {
       "id": "dragon-ball-tao-pai-pai",
       "name": "Dragon Ball Tao Pai Pai",
+      "tags": [],
       "category": "anime",
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/dragon-ball-tao-pai-pai/modelo.webp",
@@ -408,6 +469,7 @@
     {
       "id": "friday-13th",
       "name": "Friday 13th",
+      "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
       "modelo": "/catalogo/cine-series/friday-13th/modelo.webp",
@@ -416,6 +478,7 @@
     {
       "id": "tortugas-ninja",
       "name": "Tortugas Ninja",
+      "tags": [],
       "category": "comics",
       "categoryName": "Comics",
       "modelo": "/catalogo/comics/tortugas-ninja/modelo.webp",
@@ -424,6 +487,9 @@
     {
       "id": "messi-10",
       "name": "Messi 10",
+      "tags": [
+        "futbol"
+      ],
       "category": "deportes",
       "categoryName": "Deportes",
       "modelo": "/catalogo/deportes/messi-10/modelo.webp",
@@ -432,6 +498,7 @@
     {
       "id": "indio-solari",
       "name": "Indio Solari",
+      "tags": [],
       "category": "musica",
       "categoryName": "Música",
       "modelo": "/catalogo/musica/indio-solari/modelo.webp",
@@ -440,6 +507,7 @@
     {
       "id": "splatterhouse",
       "name": "Splatterhouse",
+      "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
       "modelo": "/catalogo/videojuegos/splatterhouse/modelo.webp",
@@ -448,6 +516,7 @@
     {
       "id": "dragon-ball-z-gohan",
       "name": "Dragon Ball Z Gohan",
+      "tags": [],
       "category": "anime",
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/dragon-ball-z-gohan/modelo.webp",
@@ -456,6 +525,7 @@
     {
       "id": "friday-13th-jason",
       "name": "Friday 13th Jason",
+      "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
       "modelo": "/catalogo/cine-series/friday-13th-jason/modelo.webp",
@@ -464,6 +534,7 @@
     {
       "id": "tortugas-ninja-shredder",
       "name": "Tortugas Ninja Shredder",
+      "tags": [],
       "category": "comics",
       "categoryName": "Comics",
       "modelo": "/catalogo/comics/tortugas-ninja-shredder/modelo.webp",
@@ -472,6 +543,7 @@
     {
       "id": "nicolino-locche",
       "name": "Nicolino Locche",
+      "tags": [],
       "category": "deportes",
       "categoryName": "Deportes",
       "modelo": "/catalogo/deportes/nicolino-locche/modelo.webp",
@@ -480,6 +552,7 @@
     {
       "id": "jimi-hendrix",
       "name": "Jimi Hendrix",
+      "tags": [],
       "category": "musica",
       "categoryName": "Música",
       "modelo": "/catalogo/musica/jimi-hendrix/modelo.webp",
@@ -488,6 +561,7 @@
     {
       "id": "street-fighter-dhalsim",
       "name": "Street Fighter Dhalsim",
+      "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
       "modelo": "/catalogo/videojuegos/street-fighter-dhalsim/modelo.webp",
@@ -496,6 +570,7 @@
     {
       "id": "dragon-ball-z-piccoro",
       "name": "Dragon Ball Z Piccoro",
+      "tags": [],
       "category": "anime",
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/dragon-ball-z-piccoro/modelo.webp",
@@ -504,6 +579,7 @@
     {
       "id": "hellboy",
       "name": "Hellboy",
+      "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
       "modelo": "/catalogo/cine-series/hellboy/modelo.webp",
@@ -512,6 +588,7 @@
     {
       "id": "x-men",
       "name": "X Men",
+      "tags": [],
       "category": "comics",
       "categoryName": "Comics",
       "modelo": "/catalogo/comics/x-men/modelo.webp",
@@ -520,6 +597,7 @@
     {
       "id": "lemmy-kilmister",
       "name": "Lemmy Kilmister",
+      "tags": [],
       "category": "musica",
       "categoryName": "Música",
       "modelo": "/catalogo/musica/lemmy-kilmister/modelo.webp",
@@ -528,6 +606,7 @@
     {
       "id": "super-mario-bros",
       "name": "Super Mario Bros",
+      "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
       "modelo": "/catalogo/videojuegos/super-mario-bros/modelo.webp",
@@ -536,6 +615,7 @@
     {
       "id": "dragon-ball-z-vegeta",
       "name": "Dragon Ball Z Vegeta",
+      "tags": [],
       "category": "anime",
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/dragon-ball-z-vegeta/modelo.webp",
@@ -544,6 +624,7 @@
     {
       "id": "it",
       "name": "It",
+      "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
       "modelo": "/catalogo/cine-series/it/modelo.webp",
@@ -552,6 +633,7 @@
     {
       "id": "x-men-uncanny",
       "name": "X Men Uncanny",
+      "tags": [],
       "category": "comics",
       "categoryName": "Comics",
       "modelo": "/catalogo/comics/x-men-uncanny/modelo.webp",
@@ -560,6 +642,7 @@
     {
       "id": "linkin-park",
       "name": "Linkin Park",
+      "tags": [],
       "category": "musica",
       "categoryName": "Música",
       "modelo": "/catalogo/musica/linkin-park/modelo.webp",
@@ -568,14 +651,16 @@
     {
       "id": "zelda-hyrule-icons",
       "name": "Zelda Hyrule Icons",
+      "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
       "modelo": "/catalogo/videojuegos/zelda-hyrule-icons/modelo.webp",
       "remera": "/catalogo/videojuegos/zelda-hyrule-icons/remera.webp"
     },
     {
-      "id": "eva 01-complementado-evangelion",
+      "id": "eva-01-complementado-evangelion",
       "name": "Eva 01 Complementado Evangelion",
+      "tags": [],
       "category": "anime",
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/eva 01-complementado-evangelion/modelo.webp",
@@ -584,6 +669,7 @@
     {
       "id": "joker-batman-dark-knight",
       "name": "Joker Batman Dark Knight",
+      "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
       "modelo": "/catalogo/cine-series/joker-batman-dark-knight/modelo.webp",
@@ -592,6 +678,7 @@
     {
       "id": "x-men-wolverine",
       "name": "X Men Wolverine",
+      "tags": [],
       "category": "comics",
       "categoryName": "Comics",
       "modelo": "/catalogo/comics/x-men-wolverine/modelo.webp",
@@ -600,14 +687,16 @@
     {
       "id": "michael-jackson",
       "name": "Michael Jackson",
+      "tags": [],
       "category": "musica",
       "categoryName": "Música",
       "modelo": "/catalogo/musica/michael-jackson/modelo.webp",
       "remera": "/catalogo/musica/michael-jackson/remera.webp"
     },
     {
-      "id": "eva 01-evangelion",
+      "id": "eva-01-evangelion",
       "name": "Eva 01 Evangelion",
+      "tags": [],
       "category": "anime",
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/eva 01-evangelion/modelo.webp",
@@ -616,6 +705,7 @@
     {
       "id": "karate-kid",
       "name": "Karate Kid",
+      "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
       "modelo": "/catalogo/cine-series/karate-kid/modelo.webp",
@@ -624,6 +714,7 @@
     {
       "id": "x-men-x-factor-x-force-apocalipsis",
       "name": "X Men X Factor X Force Apocalipsis",
+      "tags": [],
       "category": "comics",
       "categoryName": "Comics",
       "modelo": "/catalogo/comics/x-men-x-factor-x-force-apocalipsis/modelo.webp",
@@ -632,14 +723,16 @@
     {
       "id": "michael-jackson-smooth-criminal",
       "name": "Michael Jackson Smooth Criminal",
+      "tags": [],
       "category": "musica",
       "categoryName": "Música",
       "modelo": "/catalogo/musica/michael-jackson-smooth-criminal/modelo.webp",
       "remera": "/catalogo/musica/michael-jackson-smooth-criminal/remera.webp"
     },
     {
-      "id": "eva 01-longinus-evangelion",
+      "id": "eva-01-longinus-evangelion",
       "name": "Eva 01 Longinus Evangelion",
+      "tags": [],
       "category": "anime",
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/eva 01-longinus-evangelion/modelo.webp",
@@ -648,6 +741,7 @@
     {
       "id": "monstars-space-jam",
       "name": "Monstars Space Jam",
+      "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
       "modelo": "/catalogo/cine-series/monstars-space-jam/modelo.webp",
@@ -656,6 +750,7 @@
     {
       "id": "sepultura",
       "name": "Sepultura",
+      "tags": [],
       "category": "musica",
       "categoryName": "Música",
       "modelo": "/catalogo/musica/sepultura/modelo.webp",
@@ -664,6 +759,7 @@
     {
       "id": "hellsing",
       "name": "Hellsing",
+      "tags": [],
       "category": "anime",
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/hellsing/modelo.webp",
@@ -672,6 +768,7 @@
     {
       "id": "mumm-rah-thundercats",
       "name": "Mumm Rah Thundercats",
+      "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
       "modelo": "/catalogo/cine-series/mumm-rah-thundercats/modelo.webp",
@@ -680,6 +777,7 @@
     {
       "id": "slipknot",
       "name": "Slipknot",
+      "tags": [],
       "category": "musica",
       "categoryName": "Música",
       "modelo": "/catalogo/musica/slipknot/modelo.webp",
@@ -688,14 +786,16 @@
     {
       "id": "naruto-erosenin",
       "name": "Naruto Erosenin",
+      "tags": [],
       "category": "anime",
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/naruto-erosenin/modelo.webp",
       "remera": "/catalogo/anime/naruto-erosenin/remera.webp"
     },
     {
-      "id": "quien-engañó-a-roger-rabbit",
+      "id": "quien-enga-a-roger-rabbit",
       "name": "Quien Engañó A Roger Rabbit",
+      "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
       "modelo": "/catalogo/cine-series/quien-engañó-a-roger-rabbit/modelo.webp",
@@ -704,6 +804,7 @@
     {
       "id": "the-beatles",
       "name": "The Beatles",
+      "tags": [],
       "category": "musica",
       "categoryName": "Música",
       "modelo": "/catalogo/musica/the-beatles/modelo.webp",
@@ -712,6 +813,7 @@
     {
       "id": "naruto-rock-lee",
       "name": "Naruto Rock Lee",
+      "tags": [],
       "category": "anime",
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/naruto-rock-lee/modelo.webp",
@@ -720,6 +822,7 @@
     {
       "id": "scooby-doo",
       "name": "Scooby Doo",
+      "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
       "modelo": "/catalogo/cine-series/scooby-doo/modelo.webp",
@@ -728,6 +831,7 @@
     {
       "id": "tyk",
       "name": "Tyk",
+      "tags": [],
       "category": "musica",
       "categoryName": "Música",
       "modelo": "/catalogo/musica/tyk/modelo.webp",
@@ -736,6 +840,7 @@
     {
       "id": "naruto-uchiha-clan",
       "name": "Naruto Uchiha Clan",
+      "tags": [],
       "category": "anime",
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/naruto-uchiha-clan/modelo.webp",
@@ -744,6 +849,7 @@
     {
       "id": "south-park",
       "name": "South Park",
+      "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
       "modelo": "/catalogo/cine-series/south-park/modelo.webp",
@@ -752,6 +858,7 @@
     {
       "id": "wu-tang",
       "name": "Wu Tang",
+      "tags": [],
       "category": "musica",
       "categoryName": "Música",
       "modelo": "/catalogo/musica/wu-tang/modelo.webp",
@@ -760,6 +867,7 @@
     {
       "id": "one-piece",
       "name": "One Piece",
+      "tags": [],
       "category": "anime",
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/one-piece/modelo.webp",
@@ -768,6 +876,7 @@
     {
       "id": "star-wars",
       "name": "Star Wars",
+      "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
       "modelo": "/catalogo/cine-series/star-wars/modelo.webp",
@@ -776,6 +885,7 @@
     {
       "id": "one-piece-luffy",
       "name": "One Piece Luffy",
+      "tags": [],
       "category": "anime",
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/one-piece-luffy/modelo.webp",
@@ -784,6 +894,7 @@
     {
       "id": "star-wars-darth-vader",
       "name": "Star Wars Darth Vader",
+      "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
       "modelo": "/catalogo/cine-series/star-wars-darth-vader/modelo.webp",
@@ -792,6 +903,7 @@
     {
       "id": "pokemon-squarturtle",
       "name": "Pokemon Squarturtle",
+      "tags": [],
       "category": "anime",
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/pokemon-squarturtle/modelo.webp",
@@ -800,6 +912,7 @@
     {
       "id": "stranger-things",
       "name": "Stranger Things",
+      "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
       "modelo": "/catalogo/cine-series/stranger-things/modelo.webp",
@@ -808,6 +921,7 @@
     {
       "id": "saint-seiya-ikki",
       "name": "Saint Seiya Ikki",
+      "tags": [],
       "category": "anime",
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/saint-seiya-ikki/modelo.webp",
@@ -816,6 +930,7 @@
     {
       "id": "street-sharks",
       "name": "Street Sharks",
+      "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
       "modelo": "/catalogo/cine-series/street-sharks/modelo.webp",
@@ -824,6 +939,7 @@
     {
       "id": "slam-dunk",
       "name": "Slam Dunk",
+      "tags": [],
       "category": "anime",
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/slam-dunk/modelo.webp",
