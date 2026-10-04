@@ -775,7 +775,9 @@ const marqueeText = [
 </html>
 
 <style>
-  :global(*) {
+  :global(*),
+  :global(*::before),
+  :global(*::after) {
     box-sizing: border-box;
   }
 
@@ -3051,15 +3053,7 @@ const marqueeText = [
     background: #0a0a0a;
   }
 
-  .care-num {
-    display: block;
-    font-family: monospace;
-    font-size: 11px;
-    color: #666;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    margin-bottom: 6px;
-  }
+  
 
   .care-item strong {
     display: block;
