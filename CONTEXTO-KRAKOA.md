@@ -19,6 +19,10 @@ un index.html con un redirect automático a la URL nueva. Es para que
 los links viejos que se hayan compartido sigan funcionando. No tiene
 código del sitio.
 
+IMPORTANTE: el remote de git local apunta a `barriopuro/krakoa` (no a
+`-web`). Si alguna vez hay que pushear y GitHub rechaza, chequear con
+`git remote -v`.
+
 ## Estructura de archivos relevantes
 
 /
@@ -87,7 +91,8 @@ Cada una tiene `name` (visible) y `color` (hex para el punto de color).
 - otros → "Otros" (#bb86fc)
 
 Para agregar una categoría nueva: crear carpeta en `catalogo/` y agregar
-entrada al `categoryConfig`.
+entrada al `categoryConfig`. El catálogo se ordena con un intercalado
+round-robin por categoría (no todos los de una categoría juntos).
 
 ## ADVERTENCIA CRÍTICA: `:global()` en Astro
 
@@ -100,25 +105,17 @@ quedan sin estilo (fondo blanco, letra negra, etc. = estilo por defecto).
 `innerHTML = ...`, etc.) debe tener sus reglas CSS envueltas en
 `:global(selector)`.
 
-**Ampliación importante (Sesión 6):** además del JS, algunos elementos
-ESTÁTICOS del HTML también pueden necesitar `:global()`. Caso concreto:
-el `<footer class="site-footer">` quedó fuera de `<main>`, y Astro no le
-asignó el atributo `data-astro-cid-...`. Resultado: el CSS no le llegaba
-(el logo aparecía gigante y el texto sin estilo). Solución: envolver los
-selectores del footer en `:global(...)`. Regla general: si un bloque
-estático del HTML se ve "sin estilo" y no está dentro de `<main>`,
-probarlo con `:global()`.
+**Ampliación importante:** además del JS, algunos elementos
+ESTÁTICOS del HTML también pueden necesitar `:global()`. Casos concretos:
+- el `<footer class="site-footer">` (está fuera de `<main>`, Astro no le
+  asigna el `data-astro-cid-...`).
+- el `<div class="search-bar">` (aunque está dentro de `<main>`, tampoco
+  recibía el atributo por algún motivo de Astro).
+- las `<img class="modal-image-el">` del modal (las clases dinámicas
+  `active`, `enter-from-right`, etc. no matcheaban bien sin `:global`).
 
-Ejemplos ya resueltos así en el proyecto:
-- `.modal-thumb`, `.modal-thumb:hover`, `.modal-thumb.active`, `.modal-thumb img`
-- `.modal-fit`, `.modal-fit strong`, `.modal-fit span`, `.modal-fit:hover`, `.modal-fit.active`, `.modal-fit.active strong`
-- `.modal-size`, `.modal-size:hover`, `.modal-size.active`
-- Todas las reglas de `.cart-item*`, `.cart-items*`, `.cart-empty*`, `.cart-clear`
-- Todas las reglas del `.site-footer` y sus hijos (footer)
-- `.hero-bg img` y `.hero-bg img.active` (imágenes del hero que crea el JS)
-- `.footer-particle` (partículas que crea el JS)
-
-Si en el futuro algo dinámico o fuera de `<main>` se ve "sin estilo", es esto.
+**Regla general:** si un bloque del HTML se ve "sin estilo" y no está
+dentro de `<main>` (o sus clases las maneja el JS), probarlo con `:global()`.
 
 ## Cómo funciona el carrito
 
@@ -129,7 +126,7 @@ Si en el futuro algo dinámico o fuera de `<main>` se ve "sin estilo", es esto.
   { key, name, image, fit, size, quantity, color }
 key = ${name}__${fit}__${size} (un item único por modelo+corte+talle).
 
-Si se agrega el mismo modelo+corte+talle, se suma la cantidad al item existente.
+Si se agrega el mismo modelo+corte+talle, se suma la cantidad.
 
 cartItems se serializa a JSON y se guarda después de cada cambio.
 
@@ -140,7 +137,7 @@ saveCart() — guarda en localStorage.
 
 getTotalCount() — suma de cantidades.
 
-updateCartBadge() — actualiza el badge del ícono del carrito en el header.
+updateCartBadge() — actualiza el badge del header.
 
 addToCart(product) — agrega o suma cantidad.
 
@@ -163,42 +160,75 @@ window.open('https://wa.me/...', '_blank').
 UI
 Header: ícono de bolsa + badge (aparece solo cuando hay items).
 
-Drawer: se desliza desde la derecha. Tiene header, body scrolleable y footer.
+Drawer: se desliza desde la derecha. Header, body scrolleable y footer.
 
-Item: foto chica (60x76), nombre, "Corte · Talle X", selector −/+ y botón ×.
+Item: foto (60x76), nombre, "Corte · Talle X", selector −/+ y botón ×.
 
 Botón "Vaciar lista" arriba de todo.
 
-Footer del drawer: "Total de prendas: N" + botón verde "Enviar Pedido por WhatsApp".
+Footer del drawer: "Total de prendas: N" + botón verde
+"Enviar Pedido por WhatsApp".
+
+z-index (importante para overlays apilados)
+Modal: 1000.
+
+Carrito: 1100 (por encima del modal).
+
+Menú mobile: 1200.
+
+Barra de categorías sticky en mobile: 100.
+
+El carrito se puede abrir desde el modal (botón "Ver carrito") y queda
+por encima. Al cerrarlo, el modal sigue abierto detrás.
 
 Cómo funciona el modal de producto
 Estructura
 Layout de 2 columnas en desktop (grid-template-columns: 1.15fr 1fr):
 
-Izquierda: galería (imagen grande + flechas ‹ › + overlay con label y contador + 4 miniaturas).
+Izquierda: galería (imagen grande + flechas ‹ › + overlay con label
+y contador + 4 miniaturas).
 
-Derecha: header (categoría con punto de color + título), body (selectores) y footer (botón agregar + acciones).
+Derecha: header (categoría con punto de color + título), body
+(selectores) y footer (botón agregar + acciones).
 
-En mobile (< 800px): una sola columna, el .modal-grid es el único scroller.
+En mobile (< 800px): una sola columna, el .modal-grid es el único
+scroller.
 
 Carrusel de imágenes
 Son 4 slides siempre:
 
-Modelo (foto de la persona) — ${base}/catalogo/.../modelo.webp
+Modelo — ${base}/catalogo/.../modelo.webp
 
-Remera (producto solo) — ${base}/catalogo/.../remera.webp
+Remera — ${base}/catalogo/.../remera.webp
 
 Talles Oversize — ${base}/talles/oversize.webp
 
 Talles Regular — ${base}/talles/regular.webp
 
-Las rutas de talles se construyen con base (de import.meta.env.BASE_URL)
-que se pasa al <script> con define:vars={{ base }}.
-NO hardcodear /krakoa/... en el script.
+Hay dos <img> apiladas (#modal-image-a y #modal-image-b) para
+poder animar la transición. La variable modalImageActive indica cuál
+está visible.
+
+Transición direccional entre imágenes:
+
+renderModalImage(direction) recibe "next", "prev" o "fade".
+
+"next" → la nueva entra desde la derecha, la vieja sale hacia la izquierda.
+
+"prev" → al revés.
+
+"fade" → solo crossfade, sin desplazamiento (lo usa "Ver gráfico").
+
+Duración 0.32s, curva cubic-bezier(0.22, 1, 0.36, 1).
+
+Todas las formas de cambiar imagen (flechas, teclado, swipe, miniaturas,
+"Ver gráfico") pasan por renderModalImage con la dirección correcta.
+
+El swipe se escucha en .modal-image-wrapper (no en cada img).
 
 Selectores
-Corte: Oversize / Regular Fit. Cambiar de corte puede resetear el talle
-si el talle actual no existe en el nuevo corte.
+Corte: Oversize / Regular Fit. Cambiar de corte puede resetear el
+talle si el actual no existe en el nuevo corte.
 
 Talle: se muestran los del corte activo. En el label "2." al lado
 aparece el alto × ancho en cm (ej: "76 cm alto × 59 cm ancho").
@@ -216,21 +246,65 @@ Oversize (alto × ancho en cm):
 
 S: 72 × 55 | M: 74 × 57 | L: 76 × 59 | XL: 78 × 61 | 2XL: 80 × 63
 
-Nota: el usuario pide mostrar primero el ALTO y después el ANCHO, porque
-así está en las imágenes de las tablas.
+El usuario pide mostrar primero el ALTO y después el ANCHO, porque así
+está en las imágenes de las tablas.
 
 Colores de categoría
 Al abrir el modal, se lee --category-color del .product-category de la
 tarjeta y se setea como variable CSS en .modal-content.
-
 Ese color se aplica a: borde de la miniatura activa, botón de corte activo,
-botón de talle activo, número "1." y "2." de los labels, botón "Agregar al
-Pedido", subrayado del link "Ver gráfico", etc.
+botón de talle activo, número "1." y "2." de los labels, botón
+"Agregar al Pedido", botón "Ver carrito", subrayado de "Ver gráfico", etc.
 
-Cómo funciona el history lock (botón atrás)
-Cuando se abre el modal, el carrito o el menú mobile, se empuja
-una entrada falsa al historial (history.pushState). Así el botón "atrás"
-del celular cierra el overlay en vez de navegar hacia atrás.
+Animación de apertura/cierre
+Desktop: el modal entra con translateY(60px) scale(0.97) → 0/1
+y opacity 0 → 1. Duración 0.42s. Misma curva.
+
+Mobile: fade puro (sin transform). El slide se veía trabado en
+muchos celus por el costo del re-layout del contenido. Duración 0.3s.
+
+La clase .open se agrega con un doble requestAnimationFrame
+después de poner aria-hidden="false". Así el navegador tiene un frame
+para calcular layout antes de animar. Reduce el "tirón" inicial.
+
+El cierre es al revés: saca .open y espera la animación (por el
+visibility con delay).
+
+Compensación de scrollbar
+Cuando el modal se abre, el body pierde la barra de scroll (por
+overflow: hidden en body.modal-open). Para que el layout no salte,
+lockScroll() calcula el ancho de la barra (window.innerWidth - document.documentElement.clientWidth) y lo aplica como padding-right
+al body. unlockScroll() lo limpia al cerrar.
+
+Botones del modal
+"Agregar al Pedido" (arriba del todo).
+
+"Ver carrito" — abre el drawer del carrito por encima del modal.
+
+"Compartir" — genera un link con #hash del producto
+(.../#nombre-del-modelo) y lo comparte con navigator.share o lo copia
+al portapapeles.
+
+Link compartido (#hash)
+Cada producto tiene data-id (slug del nombre, ej: naruto-shippuden).
+
+Cuando se abre la página con un #hash que matchea un producto, se abre
+el modal de ese producto automáticamente (openProductFromHash).
+
+El truco del historial: al abrir por hash, se hace replaceState + un
+pushState extra, así al tocar "atrás" el usuario queda en la home
+sin salir de la web.
+
+Se usa una bandera hashHandled para que no se procese dos veces.
+
+NO hay listener de hashchange: antes lo había y generaba bucles
+raros con el propio pushState. Si el usuario cambia el hash a mano,
+recarga y listo.
+
+History lock (botón atrás)
+Cuando se abre el modal, el carrito o el menú mobile, se empuja una
+entrada falsa al historial (history.pushState). Así el botón "atrás" del
+celular cierra el overlay en vez de navegar hacia atrás.
 
 Variables:
 
@@ -240,41 +314,47 @@ lockHistory(kind) — hace pushState si no había lock, o actualiza el tipo.
 
 releaseHistory() — hace history.back() (dispara el popstate).
 
-window.addEventListener("popstate", ...) — cierra el overlay correspondiente.
+window.addEventListener("popstate", ...) — cierra el overlay
+correspondiente y pone historyLock = null.
 
-Cada overlay tiene 2 funciones de cierre:
+Caso particular: carrito sobre modal
+Cuando se abre el carrito desde el modal, openCartDrawer hace un
+pushState extra y cambia historyLock a "cart". Así el primer
+"atrás" cierra el carrito, no el modal.
 
+Al cerrar el carrito (closeCartDrawerDirect), si el modal sigue
+abierto, historyLock vuelve a "modal". Así el siguiente "atrás"
+cierra el modal.
+
+Caso particular: links del menú mobile
+Al tocar un link del menú mobile (#catalogo, #calidad, etc.), NO se
+hace releaseHistory(). En cambio:
+
+history.replaceState(null, "", href) — reemplaza la entrada del menú
+por la del hash.
+
+historyLock = null — libera sin hacer back.
+
+closeMobileMenuDirect() — cierra el menú.
+
+window.scrollTo({top, behavior: "smooth"}) — scroll suave.
+
+Esto es para que el "atrás" del Android después del scroll vuelva al header
+(y no saque al usuario del navegador).
+
+Cada overlay tiene 2 funciones de cierre
 closeX() — llama a releaseHistory() si tiene el lock (para que el
 atrás no quede colgado cuando el usuario cierra con la X).
 
 closeXDirect() — cierra sin tocar el historial (la usa el popstate).
 
-Caso especial: links del menú mobile
-Al tocar un link del menú mobile (#catalogo, #calidad, etc.), NO hacemos
-releaseHistory(). En cambio:
-
-history.replaceState(null, "", href) — reemplaza la entrada del menú
-por la del hash.
-
-historyLock = null — liberamos sin hacer back.
-
-closeMobileMenuDirect() — cerramos el menú.
-
-window.scrollTo({top, behavior: "smooth"}) — scroll suave con offset
-de 20px.
-
-Esto es para que el "atrás" del Android después del scroll vuelva al header
-(y no saque al usuario del navegador).
-
 Header y navegación
 Desktop (≥ 701px)
 Izquierda: logo horizontal (175px).
 
-Centro: nav con links "Catálogo", "Cómo Comprar", "Materiales"
-(con href="#catalogo" etc., scroll suave con scroll-behavior: smooth).
+Centro: nav con links "Catálogo", "Cómo Comprar", "Materiales".
 
-Derecha: botón Instagram (ícono rosa + @krakoa.sw) + botón carrito
-(fondo blanco, ícono de bolsa + badge).
+Derecha: botón Instagram (ícono rosa + @krakoa.sw) + botón carrito.
 
 Mobile (≤ 700px)
 Izquierda: logo horizontal (135px).
@@ -286,20 +366,23 @@ Derecha: botón Instagram (solo ícono) + botón carrito + botón hamburguesa.
 Al tocar la hamburguesa se abre el menú mobile (drawer desde la derecha)
 con links: Catálogo, Cómo Comprar, Materiales, Instagram (con flechita ↗).
 
-Hero con imágenes rotando (D1)
+Hero con imágenes rotando
 El .hero tiene fondo con imágenes del catálogo que rotan cada ~5.5s.
 
-Las imágenes se eligen al azar en cada visita desde los .webp del catálogo
-(hasta 6, barajadas con shuffleArray).
+Las imágenes se eligen al azar en cada visita desde los .webp del
+catálogo (hasta 6, barajadas con shuffleArray).
 
-Cada imagen hace un zoom lento + paneo hacia un costado. Las pares (nth-child(even))
-panean hacia el otro lado para dar variedad.
+Cada imagen hace un zoom lento + paneo hacia un costado. Las pares
+(nth-child(even)) panean hacia el otro lado.
 
-Se usa transition sobre transform, NO animation. Con animation,
-al sacar la clase .active el navegador borraba la animación y la imagen
-"saltaba" al centro antes del fade. Con transition sale suave.
+Se usa transition sobre transform, NO animation.
 
-Opacidad de las fotos: 0.32 (configurable).
+Opacidad de las fotos: 0.32.
+
+Ancho completo: el hero sale de <main> con left: 50%,
+width: 100vw, transform: translateX(-50%). No tiene border-radius.
+El contenido interno (.hero-content) sí está limitado a min(1400px, 90vw)
+para alinear con el resto.
 
 Debajo del hero hay una marquesina con keywords que se desplaza
 infinitamente. El array de textos está en marqueeText en el frontmatter.
@@ -315,9 +398,78 @@ Velocidad de la marquesina: el 45s en animation: marqueeScroll.
 
 Intensidad del zoom: scale(1.1) en las transiciones del hero.
 
-Paneo lateral: translateX(±1.5%) en las transiciones del hero.
+Paneo lateral: translateX(±1.5%).
 
-Footer completo (D2)
+Fondo tintado por categoría (novedad importante)
+Cuando el usuario selecciona una categoría, el fondo de la sección
+#catalogo se pinta con el color de esa categoría.
+
+Cómo funciona
+Hay dos capas (#catalogTintA y #catalogTintB) apiladas dentro de
+la sección, con position: absolute, z-index: -1 y opacity: 0.16.
+
+La visibilidad la controla el clip-path:
+
+Cerrado: clip-path: inset(0 0 0 100%) (recortado desde la izquierda).
+
+Visible: clip-path: inset(0 0 0 0).
+
+Saliendo: clip-path: inset(0 100% 0 0) (recortado desde la derecha).
+
+Dos capas permiten que el cambio de una categoría a otra sea un
+slide (no un fade): la capa nueva entra desde la derecha mientras la
+vieja sale hacia la izquierda.
+
+Duración del slide: 0.55s. La variable de JS tintTimer está en 600.
+
+El color viene de --category-color del .category-wrap.
+
+Para que el tinte llegue a los bordes de la ventana: left: 50%,
+width: 100vw, transform: translateX(-50%).
+
+El tinte arranca un poco arriba del borde superior de la sección con
+top: -13px (para dar aire arriba).
+
+Funciones de JS
+showTint(color) — activa el tinte con el color dado. Hace el swap
+entre capas si ya había un tinte activo.
+
+hideTint() — desactiva el tinte (cuando el usuario deselecciona la
+categoría).
+
+commitTintSwap() — fuerza el fin de un swap en curso.
+
+Buscador
+El buscador está fuera de <section class="catalog">, entre la
+marquesina y la sección. Está centrado.
+
+Clase .search-bar (con :global porque Astro no le asignaba el
+data-astro-cid).
+
+Ancho del input: min(420px, 100%). En mobile es 100%.
+
+Filtra por nombre (product.dataset.name) en tiempo real.
+
+Barra de categorías
+Botones envueltos en <span class="category-wrap"> con el color de la
+categoría como background.
+
+El botón se "despega" con transform: translate(-14px, -14px) en hover
+y cuando está activo.
+
+Click en el wrap también dispara el handler (no solo el botón). Se
+hace con event.stopPropagation() en el botón y un listener aparte en
+el wrap, ambos llaman a handleClick.
+
+Toggle: tocar el botón ya activo lo desactiva y vuelve a mostrar todo.
+
+Centrados horizontalmente: justify-content: center en .categories.
+
+En mobile: sticky (position: sticky; top: 0; z-index: 100),
+fondo rgba(11, 11, 11, 0.72) con backdrop-filter: blur(10px) para
+dejar ver el tinte detrás.
+
+Footer completo
 Tres columnas:
 
 Logo vertical (krakoalogo-vertical.webp) a 70px (desktop) / 58px (mobile).
@@ -326,22 +478,21 @@ Texto institucional (SEO) justificado.
 
 Menú vertical con links: Catálogo, Cómo Comprar, Materiales, Instagram.
 
-Abajo: línea fina con "© KRAKOA" y "@krakoa.sw".
+Abajo: línea fina con "© 2026 KRAKOA powered by BARRIOPURO".
 
 Fondo: partículas blancas tenues que suben lentamente (creadas por JS, con
-:global(.footer-particle)). Cantidad: 22 partículas. Velocidad y delays
-randomizados. El @keyframes floatUp hace que suban ~420px y se desvanezcan.
+:global(.footer-particle)). Cantidad: 22 partículas. El @keyframes floatUp
+hace que suban ~420px y se desvanezcan.
 
 IMPORTANTE: todas las reglas CSS del footer van con :global() porque
-el <footer> está fuera de <main> y Astro no le asigna el data-astro-cid.
+el <footer> está fuera de <main>.
 
 Secciones de la página
 Orden de arriba a abajo:
 
 #krakoa-loader — overlay de carga inicial (fade in del isotipo).
-                  Va en el <body> antes del header. Estilos inline
-                  críticos para evitar FOUC. Ver Sesión 7.
-
+Va en el <body> antes del header. Estilos inline críticos para
+evitar FOUC.
 
 <header class="site-header">
 
@@ -349,19 +500,20 @@ Orden de arriba a abajo:
 
 <main>
 
-<section class="hero"> — con fondo de imágenes rotando + título CATALOGO.
+<section class="hero"> — fondo de imágenes rotando + título CATALOGO.
 
-<div class="marquee"> — cinta con keywords
+<div class="marquee"> — cinta con keywords.
 
-<section id="catalogo" class="catalog"> — buscador, barra de categorías
-sticky en mobile (toggle, sin botón "Todos"), grilla.
+<div class="search-bar"> — buscador (fuera de la sección catálogo).
 
-<section id="como-comprar" class="faq-section"> — acordeón con 5 preguntas
+<section id="catalogo" class="catalog"> — barra de categorías centrada,
+grilla, tinte por categoría.
 
-bloque "¿Tenés una consulta especial?" con botón WhatsApp.
+<section id="como-comprar" class="faq-section"> — acordeón con 5
+preguntas + bloque "¿Tenés una consulta especial?" con botón WhatsApp.
 
 <section id="calidad" class="quality-section"> — 4 pilares (algodón,
-estampado, moldería, pre-encogido) + guía de cuidado (4 items, sin números).
+estampado, moldería, pre-encogido) + guía de cuidado (4 items).
 
 #product-modal — modal de producto.
 
@@ -371,16 +523,12 @@ estampado, moldería, pre-encogido) + guía de cuidado (4 items, sin números).
 
 #back-to-top — botón flotante "↑".
 
-## Secciones pendientes (plan original)
-
+Secciones pendientes (plan original)
 C1: Botón "Modelo / Remera" en cada tarjeta del catálogo (cambia la
 foto sin abrir el modal). Inspirado en la versión de Google AI Studio.
 El usuario pidió PAUSARLO por ahora, lo va a pensar mejor.
 
-D3: ~~Loader con el logo apareciendo~~ ✅ **HECHO en Sesión 7**
-
 Ideas futuras / deuda técnica
-
 Referencia: hay una versión alternativa hecha con Google AI Studio
 (React + Vite + Tailwind, componentes separados) en
 https://sensational-faloodeh-68f992.netlify.app — el usuario tiene los
@@ -399,202 +547,175 @@ simplicidad. Si en el futuro crece mucho, se puede refactorizar.
 
 define:vars para pasar base al script. Es la forma oficial de Astro.
 
-:global() para todo lo que cree el JS, y también para elementos estáticos
-fuera de <main> (ver footer). (Ver advertencia más arriba.)
+:global() para todo lo que cree el JS, y también para elementos
+estáticos fuera de <main> (ver advertencia más arriba).
 
-El carrito se guarda en localStorage. Decisión del usuario: que
-persista entre visitas es lo más cómodo.
+El carrito se guarda en localStorage. Persiste entre visitas.
 
-Talles Regular Fit hasta 5XL. Oversize hasta 2XL.
-Regular tiene 8 talles (S, M, L, XL, 2XL, 3XL, 4XL, 5XL).
-Oversize tiene 5 talles (S, M, L, XL, 2XL).
+Talles Regular Fit hasta 5XL, Oversize hasta 2XL.
 
-Los logos se optimizan a WebP automáticamente desde el script (400px de
-ancho máximo, quality 88, effort 6). Los PNG originales NO están en el
-repo: el usuario los guarda en una carpeta aparte, fuera de la web. Si
-hay que regenerar algún .webp, copiar temporalmente el PNG a
-public/logos/, correr el .bat, y borrarlo de nuevo.
+Los logos se optimizan a WebP automáticamente desde el script.
 
-Las tarjetas del catálogo usan object-fit: cover (con contain, la
-foto no llenaba el contenedor y las esquinas redondeadas no se veían).
+Las tarjetas del catálogo usan object-fit: cover.
+
+El modal en mobile usa fade puro (no slide) por performance.
+
+El hero va a ancho completo (fuera de <main>).
+
+El fondo tintado va a ancho completo y con clip-path (no
+translateX), para no romper el position: sticky de las categorías.
+
+El body tiene overflow-x: clip (no hidden, para no romper el sticky).
 
 Historial de cambios (más reciente arriba)
+Sesión 10 — Tinte por categoría, buscador afuera, animaciones del modal
+Fondo tintado por categoría:
+
+Nuevo fondo en la sección #catalogo que se pinta con el color de la
+categoría activa, con slide direccional (derecha → izquierda) y dos
+capas apiladas. Cuando se cambia de categoría, la nueva entra desde la
+derecha y la vieja sale hacia la izquierda (no fade).
+
+El tinte va a ancho completo (100vw, left: 50%, translateX(-50%)).
+
+Arranca con top: -13px para dar aire arriba.
+
+El color se toma de --category-color del .category-wrap.
+
+Buscador:
+
+Movido fuera de <section class="catalog">, entre la marquesina y
+el catálogo, centrado.
+
+Clase .search-bar envuelta en :global() (Astro no le asignaba el
+data-astro-cid).
+
+Ancho: min(420px, 100%).
+
+Barra de categorías:
+
+Centrada horizontalmente (justify-content: center).
+
+Click en el .category-wrap también activa la categoría (no solo el
+botón), para que la "sombra" del botón despegado sea clickeable.
+
+En mobile: fondo semitransparente con blur para dejar ver el tinte.
+
+Hero:
+
+Ahora va a ancho completo (sale de <main> con 100vw + translateX).
+
+Se sacó el border-radius.
+
+El contenido interno sigue alineado con el resto.
+
+Modal:
+
+Animación de apertura/cierre: slide + scale en desktop, fade puro en
+mobile.
+
+Compensación del ancho de la barra de scroll al abrir el modal (evita
+el "salto" del layout en PC).
+
+Botón "Consultar por WhatsApp" reemplazado por "Ver carrito" (abre el
+drawer por encima del modal).
+
+Link "Compartir" ahora genera #hash del producto. Al abrir un link
+con hash, el modal se abre solo.
+
+Transición direccional entre imágenes: dos capas apiladas, slide
+direccional (next/prev) + fade para "Ver gráfico".
+
+El doble requestAnimationFrame para agregar .open reduce el "tirón"
+inicial en mobile.
+
+History lock:
+
+Arreglado para el caso del modal por hash (se hace replaceState +
+pushState extra para que "atrás" quede en la web).
+
+Arreglado para el carrito sobre modal: openCartDrawer pushea una
+entrada extra y cambia el lock a "cart". Al cerrar el carrito, si el
+modal sigue abierto, el lock vuelve a "modal".
+
+Se eliminó el listener de hashchange (generaba bucles con el
+pushState).
+
+Sesión 9 — Fondo dinámico por categoría + fix de remote
+Nuevo fondo tintado en la sección catálogo, con slide de derecha a
+izquierda, color según la categoría activa. Dos capas apiladas para que
+el cambio entre categorías también sea slide (no fade).
+
+Buscador movido afuera de <section class="catalog">, centrado debajo
+de la marquesina.
+
+:global() también en .search-bar.
+
+Fix: el remote de git local apuntaba a krakoa-web (que ahora es el
+repo del redirect). Se cambió a barriopuro/krakoa con
+git remote set-url origin.
 
 Sesión 8 — Catálogo variado, barra de categorías rediseñada, URL nueva
-Catálogo: en `generar-catalogo.mjs` se agregó un intercalado
-round-robin de productos por categoría (antes salían todos los de
-anime, después todos los de comics, etc.). Ahora al ver "Todos" hay
-variedad desde el primer modelo. El orden es determinístico (no
-aleatorio), sigue el orden alfabético de categorías.
+Catálogo con intercalado round-robin por categoría (no todos los de
+una categoría juntos).
 
-Barra de categorías: rediseño completo inspirado en el CodePen
-"shadow-button-set" de Adam Argyle.
-- Se eliminó el botón "Todos" y los puntos de color en cada botón.
-- El color de cada categoría ahora es el FONDO del botón (visible
-  cuando el botón se "despega").
-- Al hacer hover o al estar activo, el botón se desplaza en diagonal
-  arriba-izquierda (translate(-14px, -14px)), dejando ver el color
-  de la categoría detrás. Efecto "despegue".
-- El activo queda despegado permanentemente.
-- Toggle: tocar el botón ya activo lo desactiva y vuelve a mostrar
-  todo (activeCategory = null).
-- Sin `:focus-within` (que dejaba el botón pegado después del click);
-  se usa `:focus-visible` para accesibilidad por teclado.
-- Bordes rectos (sin border-radius), borde de 3px.
-- HTML: cada botón va envuelto en un `<span class="category-wrap">`
-  que tiene el color de la categoría como fondo.
+Barra de categorías rediseñada inspirada en el CodePen "shadow-button-set"
+de Adam Argyle. Botón que se "despega" en hover/activo.
 
-Mobile: la barra de categorías es sticky (`position: sticky; top: 0`).
-- Se pega al tope cuando el scroll la empuja, queda siempre visible.
-- z-index: 100, así el modal (1000) y el carrito (1100) quedan por
-  encima cuando se abren.
-- Sin scroll horizontal: los botones van en 2 filas si no entran.
-- El fondo de la barra llega hasta los bordes (margin-inline: -5vw
-  + padding: 12px 5vw para compensar).
+Toggle: tocar el botón ya activo lo desactiva.
 
-Migración de URL: el repo se renombró de `krakoa-web` a `krakoa`.
-- `astro.config.mjs`: `base: '/krakoa-web'` → `base: '/krakoa'`.
-- El `site` no cambió (sigue `https://barriopuro.github.io`).
-- El `.bat` y el workflow `deploy.yml` NO tenían nada hardcodeado,
-  no hicieron falta cambios ahí.
-- Se creó un repo nuevo `barriopuro/krakoa-web` con un `index.html`
-  que redirige (meta refresh) a la URL nueva, para no romper links
-  viejos compartidos.
+Barra de categorías sticky en mobile.
 
+Migración de URL: repo renombrado de krakoa-web a krakoa.
 
 Sesión 7 — Fix back-to-top + Loader inicial (D3)
-Fix del botón "volver arriba" (#back-to-top): el botón ya existía
-en el HTML y tenía su CSS con :global(), pero el <script> declaraba
-la variable backToTop y nunca le agregaba la clase .visible. Se
-agregó el listener de scroll (aparece al pasar los 600px de scrollY)
-y el handler del click (scrollTo top con behavior smooth).
+Fix del botón "volver arriba" (le faltaba el listener de scroll).
 
-D3 implementado: loader de carga inicial con fade in del isotipo
-krakoalogo-isotipo.webp sobre fondo oscuro (#0a0a0a). Se ve en
-cada carga de página (no se guarda en localStorage). Duración
-mínima 700ms (MIN_TIME). Al terminar, se desvanece (0.45s) y se
-borra del DOM.
+Loader de carga inicial con fade in del isotipo sobre fondo oscuro.
 
-Fix crítico del loader: la primera versión mostraba un flash del
-logo en la esquina superior derecha por menos de un frame (FOUC,
-flash of unstyled content). El navegador dibujaba el HTML antes de
-aplicar el CSS que lo posicionaba. Solución: estilos críticos
-inline en el style="" del div y del img (posición, fondo, opacity:0).
-El JS no usa clases para mostrar/ocultar, setea style.opacity
-directo. Regla para el futuro: los loaders (y cualquier cosa que
-deba estar oculta desde el primer frame) NO deben depender del
-CSS externo para esconderse; usar estilos inline.
+Fix crítico del loader: estilos inline para evitar FOUC.
 
-
-Sesión 6 — Ajustes de estilo, Hero con imágenes rotando, Footer completo
-Ícono + título en la misma línea en los 4 pilares de "Materiales"
-(wrapper .quality-pillar-head con flex).
-
-Se borraron los números 01, 02, 03, 04 de la "Guía de Cuidado".
+Sesión 6 — Ajustes, Hero con imágenes rotando, Footer completo
+Ícono + título en la misma línea en los 4 pilares.
 
 Tarjetas del catálogo con border-radius: 15px + object-fit: cover.
 
-D1: Hero con fondo de imágenes del catálogo que rotan cada ~5.5s con
-zoom + paneo alternado (izq/der). Las imágenes se eligen al azar en cada
-visita desde los .webp del catálogo (hasta 6). Se agregó marquesina
-debajo del hero con keywords.
+Hero con fondo de imágenes rotando + marquesina.
 
-Limpieza: se borraron los PNG fuente de logos de public/logos/
-(krakoalogo-horizontal.png, -isotipo.png, -vertical.png). El usuario
-los guarda en una carpeta aparte, fuera del repo. Los .webp generados
-siguen en public/logos/ y el sitio funciona igual. Si en el futuro hay
-que regenerar algún .webp, hay que copiar temporalmente el PNG a
-public/logos/, correr el script, y volver a borrarlo.
+Footer completo con 3 columnas + partículas.
 
-
-Fix del salto del hero: se reemplazó animation por transition sobre
-transform, así la imagen saliente no se "centra" antes del fade.
-
-D2: Footer completo (3 columnas: logo vertical | texto institucional
-justificado | menú vertical) + partículas blancas tenues animadas
-subiendo lentamente (creadas por JS con :global).
-
-Fix crítico del footer: los selectores CSS necesitaban :global() porque
-el <footer> está fuera de <main> y Astro no le asignaba el
-data-astro-cid. Ver "ADVERTENCIA CRÍTICA" más arriba.
-
-Logo del footer cambiado a krakoalogo-vertical.png (luego .webp).
-
-Script: se agregó optimización de logos PNG → WebP. Los .webp se generan
-a 400px de ancho (sin agrandar) y quality 88, effort 6. Los PNG originales
-se quedan en public/logos/ como fuente, no se borran.
-
-Rutas del HTML actualizadas a .webp para todos los logos.
+Fix crítico del footer con :global().
 
 Sesión 5 — Header con menú + fix del botón atrás en mobile
-Header desktop: logo a 175px, nav central con 3 links, Instagram
-con ícono, botón carrito.
+Header desktop y mobile rediseñados.
 
-Header mobile: logo a 135px, Instagram solo ícono, carrito, hamburguesa.
+Menú mobile (drawer).
 
-Menú mobile: drawer desde la derecha con links a secciones + Instagram.
-
-Bug fix: links del menú mobile ahora usan history.replaceState +
-scrollTo manual (antes rompían el history lock y el "atrás" sacaba
-al usuario del navegador).
-
-Limpieza: se borró un bloque duplicado de CSS de la sesión 2
-(.header-actions, .cart-button, .cart-count) que estaba pisando
-las versiones nuevas y descolocaba el header.
+Fix de los links del menú mobile con history.replaceState.
 
 Sesión 4 — Secciones "Cómo Comprar" y "Calidad y Materiales"
-B1: Sección "Cómo Comprar" (#como-comprar) con acordeón de 5
-preguntas (se sacó la de diseños personalizados porque el usuario no
-ofrece ese servicio). Bloque "¿Tenés una consulta especial?" con botón
-WhatsApp. Solo una pregunta abierta a la vez.
+Acordeón de 5 preguntas + bloque de consulta con WhatsApp.
 
-B2: Sección "Calidad y Materiales" (#calidad) con 4 pilares
-(algodón 24/1, estampado DTF, moldería propia, pre-encogido) + guía de
-cuidado con 4 items numerados.
-
-Ajuste de espaciados en negritas dentro de párrafos (se pegaban a
-palabras adyacentes).
+4 pilares + guía de cuidado.
 
 Sesión 3 — Carrito + modal nuevo (Bloque A completo)
-A1: Header con ícono de carrito + badge, drawer lateral "Mi Pedido",
-persistencia en localStorage. Fix del badge "0" que se mostraba
-cuando no correspondía.
+Carrito con localStorage, drawer, badge.
 
-A2: Modal rediseñado con layout de 2 columnas, miniaturas, selectores
-de corte/talle/cantidad, cm en vivo, colores de categoría aplicados.
-Fix de responsive mobile (el .modal-grid es el único scroller).
+Modal rediseñado con 2 columnas, miniaturas, selectores.
 
-A3: Conectar modal con carrito real. Agregar, sumar cantidad, eliminar,
-vaciar lista, enviar pedido por WhatsApp con formato. Fix del scoping de
-Astro (todo lo dinámico va con :global()).
+History lock para modal y carrito.
 
-History lock para modal y carrito (botón atrás del celular los cierra).
-
-Nombres de corte: "Oversize Boxy" → "Oversize", "Regular Classic" →
-"Regular Fit" (así están en las imágenes de las tablas).
+Nombres de corte: "Oversize" y "Regular Fit".
 
 Sesión 2 — Deploy fix
-Se descubrió que el Source de Pages estaba en "Deploy from a branch"
-y mostraba el README de Astro. Se cambió a "GitHub Actions".
-
-Se aprendió que el workflow solo se dispara con push a main (no tiene
-workflow_dispatch), así que hay que hacer un cambio real y correr el
-.bat.
+Cambio de Source de Pages a "GitHub Actions".
 
 Sesión 1 — Limpieza y des-hardcodeo
-A1: Borrados archivos basura: src/components/Welcome.astro,
-src/layouts/Layout.astro, src/assets/astro.svg,
-src/assets/background.svg.
+Borrados archivos basura.
 
-A2: Arreglado formatName() en generar-catalogo.mjs para que maneje
-correctamente la "ñ" y letras acentuadas (antes "El Señor" salía "El SeñOr").
+Fix de formatName() para la "ñ" y acentos.
 
-A3: Estandarizado color de "comics" a minúscula (#e84393).
-
-A4: Borrada variable modalCounter no usada en index.astro.
-
-B: Rutas de talles ya no están hardcodeadas. Ahora usan base pasado
-al script con define:vars. Si cambia el dominio, todo se adapta solo.
+Rutas de talles con base pasado por define:vars.
 
 Protocolo para abrir chat nuevo
 Cuándo: cada ~20-30 mensajes, o al cerrar un bloque grande de trabajo,
@@ -615,31 +736,12 @@ Continuar desde donde quedamos.
 Recomendación: hacerlo idealmente al cerrar un bloque (no a mitad).
 
 Convenciones para el asistente
-Idioma: español rioplatense, tono informal pero claro. Evitar tecnicismos
+Idioma y tono
+Español rioplatense, tono informal pero claro. Evitar tecnicismos
 innecesarios; explicar lo técnico con analogías cuando haga falta.
 
-El usuario no programa. No asumir conocimientos de terminal, git, npm,
-etc. Dar pasos concretos y verificables.
+El usuario no programa
+No asumir conocimientos de terminal, git, npm, etc. Dar pasos concretos
+y verificables.
 
-Al dar instrucciones de edición: indicar claramente el archivo,
-qué línea buscar (o el texto distintivo más corto posible) y qué
-reemplazar o agregar. EVITAR espacios al inicio de los bloques al
-decir "buscá esto", porque el buscador de VS Code es literal y no
-encuentra nada. Mejor dar una línea corta y distintiva.
-
-Cambios chicos y verificables. Preferir varias iteraciones cortas antes
-que una grande. Después de cada cambio, indicar cómo probarlo.
-
-No romper el flujo del .bat. Es la parte más sensible del proyecto.
-
-Respetar la estructura de un solo archivo (index.astro). No proponer
-refactorizaciones grandes sin acordarlo antes.
-
-El usuario usa Edge en Windows. Los atajos son F12 (o Ctrl+Shift+I)
-para DevTools y Ctrl+Shift+M para modo dispositivo (mobile).
-
-El usuario tiene buen ojo. Detecta detalles finos (colores, espaciados,
-comportamientos raros). Vale la pena escucharlo.
-
-Si algo se ve "sin estilo" de golpe, la primera sospecha es el scoping
-de Astro: probar :global(). (Ver ADVERTENCIA CRÍTICA.)
+Cuando el usuario dice "no entendí", simplificar. No debatir opciones

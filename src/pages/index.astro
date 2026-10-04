@@ -541,9 +541,21 @@ const marqueeText = [
           </button>
 
           <div class="modal-image-wrapper">
-            <img id="modal-image-a" class="modal-image-el active" src="" alt="" />
-            <img id="modal-image-b" class="modal-image-el" src="" alt="" />
-          </div>
+  <img
+    id="modal-image-a"
+    class="modal-image-el active"
+    src=""
+    alt=""
+    decoding="async"
+  />
+  <img
+    id="modal-image-b"
+    class="modal-image-el"
+    src=""
+    alt=""
+    decoding="async"
+  />
+</div>
 
           <button
             id="modal-next"
@@ -1075,13 +1087,14 @@ const marqueeText = [
     object-fit: cover;
     opacity: 0;
     transition: opacity 1.4s ease, transform 9s ease-out;
-    will-change: opacity, transform;
     transform: scale(1.02) translateX(-1.5%);
   }
 
       :global(.hero-bg img.active) {
     opacity: 0.32;
     transform: scale(1.1) translateX(1.5%);
+     will-change: opacity, transform;
+
   }
 
   :global(.hero-bg img:nth-child(even)) {
@@ -3286,7 +3299,21 @@ categoryButtons.forEach((button) => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 
-  searchInput.addEventListener("input", filterProducts);
+  // Debounce: espera a que el usuario deje de teclear por 150ms
+  // antes de ejecutar la función. Evita correr filterProducts en
+  // cada tecla cuando el catálogo es grande.
+  function debounce(fn, delay) {
+    let timer = null;
+    return (...args) => {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => {
+        timer = null;
+        fn(...args);
+      }, delay);
+    };
+  }
+
+  searchInput.addEventListener("input", debounce(filterProducts, 150));
 
 
    // -------------------------
@@ -3411,11 +3438,11 @@ categoryButtons.forEach((button) => {
     const isFirstRender = !visible.src;
 
     if (isFirstRender) {
-      // Primer render: solo aparecemos la capa A, sin animación.
-      visible.src = current.src;
-      visible.alt = `${currentProductName} — ${current.label}`;
-      visible.classList.add("active");
-      return;
+     visible.src = current.src;
+visible.alt = `${currentProductName} — ${current.label}`;
+visible.decoding = "async";
+visible.classList.add("active");
+return;
     }
 
     // Las clases de animación según la dirección.
@@ -3434,7 +3461,8 @@ categoryButtons.forEach((button) => {
 
     // 1) Preparamos la capa oculta: src nuevo, posición inicial, sin transición.
     hidden.src = current.src;
-    hidden.alt = `${currentProductName} — ${current.label}`;
+hidden.alt = `${currentProductName} — ${current.label}`;
+hidden.decoding = "async";
     hidden.classList.remove("active", "enter-from-right", "enter-from-left", "enter-fade");
     hidden.classList.add(enterClass);
     // Forzamos reflow para que el navegador registre la posición inicial
@@ -3562,7 +3590,6 @@ categoryButtons.forEach((button) => {
     const categoryName =
       category?.textContent?.trim() ?? "";
 
-    modal.style.setProperty("--category-color", categoryColor);
 
     const image = product.querySelector("img");
     if (!image) return;
@@ -3604,6 +3631,8 @@ categoryButtons.forEach((button) => {
 
     modalAdd.classList.remove("is-added");
     modalAdd.textContent = "Agregar al Pedido";
+
+    modal.style.setProperty("--category-color", categoryColor);
 
     modal.setAttribute("aria-hidden", "false");
     lockScroll();
@@ -3750,16 +3779,7 @@ categoryButtons.forEach((button) => {
   });
 
 
-  // En A3 este botón va a agregar al carrito de verdad.
-  // Por ahora solo da feedback visual.
-  modalAdd.addEventListener("click", () => {
-    modalAdd.classList.add("is-added");
-    modalAdd.textContent = "¡Agregado!";
-    setTimeout(() => {
-      modalAdd.classList.remove("is-added");
-      modalAdd.textContent = "Agregar al Pedido";
-    }, 1600);
-  });
+
 
 
   modalSeeCart.addEventListener("click", () => {
@@ -4188,13 +4208,7 @@ categoryButtons.forEach((button) => {
   // Conectar modal → carrito
   // -------------------------
 
-  // Reemplazamos el listener anterior (que solo daba feedback visual)
-  // por uno que agrega de verdad al carrito.
-  const modalAddOld = modalAdd;
-  const modalAddClone = modalAddOld.cloneNode(true);
-  modalAddOld.parentNode.replaceChild(modalAddClone, modalAddOld);
-
-  modalAddClone.addEventListener("click", () => {
+  modalAdd.addEventListener("click", () => {
     const imageSrc = currentImages[0]?.src || "";
     const color = modal.style.getPropertyValue("--category-color") || "#ffffff";
 
@@ -4207,12 +4221,12 @@ categoryButtons.forEach((button) => {
       color,
     });
 
-    modalAddClone.classList.add("is-added");
-    modalAddClone.textContent = "¡Agregado!";
+    modalAdd.classList.add("is-added");
+    modalAdd.textContent = "¡Agregado!";
 
     setTimeout(() => {
-      modalAddClone.classList.remove("is-added");
-      modalAddClone.textContent = "Agregar al Pedido";
+      modalAdd.classList.remove("is-added");
+      modalAdd.textContent = "Agregar al Pedido";
     }, 1600);
   });
 
@@ -4365,7 +4379,21 @@ if (heroBg) {
     img.alt = "";
     img.setAttribute("aria-hidden", "true");
     img.decoding = "async";
-    if (index === 0) img.classList.add("active");
+
+    if (index === 0) {
+      // La primera imagen es la que se ve al cargar la página.
+      // Es el LCP: le decimos al navegador que la priorice por sobre
+      // todo lo demás, y NO la marcamos como lazy.
+      img.fetchPriority = "high";
+      img.loading = "eager";
+      img.classList.add("active");
+    } else {
+      // Las otras 5 rotan recién en los próximos segundos.
+      // No son urgentes: que carguen cuando puedan.
+      img.fetchPriority = "low";
+      img.loading = "lazy";
+    }
+
     heroBg.appendChild(img);
   });
 
