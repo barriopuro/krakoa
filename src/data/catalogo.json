@@ -505,13 +505,13 @@
       "remera": "/catalogo/musica/indio-solari/remera.webp"
     },
     {
-      "id": "splatterhouse",
-      "name": "Splatterhouse",
+      "id": "silent-hill-pyramid-head",
+      "name": "Silent Hill Pyramid Head",
       "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/splatterhouse/modelo.webp",
-      "remera": "/catalogo/videojuegos/splatterhouse/remera.webp"
+      "modelo": "/catalogo/videojuegos/silent-hill-pyramid-head/modelo.webp",
+      "remera": "/catalogo/videojuegos/silent-hill-pyramid-head/remera.webp"
     },
     {
       "id": "dragon-ball-z-gohan",
@@ -559,13 +559,13 @@
       "remera": "/catalogo/musica/jimi-hendrix/remera.webp"
     },
     {
-      "id": "street-fighter-dhalsim",
-      "name": "Street Fighter Dhalsim",
+      "id": "splatterhouse",
+      "name": "Splatterhouse",
       "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/street-fighter-dhalsim/modelo.webp",
-      "remera": "/catalogo/videojuegos/street-fighter-dhalsim/remera.webp"
+      "modelo": "/catalogo/videojuegos/splatterhouse/modelo.webp",
+      "remera": "/catalogo/videojuegos/splatterhouse/remera.webp"
     },
     {
       "id": "dragon-ball-z-piccoro",
@@ -604,13 +604,13 @@
       "remera": "/catalogo/musica/lemmy-kilmister/remera.webp"
     },
     {
-      "id": "super-mario-bros",
-      "name": "Super Mario Bros",
+      "id": "street-fighter-dhalsim",
+      "name": "Street Fighter Dhalsim",
       "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/super-mario-bros/modelo.webp",
-      "remera": "/catalogo/videojuegos/super-mario-bros/remera.webp"
+      "modelo": "/catalogo/videojuegos/street-fighter-dhalsim/modelo.webp",
+      "remera": "/catalogo/videojuegos/street-fighter-dhalsim/remera.webp"
     },
     {
       "id": "dragon-ball-z-vegeta",
@@ -649,13 +649,13 @@
       "remera": "/catalogo/musica/linkin-park/remera.webp"
     },
     {
-      "id": "zelda-hyrule-icons",
-      "name": "Zelda Hyrule Icons",
+      "id": "super-mario-bros",
+      "name": "Super Mario Bros",
       "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/zelda-hyrule-icons/modelo.webp",
-      "remera": "/catalogo/videojuegos/zelda-hyrule-icons/remera.webp"
+      "modelo": "/catalogo/videojuegos/super-mario-bros/modelo.webp",
+      "remera": "/catalogo/videojuegos/super-mario-bros/remera.webp"
     },
     {
       "id": "eva-01-complementado-evangelion",
@@ -692,6 +692,15 @@
       "categoryName": "Música",
       "modelo": "/catalogo/musica/michael-jackson/modelo.webp",
       "remera": "/catalogo/musica/michael-jackson/remera.webp"
+    },
+    {
+      "id": "zelda-hyrule-icons",
+      "name": "Zelda Hyrule Icons",
+      "tags": [],
+      "category": "videojuegos",
+      "categoryName": "Videojuegos",
+      "modelo": "/catalogo/videojuegos/zelda-hyrule-icons/modelo.webp",
+      "remera": "/catalogo/videojuegos/zelda-hyrule-icons/remera.webp"
     },
     {
       "id": "eva-01-evangelion",
@@ -944,6 +953,15 @@
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/slam-dunk/modelo.webp",
       "remera": "/catalogo/anime/slam-dunk/remera.webp"
+    },
+    {
+      "id": "the-warriors",
+      "name": "The Warriors",
+      "tags": [],
+      "category": "cine-series",
+      "categoryName": "Cine y Series",
+      "modelo": "/catalogo/cine-series/the-warriors/modelo.webp",
+      "remera": "/catalogo/cine-series/the-warriors/remera.webp"
     }
   ]
 }
