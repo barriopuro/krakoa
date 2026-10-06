@@ -112,6 +112,86 @@ function findImage(directory, baseName) {
   return null;
 }
 
+// Busca archivos que empiecen con "extra-" en la carpeta del producto.
+// Devuelve un array de objetos { file, order, label } ordenados.
+//
+// Convención de nombres:
+//   extra-1-remera-espalda.jpg   → order: 1, label: "Remera Espalda"
+//   extra-2-modelo-espalda.jpg   → order: 2, label: "Modelo Espalda"
+//   extra-referencia.jpg         → order: null, label: "Referencia"
+//   extra-1.jpg                  → order: 1, label: "Extra 1"
+//
+// Orden final: primero los que tienen número (ascendente), después los
+// que no (alfabético por label).
+function findExtraImages(directory) {
+  const files = fs.readdirSync(directory, { withFileTypes: true });
+
+  const extras = [];
+
+  for (const entry of files) {
+    if (!entry.isFile()) continue;
+
+    const name = entry.name;
+    if (!name.toLowerCase().startsWith("extra-")) continue;
+
+    const extension = path.extname(name).toLowerCase();
+    if (!imageExtensions.includes(extension)) continue;
+
+    // Sacamos "extra-" y la extensión para quedarnos con el "cuerpo".
+    // cuerpo = "1-remera-espalda" | "referencia" | "1" | ""
+    const withoutPrefix = name.slice("extra-".length);
+    const body = withoutPrefix.slice(
+      0,
+      withoutPrefix.length - extension.length
+    );
+
+    // ¿Empieza con un número seguido de guión o fin?
+    //   "1-remera-espalda" → order: 1, rest: "remera-espalda"
+    //   "1"                → order: 1, rest: ""
+    //   "referencia"       → sin número
+    const numMatch = body.match(/^(\d+)(?:-(.*))?$/);
+
+    let order = null;
+    let labelSource = body;
+
+    if (numMatch) {
+      order = parseInt(numMatch[1], 10);
+      labelSource = numMatch[2] || "";
+    }
+
+    // Generamos el label. Si después del número no hay nada, usamos
+    // "Extra N". Si no hay número y no hay label, usamos "Extra".
+    let label;
+    if (labelSource.trim()) {
+      label = formatName(labelSource);
+    } else if (order !== null) {
+      label = `Extra ${order}`;
+    } else {
+      label = "Extra";
+    }
+
+    extras.push({
+      file: name,
+      order,
+      label,
+    });
+  }
+
+  // Ordenamos: primero los que tienen número (ascendente), después
+  // los que no (alfabético por label).
+  extras.sort((a, b) => {
+    const aHasOrder = a.order !== null;
+    const bHasOrder = b.order !== null;
+
+    if (aHasOrder && bHasOrder) return a.order - b.order;
+    if (aHasOrder && !bHasOrder) return -1;
+    if (!aHasOrder && bHasOrder) return 1;
+    return a.label.localeCompare(b.label, "es");
+  });
+
+  return extras;
+}
+
 if (!fs.existsSync(catalogoDir)) {
   console.error("ERROR: No existe la carpeta catalogo.");
   process.exit(1);
@@ -312,6 +392,9 @@ categories.push({
       continue;
     }
 
+    // Fotos extra opcionales (extra-1-remera-espalda.jpg, etc.)
+    const extras = findExtraImages(productDirectory);
+
     // OJO: en el path usamos el nombre LIMPIO (sin tags), porque así
     // es como processCatalogoImages() guardó las imágenes optimizadas.
     // En la carpeta original (catalogo/) el nombre es rawFolderName
@@ -324,6 +407,10 @@ categories.push({
       categoryName: config?.name ?? formatName(categoryId),
       modelo: `/catalogo/${categoryId}/${cleanName}/${modelo.replace(/\.[^.]+$/, ".webp")}`,
       remera: `/catalogo/${categoryId}/${cleanName}/${remera.replace(/\.[^.]+$/, ".webp")}`,
+      extras: extras.map((extra) => ({
+        src: `/catalogo/${categoryId}/${cleanName}/${extra.file.replace(/\.[^.]+$/, ".webp")}`,
+        label: extra.label,
+      })),
     });
   }
 }

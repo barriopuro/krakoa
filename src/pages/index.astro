@@ -255,6 +255,7 @@ const marqueeText = [
                 data-tags={(product.tags || []).join(" ")}
                 data-category={product.category}
                 data-id={product.id}
+                data-extras={JSON.stringify(product.extras || [])}
               >
                 <button class="product-button" type="button">
                   <div class="product-image">
@@ -1860,7 +1861,7 @@ const marqueeText = [
 
   .modal-thumbs {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(56px, 1fr));
     gap: 8px;
     flex-shrink: 0;
     width: 100%;
@@ -3699,19 +3700,23 @@ categoryButtons.forEach((button) => {
   const imageZoomNext = document.querySelector("#image-zoom-next");
   const modalImageWrapper = document.querySelector(".modal-image-wrapper");
 
-  // Índices de slides que son zoomeables (0 = modelo, 1 = remera).
-  // Los de tablas de talles (2 y 3) NO lo son.
-  const ZOOMABLE_SLIDES = [true, true, false, false];
+  // ¿Qué slides del carrusel son zoomeables?
+  // Regla: todos los slides de fotos SÍ, las dos últimas (tablas de
+  // talles) NO. Se calcula dinámicamente según la cantidad de slides
+  // del producto actual (porque puede haber fotos extra).
+  function isZoomableSlide(index, total) {
+    // Los últimos 2 slides siempre son las tablas de talles.
+    return index < total - 2;
+  }
 
   // Índice del slide que está mostrándose en el zoom (dentro de
   // currentImages). Guardamos esto para poder navegar entre fotos
   // zoomeables sin cerrar el zoom.
   let zoomImageIndex = 0;
 
-  // Lista de índices zoomeables (ej: [0, 1]).
-  const zoomableIndices = ZOOMABLE_SLIDES
-    .map((isZoomable, index) => (isZoomable ? index : -1))
-    .filter((index) => index !== -1);
+  // Lista de índices zoomeables del producto actual. Se recalcula
+  // cada vez que se abre un modal (porque currentImages cambia).
+  let zoomableIndices = [];
 
   function getSizesForFit(fit) {
     return SIZE_CHART[fit] || [];
@@ -3763,7 +3768,7 @@ categoryButtons.forEach((button) => {
     // Marcamos el wrapper como zoomeable solo si el slide actual es una foto.
     modalImageWrapper.classList.toggle(
       "is-zoomable",
-      ZOOMABLE_SLIDES[currentImageIndex] === true
+      isZoomableSlide(currentImageIndex, currentImages.length)
     );
 
 
@@ -3939,9 +3944,19 @@ hidden.decoding = "async";
     const modelo = image.getAttribute("src");
     const remera = modelo.replace("/modelo.", "/remera.");
 
+    // Fotos extra: vienen del JSON generado por el script.
+    // Cada extra tiene { src, label }. Si no hay, el array queda vacío.
+    const extras = product.dataset.extras
+      ? JSON.parse(product.dataset.extras)
+      : [];
+
     currentImages = [
       { src: modelo, label: "Modelo" },
       { src: remera, label: "Remera" },
+      ...extras.map((extra) => ({
+        src: `${base}${extra.src}`,
+        label: extra.label,
+      })),
       { src: `${base}/talles/oversize.webp`, label: "Talles Oversize" },
       { src: `${base}/talles/regular.webp`, label: "Talles Regular" },
     ];
@@ -3950,6 +3965,12 @@ hidden.decoding = "async";
     currentProductName = name;
     currentProductId = product.dataset.id || "";
     currentQuantity = 1;
+
+    // Recalculamos los índices zoomeables para este producto
+    // (depende de cuántos slides tenga: 4 sin extras, 5 con 1 extra, etc.)
+    zoomableIndices = currentImages
+      .map((_, index) => (isZoomableSlide(index, currentImages.length) ? index : -1))
+      .filter((index) => index !== -1);
 
     // Reseteamos las dos capas de imagen para que el próximo modal
     // arranque limpio (sin restos del producto anterior).
@@ -4161,9 +4182,13 @@ hidden.decoding = "async";
   modalPrev.addEventListener("click", showPreviousImage);
   modalNext.addEventListener("click", showNextImage);
 
-  // Atajo: al tocar "Ver gráfico", salta a la miniatura del talle del corte actual.
+  // Atajo: al tocar "Ver tabla de talles", salta a la tabla del corte actual.
+  // Las tablas SIEMPRE son los últimos 2 slides:
+  //   - Oversize: length - 2
+  //   - Regular:  length - 1
   modalSeeChart.addEventListener("click", () => {
-    currentImageIndex = selectedFit === "Oversize" ? 2 : 3;
+    const total = currentImages.length;
+    currentImageIndex = selectedFit === "Oversize" ? total - 2 : total - 1;
     renderModalImage("fade");
   });
 
@@ -4268,7 +4293,7 @@ hidden.decoding = "async";
       zoomMoved = false;
       return;
     }
-    if (!ZOOMABLE_SLIDES[currentImageIndex]) return;
+    if (!isZoomableSlide(currentImageIndex, currentImages.length)) return;
     openImageZoom(currentImageIndex);
   });
 
