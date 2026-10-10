@@ -58,13 +58,13 @@
       "extras": []
     },
     {
-      "id": "cazador-2000",
-      "name": "Cazador 2000",
+      "id": "batman-who-laughs",
+      "name": "Batman Who Laughs",
       "tags": [],
       "category": "comics",
       "categoryName": "Comics",
-      "modelo": "/catalogo/comics/cazador-2000/modelo.webp",
-      "remera": "/catalogo/comics/cazador-2000/remera.webp",
+      "modelo": "/catalogo/comics/batman-who-laughs/modelo.webp",
+      "remera": "/catalogo/comics/batman-who-laughs/remera.webp",
       "extras": []
     },
     {
@@ -98,13 +98,13 @@
       "extras": []
     },
     {
-      "id": "god-of-war",
-      "name": "God Of War",
+      "id": "castlevania",
+      "name": "Castlevania",
       "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/god-of-war/modelo.webp",
-      "remera": "/catalogo/videojuegos/god-of-war/remera.webp",
+      "modelo": "/catalogo/videojuegos/castlevania/modelo.webp",
+      "remera": "/catalogo/videojuegos/castlevania/remera.webp",
       "extras": []
     },
     {
@@ -128,13 +128,13 @@
       "extras": []
     },
     {
-      "id": "cazador-90s",
-      "name": "Cazador 90s",
+      "id": "cazador-2000",
+      "name": "Cazador 2000",
       "tags": [],
       "category": "comics",
       "categoryName": "Comics",
-      "modelo": "/catalogo/comics/cazador-90s/modelo.webp",
-      "remera": "/catalogo/comics/cazador-90s/remera.webp",
+      "modelo": "/catalogo/comics/cazador-2000/modelo.webp",
+      "remera": "/catalogo/comics/cazador-2000/remera.webp",
       "extras": []
     },
     {
@@ -168,13 +168,13 @@
       "extras": []
     },
     {
-      "id": "hollow-knight",
-      "name": "Hollow Knight",
+      "id": "god-of-war",
+      "name": "God Of War",
       "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/hollow-knight/modelo.webp",
-      "remera": "/catalogo/videojuegos/hollow-knight/remera.webp",
+      "modelo": "/catalogo/videojuegos/god-of-war/modelo.webp",
+      "remera": "/catalogo/videojuegos/god-of-war/remera.webp",
       "extras": []
     },
     {
@@ -198,13 +198,13 @@
       "extras": []
     },
     {
-      "id": "deadpool",
-      "name": "Deadpool",
+      "id": "cazador-90s",
+      "name": "Cazador 90s",
       "tags": [],
       "category": "comics",
       "categoryName": "Comics",
-      "modelo": "/catalogo/comics/deadpool/modelo.webp",
-      "remera": "/catalogo/comics/deadpool/remera.webp",
+      "modelo": "/catalogo/comics/cazador-90s/modelo.webp",
+      "remera": "/catalogo/comics/cazador-90s/remera.webp",
       "extras": []
     },
     {
@@ -241,13 +241,13 @@
       "extras": []
     },
     {
-      "id": "king-of-fighters-iori-yagami",
-      "name": "King Of Fighters Iori Yagami",
+      "id": "hollow-knight",
+      "name": "Hollow Knight",
       "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/king-of-fighters-iori-yagami/modelo.webp",
-      "remera": "/catalogo/videojuegos/king-of-fighters-iori-yagami/remera.webp",
+      "modelo": "/catalogo/videojuegos/hollow-knight/modelo.webp",
+      "remera": "/catalogo/videojuegos/hollow-knight/remera.webp",
       "extras": []
     },
     {
@@ -271,13 +271,13 @@
       "extras": []
     },
     {
-      "id": "dr-doom",
-      "name": "Dr Doom",
+      "id": "deadpool",
+      "name": "Deadpool",
       "tags": [],
       "category": "comics",
       "categoryName": "Comics",
-      "modelo": "/catalogo/comics/dr-doom/modelo.webp",
-      "remera": "/catalogo/comics/dr-doom/remera.webp",
+      "modelo": "/catalogo/comics/deadpool/modelo.webp",
+      "remera": "/catalogo/comics/deadpool/remera.webp",
       "extras": []
     },
     {
@@ -314,13 +314,13 @@
       "extras": []
     },
     {
-      "id": "megaman",
-      "name": "Megaman",
+      "id": "king-of-fighters-iori-yagami",
+      "name": "King Of Fighters Iori Yagami",
       "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/megaman/modelo.webp",
-      "remera": "/catalogo/videojuegos/megaman/remera.webp",
+      "modelo": "/catalogo/videojuegos/king-of-fighters-iori-yagami/modelo.webp",
+      "remera": "/catalogo/videojuegos/king-of-fighters-iori-yagami/remera.webp",
       "extras": []
     },
     {
@@ -344,13 +344,13 @@
       "extras": []
     },
     {
-      "id": "spawn",
-      "name": "Spawn",
+      "id": "dr-doom",
+      "name": "Dr Doom",
       "tags": [],
       "category": "comics",
       "categoryName": "Comics",
-      "modelo": "/catalogo/comics/spawn/modelo.webp",
-      "remera": "/catalogo/comics/spawn/remera.webp",
+      "modelo": "/catalogo/comics/dr-doom/modelo.webp",
+      "remera": "/catalogo/comics/dr-doom/remera.webp",
       "extras": []
     },
     {
@@ -377,13 +377,13 @@
       "extras": []
     },
     {
-      "id": "mortal-kombat-raiden",
-      "name": "Mortal Kombat Raiden",
+      "id": "megaman",
+      "name": "Megaman",
       "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/mortal-kombat-raiden/modelo.webp",
-      "remera": "/catalogo/videojuegos/mortal-kombat-raiden/remera.webp",
+      "modelo": "/catalogo/videojuegos/megaman/modelo.webp",
+      "remera": "/catalogo/videojuegos/megaman/remera.webp",
       "extras": []
     },
     {
@@ -407,13 +407,13 @@
       "extras": []
     },
     {
-      "id": "spiderman-black-suit",
-      "name": "Spiderman Black Suit",
+      "id": "spawn",
+      "name": "Spawn",
       "tags": [],
       "category": "comics",
       "categoryName": "Comics",
-      "modelo": "/catalogo/comics/spiderman-black-suit/modelo.webp",
-      "remera": "/catalogo/comics/spiderman-black-suit/remera.webp",
+      "modelo": "/catalogo/comics/spawn/modelo.webp",
+      "remera": "/catalogo/comics/spawn/remera.webp",
       "extras": []
     },
     {
@@ -439,23 +439,23 @@
       "extras": []
     },
     {
-      "id": "mortal-kombat-sub-zero",
-      "name": "Mortal Kombat Sub Zero",
+      "id": "mortal-kombat-raiden",
+      "name": "Mortal Kombat Raiden",
       "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/mortal-kombat-sub-zero/modelo.webp",
-      "remera": "/catalogo/videojuegos/mortal-kombat-sub-zero/remera.webp",
+      "modelo": "/catalogo/videojuegos/mortal-kombat-raiden/modelo.webp",
+      "remera": "/catalogo/videojuegos/mortal-kombat-raiden/remera.webp",
       "extras": []
     },
     {
-      "id": "dragon-ball-escuela-de-la-tortuga",
-      "name": "Dragon Ball Escuela De La Tortuga",
+      "id": "digimon",
+      "name": "Digimon",
       "tags": [],
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/dragon-ball-escuela-de-la-tortuga/modelo.webp",
-      "remera": "/catalogo/anime/dragon-ball-escuela-de-la-tortuga/remera.webp",
+      "modelo": "/catalogo/anime/digimon/modelo.webp",
+      "remera": "/catalogo/anime/digimon/remera.webp",
       "extras": []
     },
     {
@@ -469,13 +469,13 @@
       "extras": []
     },
     {
-      "id": "spiderman-venom",
-      "name": "Spiderman Venom",
+      "id": "spiderman-black-suit",
+      "name": "Spiderman Black Suit",
       "tags": [],
       "category": "comics",
       "categoryName": "Comics",
-      "modelo": "/catalogo/comics/spiderman-venom/modelo.webp",
-      "remera": "/catalogo/comics/spiderman-venom/remera.webp",
+      "modelo": "/catalogo/comics/spiderman-black-suit/modelo.webp",
+      "remera": "/catalogo/comics/spiderman-black-suit/remera.webp",
       "extras": []
     },
     {
@@ -501,23 +501,23 @@
       "extras": []
     },
     {
-      "id": "resident-evil-nemesis",
-      "name": "Resident Evil Nemesis",
+      "id": "mortal-kombat-sub-zero",
+      "name": "Mortal Kombat Sub Zero",
       "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/resident-evil-nemesis/modelo.webp",
-      "remera": "/catalogo/videojuegos/resident-evil-nemesis/remera.webp",
+      "modelo": "/catalogo/videojuegos/mortal-kombat-sub-zero/modelo.webp",
+      "remera": "/catalogo/videojuegos/mortal-kombat-sub-zero/remera.webp",
       "extras": []
     },
     {
-      "id": "dragon-ball-goku",
-      "name": "Dragon Ball Goku",
+      "id": "dragon-ball-escuela-de-la-tortuga",
+      "name": "Dragon Ball Escuela De La Tortuga",
       "tags": [],
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/dragon-ball-goku/modelo.webp",
-      "remera": "/catalogo/anime/dragon-ball-goku/remera.webp",
+      "modelo": "/catalogo/anime/dragon-ball-escuela-de-la-tortuga/modelo.webp",
+      "remera": "/catalogo/anime/dragon-ball-escuela-de-la-tortuga/remera.webp",
       "extras": []
     },
     {
@@ -531,13 +531,13 @@
       "extras": []
     },
     {
-      "id": "the-joker",
-      "name": "The Joker",
+      "id": "spiderman-venom",
+      "name": "Spiderman Venom",
       "tags": [],
       "category": "comics",
       "categoryName": "Comics",
-      "modelo": "/catalogo/comics/the-joker/modelo.webp",
-      "remera": "/catalogo/comics/the-joker/remera.webp",
+      "modelo": "/catalogo/comics/spiderman-venom/modelo.webp",
+      "remera": "/catalogo/comics/spiderman-venom/remera.webp",
       "extras": []
     },
     {
@@ -563,23 +563,23 @@
       "extras": []
     },
     {
-      "id": "silent-hill-pyramid-head",
-      "name": "Silent Hill Pyramid Head",
+      "id": "resident-evil-nemesis",
+      "name": "Resident Evil Nemesis",
       "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/silent-hill-pyramid-head/modelo.webp",
-      "remera": "/catalogo/videojuegos/silent-hill-pyramid-head/remera.webp",
+      "modelo": "/catalogo/videojuegos/resident-evil-nemesis/modelo.webp",
+      "remera": "/catalogo/videojuegos/resident-evil-nemesis/remera.webp",
       "extras": []
     },
     {
-      "id": "dragon-ball-tao-pai-pai",
-      "name": "Dragon Ball Tao Pai Pai",
+      "id": "dragon-ball-goku",
+      "name": "Dragon Ball Goku",
       "tags": [],
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/dragon-ball-tao-pai-pai/modelo.webp",
-      "remera": "/catalogo/anime/dragon-ball-tao-pai-pai/remera.webp",
+      "modelo": "/catalogo/anime/dragon-ball-goku/modelo.webp",
+      "remera": "/catalogo/anime/dragon-ball-goku/remera.webp",
       "extras": []
     },
     {
@@ -593,13 +593,13 @@
       "extras": []
     },
     {
-      "id": "the-punisher",
-      "name": "The Punisher",
+      "id": "the-joker",
+      "name": "The Joker",
       "tags": [],
       "category": "comics",
       "categoryName": "Comics",
-      "modelo": "/catalogo/comics/the-punisher/modelo.webp",
-      "remera": "/catalogo/comics/the-punisher/remera.webp",
+      "modelo": "/catalogo/comics/the-joker/modelo.webp",
+      "remera": "/catalogo/comics/the-joker/remera.webp",
       "extras": []
     },
     {
@@ -625,23 +625,23 @@
       "extras": []
     },
     {
-      "id": "splatterhouse",
-      "name": "Splatterhouse",
+      "id": "silent-hill-pyramid-head",
+      "name": "Silent Hill Pyramid Head",
       "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/splatterhouse/modelo.webp",
-      "remera": "/catalogo/videojuegos/splatterhouse/remera.webp",
+      "modelo": "/catalogo/videojuegos/silent-hill-pyramid-head/modelo.webp",
+      "remera": "/catalogo/videojuegos/silent-hill-pyramid-head/remera.webp",
       "extras": []
     },
     {
-      "id": "dragon-ball-z-gohan",
-      "name": "Dragon Ball Z Gohan",
+      "id": "dragon-ball-tao-pai-pai",
+      "name": "Dragon Ball Tao Pai Pai",
       "tags": [],
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/dragon-ball-z-gohan/modelo.webp",
-      "remera": "/catalogo/anime/dragon-ball-z-gohan/remera.webp",
+      "modelo": "/catalogo/anime/dragon-ball-tao-pai-pai/modelo.webp",
+      "remera": "/catalogo/anime/dragon-ball-tao-pai-pai/remera.webp",
       "extras": []
     },
     {
@@ -655,13 +655,13 @@
       "extras": []
     },
     {
-      "id": "tortugas-ninja",
-      "name": "Tortugas Ninja",
+      "id": "the-punisher",
+      "name": "The Punisher",
       "tags": [],
       "category": "comics",
       "categoryName": "Comics",
-      "modelo": "/catalogo/comics/tortugas-ninja/modelo.webp",
-      "remera": "/catalogo/comics/tortugas-ninja/remera.webp",
+      "modelo": "/catalogo/comics/the-punisher/modelo.webp",
+      "remera": "/catalogo/comics/the-punisher/remera.webp",
       "extras": []
     },
     {
@@ -685,6 +685,56 @@
       "extras": []
     },
     {
+      "id": "splatterhouse",
+      "name": "Splatterhouse",
+      "tags": [],
+      "category": "videojuegos",
+      "categoryName": "Videojuegos",
+      "modelo": "/catalogo/videojuegos/splatterhouse/modelo.webp",
+      "remera": "/catalogo/videojuegos/splatterhouse/remera.webp",
+      "extras": []
+    },
+    {
+      "id": "dragon-ball-z-gohan",
+      "name": "Dragon Ball Z Gohan",
+      "tags": [],
+      "category": "anime",
+      "categoryName": "Anime",
+      "modelo": "/catalogo/anime/dragon-ball-z-gohan/modelo.webp",
+      "remera": "/catalogo/anime/dragon-ball-z-gohan/remera.webp",
+      "extras": []
+    },
+    {
+      "id": "hellboy",
+      "name": "Hellboy",
+      "tags": [],
+      "category": "cine-series",
+      "categoryName": "Cine y Series",
+      "modelo": "/catalogo/cine-series/hellboy/modelo.webp",
+      "remera": "/catalogo/cine-series/hellboy/remera.webp",
+      "extras": []
+    },
+    {
+      "id": "tortugas-ninja",
+      "name": "Tortugas Ninja",
+      "tags": [],
+      "category": "comics",
+      "categoryName": "Comics",
+      "modelo": "/catalogo/comics/tortugas-ninja/modelo.webp",
+      "remera": "/catalogo/comics/tortugas-ninja/remera.webp",
+      "extras": []
+    },
+    {
+      "id": "linkin-park",
+      "name": "Linkin Park",
+      "tags": [],
+      "category": "musica",
+      "categoryName": "Música",
+      "modelo": "/catalogo/musica/linkin-park/modelo.webp",
+      "remera": "/catalogo/musica/linkin-park/remera.webp",
+      "extras": []
+    },
+    {
       "id": "street-fighter-dhalsim",
       "name": "Street Fighter Dhalsim",
       "tags": [],
@@ -705,13 +755,13 @@
       "extras": []
     },
     {
-      "id": "hellboy",
-      "name": "Hellboy",
+      "id": "it",
+      "name": "It",
       "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/hellboy/modelo.webp",
-      "remera": "/catalogo/cine-series/hellboy/remera.webp",
+      "modelo": "/catalogo/cine-series/it/modelo.webp",
+      "remera": "/catalogo/cine-series/it/remera.webp",
       "extras": []
     },
     {
@@ -725,13 +775,13 @@
       "extras": []
     },
     {
-      "id": "linkin-park",
-      "name": "Linkin Park",
+      "id": "michael-jackson",
+      "name": "Michael Jackson",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/linkin-park/modelo.webp",
-      "remera": "/catalogo/musica/linkin-park/remera.webp",
+      "modelo": "/catalogo/musica/michael-jackson/modelo.webp",
+      "remera": "/catalogo/musica/michael-jackson/remera.webp",
       "extras": []
     },
     {
@@ -755,13 +805,13 @@
       "extras": []
     },
     {
-      "id": "it",
-      "name": "It",
+      "id": "joker-batman-dark-knight",
+      "name": "Joker Batman Dark Knight",
       "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/it/modelo.webp",
-      "remera": "/catalogo/cine-series/it/remera.webp",
+      "modelo": "/catalogo/cine-series/joker-batman-dark-knight/modelo.webp",
+      "remera": "/catalogo/cine-series/joker-batman-dark-knight/remera.webp",
       "extras": []
     },
     {
@@ -775,13 +825,13 @@
       "extras": []
     },
     {
-      "id": "michael-jackson",
-      "name": "Michael Jackson",
+      "id": "michael-jackson-smooth-criminal",
+      "name": "Michael Jackson Smooth Criminal",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/michael-jackson/modelo.webp",
-      "remera": "/catalogo/musica/michael-jackson/remera.webp",
+      "modelo": "/catalogo/musica/michael-jackson-smooth-criminal/modelo.webp",
+      "remera": "/catalogo/musica/michael-jackson-smooth-criminal/remera.webp",
       "extras": []
     },
     {
@@ -805,13 +855,13 @@
       "extras": []
     },
     {
-      "id": "joker-batman-dark-knight",
-      "name": "Joker Batman Dark Knight",
+      "id": "karate-kid",
+      "name": "Karate Kid",
       "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/joker-batman-dark-knight/modelo.webp",
-      "remera": "/catalogo/cine-series/joker-batman-dark-knight/remera.webp",
+      "modelo": "/catalogo/cine-series/karate-kid/modelo.webp",
+      "remera": "/catalogo/cine-series/karate-kid/remera.webp",
       "extras": []
     },
     {
@@ -825,13 +875,13 @@
       "extras": []
     },
     {
-      "id": "michael-jackson-smooth-criminal",
-      "name": "Michael Jackson Smooth Criminal",
+      "id": "sepultura",
+      "name": "Sepultura",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/michael-jackson-smooth-criminal/modelo.webp",
-      "remera": "/catalogo/musica/michael-jackson-smooth-criminal/remera.webp",
+      "modelo": "/catalogo/musica/sepultura/modelo.webp",
+      "remera": "/catalogo/musica/sepultura/remera.webp",
       "extras": []
     },
     {
@@ -845,13 +895,13 @@
       "extras": []
     },
     {
-      "id": "karate-kid",
-      "name": "Karate Kid",
+      "id": "monstars-space-jam",
+      "name": "Monstars Space Jam",
       "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/karate-kid/modelo.webp",
-      "remera": "/catalogo/cine-series/karate-kid/remera.webp",
+      "modelo": "/catalogo/cine-series/monstars-space-jam/modelo.webp",
+      "remera": "/catalogo/cine-series/monstars-space-jam/remera.webp",
       "extras": []
     },
     {
@@ -865,13 +915,13 @@
       "extras": []
     },
     {
-      "id": "sepultura",
-      "name": "Sepultura",
+      "id": "slipknot",
+      "name": "Slipknot",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/sepultura/modelo.webp",
-      "remera": "/catalogo/musica/sepultura/remera.webp",
+      "modelo": "/catalogo/musica/slipknot/modelo.webp",
+      "remera": "/catalogo/musica/slipknot/remera.webp",
       "extras": []
     },
     {
@@ -885,13 +935,13 @@
       "extras": []
     },
     {
-      "id": "monstars-space-jam",
-      "name": "Monstars Space Jam",
+      "id": "motoratones-de-marte",
+      "name": "Motoratones De Marte",
       "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/monstars-space-jam/modelo.webp",
-      "remera": "/catalogo/cine-series/monstars-space-jam/remera.webp",
+      "modelo": "/catalogo/cine-series/motoratones-de-marte/modelo.webp",
+      "remera": "/catalogo/cine-series/motoratones-de-marte/remera.webp",
       "extras": []
     },
     {
@@ -905,36 +955,6 @@
       "extras": []
     },
     {
-      "id": "slipknot",
-      "name": "Slipknot",
-      "tags": [],
-      "category": "musica",
-      "categoryName": "Música",
-      "modelo": "/catalogo/musica/slipknot/modelo.webp",
-      "remera": "/catalogo/musica/slipknot/remera.webp",
-      "extras": []
-    },
-    {
-      "id": "hellsing",
-      "name": "Hellsing",
-      "tags": [],
-      "category": "anime",
-      "categoryName": "Anime",
-      "modelo": "/catalogo/anime/hellsing/modelo.webp",
-      "remera": "/catalogo/anime/hellsing/remera.webp",
-      "extras": []
-    },
-    {
-      "id": "motoratones-de-marte",
-      "name": "Motoratones De Marte",
-      "tags": [],
-      "category": "cine-series",
-      "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/motoratones-de-marte/modelo.webp",
-      "remera": "/catalogo/cine-series/motoratones-de-marte/remera.webp",
-      "extras": []
-    },
-    {
       "id": "the-beatles",
       "name": "The Beatles",
       "tags": [],
@@ -945,13 +965,13 @@
       "extras": []
     },
     {
-      "id": "naruto-erosenin",
-      "name": "Naruto Erosenin",
+      "id": "hellsing",
+      "name": "Hellsing",
       "tags": [],
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/naruto-erosenin/modelo.webp",
-      "remera": "/catalogo/anime/naruto-erosenin/remera.webp",
+      "modelo": "/catalogo/anime/hellsing/modelo.webp",
+      "remera": "/catalogo/anime/hellsing/remera.webp",
       "extras": []
     },
     {
@@ -975,13 +995,13 @@
       "extras": []
     },
     {
-      "id": "naruto-rock-lee",
-      "name": "Naruto Rock Lee",
+      "id": "naruto-erosenin",
+      "name": "Naruto Erosenin",
       "tags": [],
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/naruto-rock-lee/modelo.webp",
-      "remera": "/catalogo/anime/naruto-rock-lee/remera.webp",
+      "modelo": "/catalogo/anime/naruto-erosenin/modelo.webp",
+      "remera": "/catalogo/anime/naruto-erosenin/remera.webp",
       "extras": []
     },
     {
@@ -1005,13 +1025,13 @@
       "extras": []
     },
     {
-      "id": "naruto-uchiha-clan",
-      "name": "Naruto Uchiha Clan",
+      "id": "naruto-rock-lee",
+      "name": "Naruto Rock Lee",
       "tags": [],
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/naruto-uchiha-clan/modelo.webp",
-      "remera": "/catalogo/anime/naruto-uchiha-clan/remera.webp",
+      "modelo": "/catalogo/anime/naruto-rock-lee/modelo.webp",
+      "remera": "/catalogo/anime/naruto-rock-lee/remera.webp",
       "extras": []
     },
     {
@@ -1025,13 +1045,13 @@
       "extras": []
     },
     {
-      "id": "one-piece",
-      "name": "One Piece",
+      "id": "naruto-uchiha-clan",
+      "name": "Naruto Uchiha Clan",
       "tags": [],
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/one-piece/modelo.webp",
-      "remera": "/catalogo/anime/one-piece/remera.webp",
+      "modelo": "/catalogo/anime/naruto-uchiha-clan/modelo.webp",
+      "remera": "/catalogo/anime/naruto-uchiha-clan/remera.webp",
       "extras": []
     },
     {
@@ -1045,13 +1065,13 @@
       "extras": []
     },
     {
-      "id": "one-piece-luffy",
-      "name": "One Piece Luffy",
+      "id": "one-piece",
+      "name": "One Piece",
       "tags": [],
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/one-piece-luffy/modelo.webp",
-      "remera": "/catalogo/anime/one-piece-luffy/remera.webp",
+      "modelo": "/catalogo/anime/one-piece/modelo.webp",
+      "remera": "/catalogo/anime/one-piece/remera.webp",
       "extras": []
     },
     {
@@ -1065,13 +1085,13 @@
       "extras": []
     },
     {
-      "id": "pokemon-squarturtle",
-      "name": "Pokemon Squarturtle",
+      "id": "one-piece-luffy",
+      "name": "One Piece Luffy",
       "tags": [],
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/pokemon-squarturtle/modelo.webp",
-      "remera": "/catalogo/anime/pokemon-squarturtle/remera.webp",
+      "modelo": "/catalogo/anime/one-piece-luffy/modelo.webp",
+      "remera": "/catalogo/anime/one-piece-luffy/remera.webp",
       "extras": []
     },
     {
@@ -1085,13 +1105,13 @@
       "extras": []
     },
     {
-      "id": "saint-seiya-ikki",
-      "name": "Saint Seiya Ikki",
+      "id": "pokemon-squarturtle",
+      "name": "Pokemon Squarturtle",
       "tags": [],
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/saint-seiya-ikki/modelo.webp",
-      "remera": "/catalogo/anime/saint-seiya-ikki/remera.webp",
+      "modelo": "/catalogo/anime/pokemon-squarturtle/modelo.webp",
+      "remera": "/catalogo/anime/pokemon-squarturtle/remera.webp",
       "extras": []
     },
     {
@@ -1105,13 +1125,13 @@
       "extras": []
     },
     {
-      "id": "slam-dunk",
-      "name": "Slam Dunk",
+      "id": "sailor-moon",
+      "name": "Sailor Moon",
       "tags": [],
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/slam-dunk/modelo.webp",
-      "remera": "/catalogo/anime/slam-dunk/remera.webp",
+      "modelo": "/catalogo/anime/sailor-moon/modelo.webp",
+      "remera": "/catalogo/anime/sailor-moon/remera.webp",
       "extras": []
     },
     {
@@ -1122,6 +1142,36 @@
       "categoryName": "Cine y Series",
       "modelo": "/catalogo/cine-series/street-sharks/modelo.webp",
       "remera": "/catalogo/cine-series/street-sharks/remera.webp",
+      "extras": []
+    },
+    {
+      "id": "saint-seiya-ikki",
+      "name": "Saint Seiya Ikki",
+      "tags": [],
+      "category": "anime",
+      "categoryName": "Anime",
+      "modelo": "/catalogo/anime/saint-seiya-ikki/modelo.webp",
+      "remera": "/catalogo/anime/saint-seiya-ikki/remera.webp",
+      "extras": []
+    },
+    {
+      "id": "the-warriors",
+      "name": "The Warriors",
+      "tags": [],
+      "category": "cine-series",
+      "categoryName": "Cine y Series",
+      "modelo": "/catalogo/cine-series/the-warriors/modelo.webp",
+      "remera": "/catalogo/cine-series/the-warriors/remera.webp",
+      "extras": []
+    },
+    {
+      "id": "slam-dunk",
+      "name": "Slam Dunk",
+      "tags": [],
+      "category": "anime",
+      "categoryName": "Anime",
+      "modelo": "/catalogo/anime/slam-dunk/modelo.webp",
+      "remera": "/catalogo/anime/slam-dunk/remera.webp",
       "extras": []
     },
     {
@@ -1146,16 +1196,6 @@
           "label": "Referencia"
         }
       ]
-    },
-    {
-      "id": "the-warriors",
-      "name": "The Warriors",
-      "tags": [],
-      "category": "cine-series",
-      "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/the-warriors/modelo.webp",
-      "remera": "/catalogo/cine-series/the-warriors/remera.webp",
-      "extras": []
     }
   ]
 }
