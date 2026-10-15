@@ -3598,6 +3598,18 @@ categoryButtons.forEach((button) => {
     }
 
     filterProducts();
+
+    // Después de filtrar, la página cambia de altura (se ocultan
+    // tarjetas). Si el usuario estaba scrolleado, el navegador lo
+    // reajusta solo y "salta" hacia abajo. Para evitar eso, lo
+    // llevamos suavemente al inicio de la grilla de productos.
+    // La barra de categorías queda sticky pegada arriba.
+    const productsGrid = document.querySelector("#products");
+    if (productsGrid) {
+      const top =
+        productsGrid.getBoundingClientRect().top + window.scrollY - 90;
+      window.scrollTo({ top, behavior: "smooth" });
+    }
   };
 
   // Click en el botón: frena la propagación para no disparar también el del wrap.
