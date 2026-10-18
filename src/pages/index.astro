@@ -530,6 +530,27 @@ const marqueeText = [
 <div id="product-modal" class="modal" aria-hidden="true">
   <div class="modal-backdrop"></div>
 
+  <!-- Flechas para cambiar de producto (desktop: costados de pantalla; mobile: al lado del título) -->
+  <button
+    id="modal-product-prev"
+    class="modal-product-arrow modal-product-prev"
+    type="button"
+    aria-label="Modelo anterior"
+  >
+    <span class="modal-product-arrow-label">Anterior</span>
+    <span class="modal-product-arrow-icon">‹</span>
+  </button>
+
+  <button
+    id="modal-product-next"
+    class="modal-product-arrow modal-product-next"
+    type="button"
+    aria-label="Modelo siguiente"
+  >
+    <span class="modal-product-arrow-label">Siguiente</span>
+    <span class="modal-product-arrow-icon">›</span>
+  </button>
+
   <div class="modal-content" role="dialog" aria-modal="true">
     <button
       id="modal-close"
@@ -591,8 +612,30 @@ const marqueeText = [
       <!-- COLUMNA DERECHA: INFO + SELECTORES -->
       <div class="modal-info">
         <div class="modal-info-header">
-          <span id="modal-category" class="modal-category"></span>
-          <h2 id="modal-title"></h2>
+          <button
+            id="modal-product-prev-mobile"
+            class="modal-product-arrow-mobile modal-product-prev-mobile"
+            type="button"
+            aria-label="Modelo anterior"
+          >
+            <span class="modal-product-arrow-label">Anterior</span>
+            <span class="modal-product-arrow-icon">‹</span>
+          </button>
+
+          <div class="modal-info-header-center">
+            <span id="modal-category" class="modal-category"></span>
+            <h2 id="modal-title"></h2>
+          </div>
+
+          <button
+            id="modal-product-next-mobile"
+            class="modal-product-arrow-mobile modal-product-next-mobile"
+            type="button"
+            aria-label="Modelo siguiente"
+          >
+            <span class="modal-product-arrow-label">Siguiente</span>
+            <span class="modal-product-arrow-icon">›</span>
+          </button>
         </div>
 
         <div class="modal-info-body">
@@ -1646,6 +1689,20 @@ const marqueeText = [
     }
   }
 
+  /* Barra de categorías sticky: aplica en desktop y mobile. */
+  .categories {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    margin-inline: -5vw;
+    padding: 12px 5vw;
+    background: rgba(11, 11, 11, 0.72);
+    -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+    border-bottom: 1px solid #1f1f1f;
+    margin-bottom: 25px;
+  }
+
   @media (max-width: 700px) {
     .site-header {
       padding: 14px 4vw;
@@ -1701,18 +1758,8 @@ const marqueeText = [
     }
 
     .categories {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      margin-inline: -5vw;
-      padding: 12px 5vw;
-      background: rgba(11, 11, 11, 0.72);
-      -webkit-backdrop-filter: blur(10px);
-              backdrop-filter: blur(10px);
-      border-bottom: 1px solid #1f1f1f;
       flex-wrap: wrap;
       gap: 4px;
-      margin-bottom: 25px;
     }
 
     .category-button {
@@ -1720,8 +1767,6 @@ const marqueeText = [
       font-size: 12px;
       border-radius: 0;
     }
-
-    
   }
       /* --------------------------- */
   /* MODAL DE PRODUCTO (NUEVO)   */
@@ -2333,6 +2378,170 @@ const marqueeText = [
 
   :global(body.modal-open) {
     overflow: hidden;
+  }
+
+  /* --------------------------- */
+  /* FLECHAS DE PRODUCTO         */
+  /* --------------------------- */
+
+  /* Desktop: afuera del modal, a los costados de la pantalla. */
+  .modal-product-arrow {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1010;
+    width: 56px;
+    height: 56px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  :global(.modal.open) .modal-product-arrow {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .modal-product-arrow:hover {
+    background: #fff;
+    color: #111;
+    border-color: #fff;
+  }
+
+  .modal-product-arrow-label {
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.7;
+    line-height: 1;
+  }
+
+  .modal-product-arrow-icon {
+    font-size: 26px;
+    line-height: 1;
+    font-weight: 400;
+  }
+
+  .modal-product-prev {
+    left: 24px;
+  }
+
+  .modal-product-next {
+    right: 24px;
+  }
+
+  /* Mobile: flechas dentro del header del modal. */
+  .modal-product-arrow-mobile {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    width: 44px;
+    height: 44px;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    background: #0a0a0a;
+    color: #ccc;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .modal-product-arrow-mobile:hover {
+    background: #141414;
+    border-color: #444;
+    color: #fff;
+  }
+
+  .modal-product-arrow-mobile .modal-product-arrow-label {
+    font-size: 7px;
+  }
+
+  .modal-product-arrow-mobile .modal-product-arrow-icon {
+    font-size: 20px;
+  }
+
+  /* En mobile ocultamos las flechas de afuera y mostramos las del header. */
+  @media (max-width: 800px) {
+    .modal-product-arrow {
+      display: none;
+    }
+
+    .modal-product-arrow-mobile {
+      display: flex;
+    }
+
+    .modal-info-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modal-info-header-center {
+      flex: 1;
+      text-align: center;
+      min-width: 0;
+    }
+
+    .modal-info-header-center h2 {
+      padding-right: 0;
+    }
+  }
+
+  /* Desktop: el header vuelve a su layout normal (sin flechas mobile). */
+  @media (min-width: 801px) {
+    .modal-info-header-center {
+      display: block;
+    }
+  }
+
+  /* Animación de cambio de producto. */
+  .modal-grid.switching-next {
+    animation: switchOutLeft 0.18s ease-in forwards;
+  }
+
+  .modal-grid.switching-prev {
+    animation: switchOutRight 0.18s ease-in forwards;
+  }
+
+  .modal-grid.switching-in-next {
+    animation: switchInFromRight 0.22s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .modal-grid.switching-in-prev {
+    animation: switchInFromLeft 0.22s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  @keyframes switchOutLeft {
+    from { opacity: 1; transform: translateX(0); }
+    to   { opacity: 0; transform: translateX(-30px); }
+  }
+
+  @keyframes switchOutRight {
+    from { opacity: 1; transform: translateX(0); }
+    to   { opacity: 0; transform: translateX(30px); }
+  }
+
+  @keyframes switchInFromRight {
+    from { opacity: 0; transform: translateX(30px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes switchInFromLeft {
+    from { opacity: 0; transform: translateX(-30px); }
+    to   { opacity: 1; transform: translateX(0); }
   }
 
   /* MODAL RESPONSIVE */
@@ -4233,6 +4442,14 @@ categoryButtons.forEach((button) => {
   const modalBackdrop = document.querySelector(".modal-backdrop");
   const modalSeeChart = document.querySelector("#modal-see-chart");
 
+  const modalProductPrev = document.querySelector("#modal-product-prev");
+  const modalProductNext = document.querySelector("#modal-product-next");
+  const modalProductPrevMobile = document.querySelector("#modal-product-prev-mobile");
+  const modalProductNextMobile = document.querySelector("#modal-product-next-mobile");
+
+  // Flag para evitar doble click mientras se anima el cambio.
+  let isSwitchingProduct = false;
+
   let currentImages = [];
   let currentImageIndex = 0;
   let selectedFit = "Oversize";
@@ -4676,6 +4893,167 @@ hidden.decoding = "async";
   }
 
 
+  // -------------------------
+  // NAVEGACIÓN ENTRE PRODUCTOS
+  // -------------------------
+
+  // Devuelve la lista de productos VISIBLES en el DOM actual
+  // (respetando filtros de categoría, búsqueda y aleatorización).
+  function getVisibleProducts() {
+    return Array.from(products).filter((product) => {
+      return product.style.display !== "none";
+    });
+  }
+
+  // Encuentra el producto actual en el DOM (para saber dónde estamos parados).
+  function findCurrentProductIndex(visibleList) {
+    return visibleList.findIndex(
+      (product) => product.dataset.id === currentProductId
+    );
+  }
+
+  // Cambia al producto anterior o siguiente con animación.
+  // direction: "next" | "prev"
+  function switchProduct(direction) {
+    if (isSwitchingProduct) return;
+    if (!modal.classList.contains("open")) return;
+
+    const visibleList = getVisibleProducts();
+    if (visibleList.length === 0) return;
+
+    const currentIndex = findCurrentProductIndex(visibleList);
+    if (currentIndex === -1) return;
+
+    let targetIndex;
+    if (direction === "next") {
+      targetIndex = (currentIndex + 1) % visibleList.length;
+    } else {
+      targetIndex = (currentIndex - 1 + visibleList.length) % visibleList.length;
+    }
+
+    const targetProduct = visibleList[targetIndex];
+    if (!targetProduct) return;
+
+    // Si el zoom estaba abierto, lo cerramos antes de cambiar.
+    if (imageZoom.getAttribute("aria-hidden") === "false") {
+      closeImageZoomDirect();
+    }
+
+    isSwitchingProduct = true;
+
+    const modalGrid = modal.querySelector(".modal-grid");
+    if (!modalGrid) {
+      isSwitchingProduct = false;
+      return;
+    }
+
+    const outClass = direction === "next" ? "switching-next" : "switching-prev";
+    const inClass = direction === "next" ? "switching-in-next" : "switching-in-prev";
+
+    // 1) Animación de salida.
+    modalGrid.classList.add(outClass);
+
+    setTimeout(() => {
+      modalGrid.classList.remove(outClass);
+
+      // 2) Cargamos el producto nuevo (sin abrir de nuevo el modal).
+      loadProductIntoModal(targetProduct);
+
+      // 3) Animación de entrada.
+      modalGrid.classList.add(inClass);
+
+      setTimeout(() => {
+        modalGrid.classList.remove(inClass);
+        isSwitchingProduct = false;
+      }, 240);
+    }, 190);
+  }
+
+  // Carga el contenido de un producto en el modal ya abierto.
+  // Es como openModal pero SIN tocar el estado de apertura del modal,
+  // el historyStack ni el scroll.
+  function loadProductIntoModal(product) {
+    const name = product.querySelector("h3")?.textContent ?? "";
+    const category = product.querySelector(".product-category");
+    const categoryColor =
+      category?.style.getPropertyValue("--category-color") ?? "#ffffff";
+    const categoryName =
+      category?.textContent?.trim() ?? "";
+
+    const image = product.querySelector("img");
+    if (!image) return;
+
+    const modelo = image.getAttribute("src");
+    const remera = modelo.replace("/modelo.", "/remera.");
+
+    const extras = product.dataset.extras
+      ? JSON.parse(product.dataset.extras)
+      : [];
+
+    currentImages = [
+      { src: modelo, label: "Modelo" },
+      { src: remera, label: "Remera" },
+      ...extras.map((extra) => ({
+        src: `${base}${extra.src}`,
+        label: extra.label,
+      })),
+      { src: `${base}/talles/oversize.webp`, label: "Talles Oversize" },
+      { src: `${base}/talles/regular.webp`, label: "Talles Regular" },
+    ];
+
+    currentImageIndex = 0;
+    currentProductName = name;
+    currentProductId = product.dataset.id || "";
+    currentQuantity = 1;
+
+    zoomableIndices = currentImages
+      .map((_, index) => (isZoomableSlide(index, currentImages.length) ? index : -1))
+      .filter((index) => index !== -1);
+
+    // Reset de capas del carrusel.
+    modalImageActive = modalImageA;
+    modalImageA.classList.remove("active", "enter-from-right", "enter-from-left", "enter-fade", "leave-to-left", "leave-to-right", "leave-fade");
+    modalImageB.classList.remove("active", "enter-from-right", "enter-from-left", "enter-fade", "leave-to-left", "leave-to-right", "leave-fade");
+    modalImageA.src = "";
+    modalImageB.src = "";
+    selectedFit = "Oversize";
+    selectedSize = "L";
+
+    modalTitle.textContent = name;
+    modalCategory.textContent = categoryName;
+
+    renderThumbs();
+    renderModalImage();
+    renderFits();
+    renderSizes();
+    updateSizeCm();
+    renderQuantity();
+
+    modalAdd.classList.remove("is-added");
+    modalAdd.textContent = "Agregar al Pedido";
+
+    modal.style.setProperty("--category-color", categoryColor);
+
+    // Enviamos evento a Clarity: qué producto se vio.
+    const productIdForClarity = product.dataset.id || "";
+    if (window.clarity && productIdForClarity) {
+      window.clarity("event", "view_" + productIdForClarity);
+    }
+
+    // Scroll interno del modal: volver arriba (mobile).
+    const modalGrid = modal.querySelector(".modal-grid");
+    if (modalGrid) {
+      modalGrid.scrollTop = 0;
+    }
+  }
+
+  // Listeners de las flechas de producto.
+  modalProductPrev?.addEventListener("click", () => switchProduct("prev"));
+  modalProductNext?.addEventListener("click", () => switchProduct("next"));
+  modalProductPrevMobile?.addEventListener("click", () => switchProduct("prev"));
+  modalProductNextMobile?.addEventListener("click", () => switchProduct("next"));
+
+
   products.forEach((product) => {
     const button = product.querySelector(".product-button");
     button?.addEventListener("click", () => {
@@ -4933,9 +5311,6 @@ hidden.decoding = "async";
 
   document.addEventListener("keydown", (event) => {
     // Primero, si el zoom está abierto, Escape lo cierra solo a él.
-    // stopImmediatePropagation es CLAVE: evita que el otro listener de
-    // keydown (el del modal, registrado más abajo) también reaccione al
-    // mismo Escape y dispare un segundo history.back().
     if (imageZoom.getAttribute("aria-hidden") === "false") {
       if (event.key === "Escape") {
         event.stopImmediatePropagation();
@@ -4953,7 +5328,22 @@ hidden.decoding = "async";
         return;
       }
     }
+
     if (!modal.classList.contains("open")) return;
+
+    // Shift + ← / → cambia de PRODUCTO.
+    // ← / → solo cambia de IMAGEN.
+    if (event.shiftKey && event.key === "ArrowLeft") {
+      event.preventDefault();
+      switchProduct("prev");
+      return;
+    }
+    if (event.shiftKey && event.key === "ArrowRight") {
+      event.preventDefault();
+      switchProduct("next");
+      return;
+    }
+
     if (event.key === "Escape") closeModal();
     if (event.key === "ArrowLeft") showPreviousImage();
     if (event.key === "ArrowRight") showNextImage();
