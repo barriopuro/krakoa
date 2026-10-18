@@ -89,6 +89,47 @@ const marqueeText = [
   </nav>
 
   <div class="header-actions">
+    <!-- Buscador: en desktop es un input visible; en mobile es una lupa
+         que despliega el input transformando el header. -->
+    <button
+      id="search-toggle"
+      class="search-toggle"
+      type="button"
+      aria-label="Buscar"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <circle cx="11" cy="11" r="7"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+    </button>
+
+    <div class="header-search-panel" id="header-search-panel">
+      <input
+        id="search"
+        type="search"
+        placeholder="Buscar diseño..."
+        autocomplete="off"
+        aria-label="Buscar diseño"
+      />
+      <button
+        id="search-close"
+        class="search-close"
+        type="button"
+        aria-label="Cerrar búsqueda"
+      >
+        ×
+      </button>
+    </div>
+
     <a
       href="https://instagram.com/krakoa.sw"
       target="_blank"
@@ -223,15 +264,6 @@ const marqueeText = [
     )}
   </div>
 </div>
-
-      <div class="search-bar">
-        <input
-          id="search"
-          type="search"
-          placeholder="Buscar diseño..."
-          autocomplete="off"
-        />
-      </div>
 
       <section id="catalogo" class="catalog">
         <div class="catalog-tint" id="catalogTintA" aria-hidden="true"></div>
@@ -1401,26 +1433,81 @@ const marqueeText = [
     clip-path: inset(0 100% 0 0);
   }
 
-  :global(.search-bar) {
-    display: flex;
+  /* --------------------------- */
+  /* BUSCADOR EN EL HEADER       */
+  /* --------------------------- */
+
+  /* Botón lupa: solo visible en mobile. */
+  .search-toggle {
+    display: none;
+    align-items: center;
     justify-content: center;
-    margin: 0 0 30px;
+    width: 42px;
+    height: 42px;
+    border: 1px solid #242424;
+    border-radius: 8px;
+    background: transparent;
+    color: #ddd;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
   }
 
-  :global(.search-bar input) {
-    width: min(420px, 100%);
-    padding: 12px 18px;
+  .search-toggle:hover {
+    background: #1a1a1a;
+    border-color: #3a3a3a;
+    color: #fff;
+  }
+
+  .search-toggle svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Panel que contiene el input + botón ×. */
+  .header-search-panel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Input del buscador en desktop: ancho fijo, mismo look que antes. */
+  #search {
+    width: 200px;
+    padding: 9px 14px;
     border: 1px solid #333;
     border-radius: 8px;
     outline: none;
     background: #111;
     color: #fff;
-    font-size: 14px;
+    font-size: 13px;
     transition: border-color 0.2s ease;
   }
 
-  :global(.search-bar input:focus) {
+  #search:focus {
     border-color: #777;
+  }
+
+  /* Botón × del buscador: solo visible en mobile. */
+  .search-close {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border: 1px solid #242424;
+    border-radius: 8px;
+    background: transparent;
+    color: #ddd;
+    cursor: pointer;
+    font-size: 22px;
+    line-height: 1;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .search-close:hover {
+    background: #1a1a1a;
+    border-color: #3a3a3a;
+    color: #fff;
   }
 
   h2 {
@@ -1796,6 +1883,30 @@ const marqueeText = [
     margin-bottom: 25px;
   }
 
+  /* Tablet: achicamos el buscador y ocultamos el label de Instagram
+     para que todo entre sin apretarse. */
+  @media (max-width: 1000px) {
+    #search {
+      width: 150px;
+    }
+
+    .instagram-btn {
+      padding: 0;
+      width: 42px;
+      height: 42px;
+      justify-content: center;
+    }
+
+    .instagram-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .instagram-label {
+      display: none;
+    }
+  }
+
   @media (max-width: 700px) {
     .site-header {
       padding: 14px 4vw;
@@ -1811,13 +1922,13 @@ const marqueeText = [
     }
 
     .logo-horizontal {
-      width: 135px;
+      width: 115px;
     }
 
     .instagram-btn {
       padding: 0;
-      width: 42px;
-      height: 42px;
+      width: 38px;
+      height: 38px;
       justify-content: center;
       border-radius: 8px;
       border-color: #242424;
@@ -1833,22 +1944,57 @@ const marqueeText = [
     }
 
     .header-actions {
-      gap: 8px;
+      gap: 6px;
     }
 
     .cart-button,
-    .menu-toggle {
-      width: 40px;
-      height: 40px;
+    .menu-toggle,
+    .search-toggle {
+      width: 38px;
+      height: 38px;
+    }
+
+    /* Buscador en mobile: lupa visible, panel oculto por defecto. */
+    .search-toggle {
+      display: inline-flex;
+    }
+
+    .header-search-panel {
+      display: none;
+    }
+
+    /* Modo búsqueda: el header se transforma en "input + ×". */
+    .site-header.search-open .brand,
+    .site-header.search-open .desktop-nav,
+    .site-header.search-open .search-toggle,
+    .site-header.search-open .instagram-btn,
+    .site-header.search-open .cart-button,
+    .site-header.search-open .menu-toggle {
+      display: none;
+    }
+
+    .site-header.search-open .header-search-panel {
+      display: flex;
+      flex: 1;
+      gap: 8px;
+    }
+
+    .site-header.search-open #search {
+      flex: 1;
+      width: 100%;
+      font-size: 14px;
+      padding: 10px 14px;
+    }
+
+    .site-header.search-open .search-close {
+      display: inline-flex;
     }
 
     .hero {
       padding: 40px 0 35px;
     }
 
-    :global(.search-bar input) {
-      width: 100%;
-    }
+
 
     .categories {
       flex-wrap: wrap;
@@ -4235,6 +4381,38 @@ const marqueeText = [
   const searchInput = document.querySelector("#search");
 
   // -------------------------
+  // BUSCADOR EN EL HEADER
+  // -------------------------
+  // En mobile, el header se transforma en "input + ×" al tocar la lupa.
+  // En desktop no hay transformación: el input está siempre visible.
+  const siteHeader = document.querySelector(".site-header");
+  const searchToggle = document.querySelector("#search-toggle");
+  const searchClose = document.querySelector("#search-close");
+
+  function openSearch() {
+    siteHeader?.classList.add("search-open");
+    // Foco después de que el navegador pinte el input (para que se abra
+    // el teclado en mobile).
+    requestAnimationFrame(() => {
+      searchInput?.focus();
+    });
+  }
+
+  function closeSearch() {
+    siteHeader?.classList.remove("search-open");
+    searchInput?.blur();
+    // Al cerrar en mobile, limpiamos la búsqueda y restauramos el catálogo.
+    // Si no, el usuario quedaría con un filtro invisible aplicado.
+    if (searchInput && searchInput.value !== "") {
+      searchInput.value = "";
+      filterProducts();
+    }
+  }
+
+  searchToggle?.addEventListener("click", openSearch);
+  searchClose?.addEventListener("click", closeSearch);
+
+  // -------------------------
   // ALEATORIZAR EL CATÁLOGO
   // -------------------------
   // Mezcla round-robin aleatoria: mantiene variedad de categorías
@@ -5417,6 +5595,15 @@ hidden.decoding = "async";
 
 
   document.addEventListener("keydown", (event) => {
+    // Si el buscador está abierto en mobile y tocan Escape, lo cerramos.
+    if (
+      event.key === "Escape" &&
+      siteHeader?.classList.contains("search-open")
+    ) {
+      closeSearch();
+      return;
+    }
+
     // Primero, si el zoom está abierto, Escape lo cierra solo a él.
     if (imageZoom.getAttribute("aria-hidden") === "false") {
       if (event.key === "Escape") {
