@@ -1,5 +1,6 @@
 ---
 import catalogo from "../data/catalogo.json";
+import promo from "../data/promo.json";
 
 const categories = catalogo.categories;
 
@@ -773,6 +774,82 @@ const marqueeText = [
     </div>
 
     </main>
+
+    {
+      promo.activa && promo.imagenes.length > 0 && (
+        <div id="promo-modal" class="promo-modal" aria-hidden="true">
+          <div class="promo-backdrop"></div>
+
+          <div class="promo-content" role="dialog" aria-modal="true">
+            <button
+              id="promo-close"
+              class="promo-close"
+              type="button"
+              aria-label="Cerrar promoción"
+            >
+              ×
+            </button>
+
+            <div class="promo-stage">
+              <button
+                id="promo-prev"
+                class="promo-arrow promo-prev"
+                type="button"
+                aria-label="Imagen anterior"
+              >
+                ‹
+              </button>
+
+              <div class="promo-image-wrapper">
+                {promo.imagenes.map((src, index) => (
+                  <img
+                    class={`promo-image-el${index === 0 ? " active" : ""}`}
+                    src={`${base}${src}`}
+                    alt="Promoción KRAKOA"
+                    loading="lazy"
+                    data-index={index}
+                  />
+                ))}
+              </div>
+
+              <button
+                id="promo-next"
+                class="promo-arrow promo-next"
+                type="button"
+                aria-label="Imagen siguiente"
+              >
+                ›
+              </button>
+            </div>
+
+            {promo.imagenes.length > 1 && (
+              <div id="promo-thumbs" class="promo-thumbs">
+                {promo.imagenes.map((src, index) => (
+                  <button
+                    class={`promo-thumb${index === 0 ? " active" : ""}`}
+                    type="button"
+                    data-index={index}
+                    aria-label={`Ver imagen ${index + 1}`}
+                  >
+                    <img src={`${base}${src}`} alt="" loading="lazy" />
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {promo.config.mostrarBotonNoMostrar && (
+              <button
+                id="promo-dont-show"
+                class="promo-dont-show"
+                type="button"
+              >
+                No mostrar de nuevo
+              </button>
+            )}
+          </div>
+        </div>
+      )
+    }
 
     <footer class="site-footer">
   <div class="footer-particles" aria-hidden="true"></div>
@@ -3353,6 +3430,223 @@ const marqueeText = [
   }
 }
 
+/* --------------------------- */
+/* PROMO POPUP                 */
+/* --------------------------- */
+
+:global(.promo-modal) {
+  position: fixed;
+  inset: 0;
+  z-index: 1250;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.32s ease, visibility 0s linear 0.32s;
+}
+
+:global(.promo-modal.open) {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.32s ease, visibility 0s linear 0s;
+}
+
+:global(.promo-backdrop) {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(8px);
+}
+
+:global(.promo-content) {
+  position: relative;
+  z-index: 1;
+  width: min(92vw, 500px);
+  max-height: 92dvh;
+  background: #111;
+  border: 1px solid #242424;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(40px) scale(0.97);
+  opacity: 0;
+  transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.42s ease;
+  will-change: transform, opacity;
+}
+
+:global(.promo-modal.open .promo-content) {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+:global(.promo-close) {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 5;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #2a2a2a;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+:global(.promo-close:hover) {
+  background: #fff;
+  color: #111;
+  border-color: #fff;
+}
+
+:global(.promo-stage) {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  background: #0a0a0a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+:global(.promo-image-wrapper) {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+:global(.promo-image-el) {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+  user-select: none;
+}
+
+:global(.promo-image-el.active) {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+:global(.promo-arrow) {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #2a2a2a;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+:global(.promo-arrow:hover) {
+  background: #fff;
+  color: #111;
+}
+
+:global(.promo-prev) {
+  left: 12px;
+}
+
+:global(.promo-next) {
+  right: 12px;
+}
+
+:global(.promo-thumbs) {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  background: #0a0a0a;
+  border-top: 1px solid #242424;
+}
+
+:global(.promo-thumb) {
+  width: 48px;
+  height: 60px;
+  padding: 0;
+  border: 2px solid #242424;
+  border-radius: 6px;
+  background: #141414;
+  overflow: hidden;
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity 0.2s ease, border-color 0.2s ease;
+  flex-shrink: 0;
+}
+
+:global(.promo-thumb:hover) {
+  opacity: 0.9;
+  border-color: #666;
+}
+
+:global(.promo-thumb.active) {
+  opacity: 1;
+  border-color: #fff;
+  box-shadow: 0 0 10px -2px #fff;
+}
+
+:global(.promo-thumb img) {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+:global(.promo-dont-show) {
+  margin: 0;
+  padding: 12px;
+  border: 0;
+  border-top: 1px solid #242424;
+  background: transparent;
+  color: #888;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+:global(.promo-dont-show:hover) {
+  color: #fff;
+  background: #1a1a1a;
+}
+
+@media (max-width: 700px) {
+  :global(.promo-content) {
+    width: 92vw;
+    max-height: 88dvh;
+  }
+
+  :global(.promo-arrow) {
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+  }
+}
+
 
 </style>
 
@@ -3365,7 +3659,7 @@ const marqueeText = [
   ↑
 </button>
 
-<script define:vars={{ base }}>
+<script define:vars={{ base, PROMO_DATA: promo }}>
 
   // Loader de carga inicial
   (() => {
@@ -3396,6 +3690,243 @@ const marqueeText = [
       hide();
     } else {
       window.addEventListener("load", hide, { once: true });
+    }
+  })();
+
+  // -------------------------
+  // PROMO POPUP
+  // -------------------------
+  // La config viene del JSON generado por el script (src/data/promo.json).
+  // Necesitamos pasarla al cliente porque el <script> de Astro corre
+  // después del render. Usamos un objeto global.
+  window.KRAKOA_PROMO = PROMO_DATA;
+
+  // Exponemos closePromoModalDirect para que closeTopOverlay() la use.
+  window.KRAKOA_CLOSE_PROMO = null;
+
+  (() => {
+    const promoModal = document.querySelector("#promo-modal");
+    if (!promoModal) return; // no hay promo configurada
+
+    const promoData = window.KRAKOA_PROMO;
+    if (!promoData || !promoData.activa) return;
+    if (!promoData.imagenes || promoData.imagenes.length === 0) return;
+
+    const promoImages = promoModal.querySelectorAll(".promo-image-el");
+    const promoThumbs = promoModal.querySelectorAll(".promo-thumb");
+    const promoPrev = promoModal.querySelector("#promo-prev");
+    const promoNext = promoModal.querySelector("#promo-next");
+    const promoClose = promoModal.querySelector("#promo-close");
+    const promoDontShow = promoModal.querySelector("#promo-dont-show");
+    const promoBackdrop = promoModal.querySelector(".promo-backdrop");
+
+    const STORAGE_KEY_DONT_SHOW = "krakoa_promo_dont_show";
+    const STORAGE_KEY_SESSION = "krakoa_promo_session_closed";
+
+    let promoIndex = 0;
+    let autoRotateTimer = null;
+    let autoRotateActive = true;
+
+    // ¿Debemos mostrar la promo?
+    function shouldShowPromo() {
+      // 1) Si el usuario la cerró en ESTA sesión (con la ×), no mostrar.
+      if (sessionStorage.getItem(STORAGE_KEY_SESSION) === "1") {
+        return false;
+      }
+
+      // 2) Si el usuario tocó "No mostrar de nuevo", chequeamos:
+      //    - Si el hash de la promo cambió → mostrar (es una promo nueva).
+      //    - Si pasaron más de X horas → mostrar.
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_DONT_SHOW);
+        if (!raw) return true;
+
+        const saved = JSON.parse(raw);
+        const currentHash = promoData.hash;
+
+        if (saved.hash && saved.hash !== currentHash) {
+          // La promo cambió → mostrar.
+          return true;
+        }
+
+        const hoursPassed = (Date.now() - saved.timestamp) / (1000 * 60 * 60);
+        const limit = promoData.config.noMostrarDuracionHoras || 24;
+
+        return hoursPassed >= limit;
+      } catch (error) {
+        return true;
+      }
+    }
+
+    function renderPromoImage(index) {
+      promoIndex = index;
+      promoImages.forEach((img, i) => {
+        img.classList.toggle("active", i === index);
+      });
+      promoThumbs.forEach((thumb, i) => {
+        thumb.classList.toggle("active", i === index);
+      });
+    }
+
+    function stopAutoRotate() {
+      if (autoRotateTimer) {
+        clearInterval(autoRotateTimer);
+        autoRotateTimer = null;
+      }
+      autoRotateActive = false;
+    }
+
+    function startAutoRotate() {
+      // Solo si hay más de 1 imagen y no fue detenido por el usuario.
+      if (promoImages.length < 2) return;
+      if (!autoRotateActive) return;
+      if (autoRotateTimer) return;
+
+      const seconds = promoData.config.autoRotateSegundos || 5;
+      autoRotateTimer = setInterval(() => {
+        const nextIndex = (promoIndex + 1) % promoImages.length;
+        renderPromoImage(nextIndex);
+      }, seconds * 1000);
+    }
+
+    function openPromoModal() {
+      if (promoModal.classList.contains("open")) return;
+      if (promoModal.getAttribute("aria-hidden") === "false") return;
+
+      promoModal.setAttribute("aria-hidden", "false");
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          promoModal.classList.add("open");
+        });
+      });
+
+      pushHistory("promo");
+      startAutoRotate();
+    }
+
+    function closePromoModal() {
+      if (isTopOfHistory("promo")) {
+        popHistory();
+        return;
+      }
+      closePromoModalDirect();
+    }
+
+    function closePromoModalDirect() {
+      if (promoModal.getAttribute("aria-hidden") === "true") return;
+      promoModal.classList.remove("open");
+      promoModal.setAttribute("aria-hidden", "true");
+      stopAutoRotate();
+    }
+
+    // Exponemos la función para que closeTopOverlay() la use cuando
+    // el usuario toca el botón "atrás" del celular.
+    window.KRAKOA_CLOSE_PROMO = closePromoModalDirect;
+
+    // Marcamos la sesión como "ya cerrada" (solo si no fue "no mostrar").
+    function markSessionClosed() {
+      try {
+        sessionStorage.setItem(STORAGE_KEY_SESSION, "1");
+      } catch (error) {}
+    }
+
+    // Guardamos el "no mostrar de nuevo".
+    function markDontShow() {
+      try {
+        localStorage.setItem(
+          STORAGE_KEY_DONT_SHOW,
+          JSON.stringify({
+            hash: promoData.hash,
+            timestamp: Date.now(),
+          })
+        );
+      } catch (error) {}
+    }
+
+    // Listeners
+    promoClose?.addEventListener("click", () => {
+      markSessionClosed();
+      closePromoModal();
+    });
+
+    promoBackdrop?.addEventListener("click", () => {
+      markSessionClosed();
+      closePromoModal();
+    });
+
+    promoDontShow?.addEventListener("click", () => {
+      markDontShow();
+      markSessionClosed();
+      closePromoModal();
+    });
+
+    promoPrev?.addEventListener("click", () => {
+      stopAutoRotate();
+      const prev =
+        (promoIndex - 1 + promoImages.length) % promoImages.length;
+      renderPromoImage(prev);
+    });
+
+    promoNext?.addEventListener("click", () => {
+      stopAutoRotate();
+      const next = (promoIndex + 1) % promoImages.length;
+      renderPromoImage(next);
+    });
+
+    promoThumbs.forEach((thumb) => {
+      thumb.addEventListener("click", () => {
+        stopAutoRotate();
+        const index = parseInt(thumb.getAttribute("data-index") || "0", 10);
+        renderPromoImage(index);
+      });
+    });
+
+    // Escape cierra la promo.
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return;
+      if (promoModal.getAttribute("aria-hidden") === "false") {
+        event.stopImmediatePropagation();
+        markSessionClosed();
+        closePromoModal();
+      }
+    });
+
+    // Swipe en mobile sobre la imagen.
+    let promoTouchStartX = 0;
+    promoModal.addEventListener(
+      "touchstart",
+      (event) => {
+        promoTouchStartX = event.changedTouches[0].screenX;
+      },
+      { passive: true }
+    );
+    promoModal.addEventListener(
+      "touchend",
+      (event) => {
+        const dx = event.changedTouches[0].screenX - promoTouchStartX;
+        if (Math.abs(dx) < 50) return;
+        stopAutoRotate();
+        if (dx < 0) {
+          renderPromoImage((promoIndex + 1) % promoImages.length);
+        } else {
+          renderPromoImage(
+            (promoIndex - 1 + promoImages.length) % promoImages.length
+          );
+        }
+      },
+      { passive: true }
+    );
+
+    // Abrimos la promo a los 2 segundos, solo si corresponde.
+    if (shouldShowPromo()) {
+      setTimeout(() => {
+        try {
+          openPromoModal();
+        } catch (error) {
+          console.error("[KRAKOA] Error abriendo promo:", error);
+        }
+      }, 2000);
     }
   })();
 
@@ -4496,6 +5027,10 @@ hidden.decoding = "async";
       closeImageZoomDirect();
     } else if (top === "mobile-menu") {
       closeMobileMenuDirect();
+    } else if (top === "promo") {
+      if (typeof window.KRAKOA_CLOSE_PROMO === "function") {
+        window.KRAKOA_CLOSE_PROMO();
+      }
     }
   }
 

@@ -8,6 +8,19 @@ const publicCatalogoDir = path.join(root, "public", "catalogo");
 const outputDir = path.join(root, "src", "data");
 const outputFile = path.join(outputDir, "catalogo.json");
 
+const promoDir = path.join(root, "promo");
+const publicPromoDir = path.join(root, "public", "promo");
+const promoOutputFile = path.join(outputDir, "promo.json");
+
+const DEFAULT_PROMO_CONFIG = {
+  activa: true,
+  noMostrarDuracionHoras: 24,
+  autoRotateSegundos: 5,
+  mostrarBotonNoMostrar: true,
+  link: "",
+  texto: "",
+};
+
 const optimizedCatalogoDir = path.join(
   root,
   "public",
@@ -450,3 +463,134 @@ fs.writeFileSync(
 console.log(
   `Catálogo generado: ${products.length} producto(s), ${categories.length} categoría(s).`
 );
+
+// -------------------------
+// PROMO
+// -------------------------
+
+async function generatePromo() {
+  // Limpiamos public/promo por si había imágenes viejas.
+  fs.rmSync(publicPromoDir, { recursive: true, force: true });
+
+  // Si no existe la carpeta promo/, no hay promo.
+  if (!fs.existsSync(promoDir)) {
+    fs.writeFileSync(
+      promoOutputFile,
+      JSON.stringify(
+        {
+          activa: false,
+          imagenes: [],
+          hash: "",
+          config: DEFAULT_PROMO_CONFIG,
+        },
+        null,
+        2
+      ),
+      "utf8"
+    );
+    console.log("Promo: no hay carpeta promo/, se omite.");
+    return;
+  }
+
+  // Leemos el config.json (si no existe, usamos el default).
+  let config = { ...DEFAULT_PROMO_CONFIG };
+  const configPath = path.join(promoDir, "config.json");
+
+  if (fs.existsSync(configPath)) {
+    try {
+      const raw = fs.readFileSync(configPath, "utf8");
+      const parsed = JSON.parse(raw);
+      config = { ...DEFAULT_PROMO_CONFIG, ...parsed };
+    } catch (error) {
+      console.warn(
+        "Promo: config.json tiene un error de formato, se usan los valores por defecto."
+      );
+      console.warn("  Detalle:", error.message);
+    }
+  }
+
+  // Buscamos las imágenes en promo/ (ordenadas alfabéticamente).
+  const files = fs
+    .readdirSync(promoDir, { withFileTypes: true })
+    .filter((entry) => entry.isFile())
+    .map((entry) => entry.name)
+    .filter((name) => {
+      const ext = path.extname(name).toLowerCase();
+      return imageExtensions.includes(ext);
+    })
+    .sort((a, b) => a.localeCompare(b, "es"));
+
+  // Sin imágenes → no hay promo (aunque activa sea true).
+  if (files.length === 0) {
+    fs.writeFileSync(
+      promoOutputFile,
+      JSON.stringify(
+        {
+          activa: false,
+          imagenes: [],
+          hash: "",
+          config,
+        },
+        null,
+        2
+      ),
+      "utf8"
+    );
+    console.log("Promo: no hay imágenes en promo/, se omite.");
+    return;
+  }
+
+  // Creamos public/promo/ y optimizamos cada imagen a .webp.
+  fs.mkdirSync(publicPromoDir, { recursive: true });
+
+  const imagenes = [];
+  const hashParts = [];
+
+  for (const file of files) {
+    const sourcePath = path.join(promoDir, file);
+    const ext = path.extname(file).toLowerCase();
+    const webpFile = file.replace(new RegExp(`${ext}$`, "i"), ".webp");
+    const destinationPath = path.join(publicPromoDir, webpFile);
+
+    await optimizeImage(sourcePath, destinationPath);
+
+    imagenes.push(`/promo/${webpFile}`);
+
+    // Para el hash usamos nombre + tamaño en bytes. Así, si reemplazás
+    // la imagen por otra con el mismo nombre pero distinto peso, el hash
+    // cambia y la promo se muestra de nuevo.
+    const stats = fs.statSync(sourcePath);
+    hashParts.push(`${webpFile}:${stats.size}`);
+  }
+
+  // Si config.activa es false, forzamos activa=false aunque haya imágenes.
+  const activa = config.activa === true;
+
+  const hash = hashParts.join("|");
+
+  fs.writeFileSync(
+    promoOutputFile,
+    JSON.stringify(
+      {
+        activa,
+        imagenes,
+        hash,
+        config,
+      },
+      null,
+      2
+    ),
+    "utf8"
+  );
+
+  console.log(
+    `Promo: ${imagenes.length} imagen(es) detectada(s) — ${
+      activa ? "ACTIVA" : "INACTIVA (config.activa = false)"
+    }.`
+  );
+  console.log(
+    `Promo: auto-rotate cada ${config.autoRotateSegundos}s, "No mostrar" dura ${config.noMostrarDuracionHoras} hs.`
+  );
+}
+
+await generatePromo();

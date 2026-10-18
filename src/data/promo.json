@@ -1,0 +1,15 @@
+{
+  "activa": true,
+  "imagenes": [
+    "/promo/promo1.webp"
+  ],
+  "hash": "promo1.webp:155653",
+  "config": {
+    "activa": true,
+    "noMostrarDuracionHoras": 24,
+    "autoRotateSegundos": 5,
+    "mostrarBotonNoMostrar": true,
+    "link": "",
+    "texto": ""
+  }
+}
