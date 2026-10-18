@@ -273,23 +273,23 @@ const marqueeText = [
                       alt={`Remera ${product.name}`}
                       loading="lazy"
                     />
+
+                    <div class="product-overlay">
+                      <span
+                        class="product-category"
+                        style={`--category-color: ${
+                          catalogo.categories.find(
+                            (category) => category.id === product.category
+                          )?.color ?? "#888888"
+                        }`}
+                      >
+                        <i class="category-dot"></i>
+                        {product.categoryName}
+                      </span>
+
+                      <h3 class="product-title">{product.name}</h3>
+                    </div>
                   </div>
-
-                  <div class="product-info">
-  <h3>{product.name}</h3>
-
-  <span
-    class="product-category"
-    style={`--category-color: ${
-      catalogo.categories.find(
-        (category) => category.id === product.category
-      )?.color ?? "#888888"
-    }`}
-  >
-    <i class="category-dot"></i>
-    {product.categoryName}
-  </span>
-</div>
                 </button>
               </article>
             ))
@@ -1486,13 +1486,22 @@ const marqueeText = [
 }
 
   
- .products {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 28px;
-  max-width: 1180px;
-  margin: 0 auto;
-}
+  .products {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+
+    /* Truco para salir del `main` (que tiene max-width) y ocupar
+       todo el ancho de la ventana. Mismo truco que el hero. */
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100vw;
+    max-width: 100vw;
+
+    /* Padding interno para que las tarjetas no toquen los bordes. */
+    padding: 0 14px;
+  }
 
   .product-card {
     min-width: 0;
@@ -1510,6 +1519,7 @@ const marqueeText = [
   }
 
   .product-image {
+    position: relative;
     aspect-ratio: 1 / 1.18;
     background: #141414;
     overflow: hidden;
@@ -1528,31 +1538,61 @@ const marqueeText = [
     transform: scale(1.025);
   }
 
-  .product-info {
-    padding: 12px 2px 0;
+  /* Overlay con degradado abajo de la imagen. */
+  .product-overlay {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 32px 14px 14px;
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.82) 0%,
+      rgba(0, 0, 0, 0.55) 45%,
+      rgba(0, 0, 0, 0) 100%
+    );
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    pointer-events: none;
+    z-index: 2;
   }
 
-  .product-info h3 {
-    margin: 0 0 5px;
+  .product-category {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #d0d0d0;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    line-height: 1.2;
+  }
+
+  .product-category .category-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--category-color);
+    flex-shrink: 0;
+    box-shadow: 0 0 6px var(--category-color);
+  }
+
+  .product-title {
+    margin: 0;
     font-size: 15px;
     font-weight: 700;
+    color: #fff;
+    line-height: 1.25;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+    /* Limitar a 2 renglones con ellipsis. */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
-
-.product-category {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  color: #777;
-  font-size: 12px;
-}
-
-.product-category .category-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--category-color);
-  flex-shrink: 0;
-}
 
   :global(.site-footer) {
     position: relative;
@@ -1686,6 +1726,20 @@ const marqueeText = [
   @media (max-width: 900px) {
     .products {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      padding: 0 12px;
+    }
+
+    .product-title {
+      font-size: 13px;
+    }
+
+    .product-category {
+      font-size: 10px;
+    }
+
+    .product-overlay {
+      padding: 28px 10px 10px;
     }
   }
 
