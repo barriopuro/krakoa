@@ -5318,6 +5318,14 @@ hidden.decoding = "async";
     // (es un tap sobre la foto, probablemente queriendo hacer pinch-zoom).
     if (zoomPointerDownOnImage && upOnImage) {
       zoomPointerDownOnImage = false;
+
+      // En DESKTOP, el click sobre la imagen cierra el zoom.
+      // El cursor ya muestra lupa con "-", así que el click debe cumplir.
+      // En MOBILE no cerramos, porque el usuario podría estar haciendo
+      // pinch-to-zoom nativo sobre la foto.
+      if (event.pointerType === "mouse") {
+        closeImageZoom();
+      }
       return;
     }
     zoomPointerDownOnImage = false;
