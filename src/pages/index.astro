@@ -4897,10 +4897,16 @@ hidden.decoding = "async";
   // NAVEGACIÓN ENTRE PRODUCTOS
   // -------------------------
 
-  // Devuelve la lista de productos VISIBLES en el DOM actual
-  // (respetando filtros de categoría, búsqueda y aleatorización).
+  // Devuelve la lista de productos VISIBLES en el ORDEN ACTUAL del DOM
+  // (respetando filtros de categoría, búsqueda y reordenamiento).
+  //
+  // OJO: no usamos el NodeList `products` (que se creó al inicio del
+  // script y no se actualiza cuando reordenamos el DOM con appendChild).
+  // Consultamos el DOM en vivo para obtener el orden real.
   function getVisibleProducts() {
-    return Array.from(products).filter((product) => {
+    return Array.from(
+      document.querySelectorAll("#products .product-card")
+    ).filter((product) => {
       return product.style.display !== "none";
     });
   }
