@@ -269,9 +269,18 @@ const marqueeText = [
                 <button class="product-button" type="button">
                   <div class="product-image">
                     <img
+                      class="product-image-base"
                       src={`${base}/${product.modelo}`}
                       alt={`Remera ${product.name}`}
                       loading="lazy"
+                    />
+
+                    <img
+                      class="product-image-hover"
+                      src={`${base}/${product.remera}`}
+                      alt=""
+                      loading="lazy"
+                      aria-hidden="true"
                     />
 
                     <div class="product-overlay">
@@ -1527,15 +1536,40 @@ const marqueeText = [
   }
 
   .product-image img {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
-    transition: transform 0.35s ease;
+    transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
   }
 
-  .product-button:hover .product-image img {
-    transform: scale(1.025);
+  /* Imagen base: visible por defecto. */
+  .product-image-base {
+    opacity: 1;
+    transform: scale(1);
+    z-index: 1;
+  }
+
+  /* Imagen hover: oculta por defecto. */
+  .product-image-hover {
+    opacity: 0;
+    transform: scale(1.02);
+    z-index: 0;
+  }
+
+  /* Hover: la base se va, la hover aparece. */
+  .product-button:hover .product-image-base {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+
+  .product-button:hover .product-image-hover {
+    opacity: 1;
+    transform: scale(1);
   }
 
   /* Overlay con degradado abajo de la imagen. */
@@ -1740,6 +1774,11 @@ const marqueeText = [
 
     .product-overlay {
       padding: 28px 10px 10px;
+    }
+
+    /* En mobile no hay hover: la imagen hover nunca se muestra. */
+    .product-image-hover {
+      display: none;
     }
   }
 
@@ -4767,7 +4806,7 @@ hidden.decoding = "async";
     }
 
 
-    const image = product.querySelector("img");
+    const image = product.querySelector(".product-image-base");
     if (!image) return;
 
     const modelo = image.getAttribute("src");
@@ -5040,7 +5079,7 @@ hidden.decoding = "async";
     const categoryName =
       category?.textContent?.trim() ?? "";
 
-    const image = product.querySelector("img");
+    const image = product.querySelector(".product-image-base");
     if (!image) return;
 
     const modelo = image.getAttribute("src");
@@ -5922,7 +5961,7 @@ const heroBg = document.querySelector(".hero-bg");
 
 if (heroBg) {
   const allSrcs = Array.from(
-    document.querySelectorAll(".product-card .product-image img")
+    document.querySelectorAll(".product-card .product-image-base")
   )
     .map((img) => img.getAttribute("src"))
     .filter(Boolean);
