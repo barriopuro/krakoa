@@ -279,6 +279,7 @@ const marqueeText = [
       <button
         class="category-button"
         data-category={category.id}
+        data-original-text={category.name}
       >
         {category.name}
       </button>
@@ -1431,53 +1432,95 @@ const marqueeText = [
     position: relative;
   }
 
-  :global(h1::before),
-  :global(h1::after) {
-    content: attr(data-text);
+  /* Los glitches ahora son spans REALES (no pseudo-elementos). El JS les
+     setea textContent directo, sin attr() en content. */
+  :global(.hero-glitch-a),
+  :global(.hero-glitch-b) {
     position: absolute;
     inset: 0;
     pointer-events: none;
     user-select: none;
     opacity: 0;
     white-space: nowrap;
+    z-index: 2;
   }
 
-  :global(h1::before) {
+  :global(.hero-glitch-a) {
     color: #ff0055;
     text-shadow: 1px 0 rgba(255, 0, 85, 0.7);
   }
 
-  :global(h1::after) {
+  :global(.hero-glitch-b) {
     color: #00fff0;
     text-shadow: -1px 0 rgba(0, 255, 240, 0.7);
   }
 
-  :global(h1.glitching)::before {
-    opacity: 0.85;
-    animation: glitchSlicesA 0.28s steps(5, end) 1;
-  }
+  :global(h1.glitching) :global(.hero-glitch-a) {
+  opacity: 1;
+  animation: glitchSlicesA 0.42s steps(9, end) 1,
+             glitchFlickerA 0.42s steps(5, end) 1;
+}
 
-  :global(h1.glitching)::after {
-    opacity: 0.85;
-    animation: glitchSlicesB 0.28s steps(5, end) 1;
-  }
+:global(h1.glitching) :global(.hero-glitch-b) {
+  opacity: 1;
+  animation: glitchSlicesB 0.42s steps(9, end) 1,
+             glitchFlickerB 0.42s steps(5, end) 1;
+}
 
+  /* Glitch mejorado: 10 fotogramas con mezcla de tiras horizontales
+     (inset top/bottom) y bloques recortados (inset top/right/bottom/left)
+     para simular datamoshing. El text-shadow también se anima →
+     RGB split dinámico. steps(9) hace los saltos digitales. */
   @keyframes glitchSlicesA {
-    0%   { clip-path: inset(20% 0 60% 0); transform: translate(-5px, 0); }
-    20%  { clip-path: inset(60% 0 10% 0); transform: translate(4px, 1px); }
-    40%  { clip-path: inset(10% 0 70% 0); transform: translate(-3px, -1px); }
-    60%  { clip-path: inset(80% 0 5% 0);  transform: translate(5px, 0); }
-    80%  { clip-path: inset(35% 0 45% 0); transform: translate(-4px, 1px); }
-    100% { clip-path: inset(20% 0 60% 0); transform: translate(0, 0); }
+    0%   { clip-path: inset(10% 0 80% 0);     transform: translate(-8px, 0);  text-shadow: 4px 0 rgba(255, 0, 85, 1); }
+    11%  { clip-path: inset(60% 0 10% 0);     transform: translate(10px, 0);  text-shadow: -6px 0 rgba(255, 0, 85, 1); }
+    22%  { clip-path: inset(30% 55% 55% 10%); transform: translate(-6px, 0);  text-shadow: 4px 0 rgba(255, 0, 85, 1); }
+    33%  { clip-path: inset(80% 0 5% 0);      transform: translate(12px, 0);  text-shadow: -8px 0 rgba(255, 0, 85, 1); }
+    44%  { clip-path: inset(20% 30% 60% 25%); transform: translate(-10px, 0) scaleY(-1); text-shadow: 6px 0 rgba(255, 0, 85, 1); }
+    55%  { clip-path: inset(45% 0 40% 0);     transform: translate(6px, 0);   text-shadow: -4px 0 rgba(255, 0, 85, 1); }
+    66%  { clip-path: inset(70% 45% 15% 0);   transform: translate(-8px, 0);  text-shadow: 8px 0 rgba(255, 0, 85, 1); }
+    77%  { clip-path: inset(5% 0 85% 0);      transform: translate(4px, 0) scaleX(-1); text-shadow: -6px 0 rgba(255, 0, 85, 1); }
+    88%  { clip-path: inset(40% 20% 35% 30%); transform: translate(-10px, 0); text-shadow: 5px 0 rgba(255, 0, 85, 1); }
+    100% { clip-path: inset(10% 0 80% 0);     transform: translate(0, 0);     text-shadow: 3px 0 rgba(255, 0, 85, 0.9); }
   }
 
   @keyframes glitchSlicesB {
-    0%   { clip-path: inset(50% 0 30% 0); transform: translate(4px, -1px); }
-    20%  { clip-path: inset(15% 0 65% 0); transform: translate(-5px, 0); }
-    40%  { clip-path: inset(70% 0 15% 0); transform: translate(3px, 1px); }
-    60%  { clip-path: inset(25% 0 55% 0); transform: translate(-4px, 0); }
-    80%  { clip-path: inset(85% 0 5% 0);  transform: translate(5px, -1px); }
-    100% { clip-path: inset(50% 0 30% 0); transform: translate(0, 0); }
+    0%   { clip-path: inset(55% 0 25% 0);     transform: translate(8px, 0);   text-shadow: -4px 0 rgba(0, 255, 240, 1); }
+    11%  { clip-path: inset(15% 0 65% 0);     transform: translate(-10px, 0); text-shadow: 6px 0 rgba(0, 255, 240, 1); }
+    22%  { clip-path: inset(75% 30% 10% 0);   transform: translate(6px, 0);   text-shadow: -4px 0 rgba(0, 255, 240, 1); }
+    33%  { clip-path: inset(25% 0 60% 0);     transform: translate(-12px, 0) scaleX(-1); text-shadow: 8px 0 rgba(0, 255, 240, 1); }
+    44%  { clip-path: inset(40% 15% 50% 35%); transform: translate(10px, 0);  text-shadow: -6px 0 rgba(0, 255, 240, 1); }
+    55%  { clip-path: inset(85% 0 5% 0);      transform: translate(-6px, 0);  text-shadow: 4px 0 rgba(0, 255, 240, 1); }
+    66%  { clip-path: inset(35% 0 45% 0);     transform: translate(8px, 0) scaleY(-1); text-shadow: -8px 0 rgba(0, 255, 240, 1); }
+    77%  { clip-path: inset(50% 40% 40% 0);   transform: translate(-4px, 0);  text-shadow: 6px 0 rgba(0, 255, 240, 1); }
+    88%  { clip-path: inset(20% 25% 55% 20%); transform: translate(10px, 0);  text-shadow: -5px 0 rgba(0, 255, 240, 1); }
+    100% { clip-path: inset(55% 0 25% 0);     transform: translate(0, 0);     text-shadow: -3px 0 rgba(0, 255, 240, 0.9); }
+  }
+
+  @keyframes glitchFlickerA {
+    0%   { opacity: 1; }
+    20%  { opacity: 0.35; }
+    40%  { opacity: 1; }
+    60%  { opacity: 0.45; }
+    80%  { opacity: 1; }
+    100% { opacity: 1; }
+  }
+
+  @keyframes glitchFlickerB {
+    0%   { opacity: 1; }
+    20%  { opacity: 0.55; }
+    40%  { opacity: 0.3; }
+    60%  { opacity: 1; }
+    80%  { opacity: 1; }
+    100% { opacity: 1; }
+  }
+
+  @keyframes glitchBaseShift {
+    0%   { transform: translate(0, 0); }
+    25%  { transform: translate(-2px, 0); }
+    50%  { transform: translate(2px, 1px); }
+    75%  { transform: translate(-1px, -1px); }
+    100% { transform: translate(0, 0); }
   }
 
   /* Cursor tipo terminal: el punto final del título titila. */
@@ -1646,6 +1689,7 @@ const marqueeText = [
 }
 
 .category-button {
+  position: relative;
   padding: 12px 20px;
   border: 3px solid #333;
   border-radius: 0;
@@ -1656,9 +1700,28 @@ const marqueeText = [
   letter-spacing: 0.01em;
   cursor: pointer;
   font-family: inherit;
+  overflow: hidden;
   transform: translate(0, 0);
   transition: transform 0.22s ease, color 0.2s ease, border-color 0.2s ease;
   will-change: transform;
+}
+
+/* Reserva el ancho del texto original. El ::before es invisible, no
+   ocupa altura y no se ve, pero su ancho entra en el cálculo del
+   "max-content" del botón. Así, cuando durante el glitch el .cat-text
+   pasa a mostrar símbolos más angostos, el botón NO se achica. */
+.category-button::before {
+  content: attr(data-original-text);
+  display: block;
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  pointer-events: none;
+  font: inherit;
+  font-weight: inherit;
+  font-size: inherit;
+  letter-spacing: inherit;
+  white-space: nowrap;
 }
 
 /* Hover / focus: el botón se despega arriba-izquierda (como el original). */
@@ -1674,6 +1737,99 @@ const marqueeText = [
   color: #fff;
   border-color: var(--category-color, #888);
 }
+
+/* --------------------------- */
+/* GLITCH SUTIL DE CATEGORÍAS  */
+/* --------------------------- */
+
+/* Los glitches ahora son spans REALES. .cat-text envuelve el texto
+   visible y los spans .cat-glitch-a/b muestran la versión scrambled
+   encima, posicionados de forma absoluta. */
+.cat-text {
+  display:global(.cat-text) {
+  display: inline-block;
+  position: relative;
+}: inline-block;
+  position: relative;
+}
+
+:global(.cat-glitch-a),
+:global(.cat-glitch-b) {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0;
+  white-space: nowrap;
+  z-index: 2;
+  font: inherit;
+  font-weight: inherit;
+  font-size: inherit;
+  letter-spacing: inherit;
+}
+
+:global(.cat-glitch-a) {
+  color: #ff0055;
+  text-shadow: 2px 0 rgba(255, 0, 85, 0.95);
+}
+
+:global(.cat-glitch-b) {
+  color: #00fff0;
+  text-shadow: -2px 0 rgba(0, 255, 240, 0.95);
+}
+
+:global(.category-button.glitching) :global(.cat-glitch-a) {
+  opacity: 1;
+  animation: catGlitchA 0.32s steps(5, end) 1,
+             catFlickerA 0.32s steps(2, end) 1;
+}
+
+:global(.category-button.glitching) :global(.cat-glitch-b) {
+  opacity: 1;
+  animation: catGlitchB 0.32s steps(5, end) 1,
+             catFlickerB 0.32s steps(2, end) 1;
+}
+
+@keyframes catGlitchA {
+  0%   { clip-path: inset(20% 0 60% 0); transform: translate(-4px, 0); text-shadow: 3px 0 rgba(255, 0, 85, 1); }
+  20%  { clip-path: inset(50% 0 20% 0); transform: translate(4px, 0);  text-shadow: -3px 0 rgba(255, 0, 85, 1); }
+  40%  { clip-path: inset(0% 0 40% 0);  transform: translate(-5px, 0) scaleY(-1); text-shadow: 4px 0 rgba(255, 0, 85, 1); }
+  60%  { clip-path: inset(60% 0 5% 0);  transform: translate(3px, 0);  text-shadow: -3px 0 rgba(255, 0, 85, 1); }
+  80%  { clip-path: inset(30% 0 30% 0); transform: translate(-4px, 0); text-shadow: 3px 0 rgba(255, 0, 85, 1); }
+  100% { clip-path: inset(20% 0 60% 0); transform: translate(0, 0);    text-shadow: 2px 0 rgba(255, 0, 85, 0.95); }
+}
+
+@keyframes catGlitchB {
+  0%   { clip-path: inset(55% 0 25% 0); transform: translate(4px, 0);  text-shadow: -3px 0 rgba(0, 255, 240, 1); }
+  20%  { clip-path: inset(15% 0 70% 0); transform: translate(-4px, 0); text-shadow: 3px 0 rgba(0, 255, 240, 1); }
+  40%  { clip-path: inset(70% 0 10% 0); transform: translate(5px, 0) scaleX(-1); text-shadow: -4px 0 rgba(0, 255, 240, 1); }
+  60%  { clip-path: inset(25% 0 55% 0); transform: translate(-3px, 0); text-shadow: 3px 0 rgba(0, 255, 240, 1); }
+  80%  { clip-path: inset(40% 0 30% 0); transform: translate(4px, 0);  text-shadow: -3px 0 rgba(0, 255, 240, 1); }
+  100% { clip-path: inset(55% 0 25% 0); transform: translate(0, 0);    text-shadow: -2px 0 rgba(0, 255, 240, 0.95); }
+}
+
+@keyframes catFlickerA {
+  0%   { opacity: 1; }
+  25%  { opacity: 0.4; }
+  50%  { opacity: 1; }
+  75%  { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+@keyframes catFlickerB {
+  0%   { opacity: 1; }
+  25%  { opacity: 0.5; }
+  50%  { opacity: 0.3; }
+  75%  { opacity: 1; }
+  100% { opacity: 1; }
+}
+
+/* El borde del botón glitchea con los mismos colores que las capas
+   de texto → refuerza el efecto en toda la silueta (no solo el texto). */
+/* Sin animación de borde: el glitch es solo texto + colores. */
 
   
   .products {
@@ -1762,8 +1918,8 @@ const marqueeText = [
     padding: 32px 14px 14px;
     background: linear-gradient(
       to top,
-      color-mix(in srgb, var(--category-color, #888) 50%, rgba(0, 0, 0, 0.82)) 0%,
-      color-mix(in srgb, var(--category-color, #888) 18%, rgba(0, 0, 0, 0.55)) 45%,
+      color-mix(in srgb, var(--category-color, #888) 10%, rgba(0, 0, 0, 0.88)) 0%,
+      color-mix(in srgb, var(--category-color, #888) 10%, rgba(0, 0, 0, 0.6)) 45%,
       rgba(0, 0, 0, 0) 100%
     );
     display: flex;
@@ -6757,16 +6913,54 @@ if (heroBg) {
 
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-  const GLITCH_DURATION = 280;  // ms que dura el glitch visible
+  const GLITCH_DURATION = 420;  // ms que dura el glitch visible (matchea la animación CSS)
   const MIN_DELAY = 5000;       // 5s mínimo entre glitches
   const MAX_DELAY = 9000;       // 9s máximo entre glitches
+
+  // Símbolos "digitales" para el scrambling de caracteres.
+  const SCRAMBLE_CHARS = "@#$%&!?*+=/\\|<>[]{}~^";
+
+  function scrambleText(text, ratio = 0.35) {
+    return text
+      .split("")
+      .map((ch) => {
+        if (ch === " " || ch === ".") return ch;
+        return Math.random() < ratio
+          ? SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)]
+          : ch;
+      })
+      .join("");
+  }
+
+  // Creamos los dos spans de glitch una sola vez.
+  (() => {
+    if (glitchEl.querySelector(".hero-glitch-a")) return;
+    const ga = document.createElement("span");
+    ga.className = "hero-glitch-a";
+    ga.setAttribute("aria-hidden", "true");
+    glitchEl.appendChild(ga);
+    const gb = document.createElement("span");
+    gb.className = "hero-glitch-b";
+    gb.setAttribute("aria-hidden", "true");
+    glitchEl.appendChild(gb);
+  })();
 
   function scheduleNextGlitch() {
     const delay = MIN_DELAY + Math.random() * (MAX_DELAY - MIN_DELAY);
     setTimeout(() => {
+      // Tomamos el texto actual (dataset.text lo mantiene sincronizado
+      // el typewriter) y le pasamos la versión scrambled a los spans.
+      const original = glitchEl.dataset.text || "CATALOGO.";
+      const scrambled = scrambleText(original);
+      const ga = glitchEl.querySelector(".hero-glitch-a");
+      const gb = glitchEl.querySelector(".hero-glitch-b");
+      if (ga) ga.textContent = scrambled;
+      if (gb) gb.textContent = scrambled;
       glitchEl.classList.add("glitching");
       setTimeout(() => {
         glitchEl.classList.remove("glitching");
+        if (ga) ga.textContent = "";
+        if (gb) gb.textContent = "";
         scheduleNextGlitch();
       }, GLITCH_DURATION);
     }, delay);
@@ -6884,5 +7078,111 @@ if (footerParticles) {
     footerParticles.appendChild(p);
   }
 }
+
+// -------------------------
+// GLITCH SUTIL DE CATEGORÍAS
+// -------------------------
+
+// Dos "cadenas" independientes de timers desfasadas. Cada cadena elige
+// un botón al azar (NO activo) y le aplica .glitching por 320ms. Con
+// dos cadenas, los glitches pueden superponerse naturalmente sin
+// compartir el momento de inicio.
+(() => {
+  const buttons = Array.from(document.querySelectorAll(".category-button"));
+  if (buttons.length === 0) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  const MIN_DELAY = 3000;
+  const MAX_DELAY = 7000;
+  const GLITCH_DURATION = 320;
+
+  // Símbolos "digitales" ANGOSTOS. El objetivo es que el texto scrambled
+  // tenga un ancho parecido al original, así el botón no cambia de tamaño
+  // ni el menú se reacomoda. Nada de @, #, %, & que son muy anchos.
+  const SCRAMBLE_CHARS = "!|/\\+~^_-=";
+
+  function scrambleText(text, ratio = 0.25) {
+    return text
+      .split("")
+      .map((ch) => {
+        // Respetamos espacios (separan palabras) y puntos.
+        if (ch === " " || ch === ".") return ch;
+        return Math.random() < ratio
+          ? SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)]
+          : ch;
+      })
+      .join("");
+  }
+
+  // Envolvemos el texto de cada botón en .cat-text y agregamos los
+  // dos spans de glitch. Se hace una sola vez al cargar.
+  buttons.forEach((btn) => {
+    if (btn.querySelector(".cat-glitch-a")) return;
+
+    const text = btn.textContent.trim();
+    btn.innerHTML = "";
+
+    const textSpan = document.createElement("span");
+    textSpan.className = "cat-text";
+    textSpan.textContent = text;
+    btn.appendChild(textSpan);
+
+    const ga = document.createElement("span");
+    ga.className = "cat-glitch-a";
+    ga.setAttribute("aria-hidden", "true");
+    btn.appendChild(ga);
+
+    const gb = document.createElement("span");
+    gb.className = "cat-glitch-b";
+    gb.setAttribute("aria-hidden", "true");
+    btn.appendChild(gb);
+
+    btn.dataset.originalText = text;
+  });
+
+  function triggerGlitch() {
+    const candidates = buttons.filter(
+      (btn) => !btn.classList.contains("active")
+    );
+
+    if (candidates.length > 0) {
+      const btn = candidates[Math.floor(Math.random() * candidates.length)];
+      if (!btn.classList.contains("glitching")) {
+        const original = btn.dataset.originalText || "";
+        const scrambled = scrambleText(original, 0.5);
+        const textSpan = btn.querySelector(".cat-text");
+        const ga = btn.querySelector(".cat-glitch-a");
+        const gb = btn.querySelector(".cat-glitch-b");
+        // Cambiamos el texto PRINCIPAL (el que siempre se ve) durante el glitch.
+        if (textSpan) textSpan.textContent = scrambled;
+        // Los spans de color llevan el mismo texto scrambled (para los slices).
+        if (ga) ga.textContent = scrambled;
+        if (gb) gb.textContent = scrambled;
+        btn.classList.add("glitching");
+        setTimeout(() => {
+          btn.classList.remove("glitching");
+          if (textSpan) textSpan.textContent = original;
+          if (ga) ga.textContent = "";
+          if (gb) gb.textContent = "";
+        }, GLITCH_DURATION);
+      }
+    }
+  }
+
+  function startChain() {
+    function scheduleNext() {
+      const delay = MIN_DELAY + Math.random() * (MAX_DELAY - MIN_DELAY);
+      setTimeout(() => {
+        triggerGlitch();
+        scheduleNext();
+      }, delay);
+    }
+    scheduleNext();
+  }
+
+  // Dos cadenas arrancan desfasadas. Los glitches pueden pisarse.
+  setTimeout(startChain, 800);
+  setTimeout(startChain, 2600);
+})();
 
 </script>
