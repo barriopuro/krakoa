@@ -155,29 +155,6 @@ const marqueeText = [
     </a>
 
     <button
-      id="cart-toggle"
-      class="cart-button"
-      type="button"
-      aria-label="Ver mi pedido"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        aria-hidden="true"
-      >
-        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
-        <path d="M3 6h18" />
-        <path d="M16 10a4 4 0 0 1-8 0" />
-      </svg>
-      <span id="cart-count" class="cart-count" hidden>0</span>
-    </button>
-
-    <button
       id="menu-toggle"
       class="menu-toggle"
       type="button"
@@ -198,6 +175,29 @@ const marqueeText = [
         <line x1="3" y1="12" x2="21" y2="12"></line>
         <line x1="3" y1="18" x2="21" y2="18"></line>
       </svg>
+    </button>
+
+    <button
+      id="cart-toggle"
+      class="cart-button"
+      type="button"
+      aria-label="Ver mi pedido"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+        <path d="M3 6h18" />
+        <path d="M16 10a4 4 0 0 1-8 0" />
+      </svg>
+      <span id="cart-count" class="cart-count" hidden>0</span>
     </button>
   </div>
 </header>
@@ -1647,6 +1647,27 @@ const marqueeText = [
     color: #fff;
   }
 
+  /* Transición al abrir/cerrar el buscador en mobile:
+     glitch breve en el header (tapa el cambio de layout instantáneo)
+     + fade/blur del panel de búsqueda. */
+  @keyframes searchHeaderGlitch {
+    0%   { transform: translateX(0); }
+    20%  { transform: translateX(-2px); }
+    40%  { transform: translateX(2px); }
+    60%  { transform: translateX(-1px); }
+    80%  { transform: translateX(1px); }
+    100% { transform: translateX(0); }
+  }
+
+  :global(.site-header.search-switching) {
+    animation: searchHeaderGlitch 0.28s steps(4, end);
+  }
+
+  @keyframes searchPanelIn {
+    0%   { opacity: 0; transform: scale(0.94); filter: blur(6px); }
+    100% { opacity: 1; transform: scale(1);    filter: blur(0); }
+  }
+
   h2 {
     margin: 0;
     font-size: 24px;
@@ -2232,10 +2253,11 @@ const marqueeText = [
       display: none;
     }
 
-    .site-header.search-open .header-search-panel {
+    :global(.site-header.search-open) :global(.header-search-panel) {
       display: flex;
       flex: 1;
       gap: 8px;
+      animation: searchPanelIn 0.32s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     .site-header.search-open #search {
@@ -4861,7 +4883,16 @@ const marqueeText = [
   const searchToggle = document.querySelector("#search-toggle");
   const searchClose = document.querySelector("#search-close");
 
+  function triggerSearchGlitch() {
+    if (!siteHeader) return;
+    siteHeader.classList.add("search-switching");
+    setTimeout(() => {
+      siteHeader.classList.remove("search-switching");
+    }, 300);
+  }
+
   function openSearch() {
+    triggerSearchGlitch();
     siteHeader?.classList.add("search-open");
     // Foco después de que el navegador pinte el input (para que se abra
     // el teclado en mobile).
@@ -4871,6 +4902,7 @@ const marqueeText = [
   }
 
   function closeSearch() {
+    triggerSearchGlitch();
     siteHeader?.classList.remove("search-open");
     searchInput?.blur();
     // Al cerrar en mobile, limpiamos la búsqueda y restauramos el catálogo.
@@ -6949,16 +6981,27 @@ if (heroBg) {
     const delay = MIN_DELAY + Math.random() * (MAX_DELAY - MIN_DELAY);
     setTimeout(() => {
       // Tomamos el texto actual (dataset.text lo mantiene sincronizado
-      // el typewriter) y le pasamos la versión scrambled a los spans.
+      // el typewriter). El "." final va aparte en #hero-cursor, así
+      // que lo sacamos para hacer el scrambling.
       const original = glitchEl.dataset.text || "CATALOGO.";
-      const scrambled = scrambleText(original);
+      const originalVisible = original.replace(/\.$/, "");
+      const scrambled = scrambleText(originalVisible, 0.4);
+      const textEl = glitchEl.querySelector("#hero-text");
       const ga = glitchEl.querySelector(".hero-glitch-a");
       const gb = glitchEl.querySelector(".hero-glitch-b");
+      // Cambiamos el texto VISIBLE (el principal) durante el glitch.
+      if (textEl) textEl.textContent = scrambled;
+      // Y los spans de color llevan el mismo texto scrambled.
       if (ga) ga.textContent = scrambled;
       if (gb) gb.textContent = scrambled;
       glitchEl.classList.add("glitching");
       setTimeout(() => {
         glitchEl.classList.remove("glitching");
+        // Restauramos el texto visible SOLO si el typewriter no lo pisó
+        // (si estaba escribiendo, deja que maneje él y no rompemos nada).
+        if (textEl && textEl.textContent === scrambled) {
+          textEl.textContent = originalVisible;
+        }
         if (ga) ga.textContent = "";
         if (gb) gb.textContent = "";
         scheduleNextGlitch();
