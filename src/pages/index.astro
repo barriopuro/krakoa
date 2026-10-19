@@ -248,7 +248,7 @@ const marqueeText = [
       <section class="hero">
   <div class="hero-bg" aria-hidden="true"></div>
   <div class="hero-content">
-    <h1 data-text="CATALOGO."><span id="hero-text">CATALOGO</span><span id="hero-cursor" class="hero-cursor">.</span></h1>
+    <h1 data-text="CATALOGO_"><span id="hero-text">CATALOGO</span><span id="hero-cursor" class="hero-cursor">_</span></h1>
   </div>
 </section>
 
@@ -1660,7 +1660,54 @@ const marqueeText = [
   }
 
   :global(.site-header.search-switching) {
-    animation: searchHeaderGlitch 0.28s steps(4, end);
+    position: relative;
+    animation: searchHeaderGlitch 0.32s steps(4, end);
+  }
+
+  /* El flash de color va SOLO en la lupa y en el panel de búsqueda,
+     no en todo el header. El shake del header es aparte. */
+  :global(.search-toggle.search-switching),
+  :global(.header-search-panel.search-switching) {
+    position: relative;
+  }
+
+  :global(.search-toggle.search-switching)::before,
+  :global(.search-toggle.search-switching)::after,
+  :global(.header-search-panel.search-switching)::before,
+  :global(.header-search-panel.search-switching)::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 50;
+  }
+
+  :global(.search-toggle.search-switching)::before,
+  :global(.header-search-panel.search-switching)::before {
+    background: rgba(255, 0, 85, 0.75);
+    animation: searchFlashMagenta 0.32s steps(4, end) 1;
+  }
+
+  :global(.search-toggle.search-switching)::after,
+  :global(.header-search-panel.search-switching)::after {
+    background: rgba(0, 255, 240, 0.7);
+    animation: searchFlashCyan 0.32s steps(4, end) 1;
+  }
+
+  @keyframes searchFlashMagenta {
+    0%   { opacity: 0.9; clip-path: inset(10% 0 60% 0); }
+    25%  { opacity: 0.5; clip-path: inset(50% 0 20% 0); }
+    50%  { opacity: 0.85; clip-path: inset(0% 0 70% 0); }
+    75%  { opacity: 0.4; clip-path: inset(40% 0 30% 0); }
+    100% { opacity: 0; clip-path: inset(100% 0 0 0); }
+  }
+
+  @keyframes searchFlashCyan {
+    0%   { opacity: 0.8; clip-path: inset(60% 0 10% 0); }
+    25%  { opacity: 0.4; clip-path: inset(20% 0 50% 0); }
+    50%  { opacity: 0.85; clip-path: inset(70% 0 5% 0); }
+    75%  { opacity: 0.35; clip-path: inset(30% 0 40% 0); }
+    100% { opacity: 0; clip-path: inset(0 0 100% 0); }
   }
 
   @keyframes searchPanelIn {
@@ -4885,10 +4932,15 @@ const marqueeText = [
 
   function triggerSearchGlitch() {
     if (!siteHeader) return;
+    const panel = document.querySelector("#header-search-panel");
     siteHeader.classList.add("search-switching");
+    searchToggle?.classList.add("search-switching");
+    panel?.classList.add("search-switching");
     setTimeout(() => {
       siteHeader.classList.remove("search-switching");
-    }, 300);
+      searchToggle?.classList.remove("search-switching");
+      panel?.classList.remove("search-switching");
+    }, 340);
   }
 
   function openSearch() {
@@ -4915,6 +4967,15 @@ const marqueeText = [
 
   searchToggle?.addEventListener("click", openSearch);
   searchClose?.addEventListener("click", closeSearch);
+
+  // En desktop, al hacer focus en el input (click para escribir),
+  // disparamos el mismo glitch del header. En mobile NO, porque
+  // openSearch ya lo dispara y el focus automático duplicaría el efecto.
+  searchInput?.addEventListener("focus", () => {
+    if (window.matchMedia("(min-width: 701px)").matches) {
+      triggerSearchGlitch();
+    }
+  });
 
   // -------------------------
   // ALEATORIZAR EL CATÁLOGO
@@ -6983,8 +7044,8 @@ if (heroBg) {
       // Tomamos el texto actual (dataset.text lo mantiene sincronizado
       // el typewriter). El "." final va aparte en #hero-cursor, así
       // que lo sacamos para hacer el scrambling.
-      const original = glitchEl.dataset.text || "CATALOGO.";
-      const originalVisible = original.replace(/\.$/, "");
+      const original = glitchEl.dataset.text || "CATALOGO_";
+      const originalVisible = original.replace(/[._]$/, "");
       const scrambled = scrambleText(originalVisible, 0.4);
       const textEl = glitchEl.querySelector("#hero-text");
       const ga = glitchEl.querySelector(".hero-glitch-a");
@@ -7043,7 +7104,7 @@ if (heroBg) {
   // pseudo-elementos se re-evalúe con el nuevo valor.
   function setText(content) {
     textEl.textContent = content;
-    h1.dataset.text = content + ".";
+    h1.dataset.text = content + "_";
     if (h1.classList.contains("glitching")) {
       void h1.offsetWidth;
     }
