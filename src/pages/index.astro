@@ -731,12 +731,6 @@ const marqueeText = [
             </div>
           </div>
 
-          <!-- AVISO TELA -->
-          <div class="modal-note">
-            <strong>100% Algodón Peinado 24/1 Premium</strong>
-            <p>No encoge, cuello con rib reforzado y costuras de alta resistencia.</p>
-          </div>
-
           <!-- PRECIO -->
           <div class="modal-price-block" id="modal-price-block">
             <span class="modal-price-label">Precio</span>
@@ -2545,28 +2539,6 @@ const marqueeText = [
     font-variant-numeric: tabular-nums;
   }
 
-  /* NOTE */
-
-  .modal-note {
-    padding: 12px 14px;
-    border: 1px solid #242424;
-    border-radius: 10px;
-    background: #0a0a0a;
-  }
-
-  .modal-note strong {
-    display: block;
-    font-size: 12px;
-    color: #ddd;
-    margin-bottom: 3px;
-  }
-
-  .modal-note p {
-    margin: 0;
-    font-size: 11px;
-    color: #777;
-    line-height: 1.4;
-  }
 
   /* FOOTER */
 
@@ -6158,6 +6130,13 @@ hidden.decoding = "async";
       cartCount.classList.add("is-visible");
     } else {
       cartCount.classList.remove("is-visible");
+    }
+
+    // Actualizamos también el botón "Ver carrito" del modal.
+    // Si hay 0 prendas, mostramos "Ver carrito" pelado; si hay, "Ver carrito (N)".
+    if (modalSeeCart) {
+      modalSeeCart.textContent =
+        total > 0 ? `Ver carrito (${total})` : "Ver carrito";
     }
   }
 
