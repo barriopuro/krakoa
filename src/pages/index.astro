@@ -248,7 +248,7 @@ const marqueeText = [
       <section class="hero">
   <div class="hero-bg" aria-hidden="true"></div>
   <div class="hero-content">
-    <h1>CATALOGO.</h1>
+    <h1 data-text="CATALOGO."><span id="hero-text">CATALOGO</span><span id="hero-cursor" class="hero-cursor">.</span></h1>
   </div>
 </section>
 
@@ -315,15 +315,15 @@ const marqueeText = [
                       aria-hidden="true"
                     />
 
-                    <div class="product-overlay">
-                      <span
-                        class="product-category"
-                        style={`--category-color: ${
-                          catalogo.categories.find(
-                            (category) => category.id === product.category
-                          )?.color ?? "#888888"
-                        }`}
-                      >
+                    <div
+                      class="product-overlay"
+                      style={`--category-color: ${
+                        catalogo.categories.find(
+                          (category) => category.id === product.category
+                        )?.color ?? "#888888"
+                      }`}
+                    >
+                      <span class="product-category">
                         <i class="category-dot"></i>
                         {product.categoryName}
                       </span>
@@ -1423,6 +1423,75 @@ const marqueeText = [
     font-weight: 900;
   }
 
+   /* --------------------------- */
+  /* GLITCH DEL TÍTULO DEL HERO  */
+  /* --------------------------- */
+
+  h1 {
+    position: relative;
+  }
+
+  :global(h1::before),
+  :global(h1::after) {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    user-select: none;
+    opacity: 0;
+    white-space: nowrap;
+  }
+
+  :global(h1::before) {
+    color: #ff0055;
+    text-shadow: 1px 0 rgba(255, 0, 85, 0.7);
+  }
+
+  :global(h1::after) {
+    color: #00fff0;
+    text-shadow: -1px 0 rgba(0, 255, 240, 0.7);
+  }
+
+  :global(h1.glitching)::before {
+    opacity: 0.85;
+    animation: glitchSlicesA 0.28s steps(5, end) 1;
+  }
+
+  :global(h1.glitching)::after {
+    opacity: 0.85;
+    animation: glitchSlicesB 0.28s steps(5, end) 1;
+  }
+
+  @keyframes glitchSlicesA {
+    0%   { clip-path: inset(20% 0 60% 0); transform: translate(-5px, 0); }
+    20%  { clip-path: inset(60% 0 10% 0); transform: translate(4px, 1px); }
+    40%  { clip-path: inset(10% 0 70% 0); transform: translate(-3px, -1px); }
+    60%  { clip-path: inset(80% 0 5% 0);  transform: translate(5px, 0); }
+    80%  { clip-path: inset(35% 0 45% 0); transform: translate(-4px, 1px); }
+    100% { clip-path: inset(20% 0 60% 0); transform: translate(0, 0); }
+  }
+
+  @keyframes glitchSlicesB {
+    0%   { clip-path: inset(50% 0 30% 0); transform: translate(4px, -1px); }
+    20%  { clip-path: inset(15% 0 65% 0); transform: translate(-5px, 0); }
+    40%  { clip-path: inset(70% 0 15% 0); transform: translate(3px, 1px); }
+    60%  { clip-path: inset(25% 0 55% 0); transform: translate(-4px, 0); }
+    80%  { clip-path: inset(85% 0 5% 0);  transform: translate(5px, -1px); }
+    100% { clip-path: inset(50% 0 30% 0); transform: translate(0, 0); }
+  }
+
+  /* Cursor tipo terminal: el punto final del título titila. */
+  :global(.hero-cursor) {
+    display: inline;
+    animation: cursorBlink 1s step-end infinite;
+  }
+
+  @keyframes cursorBlink {
+    0%   { opacity: 1; }
+    50%  { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
   .intro {
     margin: 32px 0 0;
     color: #999;
@@ -1654,8 +1723,8 @@ const marqueeText = [
     height: 100%;
     object-fit: cover;
     display: block;
-    transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-                transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     will-change: opacity, transform;
   }
 
@@ -1669,14 +1738,14 @@ const marqueeText = [
   /* Imagen hover: oculta por defecto. */
   .product-image-hover {
     opacity: 0;
-    transform: scale(1.02);
+    transform: scale(1.015);
     z-index: 0;
   }
 
   /* Hover: la base se va, la hover aparece. */
   .product-button:hover .product-image-base {
     opacity: 0;
-    transform: scale(1.04);
+    transform: scale(1.015);
   }
 
   .product-button:hover .product-image-hover {
@@ -1693,8 +1762,8 @@ const marqueeText = [
     padding: 32px 14px 14px;
     background: linear-gradient(
       to top,
-      rgba(0, 0, 0, 0.82) 0%,
-      rgba(0, 0, 0, 0.55) 45%,
+      color-mix(in srgb, var(--category-color, #888) 50%, rgba(0, 0, 0, 0.82)) 0%,
+      color-mix(in srgb, var(--category-color, #888) 18%, rgba(0, 0, 0, 0.55)) 45%,
       rgba(0, 0, 0, 0) 100%
     );
     display: flex;
@@ -1702,6 +1771,15 @@ const marqueeText = [
     gap: 4px;
     pointer-events: none;
     z-index: 2;
+    transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @media (min-width: 901px) {
+    :global(.product-button:hover .product-overlay) {
+      transform: translateY(100%);
+      opacity: 0;
+    }
   }
 
   .product-category {
@@ -2632,10 +2710,10 @@ const marqueeText = [
     top: 50%;
     transform: translateY(-50%);
     z-index: 1010;
-    width: 56px;
-    height: 56px;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    border: 1px solid var(--category-color, rgba(255, 255, 255, 0.18));
+    border-radius: 12px;
     background: rgba(0, 0, 0, 0.6);
     color: #fff;
     cursor: pointer;
@@ -2655,24 +2733,26 @@ const marqueeText = [
   }
 
   .modal-product-arrow:hover {
-    background: #fff;
-    color: #111;
-    border-color: #fff;
+    background: var(--category-color, #fff);
+    border-color: var(--category-color, #fff);
+    color: #0a0a0a;
   }
 
   .modal-product-arrow-label {
-    font-size: 8px;
+    font-size: 6px;
     font-weight: 700;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.02em;
     text-transform: uppercase;
-    opacity: 0.7;
+    opacity: 0.9;
     line-height: 1;
+    transition: color 0.2s ease;
   }
 
   .modal-product-arrow-icon {
-    font-size: 26px;
+    font-size: 22px;
     line-height: 1;
     font-weight: 400;
+    transition: color 0.2s ease;
   }
 
   .modal-product-prev {
@@ -2692,7 +2772,7 @@ const marqueeText = [
     gap: 1px;
     width: 44px;
     height: 44px;
-    border: 1px solid #2a2a2a;
+    border: 1px solid var(--category-color, #2a2a2a);
     border-radius: 8px;
     background: #0a0a0a;
     color: #ccc;
@@ -2702,9 +2782,9 @@ const marqueeText = [
   }
 
   .modal-product-arrow-mobile:hover {
-    background: #141414;
-    border-color: #444;
-    color: #fff;
+    background: var(--category-color, #444);
+    border-color: var(--category-color, #444);
+    color: #0a0a0a;
   }
 
   .modal-product-arrow-mobile .modal-product-arrow-label {
@@ -2716,7 +2796,7 @@ const marqueeText = [
   }
 
   /* En mobile ocultamos las flechas de afuera y mostramos las del header. */
-  @media (max-width: 800px) {
+  @media (max-width: 1280px) {
     .modal-product-arrow {
       display: none;
     }
@@ -2743,7 +2823,7 @@ const marqueeText = [
   }
 
   /* Desktop: el header vuelve a su layout normal (sin flechas mobile). */
-  @media (min-width: 801px) {
+  @media (min-width: 1281px) {
     .modal-info-header-center {
       display: block;
     }
@@ -5351,8 +5431,9 @@ hidden.decoding = "async";
   function openModal(product) {
     const name = product.querySelector("h3")?.textContent ?? "";
     const category = product.querySelector(".product-category");
+    const overlay = product.querySelector(".product-overlay");
     const categoryColor =
-      category?.style.getPropertyValue("--category-color") ?? "#ffffff";
+      overlay?.style.getPropertyValue("--category-color") ?? "#ffffff";
     const categoryName =
       category?.textContent?.trim() ?? "";
 
@@ -5633,8 +5714,9 @@ hidden.decoding = "async";
   function loadProductIntoModal(product) {
     const name = product.querySelector("h3")?.textContent ?? "";
     const category = product.querySelector(".product-category");
+    const overlay = product.querySelector(".product-overlay");
     const categoryColor =
-      category?.style.getPropertyValue("--category-color") ?? "#ffffff";
+      overlay?.style.getPropertyValue("--category-color") ?? "#ffffff";
     const categoryName =
       category?.textContent?.trim() ?? "";
 
@@ -6660,6 +6742,123 @@ if (heroBg) {
     }, 5500);
   }
 }
+
+// -------------------------
+// HERO — glitch del título
+// -------------------------
+
+// Cada 5-9 segundos, el h1 hace un glitch de 280ms (chromatic aberration
+// + slices). Los intervalos son aleatorios para que no se sienta mecánico.
+// Respeta prefers-reduced-motion: si el usuario pidió menos movimiento
+// en su sistema operativo, no hace nada.
+(() => {
+  const glitchEl = document.querySelector(".hero-content h1");
+  if (!glitchEl) return;
+
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  const GLITCH_DURATION = 280;  // ms que dura el glitch visible
+  const MIN_DELAY = 5000;       // 5s mínimo entre glitches
+  const MAX_DELAY = 9000;       // 9s máximo entre glitches
+
+  function scheduleNextGlitch() {
+    const delay = MIN_DELAY + Math.random() * (MAX_DELAY - MIN_DELAY);
+    setTimeout(() => {
+      glitchEl.classList.add("glitching");
+      setTimeout(() => {
+        glitchEl.classList.remove("glitching");
+        scheduleNextGlitch();
+      }, GLITCH_DURATION);
+    }, delay);
+  }
+
+  scheduleNextGlitch();
+})();
+
+// -------------------------
+// HERO — typewriter CATALOGO ↔ KRAKOA
+// -------------------------
+
+// Cada 8-14 segundos (aleatorio), el título se "borra" letra por letra,
+// se escribe "KRAKOA", se mantiene un instante, se borra, y se vuelve
+// a escribir "CATALOGO". El punto final siempre queda como cursor.
+// El glitch sigue corriendo en paralelo y pinta lo que esté visible.
+(() => {
+  const h1 = document.querySelector(".hero-content h1");
+  const textEl = document.querySelector("#hero-text");
+  if (!h1 || !textEl) return;
+
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  const WORD_MAIN = "CATALOGO";
+  const WORD_ALT = "KRAKOA";
+
+  const TYPE_DELAY = 80;    // ms por letra al escribir
+  const ERASE_DELAY = 45;   // ms por letra al borrar (más rápido)
+  const HOLD_ALT = 700;     // ms que KRAKOA se queda visible
+  const MIN_CYCLE = 8000;   // 8s mínimo entre ciclos completos
+  const MAX_CYCLE = 14000;  // 14s máximo
+
+  let isAnimating = false;
+
+  // Actualiza el texto visible y el data-text (para el glitch).
+  // Si el glitch está activo, forzamos reflow para que attr() en los
+  // pseudo-elementos se re-evalúe con el nuevo valor.
+  function setText(content) {
+    textEl.textContent = content;
+    h1.dataset.text = content + ".";
+    if (h1.classList.contains("glitching")) {
+      void h1.offsetWidth;
+    }
+  }
+
+  function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  async function typeWord(word) {
+    for (let i = 1; i <= word.length; i++) {
+      setText(word.slice(0, i));
+      await sleep(TYPE_DELAY);
+    }
+  }
+
+  async function eraseText() {
+    const current = textEl.textContent;
+    for (let i = current.length - 1; i >= 0; i--) {
+      setText(current.slice(0, i));
+      await sleep(ERASE_DELAY);
+    }
+  }
+
+  async function cycle() {
+    if (isAnimating) return;
+    isAnimating = true;
+
+    await eraseText();          // borrar CATALOGO
+    await typeWord(WORD_ALT);   // escribir KRAKOA
+    await sleep(HOLD_ALT);      // hold corto
+    await eraseText();          // borrar KRAKOA
+    await typeWord(WORD_MAIN);  // escribir CATALOGO
+
+    isAnimating = false;
+  }
+
+  function scheduleNext() {
+    const delay = MIN_CYCLE + Math.random() * (MAX_CYCLE - MIN_CYCLE);
+    setTimeout(async () => {
+      try {
+        await cycle();
+      } catch (error) {
+        console.error("[KRAKOA] Error en typewriter:", error);
+        isAnimating = false;
+      }
+      scheduleNext();
+    }, delay);
+  }
+
+  scheduleNext();
+})();
 
 // -------------------------
 // FOOTER — partículas
