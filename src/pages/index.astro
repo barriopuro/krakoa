@@ -736,6 +736,26 @@ const marqueeText = [
             <strong>100% Algodón Peinado 24/1 Premium</strong>
             <p>No encoge, cuello con rib reforzado y costuras de alta resistencia.</p>
           </div>
+
+          <!-- PRECIO -->
+          <div class="modal-price-block" id="modal-price-block">
+            <span class="modal-price-label">Precio</span>
+
+            <div class="modal-price-main">
+              <span id="modal-price-unit" class="modal-price-unit">$25.000 c/u</span>
+            </div>
+            <p id="modal-price-sub" class="modal-price-sub">Llevás 1 remera</p>
+
+            <div id="modal-price-tiers" class="modal-price-tiers"></div>
+
+            <div id="modal-price-badge" class="modal-price-badge" hidden></div>
+
+            <div class="modal-price-total-row">
+              <span>Total del pedido:</span>
+              <strong id="modal-price-total">$25.000</strong>
+            </div>
+            <p class="modal-price-total-note">(sin envío)</p>
+          </div>
         </div>
 
         <div class="modal-info-footer">
@@ -841,9 +861,20 @@ const marqueeText = [
           id="cart-drawer-footer"
           hidden
         >
-          <div class="cart-drawer-total">
-            <span>Total de prendas:</span>
-            <strong id="cart-drawer-total">0</strong>
+          <div id="cart-tier-banner" class="cart-tier-banner" hidden></div>
+
+          <div class="cart-price-summary">
+            <div id="cart-unit-line" class="cart-unit-line">
+              <span id="cart-unit-line-text"></span>
+            </div>
+            <div class="cart-subtotal-line">
+              <span>Subtotal prendas:</span>
+              <strong id="cart-drawer-subtotal">$0</strong>
+            </div>
+            <div class="cart-shipping-line">
+              <span>Envío:</span>
+              <span class="cart-shipping-pending">A coordinar</span>
+            </div>
           </div>
 
           <button
@@ -3049,17 +3080,93 @@ const marqueeText = [
     gap: 12px;
   }
 
-  .cart-drawer-total {
+    .cart-price-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding-top: 8px;
+    border-top: 1px solid #1f1f1f;
+  }
+
+  .cart-unit-line {
+    font-size: 12.5px;
+    color: #ddd;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    padding: 4px 8px;
+    margin: 0 -8px;
+    border-radius: 6px;
+  }
+
+  .cart-subtotal-line {
     display: flex;
     justify-content: space-between;
-    font-size: 13px;
+    align-items: baseline;
+    font-size: 12px;
     color: #aaa;
   }
 
-  .cart-drawer-total strong {
+  .cart-subtotal-line strong {
     color: #fff;
     font-size: 15px;
+    font-weight: 800;
     font-variant-numeric: tabular-nums;
+  }
+
+  .cart-shipping-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 12px;
+    color: #aaa;
+  }
+
+  .cart-shipping-pending {
+    color: #888;
+    font-style: italic;
+    font-weight: 600;
+  }
+
+  .cart-tier-banner {
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 11.5px;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .cart-tier-banner[hidden] {
+    display: none;
+  }
+
+  .cart-tier-banner.banner-green {
+    background: rgba(37, 211, 102, 0.12);
+    border: 1px solid rgba(37, 211, 102, 0.28);
+    color: #4ade80;
+  }
+
+  .cart-tier-banner.banner-red {
+    background: rgba(248, 113, 113, 0.12);
+    border: 1px solid rgba(248, 113, 113, 0.28);
+    color: #f87171;
+  }
+
+  @keyframes flashCartGreen {
+    0%   { background: rgba(37, 211, 102, 0.35); }
+    100% { background: transparent; }
+  }
+
+  @keyframes flashCartRed {
+    0%   { background: rgba(248, 113, 113, 0.35); }
+    100% { background: transparent; }
+  }
+
+  .cart-unit-line.flash-green {
+    animation: flashCartGreen 0.6s ease-out;
+  }
+
+  .cart-unit-line.flash-red {
+    animation: flashCartRed 0.6s ease-out;
   }
 
   .cart-drawer-whatsapp {
@@ -3201,15 +3308,28 @@ const marqueeText = [
     font-family: monospace;
   }
 
+  :global(.cart-item-bottom) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+    gap: 8px;
+  }
+
   :global(.cart-item-qty) {
     display: inline-flex;
     align-items: center;
-    align-self: flex-start;
-    margin-top: 8px;
     border: 1px solid #242424;
     border-radius: 6px;
     overflow: hidden;
     background: #111;
+  }
+
+  :global(.cart-item-line-total) {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
   }
 
   :global(.cart-item-qty button) {
@@ -4095,6 +4215,150 @@ const marqueeText = [
   }
 }
 
+/* --------------------------- */
+/* BLOQUE DE PRECIO EN MODAL   */
+/* --------------------------- */
+
+:global(.modal-price-block) {
+  padding: 14px 14px 12px;
+  border: 1px solid #242424;
+  border-radius: 10px;
+  background: #0a0a0a;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+:global(.modal-price-label) {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #666;
+  margin-bottom: 2px;
+}
+
+:global(.modal-price-main) {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+:global(.modal-price-unit) {
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: var(--category-color, #fff);
+  font-variant-numeric: tabular-nums;
+  padding: 2px 6px;
+  margin-left: -6px;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+
+:global(.modal-price-sub) {
+  margin: 0 0 8px;
+  font-size: 11.5px;
+  color: #888;
+  line-height: 1.3;
+}
+
+:global(.modal-price-tiers) {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 4px;
+}
+
+:global(.modal-price-tier) {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  padding: 4px 6px;
+  font-size: 11.5px;
+  border-radius: 5px;
+  color: #777;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+:global(.modal-price-tier.active) {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+
+:global(.modal-price-tier-label) {
+  font-weight: 500;
+}
+
+:global(.modal-price-tier-value) {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+:global(.modal-price-tier.active .modal-price-tier-value) {
+  color: var(--category-color, #fff);
+  font-weight: 800;
+}
+
+:global(.modal-price-badge) {
+  margin-top: 6px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  background: rgba(37, 211, 102, 0.12);
+  border: 1px solid rgba(37, 211, 102, 0.28);
+  color: #4ade80;
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+:global(.modal-price-badge[hidden]) {
+  display: none;
+}
+
+:global(.modal-price-total-row) {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #1f1f1f;
+  font-size: 12px;
+  color: #aaa;
+}
+
+:global(.modal-price-total-row strong) {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+:global(.modal-price-total-note) {
+  margin: 0;
+  font-size: 10.5px;
+  color: #666;
+  text-align: right;
+}
+
+/* Flash verde/rojo al cambiar de tier */
+@keyframes flashPriceGreen {
+  0%   { background: rgba(37, 211, 102, 0.35); }
+  100% { background: transparent; }
+}
+
+@keyframes flashPriceRed {
+  0%   { background: rgba(248, 113, 113, 0.35); }
+  100% { background: transparent; }
+}
+
+:global(.modal-price-unit.flash-green) {
+  animation: flashPriceGreen 0.6s ease-out;
+}
+
+:global(.modal-price-unit.flash-red) {
+  animation: flashPriceRed 0.6s ease-out;
+}
 
 </style>
 
@@ -4145,7 +4409,7 @@ const marqueeText = [
   // PROMO POPUP
   // -------------------------
   // La config viene del JSON generado por el script (src/data/promo.json).
-  // Necesitamos pasarla al cliente porque el <script> de Astro corre
+  // Necesitamos pasarla al cliente porque el script de Astro corre
   // después del render. Usamos un objeto global.
   window.KRAKOA_PROMO = PROMO_DATA;
 
@@ -4664,6 +4928,49 @@ categoryButtons.forEach((button) => {
   searchInput.addEventListener("input", debounce(filterProducts, 150));
 
 
+  // -------------------------
+  // PRECIOS
+  // -------------------------
+  // Los tiers se aplican al TOTAL de prendas del pedido, no por ítem.
+  // Si el pedido tiene 3 remeras (aunque sean modelos distintos), todas
+  // salen a $23.000 c/u. Si tiene 5 o más, todas a $20.000 c/u.
+  //
+  // Para agregar un tier nuevo o cambiar precios, se edita solo este array.
+  const PRICE_TIERS = [
+    { min: 1, max: 1,        price: 25000, label: "1 remera" },
+    { min: 2, max: 4,        price: 23000, label: "2 a 4 remeras" },
+    { min: 5, max: Infinity, price: 20000, label: "5 o más" },
+  ];
+
+  // Formatea un número como precio en pesos: 25000 → "$25.000".
+  function formatPrice(value) {
+    return "$" + value.toLocaleString("es-AR");
+  }
+
+  // Devuelve el precio unitario que corresponde a una cantidad total.
+  // Si la cantidad es 0 (carrito vacío), devuelve el precio del primer tier.
+  function getUnitPrice(totalQuantity) {
+    if (totalQuantity <= 0) return PRICE_TIERS[0].price;
+    const tier = PRICE_TIERS.find(
+      (t) => totalQuantity >= t.min && totalQuantity <= t.max
+    );
+    return tier ? tier.price : PRICE_TIERS[PRICE_TIERS.length - 1].price;
+  }
+
+  // Devuelve el próximo tier y cuántas unidades faltan para llegar.
+  // Devuelve null si ya está en el tier máximo.
+  // Ejemplo: si totalQuantity = 3, devuelve { price: 20000, label: "5 o más", unitsNeeded: 2 }.
+  function getNextTier(totalQuantity) {
+    const currentIndex = PRICE_TIERS.findIndex(
+      (t) => totalQuantity >= t.min && totalQuantity <= t.max
+    );
+    if (currentIndex === -1) return null;
+    if (currentIndex >= PRICE_TIERS.length - 1) return null;
+    const next = PRICE_TIERS[currentIndex + 1];
+    return { ...next, unitsNeeded: next.min - totalQuantity };
+  }
+
+
    // -------------------------
   // MODAL DE PRODUCTO
   // -------------------------
@@ -4712,6 +5019,12 @@ categoryButtons.forEach((button) => {
   const modalNext = document.querySelector("#modal-next");
   const modalBackdrop = document.querySelector(".modal-backdrop");
   const modalSeeChart = document.querySelector("#modal-see-chart");
+
+  const modalPriceUnit = document.querySelector("#modal-price-unit");
+  const modalPriceSub = document.querySelector("#modal-price-sub");
+  const modalPriceTiers = document.querySelector("#modal-price-tiers");
+  const modalPriceBadge = document.querySelector("#modal-price-badge");
+  const modalPriceTotal = document.querySelector("#modal-price-total");
 
   const modalProductPrev = document.querySelector("#modal-product-prev");
   const modalProductNext = document.querySelector("#modal-product-next");
@@ -4944,8 +5257,103 @@ hidden.decoding = "async";
   }
 
 
-  function renderQuantity() {
+  function renderQuantity(animate = false) {
     modalQtyValue.textContent = currentQuantity;
+    updatePriceBlock(animate);
+  }
+
+
+  // -------------------------
+  // BLOQUE DE PRECIO DEL MODAL
+  // -------------------------
+
+  // Guardamos el último precio unitario renderizado para detectar
+  // cuándo cambia de tier y disparar el flash verde/rojo.
+  // Se resetea al abrir el modal (sin flash al abrir).
+  let lastUnitPrice = null;
+
+  // Dibuja la tablita de tiers. Marca con .active la fila que corresponde
+  // al total proyectado actual.
+  function renderPriceTiers(activeTierIndex) {
+    modalPriceTiers.innerHTML = "";
+
+    PRICE_TIERS.forEach((tier, index) => {
+      const row = document.createElement("div");
+      row.className = "modal-price-tier";
+      if (index === activeTierIndex) row.classList.add("active");
+
+      const labelEl = document.createElement("span");
+      labelEl.className = "modal-price-tier-label";
+      labelEl.textContent = tier.label;
+
+      const valueEl = document.createElement("span");
+      valueEl.className = "modal-price-tier-value";
+      valueEl.textContent = `${formatPrice(tier.price)} c/u`;
+
+      row.appendChild(labelEl);
+      row.appendChild(valueEl);
+      modalPriceTiers.appendChild(row);
+    });
+  }
+
+  // Dispara el flash verde o rojo sobre el precio grande.
+  function flashPriceElement(el, isCheaper) {
+    el.classList.remove("flash-green", "flash-red");
+    // Forzamos reflow para que la animación se reinicie aunque ya
+    // tenga una clase aplicada de un flash anterior.
+    void el.offsetWidth;
+    el.classList.add(isCheaper ? "flash-green" : "flash-red");
+    setTimeout(() => {
+      el.classList.remove("flash-green", "flash-red");
+    }, 620);
+  }
+
+  // Recalcula y pinta todo el bloque de precio.
+  // animate: si es true, dispara el flash cuando cambia el unitario.
+  function updatePriceBlock(animate = false) {
+    const cartTotal = getTotalCount();
+    const projectedTotal = cartTotal + currentQuantity;
+    const unitPrice = getUnitPrice(projectedTotal);
+    const totalWithProduct = projectedTotal * unitPrice;
+
+    // Precio grande
+    modalPriceUnit.textContent = `${formatPrice(unitPrice)} c/u`;
+
+    // Texto chico de contexto
+    if (cartTotal === 0) {
+      modalPriceSub.textContent =
+        currentQuantity === 1
+          ? "Llevás 1 remera"
+          : `Llevás ${currentQuantity} remeras`;
+    } else {
+      const word = projectedTotal === 1 ? "remera" : "remeras";
+      modalPriceSub.textContent = `Tu pedido queda en ${projectedTotal} ${word}`;
+    }
+
+    // Tabla de tiers
+    const activeTierIndex = PRICE_TIERS.findIndex(
+      (t) => projectedTotal >= t.min && projectedTotal <= t.max
+    );
+    renderPriceTiers(activeTierIndex);
+
+    // Badge "agregá X más"
+    const next = getNextTier(projectedTotal);
+    if (next && next.unitsNeeded > 0 && next.unitsNeeded <= 3) {
+      const word = next.unitsNeeded === 1 ? "remera" : "remeras";
+      modalPriceBadge.textContent = `Agregá ${next.unitsNeeded} ${word} más y todas salen a ${formatPrice(next.price)} c/u`;
+      modalPriceBadge.hidden = false;
+    } else {
+      modalPriceBadge.hidden = true;
+    }
+
+    // Total
+    modalPriceTotal.textContent = formatPrice(totalWithProduct);
+
+    // Flash (solo si el unitario cambió)
+    if (animate && lastUnitPrice !== null && unitPrice !== lastUnitPrice) {
+      flashPriceElement(modalPriceUnit, unitPrice < lastUnitPrice);
+    }
+    lastUnitPrice = unitPrice;
   }
 
   // Calcula el ancho de la barra de scroll y lo guarda en una variable CSS.
@@ -5011,6 +5419,7 @@ hidden.decoding = "async";
     currentProductName = name;
     currentProductId = product.dataset.id || "";
     currentQuantity = 1;
+    lastUnitPrice = null;
 
     // Recalculamos los índices zoomeables para este producto
     // (depende de cuántos slides tenga: 4 sin extras, 5 con 1 extra, etc.)
@@ -5282,6 +5691,7 @@ hidden.decoding = "async";
     currentProductName = name;
     currentProductId = product.dataset.id || "";
     currentQuantity = 1;
+    lastUnitPrice = null;
 
     zoomableIndices = currentImages
       .map((_, index) => (isZoomableSlide(index, currentImages.length) ? index : -1))
@@ -5409,14 +5819,14 @@ hidden.decoding = "async";
   modalQtyMinus.addEventListener("click", () => {
     if (currentQuantity > 1) {
       currentQuantity -= 1;
-      renderQuantity();
+      renderQuantity(true);
     }
   });
 
   modalQtyPlus.addEventListener("click", () => {
     if (currentQuantity < 20) {
       currentQuantity += 1;
-      renderQuantity();
+      renderQuantity(true);
     }
   });
 
@@ -5657,8 +6067,11 @@ hidden.decoding = "async";
   const cartDrawerClose = document.querySelector("#cart-drawer-close");
   const cartDrawerBackdrop = document.querySelector(".cart-drawer-backdrop");
   const cartDrawerCount = document.querySelector("#cart-drawer-count");
-  const cartDrawerTotal = document.querySelector("#cart-drawer-total");
   const cartDrawerFooter = document.querySelector("#cart-drawer-footer");
+  const cartDrawerSubtotal = document.querySelector("#cart-drawer-subtotal");
+  const cartUnitLine = document.querySelector("#cart-unit-line");
+  const cartUnitLineText = document.querySelector("#cart-unit-line-text");
+  const cartTierBanner = document.querySelector("#cart-tier-banner");
   const cartDrawerWhatsapp = document.querySelector("#cart-drawer-whatsapp");
   const cartDrawerBody = document.querySelector("#cart-drawer-body");
 
@@ -5771,7 +6184,7 @@ hidden.decoding = "async";
     cartItems = cartItems.filter((item) => item.key !== key);
     saveCart();
     updateCartBadge();
-    renderCartDrawer();
+    renderCartDrawer(true);
   }
 
 
@@ -5788,7 +6201,7 @@ hidden.decoding = "async";
 
     saveCart();
     updateCartBadge();
-    renderCartDrawer();
+    renderCartDrawer(true);
   }
 
 
@@ -5800,11 +6213,43 @@ hidden.decoding = "async";
   }
 
 
-  function renderCartDrawer() {
+  // Estado para detectar cambios de tier y disparar el flash/banner.
+  let lastCartUnitPrice = null;
+  let cartTierBannerTimer = null;
+
+  function flashCartUnitLine(isCheaper) {
+    if (!cartUnitLine) return;
+    cartUnitLine.classList.remove("flash-green", "flash-red");
+    void cartUnitLine.offsetWidth;
+    cartUnitLine.classList.add(isCheaper ? "flash-green" : "flash-red");
+    setTimeout(() => {
+      cartUnitLine.classList.remove("flash-green", "flash-red");
+    }, 620);
+  }
+
+  function showCartTierBanner(total, unitPrice, isCheaper) {
+    if (!cartTierBanner) return;
+    if (cartTierBannerTimer) clearTimeout(cartTierBannerTimer);
+
+    const word = total === 1 ? "remera" : "remeras";
+    cartTierBanner.textContent = isCheaper
+      ? `✓ Ahora por llevar ${total} ${word}, cada una sale ${formatPrice(unitPrice)}`
+      : `Por llevar ${total} ${word}, cada una sale ${formatPrice(unitPrice)}`;
+
+    cartTierBanner.hidden = false;
+    cartTierBanner.classList.remove("banner-green", "banner-red");
+    cartTierBanner.classList.add(isCheaper ? "banner-green" : "banner-red");
+
+    cartTierBannerTimer = setTimeout(() => {
+      cartTierBanner.hidden = true;
+      cartTierBannerTimer = null;
+    }, 4000);
+  }
+
+  function renderCartDrawer(animate = false) {
     const total = getTotalCount();
 
     cartDrawerCount.textContent = total;
-    cartDrawerTotal.textContent = total;
     cartDrawerFooter.hidden = total === 0;
 
     if (cartItems.length === 0) {
@@ -5819,12 +6264,20 @@ hidden.decoding = "async";
           </button>
         </div>
       `;
+      if (cartUnitLineText) cartUnitLineText.textContent = "";
+      if (cartDrawerSubtotal) cartDrawerSubtotal.textContent = formatPrice(0);
+      if (cartTierBanner) cartTierBanner.hidden = true;
+      lastCartUnitPrice = null;
       return;
     }
 
+    const unitPrice = getUnitPrice(total);
+    const subtotal = total * unitPrice;
+
     const itemsHtml = cartItems
-      .map(
-        (item) => `
+      .map((item) => {
+        const lineTotal = item.quantity * unitPrice;
+        return `
         <div class="cart-item">
           <img
             class="cart-item-img"
@@ -5850,29 +6303,32 @@ hidden.decoding = "async";
               <span>·</span>
               <span>Talle <strong>${item.size}</strong></span>
             </div>
-            <div class="cart-item-qty">
-              <button
-                type="button"
-                data-action="dec"
-                data-key="${item.key}"
-                aria-label="Restar uno"
-              >
-                −
-              </button>
-              <span>${item.quantity}</span>
-              <button
-                type="button"
-                data-action="inc"
-                data-key="${item.key}"
-                aria-label="Sumar uno"
-              >
-                +
-              </button>
+            <div class="cart-item-bottom">
+              <div class="cart-item-qty">
+                <button
+                  type="button"
+                  data-action="dec"
+                  data-key="${item.key}"
+                  aria-label="Restar uno"
+                >
+                  −
+                </button>
+                <span>${item.quantity}</span>
+                <button
+                  type="button"
+                  data-action="inc"
+                  data-key="${item.key}"
+                  aria-label="Sumar uno"
+                >
+                  +
+                </button>
+              </div>
+              <span class="cart-item-line-total">${formatPrice(lineTotal)}</span>
             </div>
           </div>
         </div>
-      `
-      )
+      `;
+      })
       .join("");
 
     cartDrawerBody.innerHTML = `
@@ -5888,22 +6344,46 @@ hidden.decoding = "async";
         ${itemsHtml}
       </div>
     `;
+
+    // Resumen de precios en el footer
+    if (cartUnitLineText) {
+      const word = total === 1 ? "prenda" : "prendas";
+      cartUnitLineText.textContent = `${total} ${word} × ${formatPrice(unitPrice)} c/u`;
+    }
+    if (cartDrawerSubtotal) {
+      cartDrawerSubtotal.textContent = formatPrice(subtotal);
+    }
+
+    // Flash + banner si el unitario cambió respecto del render anterior
+    if (animate && lastCartUnitPrice !== null && unitPrice !== lastCartUnitPrice) {
+      const isCheaper = unitPrice < lastCartUnitPrice;
+      flashCartUnitLine(isCheaper);
+      showCartTierBanner(total, unitPrice, isCheaper);
+    }
+    lastCartUnitPrice = unitPrice;
   }
 
 
   function buildWhatsAppOrderMessage() {
     const total = getTotalCount();
+    const unitPrice = getUnitPrice(total);
+    const subtotal = total * unitPrice;
 
     let text = `¡Hola KRAKOA! Quería encargar las siguientes remeras:\n\n`;
 
     cartItems.forEach((item, index) => {
+      const lineTotal = item.quantity * unitPrice;
       text += `${index + 1}. *Remera ${item.name}*\n`;
       text += `   - Corte: *${item.fit}*\n`;
       text += `   - Talle: *${item.size}*\n`;
-      text += `   - Cantidad: *${item.quantity}*\n\n`;
+      text += `   - Cantidad: *${item.quantity}*\n`;
+      text += `   - Precio unitario: *${formatPrice(unitPrice)}*\n`;
+      text += `   - Subtotal: *${formatPrice(lineTotal)}*\n\n`;
     });
 
-    text += `Total de prendas: *${total}*\n\n`;
+    text += `Subtotal prendas (${total} ${total === 1 ? "unidad" : "unidades"}): *${formatPrice(subtotal)}*\n`;
+    text += `Precio por unidad aplicado: *${formatPrice(unitPrice)}*\n`;
+    text += `Envío: *A coordinar según zona*\n\n`;
     text += `¿Tienen disponibilidad y cómo coordinamos pago y envío? ¡Gracias!`;
 
     return text;

@@ -772,6 +772,234 @@ El sistema de historial usa una pila (historyStack), no una
 variable única. Ver sección "History stack".
 
 Historial de cambios (más reciente arriba)
+
+Sesión 15 — Buscador en el header + hover con segunda imagen + click cierra zoom
+Buscador movido al header:
+
+Se eliminó el .search-bar del cuerpo de la página (entre la marquesina
+y el catálogo). Ahora el buscador vive en el header, dentro de
+.header-actions, a la izquierda del botón de Instagram.
+
+Desktop: input #search visible siempre, ancho fijo de 200px.
+Tablet (≤1000px): input de 150px, Instagram sin label.
+Mobile (≤700px): botón de lupa (.search-toggle) visible. Al tocarlo,
+el header se transforma en "input + ×" (clase .search-open en
+.site-header). El logo, nav, Instagram, carrito, menú y lupa se
+ocultan; el input ocupa todo el ancho con foco automático.
+El botón × (.search-close) cierra el buscador, limpia el input y
+restaura el catálogo (filterProducts()).
+
+Escape también cierra el buscador en mobile.
+
+El ID #search no cambió, así que filterProducts y el debounce de 150ms
+siguen funcionando igual.
+
+Como el buscador salió del cuerpo, las categorías subieron y quedaron
+pegadas a la marquesina. El sticky sigue funcionando.
+
+Hover con segunda imagen en las tarjetas (desktop):
+
+Cada tarjeta ahora tiene DOS <img> apiladas:
+  .product-image-base  → modelo.webp (visible por defecto)
+  .product-image-hover → remera.webp (oculta con opacity: 0)
+Ambas con position: absolute, inset: 0, object-fit: cover.
+
+En hover: la base se desvanece con scale(1.04), la hover aparece con
+scale(1.02) → scale(1). Duración 0.5s, curva
+cubic-bezier(0.22, 1, 0.36, 1). Sensación premium tipo Zara/COS.
+
+La imagen hover se renderiza siempre en el HTML con loading="lazy",
+pero en mobile se oculta con display: none (no se descarga ni se
+muestra).
+
+El overlay (título + categoría) sigue visible sobre ambas imágenes
+porque tiene z-index: 2.
+
+Ajustes necesarios por las dos <img>:
+- openModal y loadProductIntoModal ahora buscan
+  .product-image-base (no querySelector("img"), que agarraba la
+  primera).
+- El hero ahora lee .product-card .product-image-base (no
+  .product-image img), así sigue rotando con las fotos de modelo.
+
+Click sobre la imagen del zoom cierra el zoom (solo desktop):
+
+En el pointerup del overlay del zoom, si el pointerup fue sobre la
+imagen y event.pointerType === "mouse", se cierra el zoom. En mobile
+(pointerType === "touch") NO se cierra, para permitir pinch-to-zoom
+nativo.
+
+Coherente con el cursor: lupa con + al hover, lupa con - al abrir.
+El click ahora cumple lo que el cursor promete.
+
+Sesión 14 — Tags, fotos extra, Clarity, promo, flechas de producto, grilla full-width
+Búsqueda por tags:
+
+Los tags se definen en el nombre de la carpeta del producto, después
+de " _(" y separados por coma. Ej:
+  catalogo/deportes/maradona _(pelusa, futbol, argentina)/
+El nombre visible ("Maradona") sale de la parte antes del " _(".
+El ID del producto (data-id) se calcula desde el nombre visible
+(slug: minúsculas, no-alfanuméricos → guiones).
+El buscador matchea nombre O tags, con soporte multi-palabra (AND).
+Se parsea con parseProductFolder() en generar-catalogo.mjs.
+
+Fotos extra por producto:
+
+Cualquier archivo "extra-*.{jpg,jpeg,png,webp}" en la carpeta del
+producto se agrega al carrusel entre la remera y las tablas de talles.
+Convención de nombres:
+  extra-1-remera-espalda.jpg   → label "Remera Espalda"
+  extra-2-modelo-espalda.jpg   → label "Modelo Espalda"
+  extra-referencia.jpg         → label "Referencia"
+  extra-1.jpg                  → label "Extra 1"
+Orden: primero los que tienen número (ascendente), después los que no
+(alfabético por label).
+Se guardan en catalogo.json como extras: [{ src, label }, ...] y se
+pasan a la tarjeta como data-extras (JSON string).
+El zoom ahora funciona en TODAS las fotos (modelo, remera, extras).
+Las tablas de talles (últimos 2 slides) NO son zoomeables.
+El botón "Ver tabla de talles" calcula la posición dinámicamente
+(currentImages.length - 2 para oversize, - 1 para regular).
+
+Clarity (analíticas sin cookies):
+
+Se instaló Microsoft Clarity con cookies DESACTIVADAS desde el panel
+(Settings). Sin banner de cookies.
+Evento personalizado "view_<producto>" enviado desde openModal y
+loadProductIntoModal, usando data-id del producto.
+Nota: el navegador del usuario puede bloquear clarity.ms con ad
+blockers (ERR_BLOCKED_BY_CLIENT). Es esperado y no rompe nada.
+
+Popup de promo:
+
+Carpeta promo/ con config.json + imágenes.
+config.json:
+  activa (bool), noMostrarDuracionHoras (24), autoRotateSegundos (5),
+  mostrarBotonNoMostrar (bool), link (""), texto ("").
+El script genera src/data/promo.json con { activa, imagenes, hash, config }.
+Hash = nombre + tamaño en bytes de cada imagen. Si cambia, la promo se
+muestra a todos aunque hayan tocado "No mostrar".
+Sin imágenes O activa:false → no hay popup (doble validación).
+Se abre a los 2s. Auto-rotate cada 5s (se detiene al interactuar con
+flechas/miniaturas/swipe, no se reanuda).
+Cerrar con × → solo por esta sesión (sessionStorage
+"krakoa_promo_session_closed").
+"No mostrar de nuevo" → localStorage "krakoa_promo_dont_show" con
+{ hash, timestamp }, dura 24 hs (configurable).
+Usa historyStack con kind "promo".
+Los campos link y texto están en el JSON pero todavía no tienen UI
+(preparados para el futuro).
+
+Scroll al filtrar por categoría:
+
+Al tocar una categoría, se scrollea al inicio de la grilla con
+offset de 130px (para que la barra sticky no tape la primera fila).
+Evita el salto al footer cuando la página se acorta al filtrar.
+
+Menú de categorías sticky en desktop:
+
+El sticky de .categories se sacó del @media (max-width: 700px) y
+ahora aplica en desktop también. Ancho completo de la pantalla con
+margin-inline: -5vw. Mismo fondo y blur que mobile.
+
+Flechas para cambiar de producto:
+
+Desktop (≥ 801px): flechas afuera del modal, a los costados de la
+pantalla, centradas verticalmente.
+Mobile (≤ 800px): flechas dentro del .modal-info-header, al lado del
+título, con label "Anterior" / "Siguiente". El título y la categoría
+se centran (.modal-info-header-center).
+Orden: el orden ACTUAL del DOM (alfabético si hay categoría, aleatorio
+si es el home). Se consulta document.querySelectorAll("#products
+.product-card") en vivo, NO el NodeList products (que no se actualiza
+al reordenar con appendChild).
+Wrap-around: del último al primero.
+Animación: fade + slide horizontal del .modal-grid (switcheo con
+clases .switching-next/.switching-prev y .switching-in-next/
+.switching-in-prev). Diferente a la del carrusel.
+Reset de selectores al cambiar (Oversize, L, 1).
+Scroll interno del modal vuelve arriba en mobile.
+Teclado: Shift + ← / → cambia de producto. ← / → cambia de imagen.
+Si el zoom estaba abierto, se cierra antes de cambiar.
+Envía evento Clarity "view_<producto>" al cambiar.
+Flag isSwitchingProduct para evitar doble click.
+
+Título y categoría dentro de la imagen:
+
+La tarjeta ahora tiene .product-overlay dentro de .product-image.
+Overlay con degradado negro desde abajo (linear-gradient to top,
+rgba(0,0,0,0.82) → transparente).
+Categoría arriba (uppercase, con puntito de color), título abajo
+(blanco, 2 renglones máximo con -webkit-line-clamp: 2).
+pointer-events: none en el overlay para que el hover y el click
+sigan funcionando en la imagen.
+Se eliminó .product-info de abajo.
+
+Grilla full-width:
+
+.products ahora usa position: relative + left: 50% +
+transform: translateX(-50%) + width: 100vw para escapar del `main`
+(que tiene max-width 1400px) y ocupar todo el ancho de la ventana.
+Columnas: repeat(auto-fill, minmax(260px, 1fr)) → adaptativas.
+Gap: 14px (igual horizontal y vertical).
+Padding interno: 14px (12px en mobile).
+En mobile: 2 columnas fijas, tipografía más chica.
+
+Sesión 13 — Aleatorización del catálogo + zoom navegable
+Aleatorización del catálogo (feature nueva):
+
+Cada visita al home mezcla el orden de los productos con una
+round-robin aleatoria: se barajan las tarjetas dentro de cada
+categoría y también el orden de las categorías, y después se
+intercalan sacando de a una por categoría. Así siempre hay
+variedad (nunca dos de la misma categoría pegados) pero el orden
+cambia en cada recarga.
+
+El shuffle se hace en el cliente (JS), reordenando las tarjetas
+del DOM con un DocumentFragment. Corre al principio del script,
+ANTES de que el hero lea las imágenes de .product-card, así el
+hero también agarra un set distinto cada visita.
+
+Dentro de una categoría activa: orden ALFABÉTICO por data-name
+(con localeCompare "es", respeta ñ y acentos). Se hace con
+window.__krakoaReorderProducts("alpha").
+
+Sin categoría activa: se restaura el orden aleatorio original
+guardado en window.__krakoaRandomOrder.
+
+El buscador solo no reordena (mantiene el orden aleatorio).
+
+Zoom navegable (feature nueva):
+
+Con el zoom abierto, el usuario puede pasar entre las fotos
+zoomeables (Modelo y Remera, no las tablas de talles) sin cerrar
+el zoom.
+
+Formas de navegar:
+- Flechas ‹ › visibles a los lados de la imagen.
+- Swipe izquierda/derecha en mobile.
+- Teclado ← → en desktop.
+
+El zoom tiene su propio índice (zoomImageIndex) y su propia lista
+de índices zoomeables (zoomableIndices, derivada de ZOOMABLE_SLIDES).
+Es independiente del carrusel del modal: cambiar de foto en el
+zoom NO mueve el slide del modal que está detrás.
+
+Las flechas ahora están pegadas a los lados de la imagen (no a los
+bordes de la pantalla). Se logra con .image-zoom-stage (flex)
+envolviendo la imagen + las flechas.
+
+Fix importante: las flechas se disparan con pointerdown (no con
+click) y hacen stopPropagation. El overlay del zoom tiene un
+listener de pointerdown/pointerup para cerrar con click afuera;
+sin el stopPropagation, el pointerup agarraba el click en la
+flecha y cerraba el zoom. Además, el pointerdown/pointerup del
+overlay ahora también ignora los clicks sobre las flechas.
+
+La imagen del zoom se achica en mobile (74vw) para dejar lugar
+a las flechas.
+
 Sesión 12 — Zoom de imagen + refactor del history lock a pila
 Zoom de imagen (feature nueva):
 
