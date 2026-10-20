@@ -138,13 +138,13 @@
       "extras": []
     },
     {
-      "id": "franco-colapinto",
-      "name": "Franco Colapinto",
+      "id": "el-flaco-traverso",
+      "name": "El Flaco Traverso",
       "tags": [],
       "category": "deportes",
       "categoryName": "Deportes",
-      "modelo": "/catalogo/deportes/franco-colapinto/modelo.webp",
-      "remera": "/catalogo/deportes/franco-colapinto/remera.webp",
+      "modelo": "/catalogo/deportes/el-flaco-traverso/modelo.webp",
+      "remera": "/catalogo/deportes/el-flaco-traverso/remera.webp",
       "extras": []
     },
     {
@@ -208,16 +208,13 @@
       "extras": []
     },
     {
-      "id": "kobe-bryant",
-      "name": "Kobe Bryant",
-      "tags": [
-        "basquet",
-        "basket"
-      ],
+      "id": "franco-colapinto",
+      "name": "Franco Colapinto",
+      "tags": [],
       "category": "deportes",
       "categoryName": "Deportes",
-      "modelo": "/catalogo/deportes/kobe-bryant/modelo.webp",
-      "remera": "/catalogo/deportes/kobe-bryant/remera.webp",
+      "modelo": "/catalogo/deportes/franco-colapinto/modelo.webp",
+      "remera": "/catalogo/deportes/franco-colapinto/remera.webp",
       "extras": []
     },
     {
@@ -281,16 +278,16 @@
       "extras": []
     },
     {
-      "id": "kobe-bryant-black-mamba",
-      "name": "Kobe Bryant Black Mamba",
+      "id": "kobe-bryant",
+      "name": "Kobe Bryant",
       "tags": [
         "basquet",
         "basket"
       ],
       "category": "deportes",
       "categoryName": "Deportes",
-      "modelo": "/catalogo/deportes/kobe-bryant-black-mamba/modelo.webp",
-      "remera": "/catalogo/deportes/kobe-bryant-black-mamba/remera.webp",
+      "modelo": "/catalogo/deportes/kobe-bryant/modelo.webp",
+      "remera": "/catalogo/deportes/kobe-bryant/remera.webp",
       "extras": []
     },
     {
@@ -354,16 +351,16 @@
       "extras": []
     },
     {
-      "id": "manu-ginobili",
-      "name": "Manu Ginobili",
+      "id": "kobe-bryant-black-mamba",
+      "name": "Kobe Bryant Black Mamba",
       "tags": [
         "basquet",
         "basket"
       ],
       "category": "deportes",
       "categoryName": "Deportes",
-      "modelo": "/catalogo/deportes/manu-ginobili/modelo.webp",
-      "remera": "/catalogo/deportes/manu-ginobili/remera.webp",
+      "modelo": "/catalogo/deportes/kobe-bryant-black-mamba/modelo.webp",
+      "remera": "/catalogo/deportes/kobe-bryant-black-mamba/remera.webp",
       "extras": []
     },
     {
@@ -417,15 +414,16 @@
       "extras": []
     },
     {
-      "id": "maradona",
-      "name": "Maradona",
+      "id": "manu-ginobili",
+      "name": "Manu Ginobili",
       "tags": [
-        "futbol"
+        "basquet",
+        "basket"
       ],
       "category": "deportes",
       "categoryName": "Deportes",
-      "modelo": "/catalogo/deportes/maradona/modelo.webp",
-      "remera": "/catalogo/deportes/maradona/remera.webp",
+      "modelo": "/catalogo/deportes/manu-ginobili/modelo.webp",
+      "remera": "/catalogo/deportes/manu-ginobili/remera.webp",
       "extras": []
     },
     {
@@ -479,15 +477,15 @@
       "extras": []
     },
     {
-      "id": "maradona-pelusa",
-      "name": "Maradona Pelusa",
+      "id": "maradona",
+      "name": "Maradona",
       "tags": [
         "futbol"
       ],
       "category": "deportes",
       "categoryName": "Deportes",
-      "modelo": "/catalogo/deportes/maradona-pelusa/modelo.webp",
-      "remera": "/catalogo/deportes/maradona-pelusa/remera.webp",
+      "modelo": "/catalogo/deportes/maradona/modelo.webp",
+      "remera": "/catalogo/deportes/maradona/remera.webp",
       "extras": []
     },
     {
@@ -541,15 +539,15 @@
       "extras": []
     },
     {
-      "id": "messi",
-      "name": "Messi",
+      "id": "maradona-pelusa",
+      "name": "Maradona Pelusa",
       "tags": [
         "futbol"
       ],
       "category": "deportes",
       "categoryName": "Deportes",
-      "modelo": "/catalogo/deportes/messi/modelo.webp",
-      "remera": "/catalogo/deportes/messi/remera.webp",
+      "modelo": "/catalogo/deportes/maradona-pelusa/modelo.webp",
+      "remera": "/catalogo/deportes/maradona-pelusa/remera.webp",
       "extras": []
     },
     {
@@ -603,15 +601,15 @@
       "extras": []
     },
     {
-      "id": "messi-10",
-      "name": "Messi 10",
+      "id": "messi",
+      "name": "Messi",
       "tags": [
         "futbol"
       ],
       "category": "deportes",
       "categoryName": "Deportes",
-      "modelo": "/catalogo/deportes/messi-10/modelo.webp",
-      "remera": "/catalogo/deportes/messi-10/remera.webp",
+      "modelo": "/catalogo/deportes/messi/modelo.webp",
+      "remera": "/catalogo/deportes/messi/remera.webp",
       "extras": []
     },
     {
@@ -665,13 +663,15 @@
       "extras": []
     },
     {
-      "id": "nicolino-locche",
-      "name": "Nicolino Locche",
-      "tags": [],
+      "id": "messi-10",
+      "name": "Messi 10",
+      "tags": [
+        "futbol"
+      ],
       "category": "deportes",
       "categoryName": "Deportes",
-      "modelo": "/catalogo/deportes/nicolino-locche/modelo.webp",
-      "remera": "/catalogo/deportes/nicolino-locche/remera.webp",
+      "modelo": "/catalogo/deportes/messi-10/modelo.webp",
+      "remera": "/catalogo/deportes/messi-10/remera.webp",
       "extras": []
     },
     {
@@ -722,6 +722,16 @@
       "categoryName": "Comics",
       "modelo": "/catalogo/comics/tortugas-ninja/modelo.webp",
       "remera": "/catalogo/comics/tortugas-ninja/remera.webp",
+      "extras": []
+    },
+    {
+      "id": "nicolino-locche",
+      "name": "Nicolino Locche",
+      "tags": [],
+      "category": "deportes",
+      "categoryName": "Deportes",
+      "modelo": "/catalogo/deportes/nicolino-locche/modelo.webp",
+      "remera": "/catalogo/deportes/nicolino-locche/remera.webp",
       "extras": []
     },
     {
@@ -955,13 +965,13 @@
       "extras": []
     },
     {
-      "id": "the-beatles",
-      "name": "The Beatles",
+      "id": "soulfly",
+      "name": "Soulfly",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/the-beatles/modelo.webp",
-      "remera": "/catalogo/musica/the-beatles/remera.webp",
+      "modelo": "/catalogo/musica/soulfly/modelo.webp",
+      "remera": "/catalogo/musica/soulfly/remera.webp",
       "extras": []
     },
     {
@@ -985,13 +995,13 @@
       "extras": []
     },
     {
-      "id": "tyk",
-      "name": "Tyk",
+      "id": "the-beatles",
+      "name": "The Beatles",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/tyk/modelo.webp",
-      "remera": "/catalogo/musica/tyk/remera.webp",
+      "modelo": "/catalogo/musica/the-beatles/modelo.webp",
+      "remera": "/catalogo/musica/the-beatles/remera.webp",
       "extras": []
     },
     {
@@ -1015,13 +1025,13 @@
       "extras": []
     },
     {
-      "id": "wu-tang",
-      "name": "Wu Tang",
+      "id": "tyk",
+      "name": "Tyk",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/wu-tang/modelo.webp",
-      "remera": "/catalogo/musica/wu-tang/remera.webp",
+      "modelo": "/catalogo/musica/tyk/modelo.webp",
+      "remera": "/catalogo/musica/tyk/remera.webp",
       "extras": []
     },
     {
@@ -1042,6 +1052,16 @@
       "categoryName": "Cine y Series",
       "modelo": "/catalogo/cine-series/scooby-doo/modelo.webp",
       "remera": "/catalogo/cine-series/scooby-doo/remera.webp",
+      "extras": []
+    },
+    {
+      "id": "wu-tang",
+      "name": "Wu Tang",
+      "tags": [],
+      "category": "musica",
+      "categoryName": "Música",
+      "modelo": "/catalogo/musica/wu-tang/modelo.webp",
+      "remera": "/catalogo/musica/wu-tang/remera.webp",
       "extras": []
     },
     {
