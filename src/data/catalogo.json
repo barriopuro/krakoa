@@ -291,13 +291,13 @@
       "extras": []
     },
     {
-      "id": "dano",
-      "name": "Dano",
+      "id": "cypress-hill-insane-in-the-brain",
+      "name": "Cypress Hill Insane In The Brain",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/dano/modelo.webp",
-      "remera": "/catalogo/musica/dano/remera.webp",
+      "modelo": "/catalogo/musica/cypress-hill-insane-in-the-brain/modelo.webp",
+      "remera": "/catalogo/musica/cypress-hill-insane-in-the-brain/remera.webp",
       "extras": []
     },
     {
@@ -364,13 +364,13 @@
       "extras": []
     },
     {
-      "id": "foo-fighters",
-      "name": "Foo Fighters",
+      "id": "dano",
+      "name": "Dano",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/foo-fighters/modelo.webp",
-      "remera": "/catalogo/musica/foo-fighters/remera.webp",
+      "modelo": "/catalogo/musica/dano/modelo.webp",
+      "remera": "/catalogo/musica/dano/remera.webp",
       "extras": []
     },
     {
@@ -427,13 +427,13 @@
       "extras": []
     },
     {
-      "id": "gorillaz",
-      "name": "Gorillaz",
+      "id": "foo-fighters",
+      "name": "Foo Fighters",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/gorillaz/modelo.webp",
-      "remera": "/catalogo/musica/gorillaz/remera.webp",
+      "modelo": "/catalogo/musica/foo-fighters/modelo.webp",
+      "remera": "/catalogo/musica/foo-fighters/remera.webp",
       "extras": []
     },
     {
@@ -489,13 +489,13 @@
       "extras": []
     },
     {
-      "id": "gustavo-cerati",
-      "name": "Gustavo Cerati",
+      "id": "gorillaz",
+      "name": "Gorillaz",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/gustavo-cerati/modelo.webp",
-      "remera": "/catalogo/musica/gustavo-cerati/remera.webp",
+      "modelo": "/catalogo/musica/gorillaz/modelo.webp",
+      "remera": "/catalogo/musica/gorillaz/remera.webp",
       "extras": []
     },
     {
@@ -551,13 +551,13 @@
       "extras": []
     },
     {
-      "id": "indio-solari",
-      "name": "Indio Solari",
+      "id": "gustavo-cerati",
+      "name": "Gustavo Cerati",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/indio-solari/modelo.webp",
-      "remera": "/catalogo/musica/indio-solari/remera.webp",
+      "modelo": "/catalogo/musica/gustavo-cerati/modelo.webp",
+      "remera": "/catalogo/musica/gustavo-cerati/remera.webp",
       "extras": []
     },
     {
@@ -613,13 +613,13 @@
       "extras": []
     },
     {
-      "id": "jimi-hendrix",
-      "name": "Jimi Hendrix",
+      "id": "indio-solari",
+      "name": "Indio Solari",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/jimi-hendrix/modelo.webp",
-      "remera": "/catalogo/musica/jimi-hendrix/remera.webp",
+      "modelo": "/catalogo/musica/indio-solari/modelo.webp",
+      "remera": "/catalogo/musica/indio-solari/remera.webp",
       "extras": []
     },
     {
@@ -675,13 +675,13 @@
       "extras": []
     },
     {
-      "id": "lemmy-kilmister",
-      "name": "Lemmy Kilmister",
+      "id": "jimi-hendrix",
+      "name": "Jimi Hendrix",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/lemmy-kilmister/modelo.webp",
-      "remera": "/catalogo/musica/lemmy-kilmister/remera.webp",
+      "modelo": "/catalogo/musica/jimi-hendrix/modelo.webp",
+      "remera": "/catalogo/musica/jimi-hendrix/remera.webp",
       "extras": []
     },
     {
@@ -735,13 +735,13 @@
       "extras": []
     },
     {
-      "id": "linkin-park",
-      "name": "Linkin Park",
+      "id": "lemmy-kilmister",
+      "name": "Lemmy Kilmister",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/linkin-park/modelo.webp",
-      "remera": "/catalogo/musica/linkin-park/remera.webp",
+      "modelo": "/catalogo/musica/lemmy-kilmister/modelo.webp",
+      "remera": "/catalogo/musica/lemmy-kilmister/remera.webp",
       "extras": []
     },
     {
@@ -785,13 +785,13 @@
       "extras": []
     },
     {
-      "id": "michael-jackson",
-      "name": "Michael Jackson",
+      "id": "linkin-park",
+      "name": "Linkin Park",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/michael-jackson/modelo.webp",
-      "remera": "/catalogo/musica/michael-jackson/remera.webp",
+      "modelo": "/catalogo/musica/linkin-park/modelo.webp",
+      "remera": "/catalogo/musica/linkin-park/remera.webp",
       "extras": []
     },
     {
@@ -835,13 +835,13 @@
       "extras": []
     },
     {
-      "id": "michael-jackson-smooth-criminal",
-      "name": "Michael Jackson Smooth Criminal",
+      "id": "michael-jackson",
+      "name": "Michael Jackson",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/michael-jackson-smooth-criminal/modelo.webp",
-      "remera": "/catalogo/musica/michael-jackson-smooth-criminal/remera.webp",
+      "modelo": "/catalogo/musica/michael-jackson/modelo.webp",
+      "remera": "/catalogo/musica/michael-jackson/remera.webp",
       "extras": []
     },
     {
@@ -885,13 +885,13 @@
       "extras": []
     },
     {
-      "id": "sepultura",
-      "name": "Sepultura",
+      "id": "michael-jackson-smooth-criminal",
+      "name": "Michael Jackson Smooth Criminal",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/sepultura/modelo.webp",
-      "remera": "/catalogo/musica/sepultura/remera.webp",
+      "modelo": "/catalogo/musica/michael-jackson-smooth-criminal/modelo.webp",
+      "remera": "/catalogo/musica/michael-jackson-smooth-criminal/remera.webp",
       "extras": []
     },
     {
@@ -925,13 +925,13 @@
       "extras": []
     },
     {
-      "id": "slipknot",
-      "name": "Slipknot",
+      "id": "sepultura",
+      "name": "Sepultura",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/slipknot/modelo.webp",
-      "remera": "/catalogo/musica/slipknot/remera.webp",
+      "modelo": "/catalogo/musica/sepultura/modelo.webp",
+      "remera": "/catalogo/musica/sepultura/remera.webp",
       "extras": []
     },
     {
@@ -965,13 +965,13 @@
       "extras": []
     },
     {
-      "id": "soulfly",
-      "name": "Soulfly",
+      "id": "slipknot",
+      "name": "Slipknot",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/soulfly/modelo.webp",
-      "remera": "/catalogo/musica/soulfly/remera.webp",
+      "modelo": "/catalogo/musica/slipknot/modelo.webp",
+      "remera": "/catalogo/musica/slipknot/remera.webp",
       "extras": []
     },
     {
@@ -995,13 +995,13 @@
       "extras": []
     },
     {
-      "id": "the-beatles",
-      "name": "The Beatles",
+      "id": "soulfly",
+      "name": "Soulfly",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/the-beatles/modelo.webp",
-      "remera": "/catalogo/musica/the-beatles/remera.webp",
+      "modelo": "/catalogo/musica/soulfly/modelo.webp",
+      "remera": "/catalogo/musica/soulfly/remera.webp",
       "extras": []
     },
     {
@@ -1025,13 +1025,13 @@
       "extras": []
     },
     {
-      "id": "tyk",
-      "name": "Tyk",
+      "id": "the-beatles",
+      "name": "The Beatles",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/tyk/modelo.webp",
-      "remera": "/catalogo/musica/tyk/remera.webp",
+      "modelo": "/catalogo/musica/the-beatles/modelo.webp",
+      "remera": "/catalogo/musica/the-beatles/remera.webp",
       "extras": []
     },
     {
@@ -1055,13 +1055,13 @@
       "extras": []
     },
     {
-      "id": "wu-tang",
-      "name": "Wu Tang",
+      "id": "tyk",
+      "name": "Tyk",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/wu-tang/modelo.webp",
-      "remera": "/catalogo/musica/wu-tang/remera.webp",
+      "modelo": "/catalogo/musica/tyk/modelo.webp",
+      "remera": "/catalogo/musica/tyk/remera.webp",
       "extras": []
     },
     {
@@ -1082,6 +1082,16 @@
       "categoryName": "Cine y Series",
       "modelo": "/catalogo/cine-series/south-park/modelo.webp",
       "remera": "/catalogo/cine-series/south-park/remera.webp",
+      "extras": []
+    },
+    {
+      "id": "wu-tang",
+      "name": "Wu Tang",
+      "tags": [],
+      "category": "musica",
+      "categoryName": "Música",
+      "modelo": "/catalogo/musica/wu-tang/modelo.webp",
+      "remera": "/catalogo/musica/wu-tang/remera.webp",
       "extras": []
     },
     {
