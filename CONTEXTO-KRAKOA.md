@@ -47,6 +47,10 @@ Estructura de archivos relevantes
 │ ├── catalogo/<categoria>/<modelo>/.webp (generado automáticamente)
 │ ├── talles/.webp (generado automáticamente)
 │ ├── promo/.webp (generado automáticamente)
+│ ├── fonts/
+│ │ └── krakoafont.ttf (Payback renombrada. La usa el hero
+│ │ cuando aparece KRAKOA y el título "Cómo Comprar en
+│ │ KRAKOA". No se toca, se sube tal cual.)
 │ ├── logos/
 │ │ ├── krakoalogo-horizontal.webp
 │ │ ├── krakoalogo-isotipo.webp
@@ -85,6 +89,13 @@ Escribir una descripción del cambio cuando la pida
 Esperar ~1-2 min. GitHub Actions publica solo.
 
 El .bat hace: generar catálogo → build → git add/commit/push.
+
+⚠️ Si un cambio de CSS no se ve reflejado:
+Antes de asumir que el cambio está mal, cerrar el dev server (Ctrl+C)
+y volver a correr `npm run dev`. Astro a veces cachea el <style> y no
+recompila. Es un problema del dev server, no del código. Aplica
+especialmente a cambios en `<style>` y al agregar assets nuevos en
+`public/` (como fuentes).
 
 Categorías actuales
 Definidas en scripts/generar-catalogo.mjs en el objeto categoryConfig.
@@ -149,6 +160,12 @@ Selectores compuestos con :hover que combinan dos clases
 Cualquier selector donde una de las clases la maneja el JS, aunque
 el elemento base sea estático.
 
+Selector que combina un elemento estático con uno creado por JS
+(ej: :global(.category-button.glitching) :global(.cat-glitch-a)).
+NO alcanza con envolver solo la primera parte: cada parte va en
+su propio :global() separado por espacio. Si mezclás estático + JS
+en el mismo selector, envolvé cada parte por separado.
+
 Casos que NO llevan :global():
 
 Elementos HTML estáticos, dentro de <main>, cuyas clases NO toca el JS.
@@ -162,6 +179,13 @@ Si algo "no toma estilo" y vive cerca de JS o fuera de <main>,
 envolver en :global() ANTES de investigar otra cosa. No perder
 tiempo leyendo el CSS, ni probando en DevTools. :global() primero,
 preguntas después.
+
+Además, cuando un selector CSS combina un elemento estático con
+uno creado por JS o con una clase que maneja el JS, CADA PARTE del
+selector va en su propio :global() separado por espacio. Ejemplo:
+:global(.padre.glitching) :global(.hijo). No alcanza con envolver
+solo la primera parte. Esta regla nos hubiera ahorrado varias
+rondas de debugging con los glitches del hero y del menú.
 
 Casos especiales del proyecto
 <h1> del hero: tiene mezcla de todo (texto estático, spans que
@@ -356,7 +380,31 @@ método de pago).
 UI
 Header: ícono de bolsa + badge (aparece solo cuando hay items).
 
-Drawer: se desliza desde la derecha. Header, body scrolleable y footer.
+Drawer: se desliza desde la derecha con TRANSICIÓN bidireccional
+(abre Y cierra). Header, body scrolleable y footer.
+
+Animación del drawer (Sesión 17)
+Tanto .cart-drawer como .mobile-menu usan transition en vez de
+animation. El patrón:
+  - Cerrado: opacity: 0; visibility: hidden; pointer-events: none;
+    transition: opacity 0.28s ease, visibility 0s linear 0.28s;
+  - Abierto (.open): opacity: 1; visibility: visible; pointer-events: auto;
+    transition: opacity 0.28s ease, visibility 0s linear 0s;
+
+El 0.28s del visibility (solo al cerrar) hace que el elemento siga
+visible durante la animación de salida y recién después se oculte.
+
+El panel interno (.cart-drawer-panel, .mobile-menu-panel) usa
+transform: translateX(100%) → 0 con transition: transform 0.28s ease.
+El .open del padre aplica translateX(0) al panel.
+
+Se eliminó el animation: slideInRight de antes. Ahora es transition
+pura, lo que permite también la animación de salida.
+
+IMPORTANTE: antes se usaba display: none / display: block para
+ocultar/mostrar, lo que impedía la transición de cierre. Ahora
+nunca se usa display: none, siempre está en el DOM con visibility
+y pointer-events. Es seguro para accesibilidad y no bloquea clicks.
 
 Item: foto (60x76), nombre, "Corte · Talle X", selector −/+ y botón ×.
 A la derecha del selector, el total de la línea.
@@ -628,51 +676,68 @@ showZoomPrev() / showZoomNext() — navegación entre fotos zoomeables.
 
 History stack (botón atrás) — REFACTOR IMPORTANTE
 Qué es
-Sistema que hace que el botón "atrás" del celular cierre el overlay que
-está arriba de todo (modal, carrito, zoom, menú, promo) en vez de salir
-de la web.
+Sistema que hace que el botón "atrás" del navegador DESHAGA la última
+acción del usuario (abrir modal, carrito, zoom, menú, promo, cambiar
+de categoría) en vez de salir de la web.
 
-Cómo funciona
-historyStack es un array de strings (no una variable única).
+Cómo funciona (Sesión 17)
+historyStack es un array de OBJETOS, no de strings. Cada entry es:
+  { kind: "modal" | "cart" | "image-zoom" | "mobile-menu" | "promo" | "category",
+    state: { ... }  // datos extra para poder restaurar
+  }
 
-Cada overlay que se abre hace pushHistory("modal" | "cart" | "image-zoom" | "mobile-menu" | "promo"), que hace history.pushState(...) y
-agrega el tipo al final del array.
+Cambio clave respecto a Sesión 16: ahora el stack también incluye
+"category" (cambios de filtro de categoría), con state.previousCategory
+guardado. Así el back del navegador deshace también los cambios de
+categoría, no solo los overlays.
+
+Cada acción que se puede deshacer hace:
+  pushHistory(kind, state) → history.pushState({ krakoaOverlay: kind, ...state }) + historyStack.push({ kind, state })
 
 Cuando el usuario toca "atrás", el popstate llama a closeTopOverlay(),
-que saca el último de la pila y cierra ese overlay.
+que saca el último del stack y deshace esa acción:
+  - "modal" → closeModalDirect()
+  - "cart" → closeCartDrawerDirect()
+  - "image-zoom" → closeImageZoomDirect()
+  - "mobile-menu" → closeMobileMenuDirect()
+  - "promo" → window.KRAKOA_CLOSE_PROMO()
+  - "category" → applyCategoryFilter(top.state.previousCategory, { push: false, scroll: false })
 
 Cuando el usuario cierra un overlay con la X o Escape, se llama a
 popHistory() (que hace history.back()) → dispara el popstate →
 cierra. Nunca se cierra el overlay directamente sin pasar por el
-popstate, así el "atrás" del celular y el click en la X quedan
-sincronizados.
-
-Ventaja sobre el sistema viejo
-El sistema viejo tenía una variable única (historyLock) y casos
-particulares ("si el modal está abierto y se abre el carrito, cambiar
-el lock a cart y después volver a modal..."). Eso generaba bugs cuando
-se apilaban overlays (zoom sobre modal, etc.).
-
-Con la pila no hay casos particulares: el "atrás" siempre cierra el de
-arriba. Zoom sobre modal → ["modal", "image-zoom"] → primer atrás
-cierra zoom → ["modal"] → segundo atrás cierra modal → [].
+popstate.
 
 Funciones
-isTopOfHistory(kind) — ¿el overlay "kind" es el que está arriba?
+isTopOfHistory(kind) — ¿la acción "kind" es la que está arriba?
+  return historyStack.length > 0 && historyStack[historyStack.length - 1].kind === kind
 
-pushHistory(kind) — agrega a la pila + pushState.
+pushHistory(kind, state = {}) — agrega a la pila + pushState.
 
 popHistory() — history.back() (dispara el popstate).
 
-closeTopOverlay() — la usa el popstate. Saca el último de la pila
-y llama al closeXDirect() correspondiente.
+closeTopOverlay() — la usa el popstate. Saca el último, hace switch
+por top.kind y usa top.state para restaurar.
 
 Cada overlay tiene 2 funciones de cierre:
 
-closeX() — chequea si está en el tope de la pila → popHistory();
+closeX() — chequea si está en el tope del stack → popHistory();
 si no, closeXDirect().
 
 closeXDirect() — cierra sin tocar el historial (la usa el popstate).
+
+Filtro de categoría como acción deshacible (Sesión 17)
+applyCategoryFilter(categoryId, { push = true, scroll = true }):
+- Actualiza activeCategory, clases .active de botones, tinte.
+- Llama filterProducts().
+- Si scroll: hace scroll suave al inicio de la grilla (solo cuando
+  el usuario clickea, no cuando se restaura desde back).
+- Si push: guarda previousCategory en el historyStack.
+
+Click en botón: applyCategoryFilter(newCategory) → push.
+Back del navegador: closeTopOverlay llama a
+applyCategoryFilter(previousCategory, { push: false, scroll: false })
+→ restaura sin pushear de nuevo, sin hacer scroll.
 
 Caso particular: links del menú mobile
 Al tocar un link del menú mobile (#catalogo, #calidad, etc.),
@@ -681,7 +746,10 @@ NO se hace popHistory(). En cambio:
 history.replaceState(null, "", href) — reemplaza la entrada del
 menú por la del hash.
 
-Se saca "mobile-menu" de historyStack con splice.
+Se saca "mobile-menu" de historyStack con splice. OJO: ahora
+historyStack es un array de objetos, así que el splice usa:
+  const idx = historyStack.map((e) => e.kind).lastIndexOf("mobile-menu");
+  if (idx !== -1) historyStack.splice(idx, 1);
 
 closeMobileMenuDirect() — cierra el menú sin tocar el historial.
 
@@ -689,6 +757,12 @@ window.scrollTo({top, behavior: "smooth"}) — scroll suave.
 
 Esto es para que el "atrás" del Android después del scroll vuelva al
 header (y no saque al usuario del navegador).
+
+Producto compartido por hash (openProductFromHash)
+Al abrir un producto por hash, se hace un pushState extra y se
+agrega al stack: historyStack.push({ kind: "modal", state: {} }).
+Cuando se cierra con back, closeTopOverlay llama a closeModalDirect
+normalmente.
 
 Header y navegación
 Desktop (≥ 701px)
@@ -741,39 +815,62 @@ width: 100vw, transform: translateX(-50%). No tiene border-radius.
 El contenido interno (.hero-content) sí está limitado a
 min(1400px, 90vw) para alinear con el resto.
 
-Título: glitch + typewriter + cursor (Sesión 16)
-El <h1> del hero tiene tres efectos combinados:
+Título: glitch + typewriter + cursor + KRA amarilla + KrakoaFont (Sesión 17)
+El <h1> del hero tiene efectos combinados:
 
 HTML:
 
 html
-<h1 data-text="CATALOGO."><span id="hero-text">CATALOGO</span><span id="hero-cursor" class="hero-cursor">.</span></h1>
-Cursor titilante: el span .hero-cursor (el punto final) titila
-con animation: cursorBlink 1s step-end infinite. Todo el CSS del
-cursor va con :global() porque está dentro del h1 y combina con JS.
+<h1 data-text="CATALOGO_"><span id="hero-text">CATALOGO</span><span id="hero-cursor" class="hero-cursor">_</span></h1>
+Cursor titilante: el span .hero-cursor (el "_" final) titila
+con animation: cursorBlink 1s step-end infinite. FORZADO a
+font-family: Arial (Payback no tiene "_" o lo tiene feo).
+Va con :global() porque combina con JS.
 
-Glitch (aleatorio cada 5-9s): cuando el JS agrega la clase
-.glitching al h1, los pseudo-elementos ::before y ::after copian
-data-text con content: attr(data-text) y hacen una animación de
-280ms con clip-path + transform (efecto chromatic aberration +
-slices). Colores: #ff0055 (magenta) y #00fff0 (cian). Duración 280ms,
-5 fotogramas con steps(5, end).
+Glitch (aleatorio cada 5-9s, 420ms): los pseudo-elementos
+::before/::after ya NO se usan. Ahora son SPANS REALES
+(hero-glitch-a/b) que el JS crea y llena con textContent
+directo. CERO content: attr() (es poco confiable en runtime).
+Animación de 420ms con:
+- 10 keyframes de clip-path (tiras y bloques con inset de 4 lados)
+- transform con translate + scaleX(-1)/scaleY(-1) (flips)
+- text-shadow animado (RGB split dinámico)
+- flicker de opacity en paralelo (segunda animación)
+- glitchBaseShift en el h1 (1-2px de shake)
+- steps(9, end) para saltos digitales
+Colores: #ff0055 (magenta), #00fff0 (cian).
+Además se cambea el textContent del #hero-text con símbolos
+scrambled (@#$%&!?*+=/\|<>[]{}~^, ratio 0.4) durante el glitch,
+así los símbolos SE VEN (el span está clipeado, pero el texto
+principal también cambia).
 
-TODO el CSS del glitch va con :global(): :global(h1::before),
-:global(h1::after), :global(h1.glitching)::before, etc.
+TODO el CSS del glitch va con :global() COMPLETO en el selector:
+:global(h1.glitching) :global(.hero-glitch-a).
 
 Typewriter (aleatorio cada 8-14s): el título se "borra" letra por
-letra, se escribe "KRAKOA", se mantiene 700ms, se borra, y se vuelve
-a escribir "CATALOGO". Duración por letra: 80ms al escribir, 45ms al
-borrar. Función setText(content) actualiza #hero-text y
-h1.dataset.text (para que el glitch pinte el texto actual). Si el
-glitch está activo, fuerza reflow para que attr() re-evalúe.
+letra, se escribe "KRAKOA", se mantiene 700ms, se borra, y se
+vuelve a escribir "CATALOGO". Función setText(content) usa
+textEl.innerHTML = formatHeroText(content) (no textContent)
+porque arma el HTML de KRA amarilla.
 
-Los tres efectos respetan prefers-reduced-motion: reduce.
+formatHeroText(text): si text es prefijo de "KRAKOA" (K, KR, KRA...),
+envuelve las primeras 3 letras en <span class="hero-kra"> y les da
+color #ffd655 (amarillo). El resto queda normal. Si NO es prefijo
+de KRAKOA (es CATALOGO), devuelve text plano.
 
-Si el glitch cae durante el tipeo, pinta el texto parcial (ej: "KRA").
-Es copado y es intencional. Si se quiere desactivar, agregar un chequeo
-de isAnimating en el glitch.
+KrakoaFont (Payback): cuando el h1 tiene .is-krakoa (que el JS
+agrega cuando el texto es prefijo de KRAKOA), se aplica
+font-family: "KrakoaFont". font-weight: normal (Payback solo
+tiene peso 400; si pide 900 el browser sintetiza faux bold).
+letter-spacing: 0 (Payback no necesita compresión).
+h1 tiene height: calc(clamp(...) * 0.88) para que el cambio
+de fuente no cambie la altura del hero (Payback tiene
+métricas distintas y expande el line-box).
+
+Los efectos respetan prefers-reduced-motion: reduce.
+
+Si el glitch cae durante el tipeo, pinta el texto parcial con
+símbolos ("K@A"). Es intencional.
 
 Valores para calibrar el hero
 Opacidad de fotos: opacity: 0.32 en .hero-bg img.active.
@@ -788,20 +885,75 @@ Intensidad del zoom: scale(1.1) en las transiciones del hero.
 
 Paneo lateral: translateX(±1.5%).
 
-Glitch: GLITCH_DURATION = 280, MIN_DELAY = 5000, MAX_DELAY = 9000.
+Glitch: GLITCH_DURATION = 420, MIN_DELAY = 5000, MAX_DELAY = 9000.
 
 Typewriter: TYPE_DELAY = 80, ERASE_DELAY = 45, HOLD_ALT = 700,
 MIN_CYCLE = 8000, MAX_CYCLE = 14000.
 
 Cursor: cursorBlink 1s en CSS.
 
+Colores del glitch: #ff0055 (magenta) y #00fff0 (cian).
+Color de KRA: #ffd655 (amarillo).
+
+
+---
+
+## KrakoaFont (Payback) y uso del logo
+
+### Qué es
+Payback es la tipografía del logo de KRAKOA (renombrada a
+krakoafont.ttf). Es gratuita de DaFont, pesa 8kb, y vive en
+public/fonts/krakoafont.ttf.
+
+Se carga con un <style is:inline set:html={`...`}> en el <head>,
+usando set:html con template literal para poder interpolar ${base}
+(porque ${base} NO funciona dentro de <style> normal).
+
+### Dónde se usa
+- Hero: cuando el typewriter escribe "KRAKOA" (o un prefijo),
+  el h1 recibe .is-krakoa y se aplica KrakoaFont.
+- "Cómo Comprar en KRAKOA": con <span class="brand-inline">.
+- NO se usa en el footer ni en el copyright (a 12-14px los
+  cortes decorativos no se leen; el copyright a 11px mayúsculas
+  es ilegible con Payback).
+
+### Reglas de uso del logo (jerarquía)
+La marca KRAKOA tiene 2 tratamientos:
+- **Tratamiento completo**: KrakoaFont + KRA amarilla (#ffd655).
+  Solo en contextos grandes: hero, títulos de sección con "KRAKOA".
+- **Solo KRA amarilla** (sin Payback): en párrafos de presentación
+  medianos (Materiales, footer institucional). Las primeras 3
+  letras (KRA) en amarillo, el resto hereda el color del párrafo.
+- **Sin tratamiento**: en texto chico (copyright, alt text, metadata).
+
+La clase .hero-kra aplica el amarillo a las primeras 3 letras.
+La clase .brand-inline aplica KrakoaFont. Son independientes:
+- .hero-kra sola = KRA amarilla (footer, materiales).
+- .brand-inline sola = Payback blanco (título Cómo Comprar).
+- Ambas juntas = logo completo (hero).
+
+### Faux bold en fuentes custom
+Si una @font-face declara font-weight: normal y el CSS pide
+font-weight: 900, el browser SINTETIZA bold (faux bold). Para
+evitarlo, cuando .is-krakoa/.brand-inline están activas, forzar
+font-weight: normal. Aplica a cualquier fuente de un solo peso.
+
+---
+
 Marquesina
 Debajo del hero hay una marquesina con keywords que se desplaza
 infinitamente. El array de textos está en marqueeText en el frontmatter.
 
-Fondo tintado por categoría
+Fondo tintado por categoría (Sesión 17)
 Cuando el usuario selecciona una categoría, el fondo de la sección
 #catalogo se pinta con el color de esa categoría.
+
+La selección de categoría ahora es una acción DESHACIBLE del
+historyStack (kind: "category", state: { previousCategory }). El
+back del navegador restaura la categoría anterior (o "todas" si
+era la primera). El scroll al inicio de la grilla solo se hace
+cuando el usuario clickea, no cuando se restaura desde back
+(para no saltar de lugar sin querer).
 
 Cómo funciona
 Hay dos capas (#catalogTintA y #catalogTintB) apiladas dentro de
@@ -838,7 +990,7 @@ la categoría).
 
 commitTintSwap() — fuerza el fin de un swap en curso.
 
-Buscador
+Buscador (Sesión 17)
 El buscador está en el header (dentro de .header-actions), a la
 izquierda del botón de Instagram. Tiene un #search (input) y un
 .search-toggle (botón lupa, solo mobile).
@@ -854,24 +1006,122 @@ Tiene debounce de 150ms.
 
 En mobile, el botón × cierra, limpia el input y restaura el catálogo.
 
-Barra de categorías
+Efecto glitch al abrir/cerrar (Sesión 17)
+Coordinado con el glitch del menú de categorías (concordancia
+visual). NO tiene flash de fondo — el fondo del input se queda
+igual. El efecto se aplica a:
+- Borde del input + placeholder "Buscar diseño..." (glitch de
+  border-color y color/text-shadow del placeholder).
+- Borde del botón × + la "×" misma (color + text-shadow).
+- Borde del botón lupa (mobile) + el ícono SVG (color +
+  filter: drop-shadow, simula RGB split en SVG).
+- Micro-shake del header entero (searchHeaderGlitch, 1-2px).
+
+Triggers:
+- Mobile: openSearch() y closeSearch() llaman a triggerSearchGlitch(),
+  que agrega .search-switching al header, al search-toggle y al
+  header-search-panel por 340ms.
+- Desktop: al hacer focus en el input (click para escribir), el
+  listener de focus dispara triggerSearchGlitch(). Solo en
+  ≥701px (en mobile el focus automático duplicaría el efecto).
+
+Todo el CSS va con :global() por las clases que maneja el JS y
+porque los elementos están fuera de <main>.
+
+Barra de categorías (Sesión 17)
 Botones envueltos en <span class="category-wrap"> con el color de la
 categoría como background.
 
+Contador de modelos por categoría (Sesión 17)
+En el frontmatter de index.astro se calcula productCountByCategory:
+  const productCountByCategory = {};
+  catalogo.products.forEach((p) => {
+    productCountByCategory[p.category] = (productCountByCategory[p.category] || 0) + 1;
+  });
+Cada botón tiene un <span class="category-count"> con el número de
+productos de esa categoría (viene del frontmatter, no del JS).
+
+El badge:
+- Position: absolute, top: -8px, right: -8px del .category-wrap.
+- Background del color de la categoría.
+- Se mueve junto con el botón cuando éste se eleva
+  (transform: translate(-14px, -14px)).
+- Aparece con pop-in (scale 0 → 1, cubic-bezier con overshoot)
+  + 200ms de delay (aparece después de que el botón se eleva).
+- Desaparece con pop-out (scale 1 → 0, ease-in rápido, sin delay).
+- En desktop: aparece en :hover y .active.
+- En mobile: solo en .active.
+- .active se mantiene aunque el usuario saque el mouse.
+
+El .categories tiene padding: 26px 5vw 12px (el top 26px es para que
+el badge no se corte cuando la barra está sticky arriba).
+
 El botón se "despega" con transform: translate(-14px, -14px) en hover
-y cuando está activo.
+(solo desktop) y cuando está activo (todos los dispositivos).
+
+HOVER solo en desktop: los selectores :hover están envueltos en
+@media (hover: hover) and (pointer: fine) para evitar el "sticky
+hover" en mobile (el navegador deja el hover pegado hasta que
+tocás otro elemento). En mobile, SOLO .active hace el efecto.
+
+El :focus-visible sigue funcionando en todos los dispositivos
+(navegación con teclado).
 
 Click en el wrap también dispara el handler (no solo el botón). Se
 hace con event.stopPropagation() en el botón y un listener aparte en
 el wrap, ambos llaman a handleClick.
 
 Toggle: tocar el botón ya activo lo desactiva y vuelve a mostrar todo.
+Esto ahora es una acción DESHACIBLE del historyStack (ver sección
+"History stack"). El back del navegador deshace el cambio de
+categoría, igual que deshace el cierre de un modal.
+
+Badge con conteo de modelos (Sesión 17)
+Cada botón tiene un <span class="category-count"> con el número de
+productos de esa categoría. Se calcula en el frontmatter
+(productCountByCategory) y se pasa al HTML.
+
+Aparece en la esquina superior-derecha del botón elevado, con
+background del color de la categoría, texto oscuro, y pop-in con
+overshoot (cubic-bezier(0.34, 1.56, 0.64, 1)) + 200ms de delay
+(el badge aparece después de que el botón terminó de elevarse).
+Pop-out: se encoge al centro, sin delay.
+
+- Desktop: aparece en hover y en .active.
+- Mobile: aparece en .active (al tocar una categoría).
+- .active se mantiene visible aunque el usuario saque el mouse.
+
+El padding-top del .categories es 26px (en vez de 12px) para que
+el badge no se corte cuando la barra está sticky arriba de todo.
+
+Glitch del texto + borde (Sesión 17)
+El texto de cada botón está envuelto en <span class="cat-text">,
+con dos spans más (.cat-glitch-a, .cat-glitch-b) que el JS llena
+con símbolos scrambled. El CSS va con :global() COMPLETO:
+:global(.category-button.glitching) :global(.cat-glitch-a).
+
+Símbolos scrambled del MENÚ: solo angostos (!|/\+~^_-=),
+para no cambiar el ancho del botón.
+
+Ancho fijo: el .category-button tiene un ::before invisible con
+content: attr(data-original-text) que reserva el ancho del texto
+original. Así, si el glitch cambia el texto a símbolos más angostos,
+el botón no se achica. data-original-text se agrega desde Astro.
+
+Glitch del BORDE: cuando .glitching, el border-color salta entre
+gris, magenta y cian, con box-shadow: inset para reforzar (sin
+tocar el background #111).
+
+Timing: 2 "cadenas" independientes de timers, desfasadas 800ms y
+2600ms. Cada cadena elige un botón al azar (NO activo) cada
+3-7s y le aplica .glitching por 320ms. Pueden solaparse.
 
 Centrados horizontalmente: justify-content: center en .categories.
 
 Sticky en desktop y mobile: position: sticky; top: 0; z-index: 100,
 fondo rgba(11, 11, 11, 0.72) con backdrop-filter: blur(10px) para
-dejar ver el tinte detrás. En desktop también (se sacó del @media max-width: 700px en la Sesión 14).
+dejar ver el tinte detrás. En desktop también (se sacó del @media
+max-width: 700px en la Sesión 14).
 
 Ancho completo de la pantalla con margin-inline: -5vw.
 
@@ -932,20 +1182,38 @@ Padding interno: 14px (12px en mobile).
 
 En mobile: 2 columnas fijas, tipografía más chica.
 
-Footer completo
-Tres columnas:
+Footer completo (Sesión 17 — centrado)
+Tres columnas CENTRADAS como bloque (Sesión 17):
+- .footer-inner: width: min(1000px, 100%); margin: 0 auto;
+  grid-template-columns: 100px 1fr 180px; gap: 40px.
+- .footer-col--brand: logo centrado en su columna (justify-content: center).
+- .footer-col--text p: text-align: center (antes justify; el justify
+  se veía raro con el bloque más angosto).
+- .footer-col--links: align-items: center (links centrados en su columna).
 
 Logo vertical (krakoalogo-vertical.webp) a 70px (desktop) / 58px (mobile).
 
-Texto institucional (SEO) justificado.
+Texto institucional (SEO) centrado. La KRA va en amarillo (#ffd655)
+con <span class="hero-kra">KRA</span>KOA (sin Payback, a 12.5px los
+cortes decorativos no se leen).
 
 Menú vertical con links: Catálogo, Cómo Comprar, Materiales, Instagram.
+El link de Instagram lleva una flecha ↗ posicionada con
+position: absolute (clase .footer-external-arrow, left: 100%,
+margin-left: 4px) para que NO afecte el centrado del texto
+"Instagram" respecto a los otros links.
 
 Abajo: línea fina con "© 2026 KRAKOA powered by BARRIOPURO".
+- .footer-bottom: width: min(1000px, 100%) (alineado con
+  .footer-inner, no más ancho); justify-content: center
+  (centrado horizontal).
+- El copyright NO lleva ni Payback ni KRA amarilla (a 11px
+  mayúsculas con tracking amplio es ilegible con Payback, y
+  el destello amarillo se vería como error de tipeo).
 
-Fondo: partículas blancas tenues que suben lentamente (creadas por JS, con
-:global(.footer-particle)). Cantidad: 22 partículas. El @keyframes floatUp
-hace que suban ~420px y se desvanezcan.
+Fondo: partículas blancas tenues que suben lentamente (creadas por JS,
+con :global(.footer-particle)). Cantidad: 22 partículas. El
+@keyframes floatUp hace que suban ~420px y se desvanezcan.
 
 IMPORTANTE: todas las reglas CSS del footer van con :global() porque
 el <footer> está fuera de <main>.
@@ -973,9 +1241,25 @@ centrada, grilla, tinte por categoría.
 
 <section id="como-comprar" class="faq-section"> — acordeón con 5
 preguntas + bloque "¿Tenés una consulta especial?" con botón WhatsApp.
+El header (.faq-head) está CENTRADO (text-align: center): kicker,
+h2 y subtítulo centrados. El acordeón y el CTA siguen alineados a
+la izquierda internamente (viven en sus cards).
 
 <section id="calidad" class="quality-section"> — 4 pilares + guía
-de cuidado.
+de cuidado. El header (.quality-head) está CENTRADO
+horizontalmente (margin-left/right: auto dentro de los 1100px del
+.quality-inner) y con text-align: center. El .care-strip también
+tiene text-align: center, pero solo afecta al kicker y al título;
+las 4 tarjetas del .care-grid siguen con texto interno a la
+izquierda (es grid, no flex, así que text-align no les afecta).
+
+Motivo del centrado (Sesión 17): las dos secciones se habían
+diseñado con criterios distintos (FAQ centrado, Calidad alineado
+a la izquierda). Pero los anchos internos son distintos
+(.faq-inner 820px vs .quality-inner 1100px), así que "alineado
+a la izquierda" se veía distinto en cada sección. Centrar los
+headers de ambas resuelve la inconsistencia sin tocar los
+contenidos.
 
 #product-modal — modal de producto.
 
@@ -1100,6 +1384,19 @@ Vista rápida en cada tarjeta (mini-modal sin abrir el modal grande).
 Productos relacionados en el modal (4 productos de la misma
 categoría, abajo de todo).
 
+Contador global de modelos (charlado, no implementado). Sería
+un "7 categorías · 99 diseños" en gris tenue debajo del hero.
+No es urgente: el número total cambia seguido y no hay un lugar
+natural que no compita con otro elemento.
+
+Usar KrakoaFont en otros lugares a futuro:
+- Una sección "Sobre KRAKOA" o "Nuestra historia" (si se agrega).
+- Una pantalla de error 404 custom.
+- Una página de "Gracias por tu pedido".
+Todos son contextos donde el tratamiento completo (Payback +
+KRA amarilla) tiene sentido. Hoy no aplica a ninguna porque no
+existen esas páginas.
+
 Referencia externa
 Hay una versión alternativa hecha con Google AI Studio (React + Vite +
 Tailwind, componentes separados) en
@@ -1187,7 +1484,160 @@ El pago se coordina por WhatsApp, no hay cobro online en la web
 El aviso de tela se sacó del modal. La info sigue en "Calidad y
 Materiales" y el footer.
 
+El logo KRAKOA tiene jerarquía de uso (Sesión 17):
+- Tratamiento completo (KrakoaFont + KRA amarilla): solo en
+  contextos grandes de marca (hero, títulos con "KRAKOA").
+- Solo KRA amarilla (sin Payback): en párrafos de presentación
+  medianos (Materiales, footer institucional).
+- Nada: en texto chico (copyright, alt text, metadata).
+
+El historyStack es un array de OBJETOS ({ kind, state }), no de
+strings. Nuevas acciones deshacibles van como { kind, state } y
+se agregan a closeTopOverlay. El filtro de categoría es una de
+esas acciones (kind: "category").
+
+Los selectores CSS que mezclan un elemento estático con uno
+creado por JS (o con una clase que maneja el JS) van con
+:global() en CADA PARTE del selector, separados por espacio.
+Ejemplo: :global(.category-button.glitching) :global(.cat-glitch-a).
+
+Los efectos hover que persisten (elevar, mostrar cosas) van
+envueltos en @media (hover: hover) and (pointer: fine) para
+evitar el sticky hover en mobile. El estado touch se maneja con
+.active.
+
+Los drawers (cart, mobile menu) usan transition + visibility
+diferido, no animation. Se eliminó display: none / block para
+poder animar el cierre. El patrón está documentado en "UI".
+
+Para scrambles en runtime (glitches con símbolos random), NO usar
+content: attr(data-text) con data-* que cambia. Usar spans reales
+creados por JS y setear textContent directo. attr() en content
+no es confiable para valores que cambian en runtime.
+
+Lecciones aprendidas (Sesión 17)
+Estas son las trampas que nos costaron tiempo. Si algo no funciona,
+revisar primero estas:
+
+1. :global() por cada parte del selector cuando mezcla estático + JS.
+   Antes envolvíamos solo la primera parte y la segunda quedaba
+   scopada → el CSS no matcheaba. Ejemplo correcto:
+   :global(.category-button.glitching) :global(.cat-glitch-a).
+
+2. ${base} NO se interpola dentro de <style> (ni con is:inline).
+   Para URLs en CSS (fuentes, background-image), usar
+   <style is:inline set:html={`...`}> con template literal, o rutas
+   relativas al documento (sin "/" inicial).
+
+3. Reiniciar el dev server si un cambio de CSS no se ve reflejado.
+   Astro cachea <style> y no recompila. Aplica especialmente al
+   agregar assets nuevos en public/ (fuentes, imágenes).
+
+4. attr() en content no es confiable para valores que cambian en
+   runtime. Para scrambles y animaciones de texto, usar spans
+   reales + textContent. Funciona siempre.
+
+5. Sticky hover en mobile. Los navegadores touch aplican :hover y
+   lo dejan "pegado" hasta el próximo tap. Solución: envolver los
+   :hover persistentes en @media (hover: hover) and (pointer: fine).
+
+6. Faux bold en fuentes custom de un solo peso. Si la @font-face
+   declara font-weight: normal y el CSS pide 900, el browser
+   sintetiza el bold (se ve artificial). Forzar font-weight: normal
+   en la clase que activa la fuente custom.
+
+7. Fuentes con métricas distintas cambian la altura del line-box
+   y producen layout shift. Solución: height: calc(...) fijo en
+   el contenedor (h1 en el hero).
+
 Historial de cambios (más reciente arriba)
+Sesión 17 — Glitch extendido, KrakoaFont, badge de categorías, navegación deshacible
+Degradado de las tarjetas:
+- color-mix del overlay bajado de 50%/18% a 10%/10% (decisión final).
+- El fondo de las tarjetas se ve más oscuro, menos tintado.
+
+Glitch del menú de categorías (feature nueva):
+- Texto: 2 spans reales (.cat-glitch-a/b) con textContent scrambled
+  + slices + flicker + flips.
+- Símbolos scrambled ANGOSTOS (!|/\+~^_-=) para no cambiar el ancho.
+- Ancho fijo con ::before invisible (content: attr(data-original-text)).
+- Borde: border-color salta entre gris/magenta/cian + inset box-shadow.
+- Dos cadenas de timers desfasadas, un botón al azar cada 3-7s, 320ms.
+- Hover solo en desktop (@media (hover: hover) and (pointer: fine))
+  para evitar sticky hover en mobile.
+
+Hero con glitch mejorado:
+- 10 keyframes con tiras y bloques (inset de 4 lados).
+- Flips (scaleX/scaleY) en keyframes específicos.
+- RGB split dinámico (text-shadow animado en el keyframe).
+- Flicker en paralelo + glitchBaseShift en el h1 (1-2px).
+- steps(9, end) para saltos digitales.
+- Símbolos scrambled (anchos: @#$%&!?*+=/\|<>[]{}~^, ratio 0.4)
+  cambian el #hero-text durante el glitch.
+- Duración: 420ms.
+
+Hero con KrakoaFont (Payback):
+- Fuente cargada con @font-face en <style is:inline set:html>
+  (necesario para interpolar ${base}).
+- Solo se aplica a KRAKOA (cuando el typewriter escribe KRAKOA
+  o un prefijo, el h1 recibe .is-krakoa).
+- letter-spacing: 0, font-weight: normal (Payback solo tiene 400,
+  sin faux bold).
+- height: calc(...) fijo en el h1 para que el cambio de fuente no
+  cambie la altura del hero.
+
+KRA amarilla (#ffd655):
+- Primeras 3 letras de KRAKOA en el hero.
+- En el footer institucional y en Materiales (solo color, sin Payback).
+- En "Cómo Comprar en KRAKOA" (con Payback, clase .brand-inline).
+
+Badge con conteo de modelos:
+- Cada botón de categoría tiene un badge con el número de modelos.
+- Pop-in (scale 0→1 con overshoot) + 200ms delay,
+  pop-out (scale 1→0 ease-in sin delay).
+- Aparece en hover (desktop) y en .active (todos).
+- Padding-top de .categories subido a 26px para que no se corte sticky.
+
+Buscador con glitch (concordancia con categorías):
+- Borde del input + placeholder + borde del botón × + el ×
+  + borde de la lupa + ícono SVG.
+- No hay flash de fondo (se removió).
+- Trigger mobile: openSearch/closeSearch.
+- Trigger desktop: focus en el input.
+
+historyStack con objetos (refactor grande):
+- Pasó de strings a { kind, state }.
+- Filtro de categoría es acción deshacible ("category",
+  state.previousCategory).
+- Back del navegador deshace cambio de categoría, igual que
+  cierra modales.
+- applyCategoryFilter(categoryId, { push, scroll }) unifica
+  click y back.
+
+Drawers con transición de cierre:
+- cart-drawer y mobile-menu usan transition + visibility
+  diferido (no animation).
+- Abren y cierran con slide + fade.
+
+Secciones centradas:
+- FAQ (kicker, h2, subtítulo).
+- Calidad (kicker, h2, subtítulo).
+- Guía de Cuidado (kicker, título). Las tarjetas siguen con
+  texto interno a la izquierda.
+- Footer 3 columnas centradas + copyright centrado.
+
+Flecha de Instagram en el footer:
+- position: absolute (left: 100%, margin-left: 4px).
+- No afecta el centrado del texto "Instagram".
+
+Fixes:
+- 404 por ${base} en @font-face (resuelto con set:html).
+- Sticky hover en mobile (@media hover: hover).
+- Badge cortado sticky arriba (padding-top subido).
+
+Decisión: NO se implementó el contador global de modelos.
+No hay lugar natural y el número cambia seguido.
+
 Sesión 16 — Precios, carrito con totales, hero con glitch + typewriter, ajustes estéticos
 Sistema de precios (feature nueva, grande):
 

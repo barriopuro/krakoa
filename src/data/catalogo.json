@@ -1205,24 +1205,24 @@
       "extras": []
     },
     {
-      "id": "slam-dunk-shohoku-remera-de-entrenamiento",
-      "name": "Slam Dunk Shohoku Remera De Entrenamiento",
+      "id": "slam-dunk-shohoku-entrenamiento",
+      "name": "Slam Dunk Shohoku Entrenamiento",
       "tags": [],
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/slam-dunk-shohoku-remera-de-entrenamiento/modelo.webp",
-      "remera": "/catalogo/anime/slam-dunk-shohoku-remera-de-entrenamiento/remera.webp",
+      "modelo": "/catalogo/anime/slam-dunk-shohoku-entrenamiento/modelo.webp",
+      "remera": "/catalogo/anime/slam-dunk-shohoku-entrenamiento/remera.webp",
       "extras": [
         {
-          "src": "/catalogo/anime/slam-dunk-shohoku-remera-de-entrenamiento/extra-1-modelo-frente.webp",
+          "src": "/catalogo/anime/slam-dunk-shohoku-entrenamiento/extra-1-modelo-frente.webp",
           "label": "Modelo Frente"
         },
         {
-          "src": "/catalogo/anime/slam-dunk-shohoku-remera-de-entrenamiento/extra-2-remera-frente.webp",
+          "src": "/catalogo/anime/slam-dunk-shohoku-entrenamiento/extra-2-remera-frente.webp",
           "label": "Remera Frente"
         },
         {
-          "src": "/catalogo/anime/slam-dunk-shohoku-remera-de-entrenamiento/extra-3-referencia.webp",
+          "src": "/catalogo/anime/slam-dunk-shohoku-entrenamiento/extra-3-referencia.webp",
           "label": "Referencia"
         }
       ]

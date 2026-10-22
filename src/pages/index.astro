@@ -1716,10 +1716,11 @@ const marqueeText = [
     color: #fff;
   }
 
-  /* Transición al abrir/cerrar el buscador en mobile:
-     glitch breve en el header (tapa el cambio de layout instantáneo)
-     + fade/blur del panel de búsqueda. */
-  @keyframes searchHeaderGlitch {
+  /* Transición al abrir/cerrar el buscador en mobile.
+     El glitch va SOLO en las piezas del buscador (input, placeholder,
+     × y lupa), no en el header entero: así no vibran el logo, el
+     carrito ni el resto de los botones. */
+  @keyframes searchShake {
     0%   { transform: translateX(0); }
     20%  { transform: translateX(-2px); }
     40%  { transform: translateX(2px); }
@@ -1728,31 +1729,30 @@ const marqueeText = [
     100% { transform: translateX(0); }
   }
 
-  :global(.site-header.search-switching) {
-    position: relative;
-    animation: searchHeaderGlitch 0.32s steps(4, end);
-  }
-
   /* Glitch del buscador: borde + placeholder + íconos (no el fondo).
      Concordancia con el glitch del menú de categorías. */
 
-  /* Input (mobile y desktop): borde + placeholder. */
+  /* Input (mobile y desktop): borde + placeholder + shake leve. */
   :global(.header-search-panel.search-switching) :global(#search) {
-    animation: searchFieldGlitch 0.32s steps(5, end) 1;
+    animation: searchFieldGlitch 0.32s steps(5, end) 1,
+               searchShake 0.32s steps(4, end) 1;
   }
 
   :global(.header-search-panel.search-switching) :global(#search)::placeholder {
     animation: searchPlaceholderGlitch 0.32s steps(5, end) 1;
   }
 
-  /* Botón X (mobile): borde + el "×" (color + text-shadow). */
+  /* Botón X (mobile): borde + el "×" (color + text-shadow) + shake. */
   :global(.header-search-panel.search-switching) :global(#search-close) {
-    animation: searchXGlitch 0.32s steps(5, end) 1;
+    animation: searchXGlitch 0.32s steps(5, end) 1,
+               searchShake 0.32s steps(4, end) 1;
   }
 
-  /* Lupa (mobile al cerrar): borde del botón + ícono SVG. */
+  /* Lupa (mobile al cerrar): borde del botón + ícono SVG + shake.
+     El SVG no lleva shake propio: vibra junto al botón padre. */
   :global(.search-toggle.search-switching) {
-    animation: searchToggleBorderGlitch 0.32s steps(5, end) 1;
+    animation: searchToggleBorderGlitch 0.32s steps(5, end) 1,
+               searchShake 0.32s steps(4, end) 1;
   }
 
   :global(.search-toggle.search-switching) :global(svg) {
@@ -2506,12 +2506,21 @@ const marqueeText = [
     .site-header.search-open #search {
       flex: 1;
       width: 100%;
+      /* Fijamos la altura al mismo valor que los demás botones del
+         header mobile (lupa, carrito, hamburguesa = 38px). Sin esto,
+         el input con su padding + font-size medía ~40px y el × medía
+         42px, así que el header entero crecía ~4px al abrir el
+         buscador y volvía a achicarse al cerrarlo. Mismo tipo de
+         fix que la altura fija del h1 del hero. */
+      height: 38px;
       font-size: 14px;
-      padding: 10px 14px;
+      padding: 0 14px;
     }
 
     .site-header.search-open .search-close {
       display: inline-flex;
+      width: 38px;
+      height: 38px;
     }
 
     .hero {
@@ -5144,11 +5153,9 @@ const marqueeText = [
   function triggerSearchGlitch() {
     if (!siteHeader) return;
     const panel = document.querySelector("#header-search-panel");
-    siteHeader.classList.add("search-switching");
     searchToggle?.classList.add("search-switching");
     panel?.classList.add("search-switching");
     setTimeout(() => {
-      siteHeader.classList.remove("search-switching");
       searchToggle?.classList.remove("search-switching");
       panel?.classList.remove("search-switching");
     }, 340);
@@ -5388,12 +5395,17 @@ function applyCategoryFilter(categoryId, { push = true, scroll = true } = {}) {
 
   // Scroll al inicio de la grilla. Solo cuando el usuario clickea
   // (no cuando se restaura desde back, para no saltar de lugar).
+  // Además, solo scrolleamos si el usuario está MÁS ABAJO que el
+  // destino. Si ya está arriba (viendo el header/hero), no movemos
+  // la página: cambiar de categoría no debe sacarte de donde estás.
   if (scroll) {
     const productsGrid = document.querySelector("#products");
     if (productsGrid) {
       const top =
         productsGrid.getBoundingClientRect().top + window.scrollY - 110;
-      window.scrollTo({ top, behavior: "smooth" });
+      if (window.scrollY > top) {
+        window.scrollTo({ top, behavior: "smooth" });
+      }
     }
   }
 
