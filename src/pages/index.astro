@@ -4,6 +4,12 @@ import promo from "../data/promo.json";
 
 const categories = catalogo.categories;
 
+// Conteo de productos por categoría, para el badge del menú.
+const productCountByCategory = {};
+catalogo.products.forEach((p) => {
+  productCountByCategory[p.category] = (productCountByCategory[p.category] || 0) + 1;
+});
+
 const base = import.meta.env.BASE_URL;
 
 const marqueeText = [
@@ -58,6 +64,20 @@ const marqueeText = [
       y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
     })(window, document, "clarity", "script", "yuh7dq7teh");
   </script>
+
+  <!-- Fuente custom (Payback, renombrada a KrakoaFont).
+       set:html + template literal permite interpolar ${base} dentro
+       del CSS. Necesario porque el sitio corre con base: /krakoa. -->
+  <style is:inline set:html={`
+    @font-face {
+      font-family: "KrakoaFont";
+      src: url("${base}/fonts/krakoafont.ttf") format("truetype");
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+  `}></style>
+    <link rel="preload" as="font" type="font/ttf" href={`${base}/fonts/krakoafont.ttf`} crossorigin />
 </head>
 
   <body>
@@ -283,6 +303,9 @@ const marqueeText = [
       >
         {category.name}
       </button>
+      <span class="category-count" aria-hidden="true">
+        {productCountByCategory[category.id] ?? 0}
+      </span>
     </span>
   ))
 }
@@ -344,7 +367,7 @@ const marqueeText = [
         <div class="faq-inner">
           <div class="faq-head">
             <span class="section-kicker">Preguntas Frecuentes</span>
-            <h2>Cómo Comprar en KRAKOA</h2>
+            <h2>Cómo Comprar en <span class="brand-inline"><span class="hero-kra">KRA</span>KOA</span></h2>
             <p class="faq-sub">
               Todo lo que necesitás saber sobre pedidos, pagos, talles y envíos.
             </p>
@@ -467,7 +490,7 @@ const marqueeText = [
             <span class="section-kicker">Materia Prima & Confección</span>
             <h2>Algodón Pesado & Estampas Inalterables</h2>
             <p class="quality-sub">
-              Cada prenda de KRAKOA está pensada bajo estándares de alta calidad.
+              Cada prenda de <span class="hero-kra">KRA</span>KOA está pensada bajo estándares de alta calidad.
               No usamos telas livianas ni estampas que se cuartean tras el primer lavado.
             </p>
           </div>
@@ -975,7 +998,7 @@ const marqueeText = [
 
     <div class="footer-col footer-col--text">
       <p>
-        KRAKOA es una marca argentina de remeras inspiradas en anime,
+        <span class="hero-kra">KRA</span>KOA es una marca argentina de remeras inspiradas en anime,
         música, cine, series, deportes y videojuegos. Trabajamos con
         algodón peinado 24/1 premium, estampas DTF de alta durabilidad y
         moldería propia en cortes Oversize y Regular Fit. Envíos a todo
@@ -993,7 +1016,7 @@ const marqueeText = [
         target="_blank"
         rel="noopener noreferrer"
       >
-        Instagram ↗
+        Instagram<span class="footer-external-arrow" aria-hidden="true">↗</span>
       </a>
     </div>
   </div>
@@ -1422,6 +1445,11 @@ const marqueeText = [
     line-height: 0.88;
     letter-spacing: -0.065em;
     font-weight: 900;
+    /* Fijamos la altura para que el h1 mida lo mismo con Arial o con
+       KrakoaFont (que tiene métricas distintas y expande el line-box
+       cuando el typewriter switchea). overflow: visible (default) deja
+       que los text-shadow y glitch se vean aunque se salgan del box. */
+    height: calc(clamp(48px, 9vw, 120px) * 0.88);
   }
 
    /* --------------------------- */
@@ -1448,6 +1476,33 @@ const marqueeText = [
   :global(.hero-glitch-a) {
     color: #ff0055;
     text-shadow: 1px 0 rgba(255, 0, 85, 0.7);
+  }
+
+  /* Las primeras 3 letras de KRAKOA van en amarillo mientras el
+     typewriter está mostrando ese estado. Lo crea el JS → :global(). */
+  :global(.hero-kra) {
+    color: #ffd655;
+  }
+
+  /* Cuando el typewriter muestra KRAKOA (o un prefijo de KRAKOA),
+     el h1 recibe la clase .is-krakoa y con ella la fuente custom. */
+    :global(h1.is-krakoa) {
+    font-family: "KrakoaFont", Arial, Helvetica, sans-serif;
+    /* Payback solo existe en un peso (400). Forzamos font-weight
+       normal para que el browser NO sintetice bold artificial (faux
+       bold), que la engrosaba de más. */
+    font-weight: normal;
+    /* Payback no necesita el tracking negativo que sí pide Arial.
+       Lo subimos a 0.02em para que respire sin desarmar el ritmo. */
+    letter-spacing: 0.00em;
+  }
+
+  /* "KRAKOA" en el título de "Cómo Comprar". Misma fuente que el hero,
+     sin amarillo, para reforzar marca sin robarle protagonismo. */
+  :global(.brand-inline) {
+    font-family: "KrakoaFont", Arial, Helvetica, sans-serif;
+    font-weight: normal;
+    letter-spacing: 0.00em;
   }
 
   :global(.hero-glitch-b) {
@@ -1523,10 +1578,13 @@ const marqueeText = [
     100% { transform: translate(0, 0); }
   }
 
-  /* Cursor tipo terminal: el punto final del título titila. */
+  /* Cursor tipo terminal: el punto final del título titila.
+     Forzamos Arial para que el "_" no herede KrakoaFont (que puede
+     no tener ese glifo, o tenerlo con un ancho raro). */
   :global(.hero-cursor) {
     display: inline;
     animation: cursorBlink 1s step-end infinite;
+    font-family: Arial, Helvetica, sans-serif;
   }
 
   @keyframes cursorBlink {
@@ -1806,6 +1864,54 @@ const marqueeText = [
   border-color: var(--category-color, #888);
 }
 
+/* Badge con el conteo de modelos. Aparece al hover del wrap (desktop)
+   y se queda mientras el botón está .active (mobile y desktop). Se
+   mueve junto al botón cuando éste se eleva, quedando en la esquina
+   superior-derecha del botón elevado. */
+.category-count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--category-color, #888);
+  color: #0a0a0a;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  /* scale(0) = arranca "colapsado" en el centro. Al aparecer, crece
+     desde su centro (transform-origin) hasta scale(1). Al desaparecer,
+     se encoge de vuelta. */
+  transform: translate(0, 0) scale(0);
+  transform-origin: center;
+  /* Pop out: ease-in rápido, sin delay → se encoge apenas se va el
+     hover/active. */
+  transition: opacity 0.15s ease-in, transform 0.15s ease-in;
+  z-index: 10;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.category-wrap:hover .category-count,
+:global(.category-button.active ~ .category-count) {
+  opacity: 1;
+  transform: translate(-14px, -14px) scale(1);
+  /* Pop in: delay de 200ms (el badge aparece cuando el botón ya
+     terminó de elevarse) + overshoot con cubic-bezier "back" →
+     el badge se pasa un toque de tamaño y vuelve, se siente "pop".
+     La opacidad no tiene overshoot, solo fade-in limpio. */
+  transition: opacity 0.15s ease 0.2s,
+              transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s;
+}
+
 /* --------------------------- */
 /* GLITCH SUTIL DE CATEGORÍAS  */
 /* --------------------------- */
@@ -1895,9 +2001,22 @@ const marqueeText = [
   100% { opacity: 1; }
 }
 
-/* El borde del botón glitchea con los mismos colores que las capas
-   de texto → refuerza el efecto en toda la silueta (no solo el texto). */
-/* Sin animación de borde: el glitch es solo texto + colores. */
+/* Glitch del borde: cambia el border-color con saltos digitales entre
+   gris, magenta y cian. El fondo (#111) NO se toca. Se usa
+   box-shadow: inset para reforzar el efecto sin que se salga del
+   botón (overflow: hidden lo cliparía). */
+:global(.category-button.glitching) {
+  animation: catBorderGlitch 0.32s steps(5, end) 1;
+}
+
+@keyframes catBorderGlitch {
+  0%   { border-color: #ff0055; box-shadow: inset 0 0 0 1px rgba(255, 0, 85, 0.2); }
+  20%  { border-color: #13524d; box-shadow: inset 0 0 0 1px rgba(0, 255, 240, 0.2); }
+  40%  { border-color: #333;    box-shadow: inset 0 0 0 0 transparent; }
+  60%  { border-color: #ff0055; box-shadow: inset 0 0 0 1px rgba(255, 0, 85, 0.2); }
+  80%  { border-color: #13524d; box-shadow: inset 0 0 0 1px rgba(0, 255, 240, 0.2); }
+  100% { border-color: #333;    box-shadow: inset 0 0 0 0 transparent; }
+}
 
   
   .products {
@@ -2088,17 +2207,17 @@ const marqueeText = [
   :global(.footer-inner) {
     position: relative;
     z-index: 1;
-    width: min(1200px, 100%);
+    width: min(1000px, 100%);
     margin: 0 auto;
     display: grid;
     grid-template-columns: 100px 1fr 180px;
-    gap: 48px;
+    gap: 40px;
     align-items: start;
   }
 
 :global(.footer-col--brand) {
     display: flex;
-    justify-content: flex-start;
+    justify-content: center;
   }
 
 :global(.footer-logo) {
@@ -2113,13 +2232,14 @@ const marqueeText = [
     color: #888;
     font-size: 12.5px;
     line-height: 1.75;
-    text-align: justify;
+    text-align: center;
   }
 
 :global(.footer-col--links) {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    align-items: center;
   }
 
 :global(.footer-col-title) {
@@ -2145,15 +2265,32 @@ const marqueeText = [
     transform: translateX(3px);
   }
 
+/* La flecha del link de Instagram: absoluta, así no afecta el centrado
+   del texto "Instagram" respecto a los otros links de la columna. */
+:global(.footer-col--links a) {
+    position: relative;
+  }
+
+:global(.footer-external-arrow) {
+    position: absolute;
+    left: 100%;
+    margin-left: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 11px;
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
 :global(.footer-bottom) {
     position: relative;
     z-index: 1;
-    width: min(1200px, 100%);
+    width: min(1000px, 100%);
     margin: 40px auto 0;
     padding-top: 22px;
     border-top: 1px solid #1a1a1a;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     color: #555;
     font-size: 11px;
@@ -2202,7 +2339,9 @@ const marqueeText = [
     top: 0;
     z-index: 100;
     margin-inline: -5vw;
-    padding: 12px 5vw;
+    /* Padding-top 26px para que el badge (22px de alto, elevado)
+       entre completo cuando la barra está sticky arriba de todo. */
+    padding: 26px 5vw 12px;
     background: rgba(11, 11, 11, 0.72);
     -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
@@ -3909,7 +4048,10 @@ const marqueeText = [
 
   .quality-head {
     max-width: 620px;
+    margin-left: auto;
+    margin-right: auto;
     margin-bottom: 44px;
+    text-align: center;
   }
 
   .quality-head h2 {
@@ -3997,6 +4139,7 @@ const marqueeText = [
   .care-strip {
     padding-top: 44px;
     border-top: 1px solid #1f1f1f;
+    text-align: center;
   }
 
   .care-title {
@@ -6993,6 +7136,22 @@ if (heroBg) {
 }
 
 // -------------------------
+// HERO — helpers de texto
+// -------------------------
+
+// Devuelve el HTML del texto del hero. Si el texto es parte de
+// "KRAKOA" (prefijo), las primeras 3 letras van en amarillo.
+function formatHeroText(text) {
+  if (!text) return "";
+  const WORD = "KRAKOA";
+  const isKra = text.length > 0 && WORD.startsWith(text);
+  if (!isKra) return text;
+  const yellowPart = text.slice(0, 3);
+  const whitePart = text.slice(3);
+  return `<span class="hero-kra">${yellowPart}</span>${whitePart}`;
+}
+
+// -------------------------
 // HERO — glitch del título
 // -------------------------
 
@@ -7061,7 +7220,7 @@ if (heroBg) {
         // Restauramos el texto visible SOLO si el typewriter no lo pisó
         // (si estaba escribiendo, deja que maneje él y no rompemos nada).
         if (textEl && textEl.textContent === scrambled) {
-          textEl.textContent = originalVisible;
+          textEl.innerHTML = formatHeroText(originalVisible);
         }
         if (ga) ga.textContent = "";
         if (gb) gb.textContent = "";
@@ -7103,8 +7262,12 @@ if (heroBg) {
   // Si el glitch está activo, forzamos reflow para que attr() en los
   // pseudo-elementos se re-evalúe con el nuevo valor.
   function setText(content) {
-    textEl.textContent = content;
+    textEl.innerHTML = formatHeroText(content);
     h1.dataset.text = content + "_";
+    // Si el texto actual es KRAKOA (o un prefijo de KRAKOA), el h1
+    // recibe la clase .is-krakoa para usar la fuente custom.
+    const isKrakoa = content.length > 0 && "KRAKOA".startsWith(content);
+    h1.classList.toggle("is-krakoa", isKrakoa);
     if (h1.classList.contains("glitching")) {
       void h1.offsetWidth;
     }
