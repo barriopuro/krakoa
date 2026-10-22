@@ -12,6 +12,32 @@ catalogo.products.forEach((p) => {
 
 const base = import.meta.env.BASE_URL;
 
+// URL base absoluta para los JSON-LD (Schema.org necesita URLs absolutas).
+// Si Astro.site no está configurado, cae a la URL de producción.
+const SITE_ORIGIN = (
+  Astro.site?.origin ?? "https://barriopuro.github.io"
+).replace(/\/$/, "");
+const BASE_PATH = base.endsWith("/") ? base.slice(0, -1) : base;
+const productUrl = (path) => `${SITE_ORIGIN}${BASE_PATH}${path}`;
+
+// Rango de precios para el AggregateOffer del schema.
+// Espeja PRICE_TIERS del <script> (25.000 / 23.000 / 20.000).
+// Si se cambian los precios, actualizar ACÁ TAMBIÉN.
+const SCHEMA_PRICES = {
+  lowPrice: 20000,
+  highPrice: 25000,
+  offerCount: 3,
+};
+
+// Datos de la organización, reusados en los schemas.
+const SCHEMA_ORG = {
+  "@type": "Organization",
+  name: "KRAKOA",
+  url: `${SITE_ORIGIN}${BASE_PATH}`,
+  logo: `${SITE_ORIGIN}${BASE_PATH}/logos/krakoalogo-horizontal.webp`,
+  sameAs: ["https://instagram.com/krakoa.sw"],
+};
+
 const marqueeText = [
   "Envíos a todo el país",
   "100% Algodón Peinado 24/1",
@@ -56,6 +82,13 @@ const marqueeText = [
     name="twitter:description"
     content="Catálogo de remeras inspiradas en anime, música, cine, series, deportes, videojuegos y cultura pop."
   />
+
+  <!-- Schema.org: Organization (invisible para el usuario, leído por Google). -->
+  <script
+    type="application/ld+json"
+    is:inline
+    set:html={JSON.stringify({ "@context": "https://schema.org", ...SCHEMA_ORG })}
+  ></script>
 
   <script is:inline>
     (function(c,l,a,r,i,t,y){
@@ -313,16 +346,39 @@ const marqueeText = [
 
         <div id="products" class="products">
           {
-            catalogo.products.map((product) => (
-              <article
-                class="product-card"
-                data-name={product.name.toLowerCase()}
-                data-tags={(product.tags || []).join(" ")}
-                data-category={product.category}
-                data-id={product.id}
-                data-extras={JSON.stringify(product.extras || [])}
-              >
-                <button class="product-button" type="button">
+            catalogo.products.map((product) => {
+              const productSchema = {
+                "@context": "https://schema.org",
+                "@type": "Product",
+                name: product.name,
+                image: productUrl(product.modelo),
+                description: `Remera ${product.name} de KRAKOA. Categoría: ${product.categoryName}. Algodón peinado 24/1, estampa DTF premium.`,
+                sku: product.id,
+                brand: { "@type": "Brand", name: "KRAKOA" },
+                offers: {
+                  "@type": "AggregateOffer",
+                  priceCurrency: "ARS",
+                  lowPrice: String(SCHEMA_PRICES.lowPrice),
+                  highPrice: String(SCHEMA_PRICES.highPrice),
+                  offerCount: String(SCHEMA_PRICES.offerCount),
+                  availability: "https://schema.org/InStock",
+                },
+              };
+              return (
+                <article
+                  class="product-card"
+                  data-name={product.name.toLowerCase()}
+                  data-tags={(product.tags || []).join(" ")}
+                  data-category={product.category}
+                  data-id={product.id}
+                  data-extras={JSON.stringify(product.extras || [])}
+                >
+                  <script
+                    type="application/ld+json"
+                    is:inline
+                    set:html={JSON.stringify(productSchema)}
+                  ></script>
+                  <button class="product-button" type="button">
                   <div class="product-image">
                     <img
                       class="product-image-base"
@@ -357,7 +413,8 @@ const marqueeText = [
                   </div>
                 </button>
               </article>
-            ))
+              );
+            })
           }
         </div>
            </section>
@@ -5333,15 +5390,26 @@ function hideTint() {
 
   let activeCategory = null;
 
+// Normaliza un texto para comparar: minúsculas + sin acentos.
+// "Música" → "musica", "Dragón" → "dragon".
+// NFD separa cada letra de su acento, y el regex elimina los diacríticos
+// (el rango U+0300–U+036F son los "combining diacritical marks").
+function normalizeText(str) {
+  return (str || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
 function filterProducts() {
-  const raw = searchInput.value.toLowerCase().trim();
+  const raw = normalizeText(searchInput.value).trim();
   // Partimos la búsqueda por espacios: cada palabra se busca por separado.
   // Así "dragon ball" matchea "dragon ball z" y también el tag "dragon".
   const terms = raw.split(/\s+/).filter(Boolean);
 
   products.forEach((product) => {
-    const name = product.dataset.name ?? "";
-    const tags = (product.dataset.tags ?? "").toLowerCase();
+    const name = normalizeText(product.dataset.name);
+    const tags = normalizeText(product.dataset.tags);
     const category = product.dataset.category ?? "";
 
     // Cada término debe aparecer en el nombre O en algún tag.
@@ -5409,9 +5477,92 @@ function applyCategoryFilter(categoryId, { push = true, scroll = true } = {}) {
     }
   }
 
+  // Actualizamos el título de la pestaña según el estado (categoría o default).
+  updatePageTitle();
+
+  // Actualizamos la URL con la categoría activa (?cat=anime), para
+  // poder compartir el filtro. Usamos replaceState para NO agregar
+  // una entrada nueva al historial: el "atrás" lo maneja el
+  // historyStack con pushHistory, y no queremos pisarlo.
+  updateUrlWithCategory(categoryId);
+
   // Pusheamos al history para que "atrás" pueda restaurar el estado previo.
   if (push) {
     pushHistory("category", { previousCategory });
+  }
+}
+
+// Actualiza el título de la pestaña según el estado actual:
+//   - Modal abierto → "{Producto} | KRAKOA"
+//   - Filtro de categoría activo → "{Categoría} | KRAKOA"
+//   - Estado por defecto → "KRAKOA | REMERAS"
+// Es una función declaration (no arrow), así que se puede llamar desde
+// código que aparece antes en el archivo (hoisting).
+function updatePageTitle() {
+  const DEFAULT_TITLE = "KRAKOA | REMERAS";
+  const modalEl = document.querySelector("#product-modal");
+  const modalTitleEl = document.querySelector("#modal-title");
+  const isModalOpen =
+    modalEl && modalEl.getAttribute("aria-hidden") === "false";
+  const productName = (modalTitleEl?.textContent ?? "").trim();
+
+  // Prioridad 1: si el modal está abierto, mostramos el producto.
+  if (isModalOpen && productName) {
+    document.title = `KRAKOA | ${productName}`;
+    return;
+  }
+
+  // Prioridad 2: si hay filtro de categoría activo, mostramos la categoría.
+  if (activeCategory !== null) {
+    const btn = Array.from(categoryButtons).find(
+      (b) => b.dataset.category === activeCategory
+    );
+    const catName = (btn?.dataset.originalText ?? "").trim();
+    if (catName) {
+      document.title = `KRAKOA | ${catName}`;
+      return;
+    }
+  }
+
+  // Default.
+  document.title = DEFAULT_TITLE;
+}
+
+// Actualiza la query string de la URL con la categoría activa.
+//   - Categoría activa: /?cat=anime (mantiene el hash si lo hay)
+//   - Sin categoría: borra el ?cat=
+// Usa replaceState para no tocar el historial del navegador.
+function updateUrlWithCategory(categoryId) {
+  try {
+    const url = new URL(window.location.href);
+    if (categoryId) {
+      url.searchParams.set("cat", categoryId);
+    } else {
+      url.searchParams.delete("cat");
+    }
+    history.replaceState(history.state, "", url);
+  } catch (error) {
+    console.warn("[KRAKOA] No se pudo actualizar la URL:", error);
+  }
+}
+
+// Lee el ?cat= de la URL al cargar la página. Si existe y matchea
+// con una categoría válida, aplica el filtro sin push y sin scroll
+// (el usuario está empezando a navegar: no queremos sacudirlo).
+function applyCategoryFromUrl() {
+  try {
+    const url = new URL(window.location.href);
+    const catId = url.searchParams.get("cat");
+    if (!catId) return;
+
+    const exists = Array.from(categoryButtons).some(
+      (b) => b.dataset.category === catId
+    );
+    if (!exists) return;
+
+    applyCategoryFilter(catId, { push: false, scroll: false });
+  } catch (error) {
+    console.warn("[KRAKOA] No se pudo leer la categoría de la URL:", error);
   }
 }
 
@@ -6001,7 +6152,21 @@ hidden.decoding = "async";
     // el usuario entró directo, no navegó desde la página.
     if (!openingFromHash) {
       pushHistory("modal");
+      // Actualizamos la URL con el hash del producto, sin agregar
+      // otra entrada al historial (pushHistory ya lo hizo).
+      // Así, si el usuario copia la URL del navegador, lleva directo
+      // al producto.
+      try {
+        const urlObj = new URL(window.location.href);
+        urlObj.hash = currentProductId ? `#${currentProductId}` : "";
+        history.replaceState(history.state, "", urlObj);
+      } catch (error) {
+        console.warn("[KRAKOA] No se pudo actualizar la URL:", error);
+      }
     }
+
+    // Actualizamos el título de la pestaña con el nombre del producto.
+    updatePageTitle();
 
     // Separamos el "pintar el modal" (que existe, pero invisible) del
     // "animar el modal" (agregar .open). Así el navegador tiene un frame
@@ -6036,6 +6201,21 @@ hidden.decoding = "async";
     modal.classList.remove("open");
     modal.setAttribute("aria-hidden", "true");
     unlockScroll();
+
+    // Quitamos el hash del producto de la URL (sin agregar entrada nueva).
+    // Cuando el cierre viene desde popstate (botón atrás), la URL ya
+    // cambió a la base: este replaceState queda como no-op.
+    try {
+      const urlObj = new URL(window.location.href);
+      urlObj.hash = "";
+      history.replaceState(history.state, "", urlObj);
+    } catch (error) {
+      console.warn("[KRAKOA] No se pudo limpiar el hash de la URL:", error);
+    }
+
+    // Al cerrar el modal, el título vuelve al de la categoría activa
+    // (o al default si no hay filtro).
+    updatePageTitle();
   }
 
   // -------------------------
@@ -6273,6 +6453,19 @@ hidden.decoding = "async";
     if (modalGrid) {
       modalGrid.scrollTop = 0;
     }
+
+    // Actualizamos el título de la pestaña con el nuevo producto.
+    updatePageTitle();
+
+    // Actualizamos el hash de la URL con el nuevo producto (sin agregar
+    // entrada al historial: el modal ya está en el stack).
+    try {
+      const urlObj = new URL(window.location.href);
+      urlObj.hash = currentProductId ? `#${currentProductId}` : "";
+      history.replaceState(history.state, "", urlObj);
+    } catch (error) {
+      console.warn("[KRAKOA] No se pudo actualizar el hash:", error);
+    }
   }
 
   // Listeners de las flechas de producto.
@@ -6315,9 +6508,17 @@ hidden.decoding = "async";
       // Ahora hacemos el truco del historial. Si algo falla acá,
       // el modal ya está abierto y no se rompe nada más.
       try {
-        const baseUrl = window.location.pathname;
-        history.replaceState(null, "", baseUrl);
-        history.pushState({ krakoaOverlay: "modal" }, "", `#${hash}`);
+        // Preservamos la query string (?cat=anime) al limpiar el hash,
+        // así el filtro activo sigue en la URL si el usuario comparte
+        // o recarga.
+        const url = new URL(window.location.href);
+        url.hash = "";
+        history.replaceState(null, "", url.pathname + url.search);
+        history.pushState(
+          { krakoaOverlay: "modal" },
+          "",
+          `${url.pathname}${url.search}#${hash}`
+        );
         historyStack.push({ kind: "modal", state: {} });
       } catch (error) {
         console.error("[KRAKOA] Error manipulando el historial:", error);
@@ -6326,9 +6527,16 @@ hidden.decoding = "async";
   }
 
   // Al cargar la página. Lo diferimos con setTimeout para asegurarnos de que
-  // TODO el resto del script ya se registró (por si openProductFromHash
-  // tira algún error que antes rompía la ejecución del script entero).
+  // TODO el resto del script ya se registró (por si algo tira un error que
+  // antes rompía la ejecución del script entero).
+  // Primero aplicamos el filtro de categoría (?cat=anime), y después
+  // abrimos el producto por hash si corresponde (?cat=anime#naruto).
   setTimeout(() => {
+    try {
+      applyCategoryFromUrl();
+    } catch (error) {
+      console.error("[KRAKOA] Error aplicando categoría desde la URL:", error);
+    }
     try {
       openProductFromHash();
     } catch (error) {
@@ -6381,9 +6589,12 @@ hidden.decoding = "async";
 
 
   modalShare.addEventListener("click", async () => {
-    // Armamos la URL con el hash del producto (ej: .../#remera-naruto).
-    const baseUrl = window.location.origin + window.location.pathname;
-    const url = currentProductId ? `${baseUrl}#${currentProductId}` : baseUrl;
+    // Armamos la URL con el hash del producto (ej: .../?cat=anime#remera-naruto).
+    // Preservamos la query string (?cat=anime) si el usuario está
+    // filtrando por categoría, así el receptor ve el mismo filtro activo.
+    const urlObj = new URL(window.location.href);
+    urlObj.hash = currentProductId ? `#${currentProductId}` : "";
+    const url = urlObj.toString();
     const title = currentProductName;
 
     if (navigator.share) {

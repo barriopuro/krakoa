@@ -8,6 +8,19 @@ const publicCatalogoDir = path.join(root, "public", "catalogo");
 const outputDir = path.join(root, "src", "data");
 const outputFile = path.join(outputDir, "catalogo.json");
 
+// Sitemap: se genera en public/, así el deploy lo sirve directo.
+const publicDir = path.join(root, "public");
+const sitemapFile = path.join(publicDir, "sitemap.xml");
+
+// URL base del sitio (para armar las URLs absolutas del sitemap).
+// Tiene que coincidir con `site` en astro.config.mjs.
+const SITE_URL = "https://barriopuro.github.io";
+const BASE_PATH = "/krakoa";
+const absoluteUrl = (path) => `${SITE_URL}${BASE_PATH}${path}`;
+
+// Fecha ISO (YYYY-MM-DD) para el <lastmod> de cada URL del sitemap.
+const TODAY = new Date().toISOString().slice(0, 10);
+
 const promoDir = path.join(root, "promo");
 const publicPromoDir = path.join(root, "public", "promo");
 const promoOutputFile = path.join(outputDir, "promo.json");
@@ -594,3 +607,71 @@ async function generatePromo() {
 }
 
 await generatePromo();
+
+// -------------------------
+// SITEMAP
+// -------------------------
+
+// Genera un sitemap.xml con la home, cada categoría y cada producto.
+// Google lo lee y indexa cada remera por separado.
+// Se sirve en /krakoa/sitemap.xml (declarado en robots.txt).
+function generateSitemap() {
+  // Lista de URLs: { loc, priority, changefreq }
+  const urls = [];
+
+  // Home
+  urls.push({
+    loc: absoluteUrl("/"),
+    priority: "1.0",
+    changefreq: "weekly",
+  });
+
+  // Categorías: se filtran por las que tienen al menos 1 producto
+  // (evita incluir categorías vacías en el sitemap).
+  const categoriesWithProducts = new Set(
+    products.map((p) => p.category)
+  );
+
+  categories.forEach((cat) => {
+    if (!categoriesWithProducts.has(cat.id)) return;
+    urls.push({
+      loc: absoluteUrl(`/?cat=${cat.id}`),
+      priority: "0.8",
+      changefreq: "weekly",
+    });
+  });
+
+  // Productos (uno por cada remera, con su hash para abrir directo).
+  products.forEach((product) => {
+    urls.push({
+      loc: absoluteUrl(`/#${product.id}`),
+      priority: "0.7",
+      changefreq: "monthly",
+    });
+  });
+
+  // Armamos el XML.
+  const xml = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ...urls.map(
+      (u) =>
+        `  <url>\n` +
+        `    <loc>${u.loc}</loc>\n` +
+        `    <lastmod>${TODAY}</lastmod>\n` +
+        `    <changefreq>${u.changefreq}</changefreq>\n` +
+        `    <priority>${u.priority}</priority>\n` +
+        `  </url>`
+    ),
+    "</urlset>",
+    "",
+  ].join("\n");
+
+  fs.writeFileSync(sitemapFile, xml, "utf8");
+
+  console.log(
+    `Sitemap generado: ${urls.length} URL(s) (1 home + ${categoriesWithProducts.size} categorías + ${products.length} productos).`
+  );
+}
+
+generateSitemap();
