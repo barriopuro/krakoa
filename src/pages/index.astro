@@ -1850,8 +1850,20 @@ const marqueeText = [
   white-space: nowrap;
 }
 
-/* Hover / focus: el botón se despega arriba-izquierda (como el original). */
-.category-wrap:hover .category-button:not(:active),
+/* Hover solo en dispositivos con puntero real (desktop). En mobile
+   los navegadores "pegan" el :hover después del tap y el botón se
+   queda elevado hasta tocar otro lado. Con esto, en mobile solo
+   .active hace el efecto (que es lo correcto: si desactivás el
+   filtro, el botón baja al instante). */
+@media (hover: hover) and (pointer: fine) {
+  .category-wrap:hover .category-button:not(:active) {
+    transform: translate(-14px, -14px);
+    color: #fff;
+  }
+}
+
+/* focus-visible (navegación con teclado) sigue funcionando en todos
+   los dispositivos. */
 .category-button:focus-visible {
   transform: translate(-14px, -14px);
   color: #fff;
@@ -1900,14 +1912,23 @@ const marqueeText = [
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 
-.category-wrap:hover .category-count,
+@media (hover: hover) and (pointer: fine) {
+  .category-wrap:hover .category-count {
+    opacity: 1;
+    transform: translate(-14px, -14px) scale(1);
+    /* Pop in: delay de 200ms (el badge aparece cuando el botón ya
+       terminó de elevarse) + overshoot con cubic-bezier "back" →
+       el badge se pasa un toque de tamaño y vuelve, se siente "pop".
+       La opacidad no tiene overshoot, solo fade-in limpio. */
+    transition: opacity 0.15s ease 0.2s,
+                transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s;
+  }
+}
+
+/* .active funciona en TODOS los dispositivos (mobile incluido). */
 :global(.category-button.active ~ .category-count) {
   opacity: 1;
   transform: translate(-14px, -14px) scale(1);
-  /* Pop in: delay de 200ms (el badge aparece cuando el botón ya
-     terminó de elevarse) + overshoot con cubic-bezier "back" →
-     el badge se pasa un toque de tamaño y vuelve, se siente "pop".
-     La opacidad no tiene overshoot, solo fade-in limpio. */
   transition: opacity 0.15s ease 0.2s,
               transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s;
 }
