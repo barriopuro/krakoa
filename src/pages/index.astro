@@ -1722,50 +1722,75 @@ const marqueeText = [
     animation: searchHeaderGlitch 0.32s steps(4, end);
   }
 
-  /* El flash de color va SOLO en la lupa y en el panel de búsqueda,
-     no en todo el header. El shake del header es aparte. */
-  :global(.search-toggle.search-switching),
-  :global(.header-search-panel.search-switching) {
-    position: relative;
+  /* Glitch del buscador: borde + placeholder + íconos (no el fondo).
+     Concordancia con el glitch del menú de categorías. */
+
+  /* Input (mobile y desktop): borde + placeholder. */
+  :global(.header-search-panel.search-switching) :global(#search) {
+    animation: searchFieldGlitch 0.32s steps(5, end) 1;
   }
 
-  :global(.search-toggle.search-switching)::before,
-  :global(.search-toggle.search-switching)::after,
-  :global(.header-search-panel.search-switching)::before,
-  :global(.header-search-panel.search-switching)::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 50;
+  :global(.header-search-panel.search-switching) :global(#search)::placeholder {
+    animation: searchPlaceholderGlitch 0.32s steps(5, end) 1;
   }
 
-  :global(.search-toggle.search-switching)::before,
-  :global(.header-search-panel.search-switching)::before {
-    background: rgba(255, 0, 85, 0.75);
-    animation: searchFlashMagenta 0.32s steps(4, end) 1;
+  /* Botón X (mobile): borde + el "×" (color + text-shadow). */
+  :global(.header-search-panel.search-switching) :global(#search-close) {
+    animation: searchXGlitch 0.32s steps(5, end) 1;
   }
 
-  :global(.search-toggle.search-switching)::after,
-  :global(.header-search-panel.search-switching)::after {
-    background: rgba(0, 255, 240, 0.7);
-    animation: searchFlashCyan 0.32s steps(4, end) 1;
+  /* Lupa (mobile al cerrar): borde del botón + ícono SVG. */
+  :global(.search-toggle.search-switching) {
+    animation: searchToggleBorderGlitch 0.32s steps(5, end) 1;
   }
 
-  @keyframes searchFlashMagenta {
-    0%   { opacity: 0.9; clip-path: inset(10% 0 60% 0); }
-    25%  { opacity: 0.5; clip-path: inset(50% 0 20% 0); }
-    50%  { opacity: 0.85; clip-path: inset(0% 0 70% 0); }
-    75%  { opacity: 0.4; clip-path: inset(40% 0 30% 0); }
-    100% { opacity: 0; clip-path: inset(100% 0 0 0); }
+  :global(.search-toggle.search-switching) :global(svg) {
+    animation: searchIconGlitch 0.32s steps(5, end) 1;
   }
 
-  @keyframes searchFlashCyan {
-    0%   { opacity: 0.8; clip-path: inset(60% 0 10% 0); }
-    25%  { opacity: 0.4; clip-path: inset(20% 0 50% 0); }
-    50%  { opacity: 0.85; clip-path: inset(70% 0 5% 0); }
-    75%  { opacity: 0.35; clip-path: inset(30% 0 40% 0); }
-    100% { opacity: 0; clip-path: inset(0 0 100% 0); }
+  @keyframes searchFieldGlitch {
+    0%   { border-color: #ff0055; box-shadow: inset 0 0 0 1px rgba(255, 0, 85, 0.35); }
+    20%  { border-color: #00fff0; box-shadow: inset 0 0 0 1px rgba(0, 255, 240, 0.35); }
+    40%  { border-color: #333;    box-shadow: none; }
+    60%  { border-color: #ff0055; box-shadow: inset 0 0 0 1px rgba(255, 0, 85, 0.35); }
+    80%  { border-color: #00fff0; box-shadow: inset 0 0 0 1px rgba(0, 255, 240, 0.35); }
+    100% { border-color: #333;    box-shadow: none; }
+  }
+
+  @keyframes searchPlaceholderGlitch {
+    0%   { color: #ff0055; text-shadow: 1px 0 rgba(0, 255, 240, 0.6); }
+    20%  { color: #00fff0; text-shadow: -1px 0 rgba(255, 0, 85, 0.6); }
+    40%  { color: #666;    text-shadow: none; }
+    60%  { color: #ff0055; text-shadow: 1px 0 rgba(0, 255, 240, 0.6); }
+    80%  { color: #00fff0; text-shadow: -1px 0 rgba(255, 0, 85, 0.6); }
+    100% { color: #666;    text-shadow: none; }
+  }
+
+  @keyframes searchXGlitch {
+    0%   { color: #ff0055; text-shadow: 1px 0 rgba(0, 255, 240, 0.7);  border-color: #ff0055; }
+    20%  { color: #00fff0; text-shadow: -1px 0 rgba(255, 0, 85, 0.7); border-color: #00fff0; }
+    40%  { color: #ddd;    text-shadow: none;                          border-color: #242424; }
+    60%  { color: #ff0055; text-shadow: 1px 0 rgba(0, 255, 240, 0.7);  border-color: #ff0055; }
+    80%  { color: #00fff0; text-shadow: -1px 0 rgba(255, 0, 85, 0.7); border-color: #00fff0; }
+    100% { color: #ddd;    text-shadow: none;                          border-color: #242424; }
+  }
+
+  @keyframes searchToggleBorderGlitch {
+    0%   { border-color: #ff0055; }
+    20%  { border-color: #00fff0; }
+    40%  { border-color: #242424; }
+    60%  { border-color: #ff0055; }
+    80%  { border-color: #00fff0; }
+    100% { border-color: #242424; }
+  }
+
+  @keyframes searchIconGlitch {
+    0%   { color: #ff0055; filter: drop-shadow(1px 0 0 rgba(0, 255, 240, 0.8)); }
+    20%  { color: #00fff0; filter: drop-shadow(-1px 0 0 rgba(255, 0, 85, 0.8)); }
+    40%  { color: #ddd;    filter: none; }
+    60%  { color: #ff0055; filter: drop-shadow(1px 0 0 rgba(0, 255, 240, 0.8)); }
+    80%  { color: #00fff0; filter: drop-shadow(-1px 0 0 rgba(255, 0, 85, 0.8)); }
+    100% { color: #ddd;    filter: none; }
   }
 
   @keyframes searchPanelIn {
