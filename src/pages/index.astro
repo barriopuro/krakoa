@@ -5310,46 +5310,61 @@ function filterProducts() {
   }
 }
 
-categoryButtons.forEach((button) => {
-  const wrap = button.closest(".category-wrap");
+// Aplica un filtro de categoría al catálogo. Puede hacer push al
+// history (default, para clicks del usuario) o no (para restauraciones
+// desde el botón atrás).
+// categoryId: id de la categoría, o null para "todas".
+function applyCategoryFilter(categoryId, { push = true, scroll = true } = {}) {
+  const previousCategory = activeCategory;
+  activeCategory = categoryId;
 
-  const handleClick = () => {
-    const clickedCategory = button.dataset.category ?? "";
-    const isAlreadyActive = button.classList.contains("active");
+  // Actualizamos las clases .active de los botones.
+  categoryButtons.forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.category === categoryId);
+  });
 
-    // Apagamos todos primero.
-    categoryButtons.forEach((item) => item.classList.remove("active"));
+  // Tinte de fondo: on si hay categoría, off si no.
+  if (categoryId === null) {
+    hideTint();
+  } else {
+    const btn = Array.from(categoryButtons).find(
+      (b) => b.dataset.category === categoryId
+    );
+    const wrap = btn?.closest(".category-wrap");
+    const color =
+      wrap?.style.getPropertyValue("--category-color")?.trim() ||
+      "#888888";
+    showTint(color);
+  }
 
-    // Si toqué el que ya estaba activo → quedo en "sin filtro".
-    // Si toqué otro → ese queda activo.
-    if (isAlreadyActive) {
-      activeCategory = null;
-      hideTint();
-    } else {
-      button.classList.add("active");
-      activeCategory = clickedCategory;
+  filterProducts();
 
-      // Sacamos el color del category-wrap (el span que envuelve al botón).
-      const color =
-        wrap?.style.getPropertyValue("--category-color")?.trim() ||
-        "#888888";
-
-      showTint(color);
-    }
-
-    filterProducts();
-
-    // Después de filtrar, la página cambia de altura (se ocultan
-    // tarjetas). Si el usuario estaba scrolleado, el navegador lo
-    // reajusta solo y "salta" hacia abajo. Para evitar eso, lo
-    // llevamos suavemente al inicio de la grilla de productos.
-    // La barra de categorías queda sticky pegada arriba.
+  // Scroll al inicio de la grilla. Solo cuando el usuario clickea
+  // (no cuando se restaura desde back, para no saltar de lugar).
+  if (scroll) {
     const productsGrid = document.querySelector("#products");
     if (productsGrid) {
       const top =
         productsGrid.getBoundingClientRect().top + window.scrollY - 110;
       window.scrollTo({ top, behavior: "smooth" });
     }
+  }
+
+  // Pusheamos al history para que "atrás" pueda restaurar el estado previo.
+  if (push) {
+    pushHistory("category", { previousCategory });
+  }
+}
+
+categoryButtons.forEach((button) => {
+  const wrap = button.closest(".category-wrap");
+
+  const handleClick = () => {
+    const clickedCategory = button.dataset.category ?? "";
+    const isAlreadyActive = button.classList.contains("active");
+    // Toggle: si ya estaba activo, vamos a "todas" (null).
+    const newCategory = isAlreadyActive ? null : clickedCategory;
+    applyCategoryFilter(newCategory);
   };
 
   // Click en el botón: frena la propagación para no disparar también el del wrap.
@@ -6244,7 +6259,7 @@ hidden.decoding = "async";
         const baseUrl = window.location.pathname;
         history.replaceState(null, "", baseUrl);
         history.pushState({ krakoaOverlay: "modal" }, "", `#${hash}`);
-        historyStack.push("modal");
+        historyStack.push({ kind: "modal", state: {} });
       } catch (error) {
         console.error("[KRAKOA] Error manipulando el historial:", error);
       }
@@ -6555,46 +6570,61 @@ hidden.decoding = "async";
   // HISTORY STACK (botón atrás)
   // -------------------------
 
-  // Pila de overlays abiertos. El último es el que está arriba de todo.
-  // Cuando el usuario toca "atrás", sacamos el último y lo cerramos.
-  // Así no hay casos particulares: zoom sobre modal, carrito sobre modal,
-  // menú sobre lo que sea, todo se resuelve igual.
+  // Pila de "acciones" que el usuario hizo y que pueden deshacerse con
+  // el botón atrás del navegador. Cada entry tiene:
+  //   - kind: el tipo ("modal", "cart", "image-zoom", "mobile-menu",
+  //     "promo", "category").
+  //   - state: datos extra para poder deshacer (ej: para "category",
+  //     el previousCategory).
+  // El último es el que está arriba de todo. Cuando el usuario toca
+  // "atrás", sacamos el último y deshacemos esa acción.
   let historyStack = [];
 
-  // ¿El overlay "kind" es el que está arriba de todo?
+  // ¿La acción "kind" es la que está arriba de todo?
   function isTopOfHistory(kind) {
-    return historyStack[historyStack.length - 1] === kind;
+    return (
+      historyStack.length > 0 &&
+      historyStack[historyStack.length - 1].kind === kind
+    );
   }
 
-  // Empuja un overlay a la pila y al historial del navegador.
-  function pushHistory(kind) {
-    history.pushState({ krakoaOverlay: kind }, "");
-    historyStack.push(kind);
+  // Empuja una acción a la pila y al historial del navegador.
+  // state es opcional: guarda datos para poder restaurar después.
+  function pushHistory(kind, state = {}) {
+    history.pushState({ krakoaOverlay: kind, ...state }, "");
+    historyStack.push({ kind, state });
   }
 
-  // Saca el overlay de arriba. Dispara history.back(), que a su vez
-  // dispara el popstate, que hace el cierre real.
+  // Saca la acción de arriba. Dispara history.back(), que a su vez
+  // dispara el popstate, que hace la restauración real.
   function popHistory() {
     if (historyStack.length === 0) return;
     history.back();
   }
 
-  // Cierra el overlay que está en el tope de la pila, sin tocar el historial.
+  // Deshace la acción que está en el tope de la pila.
   // La usa el popstate (que ya viene del back del navegador).
   function closeTopOverlay() {
     const top = historyStack.pop();
-    if (top === "modal") {
+    if (!top) return;
+
+    if (top.kind === "modal") {
       closeModalDirect();
-    } else if (top === "cart") {
+    } else if (top.kind === "cart") {
       closeCartDrawerDirect();
-    } else if (top === "image-zoom") {
+    } else if (top.kind === "image-zoom") {
       closeImageZoomDirect();
-    } else if (top === "mobile-menu") {
+    } else if (top.kind === "mobile-menu") {
       closeMobileMenuDirect();
-    } else if (top === "promo") {
+    } else if (top.kind === "promo") {
       if (typeof window.KRAKOA_CLOSE_PROMO === "function") {
         window.KRAKOA_CLOSE_PROMO();
       }
+    } else if (top.kind === "category") {
+      applyCategoryFilter(top.state?.previousCategory ?? null, {
+        push: false,
+        scroll: false,
+      });
     }
   }
 
@@ -7071,7 +7101,9 @@ hidden.decoding = "async";
         history.replaceState(null, "", href);
 
         // Sacamos el menú de la pila sin hacer back (ya lo reemplazamos).
-        const idx = historyStack.lastIndexOf("mobile-menu");
+        const idx = historyStack
+          .map((entry) => entry.kind)
+          .lastIndexOf("mobile-menu");
         if (idx !== -1) historyStack.splice(idx, 1);
 
         // Cerramos el menú sin disparar popHistory.
