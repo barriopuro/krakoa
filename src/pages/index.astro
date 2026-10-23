@@ -14,11 +14,16 @@ const base = import.meta.env.BASE_URL;
 
 // URL base absoluta para los JSON-LD (Schema.org necesita URLs absolutas).
 // Si Astro.site no está configurado, cae a la URL de producción.
-const SITE_ORIGIN = (
-  Astro.site?.origin ?? "https://barriopuro.github.io"
-).replace(/\/$/, "");
+// Nota: evitamos optional chaining (?.), nullish coalescing (??) y
+// template literals en este bloque porque el scanner de dependencias
+// de Vite 7 (rolldown) no los procesa bien en el frontmatter.
+const siteOriginRaw = Astro.site ? Astro.site.origin : "https://barriopuro.github.io";
+const SITE_ORIGIN = siteOriginRaw.replace(/\/$/, "");
 const BASE_PATH = base.endsWith("/") ? base.slice(0, -1) : base;
-const productUrl = (path) => `${SITE_ORIGIN}${BASE_PATH}${path}`;
+
+function productUrl(path) {
+  return SITE_ORIGIN + BASE_PATH + path;
+}
 
 // Rango de precios para el AggregateOffer del schema.
 // Espeja PRICE_TIERS del <script> (25.000 / 23.000 / 20.000).
@@ -83,11 +88,35 @@ const marqueeText = [
     content="Catálogo de remeras inspiradas en anime, música, cine, series, deportes, videojuegos y cultura pop."
   />
 
-  <!-- Schema.org: Organization (invisible para el usuario, leído por Google). -->
+  <!-- Schema.org: Organization + todos los productos en un único
+       script con @graph. Antes había 117 <script> inline (uno por
+       producto) que el navegador tenía que parsear. Ahora es uno
+       solo. Google lo acepta igual. -->
   <script
     type="application/ld+json"
     is:inline
-    set:html={JSON.stringify({ "@context": "https://schema.org", ...SCHEMA_ORG })}
+    set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@graph": [
+        SCHEMA_ORG,
+        ...catalogo.products.map((product) => ({
+          "@type": "Product",
+          name: product.name,
+          image: productUrl(product.modelo),
+          description: `Remera ${product.name} de KRAKOA. Categoría: ${product.categoryName}. Algodón peinado 24/1, estampa DTF premium.`,
+          sku: product.id,
+          brand: { "@type": "Brand", name: "KRAKOA" },
+          offers: {
+            "@type": "AggregateOffer",
+            priceCurrency: "ARS",
+            lowPrice: String(SCHEMA_PRICES.lowPrice),
+            highPrice: String(SCHEMA_PRICES.highPrice),
+            offerCount: String(SCHEMA_PRICES.offerCount),
+            availability: "https://schema.org/InStock",
+          },
+        })),
+      ],
+    })}
   ></script>
 
   <script is:inline>
@@ -111,6 +140,12 @@ const marqueeText = [
     }
   `}></style>
     <link rel="preload" as="font" type="font/ttf" href={`${base}/fonts/krakoafont.ttf`} crossorigin />
+  
+  <!-- Precargamos la primera imagen del hero (que ahora es estática
+       en el HTML). El navegador la prioriza desde el HTML y la baja
+       antes que las 234 imágenes del catálogo. El LCP debería bajar
+       a ~2-3s. -->
+  <link rel="preload" as="image" href={`${base}/${catalogo.products[0].modelo}`} fetchpriority="high" />
 </head>
 
   <body>
@@ -118,6 +153,10 @@ const marqueeText = [
  <div id="krakoa-loader" class="krakoa-loader" style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#0a0a0a;transition:opacity 0.45s ease;">
   <img src={`${base}/logos/krakoalogo-isotipo.webp`} alt="KRAKOA" style="width:90px;height:auto;opacity:0;transition:opacity 0.6s ease;" />
 </div>
+
+<!-- Barra de progreso de scroll: línea fina arriba de todo que
+     se llena a medida que el usuario baja la página. -->
+<div id="scroll-progress" class="scroll-progress" aria-hidden="true"></div>
 
 <header class="site-header">
   <a href={`${base}/`} class="brand" aria-label="KRAKOA">
@@ -299,7 +338,20 @@ const marqueeText = [
 
     <main>
       <section class="hero">
-  <div class="hero-bg" aria-hidden="true"></div>
+  <div class="hero-bg" aria-hidden="true">
+    <!-- Primera imagen del hero: estática, con fetchpriority="high",
+         para que el navegador la priorice como LCP y la baje antes
+         que las imágenes del catálogo. El JS la usa como base y
+         solo agrega las 5 rotativas. -->
+    <img
+      class="hero-bg-img active"
+      src={`${base}/${catalogo.products[0].modelo}`}
+      alt=""
+      fetchpriority="high"
+      loading="eager"
+      decoding="async"
+    />
+  </div>
   <div class="hero-content">
     <h1 data-text="CATALOGO_"><span id="hero-text">CATALOGO</span><span id="hero-cursor" class="hero-cursor">_</span></h1>
   </div>
@@ -347,23 +399,6 @@ const marqueeText = [
         <div id="products" class="products">
           {
             catalogo.products.map((product) => {
-              const productSchema = {
-                "@context": "https://schema.org",
-                "@type": "Product",
-                name: product.name,
-                image: productUrl(product.modelo),
-                description: `Remera ${product.name} de KRAKOA. Categoría: ${product.categoryName}. Algodón peinado 24/1, estampa DTF premium.`,
-                sku: product.id,
-                brand: { "@type": "Brand", name: "KRAKOA" },
-                offers: {
-                  "@type": "AggregateOffer",
-                  priceCurrency: "ARS",
-                  lowPrice: String(SCHEMA_PRICES.lowPrice),
-                  highPrice: String(SCHEMA_PRICES.highPrice),
-                  offerCount: String(SCHEMA_PRICES.offerCount),
-                  availability: "https://schema.org/InStock",
-                },
-              };
               return (
                 <article
                   class="product-card"
@@ -373,11 +408,6 @@ const marqueeText = [
                   data-id={product.id}
                   data-extras={JSON.stringify(product.extras || [])}
                 >
-                  <script
-                    type="application/ld+json"
-                    is:inline
-                    set:html={JSON.stringify(productSchema)}
-                  ></script>
                   <button class="product-button" type="button">
                   <div class="product-image">
                     <img
@@ -385,6 +415,7 @@ const marqueeText = [
                       src={`${base}/${product.modelo}`}
                       alt={`Remera ${product.name}`}
                       loading="lazy"
+                      fetchpriority="low"
                     />
 
                     <img
@@ -835,7 +866,7 @@ const marqueeText = [
 
         <div class="modal-info-footer">
           <button id="modal-add" class="modal-add" type="button">
-            Agregar al Pedido
+            <span id="modal-add-text">Agregar al Pedido</span>
           </button>
 
           <div class="modal-actions">
@@ -1105,6 +1136,19 @@ const marqueeText = [
     overflow-x: clip;
   }
 
+  /* Bounce al click (feedback táctil en cualquier botón).
+     Usa la propiedad `scale` (independiente de `transform`) así se combina
+     con los hover existentes sin pisarlos. La transición va solo en :active
+     → al apretar se achica rápido (80ms), al soltar vuelve instantáneo.
+     Excluyo .category-button porque su .active ya tiene un translate de
+     elevación y el scale le restaría tamaño durante el efecto. */
+  :global(button:not(.category-button):active),
+  :global(a.instagram-btn:active),
+  :global(a.faq-cta-button:active) {
+    scale: 0.95;
+    transition: scale 0.08s ease;
+  }
+
   .site-header {
     width: 100%;
     padding: 18px 5vw;
@@ -1156,6 +1200,34 @@ const marqueeText = [
 
   .desktop-nav a:hover {
     color: #fff;
+  }
+
+  /* Subrayado animado en los links del header.
+     El ::after es un pseudo-elemento dentro de un <header> (fuera de <main>),
+     así que va con :global() según las reglas del proyecto.
+     Se dibuja de izquierda a derecha (transform-origin: left) al hover,
+     y se retrae al revés al sacar el mouse. Curva "out-expo" para un
+     cierre suave. */
+  :global(.desktop-nav a) {
+    position: relative;
+  }
+
+  :global(.desktop-nav a::after) {
+    content: "";
+    position: absolute;
+    bottom: 2px;
+    left: 2px;
+    right: 2px;
+    height: 1px;
+    background: #fff;
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+  }
+
+  :global(.desktop-nav a:hover::after) {
+    transform: scaleX(1);
   }
 
   /* Acciones del header */
@@ -1434,9 +1506,8 @@ const marqueeText = [
     transform: scale(1.1) translateX(-1.5%);
   }
 
-  :global(.hero-bg img:nth-child(even).active) {
-    animation: heroZoomRight 9s ease-out forwards;
-  }
+  /* (la referencia a heroZoomRight se eliminó: ese keyframe nunca
+     existió, así que la regla era un no-op silencioso.) */
 
  
 
@@ -1445,12 +1516,34 @@ const marqueeText = [
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(
-    180deg,
-    rgba(11, 11, 11, 0.15) 0%,
-    rgba(11, 11, 11, 0.6) 100%
-  );
   pointer-events: none;
+  /* Tres capas apiladas (la primera queda visualmente "arriba"):
+     1) Scanlines horizontales finas (estilo CRT), 1px de blanco
+        translúcido cada 3px. Muy sutiles: no distraen, pero le dan
+        una textura de "pantalla vieja" al hero.
+     2) Vignette radial: oscurece los bordes y deja el centro
+        limpio, dirigiendo la mirada al título.
+     3) Degradado vertical que ya existía (mantiene el contraste
+        del texto contra el fondo de imágenes). */
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.00) 0px,
+      rgba(255, 255, 255, 0.02) 3px,
+      transparent 1px,
+      transparent 3px
+    ),
+    radial-gradient(
+      ellipse at center,
+      transparent 0%,
+      transparent 45%,
+      rgba(0, 0, 0, 0.9) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(11, 11, 11, 0.15) 0%,
+      rgba(11, 11, 11, 0.6) 100%
+    );
 }
 
 .hero-content {
@@ -1638,13 +1731,7 @@ const marqueeText = [
     100% { opacity: 1; }
   }
 
-  @keyframes glitchBaseShift {
-    0%   { transform: translate(0, 0); }
-    25%  { transform: translate(-2px, 0); }
-    50%  { transform: translate(2px, 1px); }
-    75%  { transform: translate(-1px, -1px); }
-    100% { transform: translate(0, 0); }
-  }
+  /* (glitchBaseShift no se usa, se eliminó por limpieza.) */
 
   /* Cursor tipo terminal: el punto final del título titila.
      Forzamos Arial para que el "_" no herede KrakoaFont (que puede
@@ -1791,74 +1878,91 @@ const marqueeText = [
 
   /* Input (mobile y desktop): borde + placeholder + shake leve. */
   :global(.header-search-panel.search-switching) :global(#search) {
-    animation: searchFieldGlitch 0.32s steps(5, end) 1,
-               searchShake 0.32s steps(4, end) 1;
+    animation: searchFieldGlitch 0.4s steps(9, end) 1,
+               searchShake 0.4s steps(4, end) 1;
   }
 
   :global(.header-search-panel.search-switching) :global(#search)::placeholder {
-    animation: searchPlaceholderGlitch 0.32s steps(5, end) 1;
+    animation: searchPlaceholderGlitch 0.4s steps(7, end) 1;
   }
 
   /* Botón X (mobile): borde + el "×" (color + text-shadow) + shake. */
   :global(.header-search-panel.search-switching) :global(#search-close) {
-    animation: searchXGlitch 0.32s steps(5, end) 1,
-               searchShake 0.32s steps(4, end) 1;
+    animation: searchXGlitch 0.4s steps(9, end) 1,
+               searchShake 0.4s steps(4, end) 1;
   }
 
   /* Lupa (mobile al cerrar): borde del botón + ícono SVG + shake.
      El SVG no lleva shake propio: vibra junto al botón padre. */
   :global(.search-toggle.search-switching) {
-    animation: searchToggleBorderGlitch 0.32s steps(5, end) 1,
-               searchShake 0.32s steps(4, end) 1;
+    animation: searchToggleBorderGlitch 0.4s steps(7, end) 1,
+               searchShake 0.4s steps(4, end) 1;
   }
 
   :global(.search-toggle.search-switching) :global(svg) {
-    animation: searchIconGlitch 0.32s steps(5, end) 1;
+    animation: searchIconGlitch 0.4s steps(9, end) 1;
   }
 
+  /* Borde del input: flash breve de magenta/cian con glow externo,
+     y vuelve a gris entre cada uno. Sin bucle "navideño". */
   @keyframes searchFieldGlitch {
-    0%   { border-color: #ff0055; box-shadow: inset 0 0 0 1px rgba(255, 0, 85, 0.35); }
-    20%  { border-color: #00fff0; box-shadow: inset 0 0 0 1px rgba(0, 255, 240, 0.35); }
-    40%  { border-color: #333;    box-shadow: none; }
-    60%  { border-color: #ff0055; box-shadow: inset 0 0 0 1px rgba(255, 0, 85, 0.35); }
-    80%  { border-color: #00fff0; box-shadow: inset 0 0 0 1px rgba(0, 255, 240, 0.35); }
+    0%   { border-color: #ff0055; box-shadow: inset 0 0 0 2px rgba(255, 0, 85, 0.35), 0 0 10px rgba(255, 0, 85, 0.45); }
+    15%  { border-color: #333;    box-shadow: inset 0 0 0 0 transparent, 0 0 0 transparent; }
+    30%  { border-color: #00fff0; box-shadow: inset 0 0 0 2px rgba(0, 255, 240, 0.3), 0 0 8px rgba(0, 255, 240, 0.45); }
+    50%  { border-color: #333;    box-shadow: inset 0 0 0 0 transparent, 0 0 0 transparent; }
+    70%  { border-color: #ff0055; box-shadow: inset 0 0 0 2px rgba(255, 0, 85, 0.35), 0 0 10px rgba(255, 0, 85, 0.45); }
+    85%  { border-color: #333;    box-shadow: inset 0 0 0 0 transparent, 0 0 0 transparent; }
     100% { border-color: #333;    box-shadow: none; }
   }
 
+  /* Placeholder: RGB split doble (magenta + cian a la vez, alternando
+     de lado). El color base se mantiene gris (#666) la mayoría del
+     tiempo, con algún flash puntual a un gris más claro. */
   @keyframes searchPlaceholderGlitch {
-    0%   { color: #ff0055; text-shadow: 1px 0 rgba(0, 255, 240, 0.6); }
-    20%  { color: #00fff0; text-shadow: -1px 0 rgba(255, 0, 85, 0.6); }
-    40%  { color: #666;    text-shadow: none; }
-    60%  { color: #ff0055; text-shadow: 1px 0 rgba(0, 255, 240, 0.6); }
-    80%  { color: #00fff0; text-shadow: -1px 0 rgba(255, 0, 85, 0.6); }
-    100% { color: #666;    text-shadow: none; }
+    0%   { color: #666; text-shadow: 3px 0 rgba(255, 0, 85, 0.9), -3px 0 rgba(0, 255, 240, 0.9); }
+    15%  { color: #999; text-shadow: -3px 0 rgba(255, 0, 85, 0.9), 3px 0 rgba(0, 255, 240, 0.9); }
+    30%  { color: #666; text-shadow: 2px 0 rgba(255, 0, 85, 0.7), -2px 0 rgba(0, 255, 240, 0.7); }
+    50%  { color: #999; text-shadow: -3px 0 rgba(255, 0, 85, 0.9), 3px 0 rgba(0, 255, 240, 0.9); }
+    70%  { color: #666; text-shadow: 3px 0 rgba(255, 0, 85, 0.9), -3px 0 rgba(0, 255, 240, 0.9); }
+    85%  { color: #666; text-shadow: none; }
+    100% { color: #666; text-shadow: none; }
   }
 
+  /* × y su borde: el texto (×) con RGB split doble, y el borde con
+     flash breve (magenta/cian) + glow. Los dos efectos corren
+     sincronizados. */
   @keyframes searchXGlitch {
-    0%   { color: #ff0055; text-shadow: 1px 0 rgba(0, 255, 240, 0.7);  border-color: #ff0055; }
-    20%  { color: #00fff0; text-shadow: -1px 0 rgba(255, 0, 85, 0.7); border-color: #00fff0; }
-    40%  { color: #ddd;    text-shadow: none;                          border-color: #242424; }
-    60%  { color: #ff0055; text-shadow: 1px 0 rgba(0, 255, 240, 0.7);  border-color: #ff0055; }
-    80%  { color: #00fff0; text-shadow: -1px 0 rgba(255, 0, 85, 0.7); border-color: #00fff0; }
-    100% { color: #ddd;    text-shadow: none;                          border-color: #242424; }
+    0%   { color: #ddd; text-shadow: 3px 0 rgba(255, 0, 85, 0.9), -3px 0 rgba(0, 255, 240, 0.9); border-color: #ff0055; box-shadow: 0 0 10px rgba(255, 0, 85, 0.45); }
+    15%  { color: #ddd; text-shadow: -3px 0 rgba(255, 0, 85, 0.9), 3px 0 rgba(0, 255, 240, 0.9); border-color: #242424; box-shadow: none; }
+    30%  { color: #ddd; text-shadow: 2px 0 rgba(255, 0, 85, 0.7), -2px 0 rgba(0, 255, 240, 0.7); border-color: #00fff0; box-shadow: 0 0 8px rgba(0, 255, 240, 0.45); }
+    50%  { color: #ddd; text-shadow: -2px 0 rgba(255, 0, 85, 0.7), 2px 0 rgba(0, 255, 240, 0.7); border-color: #242424; box-shadow: none; }
+    70%  { color: #ddd; text-shadow: 3px 0 rgba(255, 0, 85, 0.9), -3px 0 rgba(0, 255, 240, 0.9); border-color: #ff0055; box-shadow: 0 0 10px rgba(255, 0, 85, 0.45); }
+    85%  { color: #ddd; text-shadow: none; border-color: #242424; box-shadow: none; }
+    100% { color: #ddd; text-shadow: none; border-color: #242424; box-shadow: none; }
   }
 
+  /* Borde de la lupa: igual al borde del input (flash + glow). */
   @keyframes searchToggleBorderGlitch {
-    0%   { border-color: #ff0055; }
-    20%  { border-color: #00fff0; }
-    40%  { border-color: #242424; }
-    60%  { border-color: #ff0055; }
-    80%  { border-color: #00fff0; }
-    100% { border-color: #242424; }
+    0%   { border-color: #ff0055; box-shadow: 0 0 10px rgba(255, 0, 85, 0.45); }
+    15%  { border-color: #242424; box-shadow: none; }
+    30%  { border-color: #00fff0; box-shadow: 0 0 8px rgba(0, 255, 240, 0.45); }
+    50%  { border-color: #242424; box-shadow: none; }
+    70%  { border-color: #ff0055; box-shadow: 0 0 10px rgba(255, 0, 85, 0.45); }
+    85%  { border-color: #242424; box-shadow: none; }
+    100% { border-color: #242424; box-shadow: none; }
   }
 
+  /* SVG de la lupa: RGB split doble con drop-shadow (el equivalente
+     a text-shadow pero para SVG), alternando dirección. El color
+     base del ícono se mantiene en #ddd para no parpadear. */
   @keyframes searchIconGlitch {
-    0%   { color: #ff0055; filter: drop-shadow(1px 0 0 rgba(0, 255, 240, 0.8)); }
-    20%  { color: #00fff0; filter: drop-shadow(-1px 0 0 rgba(255, 0, 85, 0.8)); }
-    40%  { color: #ddd;    filter: none; }
-    60%  { color: #ff0055; filter: drop-shadow(1px 0 0 rgba(0, 255, 240, 0.8)); }
-    80%  { color: #00fff0; filter: drop-shadow(-1px 0 0 rgba(255, 0, 85, 0.8)); }
-    100% { color: #ddd;    filter: none; }
+    0%   { color: #ddd; filter: drop-shadow(3px 0 #ff0055) drop-shadow(-3px 0 #00fff0); }
+    15%  { color: #ddd; filter: drop-shadow(-3px 0 #ff0055) drop-shadow(3px 0 #00fff0); }
+    30%  { color: #ddd; filter: drop-shadow(2px 0 #ff0055) drop-shadow(-2px 0 #00fff0); }
+    50%  { color: #ddd; filter: drop-shadow(-2px 0 #ff0055) drop-shadow(2px 0 #00fff0); }
+    70%  { color: #ddd; filter: drop-shadow(3px 0 #ff0055) drop-shadow(-3px 0 #00fff0); }
+    85%  { color: #ddd; filter: none; }
+    100% { color: #ddd; filter: none; }
   }
 
   @keyframes searchPanelIn {
@@ -2033,13 +2137,10 @@ const marqueeText = [
 /* Los glitches ahora son spans REALES. .cat-text envuelve el texto
    visible y los spans .cat-glitch-a/b muestran la versión scrambled
    encima, posicionados de forma absoluta. */
-.cat-text {
-  display:global(.cat-text) {
-  display: inline-block;
-  position: relative;
-}: inline-block;
-  position: relative;
-}
+  .cat-text {
+    display: inline-block;
+    position: relative;
+  }
 
 :global(.cat-glitch-a),
 :global(.cat-glitch-b) {
@@ -2071,47 +2172,67 @@ const marqueeText = [
 
 :global(.category-button.glitching) :global(.cat-glitch-a) {
   opacity: 1;
-  animation: catGlitchA 0.32s steps(5, end) 1,
-             catFlickerA 0.32s steps(2, end) 1;
+  animation: catGlitchA 0.4s steps(9, end) 1,
+             catFlickerA 0.4s steps(5, end) 1;
 }
 
 :global(.category-button.glitching) :global(.cat-glitch-b) {
   opacity: 1;
-  animation: catGlitchB 0.32s steps(5, end) 1,
-             catFlickerB 0.32s steps(2, end) 1;
+  animation: catGlitchB 0.4s steps(9, end) 1,
+             catFlickerB 0.4s steps(5, end) 1;
 }
 
+/* Glitch de texto unificado con la técnica del hero: 10 keyframes
+   con bloques y tiras horizontales variados (inset de 4 lados),
+   flips (scaleX/scaleY) en frames clave, y RGB split DOBLE: el
+   text-shadow ahora tiene un offset magenta y uno cian al mismo
+   tiempo, y la dirección alterna en cada frame. Eso es lo que da
+   la sensación "cyberpunk" (los dos colores separados del texto). */
 @keyframes catGlitchA {
-  0%   { clip-path: inset(20% 0 60% 0); transform: translate(-4px, 0); text-shadow: 3px 0 rgba(255, 0, 85, 1); }
-  20%  { clip-path: inset(50% 0 20% 0); transform: translate(4px, 0);  text-shadow: -3px 0 rgba(255, 0, 85, 1); }
-  40%  { clip-path: inset(0% 0 40% 0);  transform: translate(-5px, 0) scaleY(-1); text-shadow: 4px 0 rgba(255, 0, 85, 1); }
-  60%  { clip-path: inset(60% 0 5% 0);  transform: translate(3px, 0);  text-shadow: -3px 0 rgba(255, 0, 85, 1); }
-  80%  { clip-path: inset(30% 0 30% 0); transform: translate(-4px, 0); text-shadow: 3px 0 rgba(255, 0, 85, 1); }
-  100% { clip-path: inset(20% 0 60% 0); transform: translate(0, 0);    text-shadow: 2px 0 rgba(255, 0, 85, 0.95); }
+  0%   { clip-path: inset(10% 0 80% 0);     transform: translate(-4px, 0);           text-shadow: 4px 0 rgba(255, 0, 85, 1), -4px 0 rgba(0, 255, 240, 1); }
+  11%  { clip-path: inset(60% 0 10% 0);     transform: translate(5px, 0);            text-shadow: -5px 0 rgba(255, 0, 85, 1), 5px 0 rgba(0, 255, 240, 1); }
+  22%  { clip-path: inset(30% 55% 55% 10%); transform: translate(-3px, 0) scaleY(-1); text-shadow: 3px 0 rgba(255, 0, 85, 1), -3px 0 rgba(0, 255, 240, 1); }
+  33%  { clip-path: inset(80% 0 5% 0);      transform: translate(6px, 0);            text-shadow: -6px 0 rgba(255, 0, 85, 1), 6px 0 rgba(0, 255, 240, 1); }
+  44%  { clip-path: inset(20% 30% 60% 25%); transform: translate(-5px, 0) scaleX(-1); text-shadow: 5px 0 rgba(255, 0, 85, 1), -5px 0 rgba(0, 255, 240, 1); }
+  55%  { clip-path: inset(45% 0 40% 0);     transform: translate(3px, 0);            text-shadow: -3px 0 rgba(255, 0, 85, 1), 3px 0 rgba(0, 255, 240, 1); }
+  66%  { clip-path: inset(70% 45% 15% 0);   transform: translate(-4px, 0);           text-shadow: 4px 0 rgba(255, 0, 85, 1), -4px 0 rgba(0, 255, 240, 1); }
+  77%  { clip-path: inset(5% 0 85% 0);      transform: translate(2px, 0) scaleX(-1); text-shadow: -2px 0 rgba(255, 0, 85, 1), 2px 0 rgba(0, 255, 240, 1); }
+  88%  { clip-path: inset(40% 20% 35% 30%); transform: translate(-5px, 0);           text-shadow: 5px 0 rgba(255, 0, 85, 1), -5px 0 rgba(0, 255, 240, 1); }
+  100% { clip-path: inset(10% 0 80% 0);     transform: translate(0, 0);              text-shadow: 2px 0 rgba(255, 0, 85, 0.9), -2px 0 rgba(0, 255, 240, 0.9); }
 }
 
 @keyframes catGlitchB {
-  0%   { clip-path: inset(55% 0 25% 0); transform: translate(4px, 0);  text-shadow: -3px 0 rgba(0, 255, 240, 1); }
-  20%  { clip-path: inset(15% 0 70% 0); transform: translate(-4px, 0); text-shadow: 3px 0 rgba(0, 255, 240, 1); }
-  40%  { clip-path: inset(70% 0 10% 0); transform: translate(5px, 0) scaleX(-1); text-shadow: -4px 0 rgba(0, 255, 240, 1); }
-  60%  { clip-path: inset(25% 0 55% 0); transform: translate(-3px, 0); text-shadow: 3px 0 rgba(0, 255, 240, 1); }
-  80%  { clip-path: inset(40% 0 30% 0); transform: translate(4px, 0);  text-shadow: -3px 0 rgba(0, 255, 240, 1); }
-  100% { clip-path: inset(55% 0 25% 0); transform: translate(0, 0);    text-shadow: -2px 0 rgba(0, 255, 240, 0.95); }
+  0%   { clip-path: inset(55% 0 25% 0);     transform: translate(4px, 0);            text-shadow: -4px 0 rgba(0, 255, 240, 1), 4px 0 rgba(255, 0, 85, 1); }
+  11%  { clip-path: inset(15% 0 70% 0);     transform: translate(-5px, 0);           text-shadow: 5px 0 rgba(0, 255, 240, 1), -5px 0 rgba(255, 0, 85, 1); }
+  22%  { clip-path: inset(75% 30% 10% 0);   transform: translate(3px, 0) scaleX(-1); text-shadow: -3px 0 rgba(0, 255, 240, 1), 3px 0 rgba(255, 0, 85, 1); }
+  33%  { clip-path: inset(25% 0 60% 0);     transform: translate(-6px, 0);           text-shadow: 6px 0 rgba(0, 255, 240, 1), -6px 0 rgba(255, 0, 85, 1); }
+  44%  { clip-path: inset(40% 15% 50% 35%); transform: translate(5px, 0) scaleY(-1);  text-shadow: -5px 0 rgba(0, 255, 240, 1), 5px 0 rgba(255, 0, 85, 1); }
+  55%  { clip-path: inset(85% 0 5% 0);      transform: translate(-3px, 0);           text-shadow: 3px 0 rgba(0, 255, 240, 1), -3px 0 rgba(255, 0, 85, 1); }
+  66%  { clip-path: inset(35% 0 45% 0);     transform: translate(4px, 0);            text-shadow: -4px 0 rgba(0, 255, 240, 1), 4px 0 rgba(255, 0, 85, 1); }
+  77%  { clip-path: inset(50% 40% 40% 0);   transform: translate(-2px, 0) scaleX(-1); text-shadow: 2px 0 rgba(0, 255, 240, 1), -2px 0 rgba(255, 0, 85, 1); }
+  88%  { clip-path: inset(20% 25% 55% 20%); transform: translate(5px, 0);            text-shadow: -5px 0 rgba(0, 255, 240, 1), 5px 0 rgba(255, 0, 85, 1); }
+  100% { clip-path: inset(55% 0 25% 0);     transform: translate(0, 0);              text-shadow: -2px 0 rgba(0, 255, 240, 0.9), 2px 0 rgba(255, 0, 85, 0.9); }
 }
 
+/* Flicker más "señal que se corta" que "estrella que titila".
+   Saltos más discretos, sin llegar a 0. */
 @keyframes catFlickerA {
   0%   { opacity: 1; }
-  25%  { opacity: 0.4; }
-  50%  { opacity: 1; }
-  75%  { opacity: 0.5; }
+  15%  { opacity: 0.65; }
+  30%  { opacity: 1; }
+  50%  { opacity: 0.75; }
+  70%  { opacity: 1; }
+  85%  { opacity: 0.6; }
   100% { opacity: 1; }
 }
 
 @keyframes catFlickerB {
   0%   { opacity: 1; }
-  25%  { opacity: 0.5; }
-  50%  { opacity: 0.3; }
-  75%  { opacity: 1; }
+  15%  { opacity: 0.7; }
+  30%  { opacity: 0.55; }
+  50%  { opacity: 1; }
+  70%  { opacity: 0.65; }
+  85%  { opacity: 1; }
   100% { opacity: 1; }
 }
 
@@ -2120,16 +2241,23 @@ const marqueeText = [
    box-shadow: inset para reforzar el efecto sin que se salga del
    botón (overflow: hidden lo cliparía). */
 :global(.category-button.glitching) {
-  animation: catBorderGlitch 0.32s steps(5, end) 1;
+  animation: catBorderGlitch 0.4s steps(5, end) 1;
 }
 
+/* Borde: en vez de saltar entre gris/magenta/cian en bucle (que daba
+   el look "guirnalda"), ahora hace un flash breve de un solo color
+   (magenta) con un inset box-shadow que lo refuerza, y vuelve a gris
+   enseguida. La mayor parte del tiempo el borde está en su color
+   base (#333), así no compite con el texto del glitch. La idea es
+   "interferencia" (un pulso eléctrico), no "luces de fiesta". */
 @keyframes catBorderGlitch {
-  0%   { border-color: #ff0055; box-shadow: inset 0 0 0 1px rgba(255, 0, 85, 0.2); }
-  20%  { border-color: #13524d; box-shadow: inset 0 0 0 1px rgba(0, 255, 240, 0.2); }
-  40%  { border-color: #333;    box-shadow: inset 0 0 0 0 transparent; }
-  60%  { border-color: #ff0055; box-shadow: inset 0 0 0 1px rgba(255, 0, 85, 0.2); }
-  80%  { border-color: #13524d; box-shadow: inset 0 0 0 1px rgba(0, 255, 240, 0.2); }
-  100% { border-color: #333;    box-shadow: inset 0 0 0 0 transparent; }
+  0%   { border-color: #ff0055; box-shadow: inset 0 0 0 2px rgba(255, 0, 85, 0.35), 0 0 12px rgba(255, 0, 85, 0.5); }
+  15%  { border-color: #333;    box-shadow: inset 0 0 0 0 transparent, 0 0 0 transparent; }
+  30%  { border-color: #00fff0; box-shadow: inset 0 0 0 2px rgba(0, 255, 240, 0.3), 0 0 10px rgba(0, 255, 240, 0.45); }
+  50%  { border-color: #333;    box-shadow: inset 0 0 0 0 transparent, 0 0 0 transparent; }
+  70%  { border-color: #ff0055; box-shadow: inset 0 0 0 2px rgba(255, 0, 85, 0.35), 0 0 12px rgba(255, 0, 85, 0.5); }
+  85%  { border-color: #333;    box-shadow: inset 0 0 0 0 transparent, 0 0 0 transparent; }
+  100% { border-color: #333;    box-shadow: inset 0 0 0 0 transparent, 0 0 0 transparent; }
 }
 
   
@@ -2154,7 +2282,93 @@ const marqueeText = [
     min-width: 0;
   }
 
-  .product-button {
+  /* Animación de revelado al filtrar (cambio de categoría o búsqueda).
+     Las tres clases las maneja el JS, así que van con :global().
+
+     - .is-hidden: display: none. La tarjeta no ocupa lugar en la grilla.
+       Es el estado "definitivo" de una tarjeta filtrada.
+     - .is-hiding: la tarjeta está en transición hacia .is-hidden.
+       Sigue ocupando lugar pero con opacity 0 + scale chico.
+     - .is-revealing: la tarjeta está en transición de aparición.
+       Arranca con opacity 0 + scale chico y SIN transition (para
+       que el punto de partida sea instantáneo). Después el JS
+       le quita esta clase y el CSS base la anima a su estado normal.
+
+     La transition del estado base aplica tanto para ocultar como
+     para mostrar. La duración (350ms) es la misma para ambos casos,
+     así se siente simétrico. */
+  :global(.product-card.is-hidden) {
+    display: none !important;
+  }
+
+     :global(.product-card.is-hidden) {
+    display: none !important;
+  }
+
+  :global(.product-card.is-revealing) {
+    animation: cardReveal 0.3s ease-out both;
+    animation-delay: var(--card-stagger, 0ms);
+  }
+
+@keyframes cardReveal {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* --------------------------- */
+  /* FADE-IN AL SCROLLEAR        */
+  /* --------------------------- */
+
+  /* Las secciones arrancan con esta clase (la agrega el JS al cargar),
+     y el IntersectionObserver les agrega .is-visible cuando entran al
+     viewport. La transición las lleva de opacity 0 + translateY(30px)
+     a opacity 1 + translateY(0) en 0.7s. Después de animarse una vez,
+     se quedan visibles para siempre (el observer deja de vigilarlas). */
+  :global(.section-observe) {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+   :global(.section-observe.is-visible) {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* --------------------------- */
+  /* GLITCH DEL TÍTULO DEL MODAL */
+  /* --------------------------- */
+
+  /* Misma técnica que el hero: clip-path con tiras y bloques, flips,
+     RGB split doble en el text-shadow (magenta + cian a la vez),
+     steps() para los saltos digitales.
+     Se usa en dos momentos:
+       1) Al abrir un producto (E19): glitch breve de 400ms.
+       2) Cada 15-20s mientras el modal está abierto (E20): glitch
+          breve de 300ms.
+     La clase que activa esto es .glitching, la misma del hero, pero
+     el selector es específico del modal para no interferir con el
+     h1 del hero. */
+  :global(.modal-info-header h2.glitching) {
+    animation: modalTitleGlitch 0.4s steps(9, end) 1;
+    will-change: transform, filter, clip-path;
+  }
+
+  @keyframes modalTitleGlitch {
+    0%   { clip-path: inset(10% 0 80% 0);     transform: translate(-4px, 0);           text-shadow: 4px 0 rgba(255, 0, 85, 1), -4px 0 rgba(0, 255, 240, 1); }
+    11%  { clip-path: inset(60% 0 10% 0);     transform: translate(5px, 0);            text-shadow: -5px 0 rgba(255, 0, 85, 1), 5px 0 rgba(0, 255, 240, 1); }
+    22%  { clip-path: inset(30% 55% 55% 10%); transform: translate(-3px, 0) scaleY(-1); text-shadow: 3px 0 rgba(255, 0, 85, 1), -3px 0 rgba(0, 255, 240, 1); }
+    33%  { clip-path: inset(80% 0 5% 0);      transform: translate(6px, 0);            text-shadow: -6px 0 rgba(255, 0, 85, 1), 6px 0 rgba(0, 255, 240, 1); }
+    44%  { clip-path: inset(20% 30% 60% 25%); transform: translate(-5px, 0) scaleX(-1); text-shadow: 5px 0 rgba(255, 0, 85, 1), -5px 0 rgba(0, 255, 240, 1); }
+    55%  { clip-path: inset(45% 0 40% 0);     transform: translate(3px, 0);            text-shadow: -3px 0 rgba(255, 0, 85, 1), 3px 0 rgba(0, 255, 240, 1); }
+    66%  { clip-path: inset(70% 45% 15% 0);   transform: translate(-4px, 0);           text-shadow: 4px 0 rgba(255, 0, 85, 1), -4px 0 rgba(0, 255, 240, 1); }
+    77%  { clip-path: inset(5% 0 85% 0);      transform: translate(2px, 0) scaleX(-1); text-shadow: -2px 0 rgba(255, 0, 85, 1), 2px 0 rgba(0, 255, 240, 1); }
+    88%  { clip-path: inset(40% 20% 35% 30%); transform: translate(-5px, 0);           text-shadow: 5px 0 rgba(255, 0, 85, 1), -5px 0 rgba(0, 255, 240, 1); }
+    100% { clip-path: inset(10% 0 80% 0);     transform: translate(0, 0);              text-shadow: 2px 0 rgba(255, 0, 85, 0.9), -2px 0 rgba(0, 255, 240, 0.9); }
+  }
+  
+    .product-button {
     display: block;
     width: 100%;
     padding: 0;
@@ -2165,12 +2379,44 @@ const marqueeText = [
     cursor: pointer;
   }
 
-  .product-image {
+  :global(.product-image) {
     position: relative;
     aspect-ratio: 1 / 1.18;
     background: #141414;
     overflow: hidden;
     border-radius: 15px;
+  }
+
+  /* Skeleton loader: el ::before existe SIEMPRE (contenido vacío,
+     opacidad 0). Cuando el contenedor NO tiene .loaded, se pone
+     opaco y anima el shimmer. Cuando el JS agrega .loaded, vuelve
+     a opacidad 0 con fade (por el transition del bloque base).
+     Todo con :global() porque .loaded lo maneja el JS. */
+  :global(.product-image)::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    background: linear-gradient(
+      90deg,
+      #161616 0%,
+      #2a2a2a 50%,
+      #161616 100%
+    );
+    background-size: 200% 100%;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+  }
+
+  :global(.product-image:not(.loaded))::before {
+    opacity: 1;
+    animation: skeletonShimmer 1.4s ease-in-out infinite;
+  }
+
+  @keyframes skeletonShimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
   }
 
   .product-image img {
@@ -2182,7 +2428,14 @@ const marqueeText = [
     display: block;
     transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
                 transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    will-change: opacity, transform;
+    /* El will-change masivo está apagado: 234 imágenes generando capas
+       GPU traban el compositor en mobile. Lo activamos solo en hover. */
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .product-button:hover .product-image img {
+      will-change: opacity, transform;
+    }
   }
 
   /* Imagen base: visible por defecto. */
@@ -2456,9 +2709,13 @@ const marqueeText = [
     /* Padding-top 26px para que el badge (22px de alto, elevado)
        entre completo cuando la barra está sticky arriba de todo. */
     padding: 26px 5vw 12px;
-    background: rgba(11, 11, 11, 0.72);
-    -webkit-backdrop-filter: blur(10px);
-            backdrop-filter: blur(10px);
+    background: rgba(11, 11, 11, 0.82);
+    /* blur(6px) en vez de blur(10px): imperceptible al ojo, pero
+       reduce bastante el costo de recalcular el blur en cada frame
+       de scroll (especialmente en mobile). Subimos la opacidad del
+       fondo (0.72 → 0.82) para compensar el menor blur. */
+    -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px);
     border-bottom: 1px solid #1f1f1f;
     margin-bottom: 25px;
   }
@@ -3117,6 +3374,8 @@ const marqueeText = [
   }
 
   .modal-add {
+    position: relative;
+    overflow: hidden;
     width: 100%;
     padding: 14px 18px;
     border: 0;
@@ -3128,7 +3387,7 @@ const marqueeText = [
     letter-spacing: 0.04em;
     text-transform: uppercase;
     cursor: pointer;
-    transition: transform 0.15s ease, filter 0.2s ease;
+    transition: transform 0.15s ease, filter 0.2s ease, color 0.25s ease;
   }
 
   .modal-add:hover {
@@ -3136,8 +3395,39 @@ const marqueeText = [
     transform: translateY(-1px);
   }
 
-  .modal-add.is-added {
-    background: #25d366 !important;
+  /* El "relleno" verde del botón. Arranca como un rectángulo de ancho
+     cero (scaleX(0)) alineado a la izquierda. Cuando el botón recibe
+     .is-added, el scaleX va a 1 y el verde se expande de izquierda a
+     derecha en 0.4s. Al quitarse la clase, se retrae a la izquierda
+     (mismo transform-origin), como una cortina que se cierra. */
+  :global(.modal-add)::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: #25d366;
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 0;
+  }
+
+  :global(.modal-add.is-added)::before {
+    transform: scaleX(1);
+  }
+
+  /* El texto del botón va por encima del ::before.
+     Necesitamos envolver el texto en un span para poder darle
+     position: relative + z-index sin afectar el layout del botón. */
+  :global(.modal-add > span) {
+    position: relative;
+    z-index: 1;
+    display: inline-block;
+  }
+
+  /* Cuando está en estado "agregado", el texto pasa a blanco para
+     contrastar con el verde. La transición de color está declarada
+     en el .modal-add base (color 0.25s ease). */
+  :global(.modal-add.is-added) {
     color: #fff;
   }
 
@@ -3457,6 +3747,10 @@ const marqueeText = [
     visibility: hidden;
     transform: translateY(10px);
     transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
   }
 
   :global(.back-to-top.visible) {
@@ -3467,6 +3761,43 @@ const marqueeText = [
 
     :global(.back-to-top:hover) {
     background: #555;
+  }
+
+  /* Anillo de progreso alrededor del botón "volver arriba".
+     El SVG gira -90° para que el trazo arranque desde las 12 en punto
+     (por defecto arranca a las 3). El track es la pista gris, el
+     progress es el trazo cian que se llena con el scroll. */
+  :global(.back-to-top-ring) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+    pointer-events: none;
+    overflow: visible;
+  }
+
+  :global(.back-to-top-ring-track) {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.12);
+    stroke-width: 2;
+  }
+
+  :global(.back-to-top-ring-progress) {
+    fill: none;
+    stroke: #00fff0;
+    stroke-width: 2;
+    stroke-linecap: round;
+    /* 2π × r (r=19) = 119.38. Se setea acá el valor inicial (vacío)
+       y el JS lo va actualizando según el scroll. */
+    stroke-dasharray: 119.38;
+    stroke-dashoffset: 119.38;
+  }
+
+  :global(.back-to-top-icon) {
+    position: relative;
+    z-index: 1;
+    line-height: 1;
   }
 
 
@@ -3513,14 +3844,7 @@ const marqueeText = [
     transform: translateX(0);
   }
 
-  @keyframes slideInRight {
-    from {
-      transform: translateX(100%);
-    }
-    to {
-      transform: translateX(0);
-    }
-  }
+  /* (slideInRight no se usa, se eliminó por limpieza.) */
 
   .cart-drawer-header {
     display: flex;
@@ -3732,11 +4056,25 @@ const marqueeText = [
     text-transform: uppercase;
     cursor: pointer;
     transition: background 0.2s ease, transform 0.15s ease;
+    /* Glow pulsante: un halo verde que "respira" para llamar la atención
+       al CTA principal del carrito. Al hover se pausa (el usuario ya
+       está apuntando al botón). */
+    animation: whatsappGlowPulse 2.5s ease-in-out infinite;
   }
 
   .cart-drawer-whatsapp:hover {
     background: #35e276;
     transform: translateY(-1px);
+    animation-play-state: paused;
+  }
+
+  @keyframes whatsappGlowPulse {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.55);
+    }
+    50% {
+      box-shadow: 0 0 0 10px rgba(37, 211, 102, 0);
+    }
   }
 
   :global(body.cart-open) {
@@ -4895,24 +5233,244 @@ const marqueeText = [
   text-align: right;
 }
 
-/* Flash verde/rojo al cambiar de tier */
-@keyframes flashPriceGreen {
-  0%   { background: rgba(37, 211, 102, 0.35); }
-  100% { background: transparent; }
-}
+/* (los @keyframes flashPriceGreen/Red fueron reemplazados por las
+   versiones "Soft" que están más abajo. Se eliminaron por limpieza.) */
 
-@keyframes flashPriceRed {
-  0%   { background: rgba(248, 113, 113, 0.35); }
-  100% { background: transparent; }
-}
+  /* --------------------------- */
+  /* NÚMEROS QUE RUEDAN (odómetro) */
+  /* --------------------------- */
 
-:global(.modal-price-unit.flash-green) {
-  animation: flashPriceGreen 0.6s ease-out;
-}
+  /* El precio se renderiza como una serie de spans, uno por carácter
+     (incluyendo el "$", el punto y los dígitos). Cada span tiene
+     position: relative y overflow: hidden para que el dígito "que
+     sale" y el "que entra" no se salgan del contenedor. Los spans
+     que no cambian de valor no se tocan. */
+  :global(.price-digit) {
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    vertical-align: bottom;
+    /* Altura fija (1.15em, igual al line-height del padre) para que
+       el bloque no cambie de alto durante la animación de los dígitos
+       (el "digit-out" está en absolute, y sin altura fija el span
+       colapsaría al alto del "digit-in" en cada frame). */
+    line-height: 1.15;
+    height: 1.15em;
+  }
 
-:global(.modal-price-unit.flash-red) {
-  animation: flashPriceRed 0.6s ease-out;
-}
+  /* El dígito "viejo" sale hacia arriba y se desvanece. */
+  :global(.price-digit .digit-out) {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    animation: priceDigitOut 0.32s cubic-bezier(0.4, 0, 0.2, 1) both;
+    pointer-events: none;
+  }
+
+  /* El dígito "nuevo" entra desde abajo. */
+  :global(.price-digit .digit-in) {
+    display: inline-block;
+    animation: priceDigitIn 0.32s cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+
+  @keyframes priceDigitOut {
+    from { transform: translateY(0);     opacity: 1; }
+    to   { transform: translateY(-100%); opacity: 0; }
+  }
+
+  @keyframes priceDigitIn {
+    from { transform: translateY(100%);  opacity: 0; }
+    to   { transform: translateY(0);     opacity: 1; }
+  }
+
+  /* El contenedor del precio (con las animaciones) necesita un
+     flash breve de fondo para reforzar el cambio. Es un flash
+     MUY sutil (verde o rojo al 15%), mucho más discreto que los
+     flashes anteriores. Solo aplica al contenedor padre. */
+  :global(.modal-price-unit) {
+    /* inline-block en vez de inline-flex: se comporta como un texto
+       más dentro del flex del .modal-price-main, sin afectar el
+       cálculo de altura del bloque padre. */
+    display: inline-block;
+    white-space: nowrap;
+    padding: 2px 6px;
+    margin-left: -6px;
+    border-radius: 6px;
+    transition: background 0.4s ease;
+    /* Altura estable y line-height igual al de los dígitos. */
+    line-height: 1.15;
+    vertical-align: bottom;
+  }
+
+  :global(.modal-price-unit.flash-green) {
+    animation: flashPriceGreenSoft 0.6s ease-out;
+  }
+
+  :global(.modal-price-unit.flash-red) {
+    animation: flashPriceRedSoft 0.6s ease-out;
+  }
+
+  @keyframes flashPriceGreenSoft {
+    0%   { background: rgba(37, 211, 102, 0.18); }
+    100% { background: transparent; }
+  }
+
+  @keyframes flashPriceRedSoft {
+    0%   { background: rgba(248, 113, 113, 0.18); }
+    100% { background: transparent; }
+  }
+
+  /* --------------------------- */
+  /* BARRA DE PROGRESO DE SCROLL */
+  /* --------------------------- */
+
+  /* Línea fina arriba de todo, de izquierda a derecha, que se llena
+     con el scroll. Gradiente con los colores del glitch para
+     mantener la identidad KRAKOA. */
+  .scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    width: 0%;
+    background: linear-gradient(90deg, #ff0055 0%, #00fff0 100%);
+    z-index: 9500;
+    pointer-events: none;
+    /* Sin transition: el ancho lo actualiza el JS en cada frame de
+       scroll. Una transition acá produciría lag (la barra iría
+       "persiguiendo" al scroll). */
+    will-change: width;
+  }
+
+  /* --------------------------- */
+  /* TEXTURA DE GRANO (NOISE)    */
+  /* --------------------------- */
+
+  /* Grano sutil sobre todo el sitio, generado con feTurbulence de SVG.
+     Es un pseudo-elemento del body con position: fixed, así cubre el
+     viewport sin scrollear. Queda por ENCIMA del contenido estático y
+     del hero, pero por DEBAJO de la barra sticky de categorías (100),
+     back-to-top (900) y los overlays (1000+). Así los modales, el
+     carrito y el zoom se ven nítidos, sin grano encima.
+
+     La opacidad es MUY baja (0.045). Si te parece mucho o poco, se
+     ajusta ese único valor.
+
+     El SVG es un data URI con feTurbulence (fractalNoise) de 200x200
+     que se tilea con background-repeat. El "%23" es el "#" codificado
+     para no romper el data URI.
+
+     Ojo con performance: feTurbulence puede ser costoso en mobile de
+     gama muy baja. En la auditoría de performance que tenemos
+     pendiente, si vemos lag, lo cambiamos por un PNG estático o lo
+     reducimos. */
+    :global(body)::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    opacity: 0.045;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
+    background-repeat: repeat;
+  }
+
+  /* --------------------------- */
+  /* GLITCH OCASIONAL DEL LOGO   */
+  /* --------------------------- */
+
+  /* Cada 30-60s, el logo horizontal del header hace un glitch breve
+     (220ms) de tipo "color shift + shake": se desplaza horizontal,
+     cambia el tono con hue-rotate, y vuelve. Es MUCHO menos
+     frecuente que el glitch del hero (que cada 5-9s), así que no
+     compite con él y se siente como "un detalle ocasional".
+
+     Todo con :global() porque el logo vive en el <header> (fuera de
+     <main>) y la clase .glitching la maneja el JS. */
+  :global(.logo-horizontal.glitching) {
+    animation: logoGlitch 0.42s steps(9, end) 1;
+    will-change: transform, filter, clip-path;
+  }
+
+  /* Glitch unificado con la técnica del hero: clip-path con tiras y
+     bloques (inset de 4 lados), flips (scaleX/scaleY), RGB split
+     dinámico (drop-shadow magenta/cian, que es el equivalente a
+     text-shadow pero funciona en imágenes y bordes), y steps() para
+     los saltos digitales.
+     Misma duración (420ms) y misma cantidad de pasos (9) que el hero,
+     para que se sienta como la misma familia visual. */
+  @keyframes logoGlitch {
+    0%   { clip-path: inset(10% 0 80% 0);     transform: translate(-2px, 0);           filter: drop-shadow(4px 0 #ff0055) drop-shadow(-4px 0 #00fff0) drop-shadow(0 0 8px #ff0055); }
+    11%  { clip-path: inset(60% 0 10% 0);     transform: translate(3px, 0);            filter: drop-shadow(-5px 0 #ff0055) drop-shadow(5px 0 #00fff0) drop-shadow(0 0 8px #00fff0); }
+    22%  { clip-path: inset(30% 55% 55% 10%); transform: translate(-2px, 0) scaleY(-1); filter: drop-shadow(4px 0 #ff0055) drop-shadow(-4px 0 #00fff0) drop-shadow(0 0 10px #ff0055); }
+    33%  { clip-path: inset(80% 0 5% 0);      transform: translate(4px, 0);            filter: drop-shadow(-6px 0 #ff0055) drop-shadow(6px 0 #00fff0) drop-shadow(0 0 10px #00fff0); }
+    44%  { clip-path: inset(20% 30% 60% 25%); transform: translate(-3px, 0) scaleX(-1); filter: drop-shadow(5px 0 #ff0055) drop-shadow(-5px 0 #00fff0) drop-shadow(0 0 12px #ff0055); }
+    55%  { clip-path: inset(45% 0 40% 0);     transform: translate(2px, 0);            filter: drop-shadow(-4px 0 #ff0055) drop-shadow(4px 0 #00fff0) drop-shadow(0 0 8px #00fff0); }
+    66%  { clip-path: inset(70% 45% 15% 0);   transform: translate(-3px, 0);           filter: drop-shadow(5px 0 #ff0055) drop-shadow(-5px 0 #00fff0) drop-shadow(0 0 10px #ff0055); }
+    77%  { clip-path: inset(5% 0 85% 0);      transform: translate(1px, 0) scaleX(-1); filter: drop-shadow(-4px 0 #ff0055) drop-shadow(4px 0 #00fff0) drop-shadow(0 0 8px #00fff0); }
+    88%  { clip-path: inset(40% 20% 35% 30%); transform: translate(-3px, 0);           filter: drop-shadow(3px 0 #ff0055) drop-shadow(-3px 0 #00fff0) drop-shadow(0 0 6px #ff0055); }
+    100% { clip-path: inset(10% 0 80% 0);     transform: translate(0, 0);              filter: none; }
+  }
+
+  /* --------------------------- */
+  /* MARQUESINA: HOVER PAUSE + AMARILLO KRA */
+  /* --------------------------- */
+
+  /* Al pasar el mouse por un ítem de la marquesina:
+     1) La cinta entera se PAUSA (animation-play-state: paused).
+     2) El texto del ítem sobre el que está el mouse se pone en
+        amarillo KRA (#ffd655), destacándolo como "lectura activa".
+     Solo en desktop (pointer: fine) para no dejar el hover pegado
+     en mobile. */
+  @media (hover: hover) and (pointer: fine) {
+    :global(.marquee:hover) .marquee-track {
+      animation-play-state: paused;
+    }
+
+    :global(.marquee-item:hover) {
+      color: #ffd655;
+      transition: color 0.2s ease;
+    }
+  }
+
+  /* --------------------------- */
+  /* REVEAL POR LETRA DEL HERO   */
+  /* --------------------------- */
+
+  /* Al cargar la página (después del loader), las letras de "CATALOGO"
+     aparecen una por una con fade + slide up. El JS arma los spans
+     con un `animation-delay` escalonado (45ms por letra).
+     Al terminar, restaura el HTML normal, y el typewriter y el glitch
+     siguen funcionando como siempre. */
+  :global(.hero-reveal-letter) {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(20px) scale(0.85);
+    animation: heroRevealLetter 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    will-change: opacity, transform;
+  }
+
+  @keyframes heroRevealLetter {
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* --------------------------- */
+  /* GLITCH DEL LOADER INICIAL   */
+  /* --------------------------- */
+
+  /* El isotipo del loader hace un glitch breve (420ms) después de
+     aparecer con fade. Reusa el keyframe `logoGlitch` que ya está
+     declarado globalmente. Le da un "arranque" narrativo al sitio:
+     primero aparece el logo, después parpadea, después se revela
+     el hero con las letras apareciendo. */
+  :global(#krakoa-loader img.glitching) {
+    animation: logoGlitch 0.42s steps(9, end) 1;
+    will-change: transform, filter, clip-path;
+  }
 
 </style>
 
@@ -4922,7 +5480,11 @@ const marqueeText = [
   type="button"
   aria-label="Volver arriba"
 >
-  ↑
+  <svg class="back-to-top-ring" viewBox="0 0 44 44" aria-hidden="true">
+    <circle class="back-to-top-ring-track" cx="22" cy="22" r="19" />
+    <circle id="back-to-top-ring-progress" class="back-to-top-ring-progress" cx="22" cy="22" r="19" />
+  </svg>
+  <span class="back-to-top-icon" aria-hidden="true">↑</span>
 </button>
 
 <script define:vars={{ base, PROMO_DATA: promo }}>
@@ -4932,13 +5494,40 @@ const marqueeText = [
     const loader = document.querySelector("#krakoa-loader");
     if (!loader) return;
     const img = loader.querySelector("img");
-    const MIN_TIME = 700;
+    // Bajamos el MIN_TIME de 1000 a 300. Con 300ms el glitch
+    // del isotipo alcanza a verse un instante, pero el usuario
+    // pasa al hero mucho más rápido.
+    const MIN_TIME = 300;
     const startTime = Date.now();
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    // Intervalo del glitch periódico. Se guarda para poder limpiarlo
+    // cuando el loader se va (si no, sigue corriendo sobre un elemento
+    // que ya fue removido del DOM).
+    let loaderGlitchInterval = null;
+
+    function triggerLoaderGlitch() {
+      if (img.classList.contains("glitching")) return;
+      img.classList.add("glitching");
+      setTimeout(() => img.classList.remove("glitching"), 420);
+    }
 
     // Esperamos 2 frames para que el navegador pinte, y mostramos el logo
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         img.style.opacity = "1";
+
+        if (prefersReducedMotion) return;
+
+        // Primer glitch a los 600ms (después del fade in).
+        setTimeout(triggerLoaderGlitch, 600);
+
+        // Glitch periódico cada 2.5s, mientras el loader esté visible.
+        // Así, si la carga tarda 8 segundos, el usuario ve ~3 glitches
+        // en vez de uno solo.
+        loaderGlitchInterval = setInterval(triggerLoaderGlitch, 2500);
       });
     });
 
@@ -4946,17 +5535,50 @@ const marqueeText = [
       const elapsed = Date.now() - startTime;
       const wait = Math.max(0, MIN_TIME - elapsed);
       setTimeout(() => {
+        // Frenamos el glitch periódico antes de sacar el loader.
+        if (loaderGlitchInterval) {
+          clearInterval(loaderGlitchInterval);
+          loaderGlitchInterval = null;
+        }
+
         loader.style.opacity = "0";
         loader.style.pointerEvents = "none";
+
+        // Avisamos que el loader se está yendo, para que otros efectos
+        // (como el reveal por letra del hero) puedan arrancar.
+        document.dispatchEvent(new CustomEvent("krakoa:loaded"));
+
         setTimeout(() => loader.remove(), 500);
       }, wait);
     };
 
-    if (document.readyState === "complete") {
+    // Estrategia nueva: esperar DOMContentLoaded (HTML+CSS listos)
+    // y NO window.load (que espera a todas las imágenes, incluyendo
+    // las lazy del catálogo, y al script de Clarity).
+    //
+    // Además, un "race" con un timeout de 1500ms: si por alguna razón
+    // DOMContentLoaded tarda (por un script externo lento), ocultamos
+    // el loader igual. Así el usuario NUNCA queda mirando una pantalla
+    // negra por más de 1.5s.
+    //
+    // El MIN_TIME de 1000ms se sigue respetando: así el glitch del
+    // isotipo se ve completo antes de que el loader se vaya.
+    let hideScheduled = false;
+
+    function scheduleHide() {
+      if (hideScheduled) return;
+      hideScheduled = true;
       hide();
-    } else {
-      window.addEventListener("load", hide, { once: true });
     }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", scheduleHide, { once: true });
+    } else {
+      scheduleHide();
+    }
+
+    // Red de seguridad: a los 1.5s, ocultar sí o sí.
+    setTimeout(scheduleHide, 1500);
   })();
 
   // -------------------------
@@ -5212,10 +5834,12 @@ const marqueeText = [
     const panel = document.querySelector("#header-search-panel");
     searchToggle?.classList.add("search-switching");
     panel?.classList.add("search-switching");
+    // 420ms = 400ms de la nueva animación + 20ms de margen (antes
+    // era 340ms, cuando la animación duraba 320ms).
     setTimeout(() => {
       searchToggle?.classList.remove("search-switching");
       panel?.classList.remove("search-switching");
-    }, 340);
+    }, 420);
   }
 
   function openSearch() {
@@ -5330,11 +5954,57 @@ const marqueeText = [
         if (newOrder.length === 0) return;
       }
 
-      const frag = document.createDocumentFragment();
-      newOrder.forEach((card) => frag.appendChild(card));
-      grid.appendChild(frag);
+          const frag = document.createDocumentFragment();
+    newOrder.forEach((card) => frag.appendChild(card));
+    grid.appendChild(frag);
     };
   })();
+
+  // -------------------------
+  // SKELETON LOADER DEL CATÁLOGO
+  // -------------------------
+  // Mientras cada imagen base (.product-image-base) se está cargando,
+  // el contenedor .product-image no tiene .loaded y el CSS muestra
+  // el shimmer. Cuando la imagen termina de cargar, agregamos .loaded
+  // y el shimmer se desvanece.
+  // Hay que manejar dos casos:
+  //   1) La imagen ya cargó antes de correr este código (cache, o ya
+  //      estaba en viewport al recargar). Se detecta con img.complete.
+  //   2) La imagen todavía está cargando (loading=lazy). Se detecta
+  //      con el evento 'load'.
+  (() => {
+    const cards = document.querySelectorAll(".product-image");
+    cards.forEach((container) => {
+      const img = container.querySelector(".product-image-base");
+      if (!img) {
+        // Sin imagen base no tiene sentido el skeleton.
+        container.classList.add("loaded");
+        return;
+      }
+
+      // Caso 1: ya cargó (o está en cache).
+      if (img.complete && img.naturalWidth > 0) {
+        container.classList.add("loaded");
+        return;
+      }
+
+      // Caso 2: todavía cargando. Escuchamos el load.
+      img.addEventListener(
+        "load",
+        () => container.classList.add("loaded"),
+        { once: true }
+      );
+
+      // Si por algún motivo la imagen falla, sacamos el skeleton igual
+      // para no dejar un shimmer eterno.
+      img.addEventListener(
+        "error",
+        () => container.classList.add("loaded"),
+        { once: true }
+      );
+    });
+  })();
+
   const tintLayers = [
   document.querySelector("#catalogTintA"),
   document.querySelector("#catalogTintB"),
@@ -5407,12 +6077,16 @@ function filterProducts() {
   // Así "dragon ball" matchea "dragon ball z" y también el tag "dragon".
   const terms = raw.split(/\s+/).filter(Boolean);
 
+  // ── Paso 1: clasificar cada producto y OCULTAR los que no matchean.
+  // Las que se van a mostrar NO se tocan todavía (siguen con .is-hidden
+  // si estaban ocultas), así no hay flash mientras se reordena.
+  const toShowSet = new Set();
+
   products.forEach((product) => {
     const name = normalizeText(product.dataset.name);
     const tags = normalizeText(product.dataset.tags);
     const category = product.dataset.category ?? "";
 
-    // Cada término debe aparecer en el nombre O en algún tag.
     const matchesSearch =
       terms.length === 0 ||
       terms.every((term) => name.includes(term) || tags.includes(term));
@@ -5420,17 +6094,80 @@ function filterProducts() {
     const matchesCategory =
       activeCategory === null || category === activeCategory;
 
-    product.style.display =
-      matchesSearch && matchesCategory ? "" : "none";
+    const shouldShow = matchesSearch && matchesCategory;
+
+    if (shouldShow) {
+      toShowSet.add(product);
+    } else {
+      // Ocultar inmediatamente (display: none).
+      if (product.classList.contains("is-revealing")) {
+        product.classList.remove("is-revealing");
+      }
+      if (!product.classList.contains("is-hidden")) {
+        product.classList.add("is-hidden");
+      }
+    }
   });
 
-  // Reordenamos el DOM según el modo:
-  //  - Con categoría activa: alfabético (para que se vea ordenado).
-  //  - Sin categoría (home): el orden aleatorio original.
+  // ── Paso 2: reordenar el DOM (ahora que las ocultas ya no ocupan
+  // lugar, el reorder no genera saltos visuales).
   if (typeof window.__krakoaReorderProducts === "function") {
     window.__krakoaReorderProducts(activeCategory === null ? "random" : "alpha");
   }
+
+  // ── Paso 3: revelar TODAS las visibles con stagger calculado
+  // según el ORDEN VISUAL ACTUAL del DOM. No solo las que estaban
+  // ocultas: si solo animamos las nuevas, quedan "huecos" donde
+  // están las que ya estaban visibles, y el ojo percibe que
+  // "algunas aparecen antes que otras". Al reanimar todas, el
+  // stagger es parejo y sigue la lectura natural de la grilla
+  // (arriba-izquierda → arriba-derecha → abajo...).
+  // Trade-off: las que ya estaban visibles hacen un fade-in leve
+  // (1 → 0 → 1 en 300ms). Es el comportamiento típico de los
+  // grids al filtrar.
+  const grid = document.querySelector("#products");
+  if (!grid) return;
+  const allCards = Array.from(grid.querySelectorAll(".product-card"));
+
+  let revealIndex = 0;
+  allCards.forEach((product) => {
+    // Solo animamos las que DEBEN mostrarse (toShowSet).
+    // Las que no, ya quedaron con .is-hidden en el Paso 1 y se
+    // saltean acá.
+    if (!toShowSet.has(product)) return;
+
+    // Desocultar (por si venía oculta de un filtro anterior) y animar.
+    product.classList.remove("is-hidden");
+    product.style.setProperty(
+      "--card-stagger",
+      `${Math.min(revealIndex, 15) * 30}ms`
+    );
+    // Forzamos reinicio de la animación (por si ya estaba
+    // corriendo de un filtrado anterior rápido).
+    product.classList.remove("is-revealing");
+    void product.offsetWidth;
+    product.classList.add("is-revealing");
+    revealIndex++;
+  });
 }
+
+// Listener de animationend: cuando una tarjeta termina de animarse,
+// actualizamos su estado definitivo. Se agrega UNA SOLA VEZ al inicio
+// (no en cada filtro, para no acumular listeners).
+//   - cardHide termina → pasar a is-hidden (display: none).
+//   - cardReveal termina → quitar is-revealing (queda en estado base).
+// Los checks de clase evitan bugs si el usuario filtró rápido y el
+// animationend llega tarde (la clase ya no está, no hacemos nada).
+products.forEach((product) => {
+  product.addEventListener("animationend", (event) => {
+    if (
+      event.animationName === "cardReveal" &&
+      product.classList.contains("is-revealing")
+    ) {
+      product.classList.remove("is-revealing");
+    }
+  });
+});
 
 // Aplica un filtro de categoría al catálogo. Puede hacer push al
 // history (default, para clicks del usuario) o no (para restauraciones
@@ -5588,14 +6325,52 @@ categoryButtons.forEach((button) => {
   wrap?.addEventListener("click", handleClick);
 });
 
-  // Botón "volver arriba"
-  window.addEventListener("scroll", () => {
-    if (window.scrollY > 600) {
-      backToTop.classList.add("visible");
-    } else {
-      backToTop.classList.remove("visible");
+  // Botón "volver arriba" + barra de progreso de scroll + anillo del botón.
+  const scrollProgress = document.querySelector("#scroll-progress");
+  const backToTopRingProgress = document.querySelector(
+    "#back-to-top-ring-progress"
+  );
+  // Circunferencia del anillo (2π × r, con r=19).
+  // Tiene que coincidir con el stroke-dasharray del CSS.
+  const BACK_TO_TOP_CIRCUMFERENCE = 2 * Math.PI * 19;
+
+  function updateScrollProgress() {
+    if (!scrollProgress) return;
+    const docHeight =
+      document.documentElement.scrollHeight - window.innerHeight;
+    // Si la página no scrollea (contenido más corto que la ventana),
+    // dejamos la barra en 0.
+    const percent = docHeight > 0 ? (window.scrollY / docHeight) * 100 : 0;
+    scrollProgress.style.width = `${percent}%`;
+
+    // Anillo del botón "volver arriba": se llena de 0 a 100.
+    // dashoffset va de C (vacío) a 0 (lleno).
+    if (backToTopRingProgress) {
+      const offset = BACK_TO_TOP_CIRCUMFERENCE * (1 - percent / 100);
+      backToTopRingProgress.style.strokeDashoffset = String(offset);
     }
-  });
+  }
+
+  let scrollTicking = false;
+
+  window.addEventListener("scroll", () => {
+    if (!scrollTicking) {
+      window.requestAnimationFrame(() => {
+        if (window.scrollY > 600) {
+          backToTop.classList.add("visible");
+        } else {
+          backToTop.classList.remove("visible");
+        }
+        updateScrollProgress();
+        scrollTicking = false;
+      });
+      scrollTicking = true;
+    }
+  }, { passive: true });
+
+  // Actualizamos al cargar la página (por si el usuario recarga estando
+  // a mitad de scroll, o entra con un hash).
+  updateScrollProgress();
 
   backToTop.addEventListener("click", () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -5702,6 +6477,7 @@ categoryButtons.forEach((button) => {
   const modalQtyMinus = document.querySelector("#modal-qty-minus");
   const modalQtyPlus = document.querySelector("#modal-qty-plus");
   const modalAdd = document.querySelector("#modal-add");
+  const modalAddText = document.querySelector("#modal-add-text");
   const modalSeeCart = document.querySelector("#modal-see-cart");
   const modalShare = document.querySelector("#modal-share");
   const modalClose = document.querySelector("#modal-close");
@@ -5998,6 +6774,82 @@ hidden.decoding = "async";
     }, 620);
   }
 
+  // Guarda el último precio renderizado para comparar dígito a dígito.
+  // Se resetea a null cuando se abre el modal (sin animación al abrir).
+  let lastRenderedPrice = null;
+
+  // Renderiza el precio en #modal-price-unit como una serie de spans
+  // (uno por carácter). Si hay un precio anterior y los caracteres en
+  // la misma posición son distintos, esos dígitos "ruedan" (sale el
+  // viejo, entra el nuevo). Los que no cambian se quedan quietos.
+  //
+  // Ejemplo: "$25.000" → "$23.000"
+  //   Los caracteres cambian en la posición del 5→3 (el 2, 5, ".", 0, 0, 0).
+  //   Solo el "5" y el "3" son distintos en esa posición. Los demás
+  //   (2, ".", 0, 0, 0) se mantienen. Se anima solo el que cambió.
+  function renderPriceDigits(newText, animate = true) {
+    if (!modalPriceUnit) return;
+
+    // Si NO hay que animar (primera vez, o se resetea al abrir el modal),
+    // reemplazamos el contenido directamente sin spans de animación.
+    if (!animate || lastRenderedPrice === null || lastRenderedPrice === newText) {
+      modalPriceUnit.textContent = newText;
+      lastRenderedPrice = newText;
+      return;
+    }
+
+    const oldText = lastRenderedPrice;
+    // Recorremos carácter por carácter. Manejamos el caso en que las
+    // longitudes sean distintas (ej: "$9.000" → "$10.000", que pasa
+    // de 6 a 7 caracteres). En ese caso, todos los caracteres a
+    // partir de la primera diferencia se animan (no solo uno).
+    const maxLen = Math.max(oldText.length, newText.length);
+    const fragments = [];
+
+    for (let i = 0; i < maxLen; i++) {
+      const oldCh = oldText[i] ?? "";
+      const newCh = newText[i] ?? "";
+
+      if (oldCh === newCh) {
+        // Carácter sin cambios: se renderiza estático.
+        const span = document.createElement("span");
+        span.className = "price-digit";
+        span.textContent = newCh;
+        fragments.push(span);
+      } else {
+        // Carácter que cambia: se anima con el "out" y el "in".
+        const wrapper = document.createElement("span");
+        wrapper.className = "price-digit";
+        // Clonamos los caracteres a partir del índice i para que
+        // todos los que cambian se animen juntos (si las longitudes
+        // difieren, es la única forma de que se vea coherente).
+        if (oldCh) {
+          const out = document.createElement("span");
+          out.className = "digit-out";
+          out.textContent = oldText.slice(i);
+          wrapper.appendChild(out);
+        }
+        const inEl = document.createElement("span");
+        inEl.className = "digit-in";
+        inEl.textContent = newText.slice(i);
+        wrapper.appendChild(inEl);
+        fragments.push(wrapper);
+        // Cortamos: el "out" y el "in" ya tienen el resto del texto.
+        break;
+      }
+    }
+
+    // Construimos los fragmentos en un DocumentFragment y los
+    // reemplazamos de una sola vez con replaceChildren. Así el
+    // contenedor NUNCA queda vacío (que causaba un salto de layout
+    // porque el padre colapsaba a 0px por un frame).
+    const fragment = document.createDocumentFragment();
+    fragments.forEach((frag) => fragment.appendChild(frag));
+    modalPriceUnit.replaceChildren(fragment);
+
+    lastRenderedPrice = newText;
+  }
+
   // Recalcula y pinta todo el bloque de precio.
   // animate: si es true, dispara el flash cuando cambia el unitario.
   function updatePriceBlock(animate = false) {
@@ -6006,8 +6858,10 @@ hidden.decoding = "async";
     const unitPrice = getUnitPrice(projectedTotal);
     const totalWithProduct = projectedTotal * unitPrice;
 
-    // Precio grande
-    modalPriceUnit.textContent = `${formatPrice(unitPrice)} c/u`;
+    // Precio grande (con animación de dígitos que ruedan al cambiar).
+    // Solo animamos si animate = true (no en la apertura del modal
+    // ni cuando se resetea el estado).
+    renderPriceDigits(`${formatPrice(unitPrice)} c/u`, animate);
 
     // Texto chico de contexto
     if (cartTotal === 0) {
@@ -6026,15 +6880,24 @@ hidden.decoding = "async";
     );
     renderPriceTiers(activeTierIndex);
 
-    // Badge "agregá X más"
+    // Badge de contexto. NO se oculta nunca (así el bloque de precio
+    // mantiene la misma altura en todos los tiers y no salta cuando
+    // se cruza al máximo). Tres estados posibles:
+    //   - Tier máximo (next === null): mensaje positivo "Ya tenés
+    //     el mejor precio".
+    //   - Faltan ≤3 unidades para el próximo tier: "Agregá X más".
+    //   - Faltan >3 unidades (no debería pasar con los tiers
+    //     actuales, pero por las dudas): frase de contexto.
     const next = getNextTier(projectedTotal);
-    if (next && next.unitsNeeded > 0 && next.unitsNeeded <= 3) {
+    if (!next) {
+      modalPriceBadge.textContent = "✓ Ya tenés el mejor precio por unidad";
+    } else if (next.unitsNeeded <= 3) {
       const word = next.unitsNeeded === 1 ? "remera" : "remeras";
       modalPriceBadge.textContent = `Agregá ${next.unitsNeeded} ${word} más y todas salen a ${formatPrice(next.price)} c/u`;
-      modalPriceBadge.hidden = false;
     } else {
-      modalPriceBadge.hidden = true;
+      modalPriceBadge.textContent = `Sumá ${next.unitsNeeded} remeras más para llegar a ${formatPrice(next.price)} c/u`;
     }
+    modalPriceBadge.hidden = false;
 
     // Total
     modalPriceTotal.textContent = formatPrice(totalWithProduct);
@@ -6063,6 +6926,23 @@ hidden.decoding = "async";
   function unlockScroll() {
     document.body.style.paddingRight = "";
     document.body.classList.remove("modal-open");
+  }
+
+  // Dispara el glitch del título del modal (E19 y E20 comparten esta
+  // función). Recibe la duración en ms. Cancela cualquier timer
+  // anterior para que dos glitches seguidos no se pisen.
+  let modalTitleGlitchTimer = null;
+  function triggerModalTitleGlitch(duration = 400) {
+    if (!modalTitle) return;
+    if (modalTitleGlitchTimer) clearTimeout(modalTitleGlitchTimer);
+    // Forzamos reinicio de la animación aunque ya estuviera activa.
+    modalTitle.classList.remove("glitching");
+    void modalTitle.offsetWidth;
+    modalTitle.classList.add("glitching");
+    modalTitleGlitchTimer = setTimeout(() => {
+      modalTitle.classList.remove("glitching");
+      modalTitleGlitchTimer = null;
+    }, duration);
   }
 
 
@@ -6111,6 +6991,7 @@ hidden.decoding = "async";
     currentProductId = product.dataset.id || "";
     currentQuantity = 1;
     lastUnitPrice = null;
+    lastRenderedPrice = null;
 
     // Recalculamos los índices zoomeables para este producto
     // (depende de cuántos slides tenga: 4 sin extras, 5 con 1 extra, etc.)
@@ -6139,7 +7020,7 @@ hidden.decoding = "async";
     renderQuantity();
 
     modalAdd.classList.remove("is-added");
-    modalAdd.textContent = "Agregar al Pedido";
+    if (modalAddText) modalAddText.textContent = "Agregar al Pedido";
 
     modal.style.setProperty("--category-color", categoryColor);
 
@@ -6177,6 +7058,11 @@ hidden.decoding = "async";
         modal.classList.add("open");
       });
     });
+
+    // Glitch breve del título después de que el modal ya está
+    // entrando (200ms de delay para que no compita con la
+    // animación de apertura del modal).
+    setTimeout(() => triggerModalTitleGlitch(400), 200);
   }
   
 
@@ -6307,7 +7193,10 @@ hidden.decoding = "async";
     return Array.from(
       document.querySelectorAll("#products .product-card")
     ).filter((product) => {
-      return product.style.display !== "none";
+      // Una tarjeta cuenta como "visible" si no está oculta
+      // (.is-hidden). Como ahora el hide es instantáneo (display:
+      // none), no hace falta chequear estados intermedios.
+      return !product.classList.contains("is-hidden");
     });
   }
 
@@ -6413,6 +7302,7 @@ hidden.decoding = "async";
     currentProductId = product.dataset.id || "";
     currentQuantity = 1;
     lastUnitPrice = null;
+    lastRenderedPrice = null;
 
     zoomableIndices = currentImages
       .map((_, index) => (isZoomableSlide(index, currentImages.length) ? index : -1))
@@ -6438,7 +7328,7 @@ hidden.decoding = "async";
     renderQuantity();
 
     modalAdd.classList.remove("is-added");
-    modalAdd.textContent = "Agregar al Pedido";
+    if (modalAddText) modalAddText.textContent = "Agregar al Pedido";
 
     modal.style.setProperty("--category-color", categoryColor);
 
@@ -6466,6 +7356,9 @@ hidden.decoding = "async";
     } catch (error) {
       console.warn("[KRAKOA] No se pudo actualizar el hash:", error);
     }
+
+    // Glitch breve del título al cambiar de producto.
+    triggerModalTitleGlitch(400);
   }
 
   // Listeners de las flechas de producto.
@@ -7268,11 +8161,11 @@ hidden.decoding = "async";
     });
 
     modalAdd.classList.add("is-added");
-    modalAdd.textContent = "¡Agregado!";
+    if (modalAddText) modalAddText.textContent = "¡Agregado!";
 
     setTimeout(() => {
       modalAdd.classList.remove("is-added");
-      modalAdd.textContent = "Agregar al Pedido";
+      if (modalAddText) modalAddText.textContent = "Agregar al Pedido";
     }, 1600);
   });
 
@@ -7403,59 +8296,85 @@ hidden.decoding = "async";
 const heroBg = document.querySelector(".hero-bg");
 
 if (heroBg) {
-  const allSrcs = Array.from(
-    document.querySelectorAll(".product-card .product-image-base")
-  )
-    .map((img) => img.getAttribute("src"))
-    .filter(Boolean);
+  // La primera imagen del hero YA está en el HTML con fetchpriority="high".
+  // El JS no la crea: la usa como base y agrega las 5 rotativas
+  // (aleatorias, distintas a la primera) para la rotación.
+  const baseImg = heroBg.querySelector(".hero-bg-img");
 
-  function shuffleArray(arr) {
-    const copy = [...arr];
-    for (let i = copy.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [copy[i], copy[j]] = [copy[j], copy[i]];
+  if (baseImg) {
+    const baseSrc = baseImg.getAttribute("src");
+
+    const allSrcs = Array.from(
+      document.querySelectorAll(".product-card .product-image-base")
+    )
+      .map((img) => img.getAttribute("src"))
+      .filter((src) => src && src !== baseSrc);
+
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
     }
-    return copy;
-  }
 
-  // Elegimos hasta 6 imágenes al azar por visita.
-  const picked = shuffleArray(allSrcs).slice(0, 6);
+    // Agregamos 5 imágenes rotativas (la primera ya está estática).
+    const picked = shuffleArray(allSrcs).slice(0, 5);
 
-  picked.forEach((src, index) => {
-    const img = document.createElement("img");
-    img.src = src;
-    img.alt = "";
-    img.setAttribute("aria-hidden", "true");
-    img.decoding = "async";
-
-    if (index === 0) {
-      // La primera imagen es la que se ve al cargar la página.
-      // Es el LCP: le decimos al navegador que la priorice por sobre
-      // todo lo demás, y NO la marcamos como lazy.
-      img.fetchPriority = "high";
-      img.loading = "eager";
-      img.classList.add("active");
-    } else {
-      // Las otras 5 rotan recién en los próximos segundos.
-      // No son urgentes: que carguen cuando puedan.
+    picked.forEach((src) => {
+      const img = document.createElement("img");
+      img.src = src;
+      img.alt = "";
+      img.setAttribute("aria-hidden", "true");
+      img.decoding = "async";
       img.fetchPriority = "low";
       img.loading = "lazy";
+      heroBg.appendChild(img);
+    });
+
+    const heroImgs = heroBg.querySelectorAll("img");
+
+    if (heroImgs.length > 1) {
+      let heroIndex = 0;
+      let heroRotationInterval = null;
+
+      function startHeroRotation() {
+        if (heroRotationInterval) return;
+        heroRotationInterval = setInterval(() => {
+          heroImgs[heroIndex].classList.remove("active");
+          heroIndex = (heroIndex + 1) % heroImgs.length;
+          heroImgs[heroIndex].classList.add("active");
+        }, 5500);
+      }
+
+      function stopHeroRotation() {
+        if (heroRotationInterval) {
+          clearInterval(heroRotationInterval);
+          heroRotationInterval = null;
+        }
+      }
+
+      // Pausar/reanudar la rotación cuando el hero entra o sale
+      // del viewport. Ahorra CPU cuando el usuario está scrolleando
+      // el catálogo o leyendo el footer.
+      const heroSection = document.querySelector(".hero");
+      if (heroSection && "IntersectionObserver" in window) {
+        const heroObserver = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              startHeroRotation();
+            } else {
+              stopHeroRotation();
+            }
+          });
+        }, { threshold: 0.1 });
+        heroObserver.observe(heroSection);
+      } else {
+        startHeroRotation();
+      }
     }
-
-    heroBg.appendChild(img);
-  });
-
-  const heroImgs = heroBg.querySelectorAll("img");
-
-  if (heroImgs.length > 1) {
-    let heroIndex = 0;
-
-    setInterval(() => {
-      heroImgs[heroIndex].classList.remove("active");
-      heroIndex = (heroIndex + 1) % heroImgs.length;
-      heroImgs[heroIndex].classList.add("active");
-    }, 5500);
-  }
+  } // cierra el if (baseImg)
 }
 
 // -------------------------
@@ -7520,9 +8439,26 @@ function formatHeroText(text) {
     glitchEl.appendChild(gb);
   })();
 
+  let heroInView = true;
+  const heroSectionForGlitch = document.querySelector(".hero");
+  if (heroSectionForGlitch && "IntersectionObserver" in window) {
+    const glitchVisibilityObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        heroInView = entry.isIntersecting;
+      });
+    }, { threshold: 0.1 });
+    glitchVisibilityObserver.observe(heroSectionForGlitch);
+  }
+
   function scheduleNextGlitch() {
     const delay = MIN_DELAY + Math.random() * (MAX_DELAY - MIN_DELAY);
     setTimeout(() => {
+      // Si el hero no está a la vista, saltamos este ciclo para
+      // no gastar CPU. Reagendamos directamente.
+      if (!heroInView) {
+        scheduleNextGlitch();
+        return;
+      }
       // Tomamos el texto actual (dataset.text lo mantiene sincronizado
       // el typewriter). El "." final va aparte en #hero-cursor, así
       // que lo sacamos para hacer el scrambling.
@@ -7628,9 +8564,25 @@ function formatHeroText(text) {
     isAnimating = false;
   }
 
+  let typewriterInView = true;
+  const heroSectionForTypewriter = document.querySelector(".hero");
+  if (heroSectionForTypewriter && "IntersectionObserver" in window) {
+    const typewriterVisibilityObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        typewriterInView = entry.isIntersecting;
+      });
+    }, { threshold: 0.1 });
+    typewriterVisibilityObserver.observe(heroSectionForTypewriter);
+  }
+
   function scheduleNext() {
     const delay = MIN_CYCLE + Math.random() * (MAX_CYCLE - MIN_CYCLE);
     setTimeout(async () => {
+      // Si el hero no está a la vista, saltamos el ciclo completo.
+      if (!typewriterInView) {
+        scheduleNext();
+        return;
+      }
       try {
         await cycle();
       } catch (error) {
@@ -7642,6 +8594,150 @@ function formatHeroText(text) {
   }
 
   scheduleNext();
+})();
+
+// -------------------------
+// HERO — reveal por letra (solo en la carga inicial)
+// -------------------------
+
+// Cuando el loader se va, el hero revela "CATALOGO" letra por letra
+// con un stagger corto. Al terminar, restauramos el HTML normal para
+// que el typewriter y el glitch sigan funcionando igual que siempre.
+// El reveal se dispara con el evento "krakoa:loaded" que emite el
+// loader al empezar a desvanecerse.
+(() => {
+  const textEl = document.querySelector("#hero-text");
+  if (!textEl) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  let played = false;
+
+  function playReveal() {
+    if (played) return;
+    played = true;
+
+    const originalHTML = textEl.innerHTML;
+    const word = "CATALOGO";
+
+    // ── Paso 1: medir la posición exacta de CADA letra en el texto
+    // original (como un solo nodo, con kerning correcto).
+    // Usamos Range para obtener la caja de cada carácter.
+    textEl.textContent = word;
+    void textEl.offsetWidth;
+
+    const textRect = textEl.getBoundingClientRect();
+    const range = document.createRange();
+    const textNode = textEl.firstChild;
+    const charLefts = [];
+    for (let i = 0; i < word.length; i++) {
+      range.setStart(textNode, i);
+      range.setEnd(textNode, i + 1);
+      charLefts.push(range.getBoundingClientRect().left - textRect.left);
+    }
+
+    // ── Paso 2: crear los spans (sin animación, sin transform) para
+    // poder medir y reposicionar cada letra con precisión.
+    textEl.innerHTML = word
+      .split("")
+      .map(
+        (ch) =>
+          `<span class="hero-reveal-letter" style="animation: none; opacity: 0; transform: none">${ch}</span>`
+      )
+      .join("");
+    void textEl.offsetWidth;
+
+    const spans = textEl.querySelectorAll(".hero-reveal-letter");
+
+    // ── Paso 3: alinear cada span con la posición de su letra en el
+    // texto original usando margin-left. Se hace en orden y se
+    // recalcula después de cada ajuste (getBoundingClientRect fuerza
+    // reflow), así cada span arranca desde la posición ya ajustada
+    // del anterior. Resultado: cada letra queda EXACTAMENTE en el
+    // mismo píxel que en el texto original (con kerning real).
+    spans.forEach((span, i) => {
+      if (i === 0) return; // el primero ya está en su lugar
+      const spanRect = span.getBoundingClientRect();
+      const textRectNow = textEl.getBoundingClientRect();
+      const currentLeft = spanRect.left - textRectNow.left;
+      const targetLeft = charLefts[i];
+      const delta = targetLeft - currentLeft;
+      if (Math.abs(delta) > 0.1) {
+        span.style.marginLeft = `${delta}px`;
+        void span.offsetWidth; // reflow para el próximo
+      }
+    });
+
+    // ── Paso 4: arrancar la animación (quitar overrides inline para
+    // que el CSS y el keyframe tomen el control).
+    spans.forEach((el, i) => {
+      el.style.animation = "";
+      el.style.opacity = "";
+      el.style.transform = "";
+      el.style.animationDelay = `${i * 60}ms`;
+    });
+
+    // ── Paso 5: restaurar el HTML original cuando termina el reveal.
+    const totalTime = 450 + (word.length - 1) * 60 + 100;
+    setTimeout(() => {
+      textEl.innerHTML = originalHTML;
+    }, totalTime);
+  }
+
+  // Esperamos 150ms después del evento para que el fade del loader
+  // ya esté en curso (0.45s de duración) y el hero se vea detrás.
+  // Sin este delay, las primeras letras aparecen debajo del loader
+  // todavía opaco.
+  document.addEventListener(
+    "krakoa:loaded",
+    () => setTimeout(playReveal, 150),
+    { once: true }
+  );
+
+  // Fallback de red de seguridad: solo si el evento NUNCA llega
+  // (por un bug en el loader). A los 15s, se ejecuta igual. Esto
+  // no debería pasar nunca en condiciones normales.
+  setTimeout(playReveal, 15000);
+})();
+
+// -------------------------
+// GLITCH OCASIONAL DEL LOGO DEL HEADER
+// -------------------------
+
+// Cada 30-60s (aleatorio), el logo horizontal hace un glitch breve.
+// Respeta prefers-reduced-motion.
+(() => {
+  const logo = document.querySelector(".logo-horizontal");
+  if (!logo) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  // Bajamos la frecuencia (antes era 30-60s). Ahora el glitch del
+  // logo del header aparece cada 15-30s: suficiente para sentirse
+  // "vivo" sin ser molesto ni competir con el glitch del hero.
+  const MIN_DELAY = 15000;
+  const MAX_DELAY = 30000;
+  // Antes era 220ms. Lo subimos a 420ms para que coincida con la
+  // nueva animación CSS (que ahora tiene la misma duración que el
+  // glitch del hero). Si no, la clase se quitaba antes de que
+  // terminara la animación.
+  const GLITCH_DURATION = 420;
+
+  function triggerLogoGlitch() {
+    if (logo.classList.contains("glitching")) return;
+    logo.classList.add("glitching");
+    setTimeout(() => logo.classList.remove("glitching"), GLITCH_DURATION);
+  }
+
+  function scheduleNext() {
+    const delay = MIN_DELAY + Math.random() * (MAX_DELAY - MIN_DELAY);
+    setTimeout(() => {
+      triggerLogoGlitch();
+      scheduleNext();
+    }, delay);
+  }
+
+  // Arranca con un pequeño delay inicial (5s) para que no se
+  // superponga con la carga inicial de la página.
+  setTimeout(scheduleNext, 5000);
 })();
 
 // -------------------------
@@ -7667,6 +8763,24 @@ if (footerParticles) {
 
     footerParticles.appendChild(p);
   }
+
+  // Pausamos las animaciones de las partículas cuando el footer
+  // no está en viewport. Ahorra GPU y CPU cuando el usuario está
+  // en el catálogo o en el hero.
+  if ("IntersectionObserver" in window) {
+    const footerEl = document.querySelector(".site-footer");
+    if (footerEl) {
+      const particleObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          const particles = footerParticles.querySelectorAll(".footer-particle");
+          particles.forEach((p) => {
+            p.style.animationPlayState = entry.isIntersecting ? "running" : "paused";
+          });
+        });
+      });
+      particleObserver.observe(footerEl);
+    }
+  }
 }
 
 // -------------------------
@@ -7684,7 +8798,10 @@ if (footerParticles) {
 
   const MIN_DELAY = 3000;
   const MAX_DELAY = 7000;
-  const GLITCH_DURATION = 320;
+  // Antes era 320ms. Lo subimos a 400ms para que coincida con la
+  // nueva duración CSS (10 keyframes + steps(9) tardan más en
+  // "leerse"). Si no, la clase se quitaba antes de que terminara.
+  const GLITCH_DURATION = 400;
 
   // Símbolos "digitales" ANGOSTOS. El objetivo es que el texto scrambled
   // tenga un ancho parecido al original, así el botón no cambia de tamaño
@@ -7773,6 +8890,92 @@ if (footerParticles) {
   // Dos cadenas arrancan desfasadas. Los glitches pueden pisarse.
   setTimeout(startChain, 800);
   setTimeout(startChain, 2600);
+})();
+
+// -------------------------
+// FADE-IN AL SCROLLEAR (secciones)
+// -------------------------
+
+// Las secciones "Cómo Comprar", "Calidad" y el footer aparecen
+// suavemente cuando entran al viewport por primera vez.
+// Usa IntersectionObserver (nativo del navegador): el browser
+// detecta cuándo un elemento entra/sale del viewport y dispara un
+// callback. Es muchísimo más eficiente que escuchar "scroll" y
+// medir posiciones a mano.
+//
+// La clase .section-observe se agrega DESDE JS (no está en el HTML),
+// así si JS falla por algún motivo, las secciones se ven normales
+// (progressive enhancement). Si el usuario tiene reduce-motion
+// activado, ni siquiera agregamos la clase: todo visible de entrada.
+(() => {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  if (!("IntersectionObserver" in window)) return;
+
+  const sections = document.querySelectorAll(
+    "#como-comprar, #calidad, .site-footer"
+  );
+  if (sections.length === 0) return;
+
+  // Marcamos las secciones como "pendientes de animar" (opacity 0).
+  sections.forEach((section) => section.classList.add("section-observe"));
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          // Dejamos de vigilar esta sección: ya se animó, no queremos
+          // que se re-anime cada vez que el usuario sube y baja.
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    {
+      // threshold 0.1: la sección se anima cuando al menos 10% de
+      // su altura ya es visible en el viewport.
+      // rootMargin -80px: adelanta la animación 80px antes de que
+      // la sección "toque" el borde inferior del viewport. Así,
+      // cuando el usuario llega por un anchor (#como-comprar), la
+      // sección ya está visible y no hay salto.
+      threshold: 0.3,
+      rootMargin: "0px 0px -80px 0px",
+    }
+  );
+
+  sections.forEach((section) => observer.observe(section));
+})();
+
+// -------------------------
+// GLITCH OCASIONAL DEL TÍTULO DEL MODAL (E20)
+// -------------------------
+
+// Mientras el modal está abierto, cada 15-20s el título hace un
+// glitch breve (300ms). Si el modal está cerrado, no hace nada.
+// Respeta prefers-reduced-motion.
+(() => {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  const MIN_DELAY = 15000;
+  const MAX_DELAY = 20000;
+  const GLITCH_DURATION = 300;
+
+  function scheduleNext() {
+    const delay = MIN_DELAY + Math.random() * (MAX_DELAY - MIN_DELAY);
+    setTimeout(() => {
+      // Solo si el modal está abierto (aria-hidden === "false").
+      // Si está cerrado, no hacemos nada y reagendamos.
+      if (
+        modal &&
+        modal.getAttribute("aria-hidden") === "false" &&
+        typeof triggerModalTitleGlitch === "function"
+      ) {
+        triggerModalTitleGlitch(GLITCH_DURATION);
+      }
+      scheduleNext();
+    }, delay);
+  }
+
+  scheduleNext();
 })();
 
 </script>

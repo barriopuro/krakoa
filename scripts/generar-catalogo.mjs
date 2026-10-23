@@ -42,8 +42,20 @@ const optimizedCatalogoDir = path.join(
 
 async function optimizeImage(sourcePath, destinationPath) {
   await sharp(sourcePath)
+    // Redimensionamos a un máximo de 1000px de ancho (y alto).
+    // withoutEnlargement: true evita que las imágenes chicas se
+    // estiren si el original era menor a 1000px.
+    // fit: "inside" mantiene la proporción original.
+    .resize({
+      width: 1000,
+      height: 1000,
+      fit: "inside",
+      withoutEnlargement: true,
+    })
     .webp({
-      quality: 82,
+      // Bajamos de 82 a 75. En fotos de remeras sobre fondo, la
+      // diferencia visual es imperceptible, pero el peso baja ~30%.
+      quality: 75,
       effort: 4,
     })
     .toFile(destinationPath);

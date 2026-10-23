@@ -1934,3 +1934,37 @@ verificables. No mezclar muchos cambios grandes en un mismo mensaje.
 
 Al final de cada tanda, incluir una sección "Cómo probarlo" con
 pasos concretos que el usuario pueda seguir.
+
+
+### Sesión 19 — Optimización de Performance, Unificación de Glitches y Loader
+
+**Métricas finales (Fast 4G, Lighthouse Mobile):**
+- Performance: 79 (antes 60-70)
+- LCP: 3.8s (antes 12.3s)
+- Peso total: 22.5 MB (antes 41 MB)
+- DOMContentLoaded: 2.07s (antes 3.2s)
+
+**Cambios realizados:**
+1. **Imágenes**: Calidad webp bajada de 82 a 75 y resize máximo a 1000px. Redujo el peso del catálogo a la mitad.
+2. **Loader**: Cambiado de `window.load` a `DOMContentLoaded` + timeout de seguridad de 1500ms. El MIN_TIME bajó de 1000 a 300ms.
+3. **Hero LCP**: La primera imagen del hero ahora es estática en el HTML con `fetchpriority="high"`. El JS solo agrega las 5 rotativas.
+4. **JSON-LD**: Consolidado en 1 solo `<script>` con `@graph` (antes eran 117 scripts inline).
+5. **Timers pausados**: La rotación del hero, el glitch del título, el typewriter y las partículas del footer se pausan vía `IntersectionObserver` cuando no están en viewport.
+6. **Scroll**: Listener optimizado con `requestAnimationFrame` y `{ passive: true }`.
+7. **CSS Limpieza**: Se eliminó código muerto (keyframes viejos) y se arregló un error de sintaxis en `.cat-text`.
+8. **Will-change**: Se quitó el masivo de las imágenes del catálogo (solo queda en hover).
+9. **Unificación de Glitches**: Todos (logo, loader, categorías, buscador, modal) usan la misma técnica del hero (clip-path, flips, RGB split, steps).
+10. **Título de pestaña y URL dinámicos**: La URL refleja `?cat=...` y `#producto`, y el `<title>` cambia según el contexto.
+11. **Botón "Volver arriba"**: Ahora tiene un anillo SVG de progreso circular basado en el scroll.
+12. **Filtro de categorías**: Animación de fade-in escalonada y reordenamiento sin saltos.
+
+**🛑 PENDIENTE PARA LA PRÓXIMA SESIÓN (Errores sutiles a corregir):**
+- [El usuario pegará acá los detalles que encontró]
+/// hola soy el usuario, :) ////
+1.- al hacer hover sobre alguna tarjeta, la imagen 1 (modelo) por un momento antes de desaparecer para que aparezca la imagen 2 (remera), baja uno o unos pocos pixeles.
+cuando dejo de hacer hover, vuelve desde la imagen 2 a la imagen 1, y hace lo inverso, sube unos pocos pixeles.
+es minimo, pero se nota.
+////chau, atte.: el usuario//////
+
+- Revisar el comportamiento del `IntersectionObserver` en el hero si el usuario scrollea muy rápido.
+- Revisar performance del `backdrop-filter` en mobile de gama baja (bajado a blur(6px) pero puede requerir más ajustes).
