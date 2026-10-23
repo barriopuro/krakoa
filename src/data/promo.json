@@ -1,9 +1,9 @@
 {
   "activa": true,
   "imagenes": [
-    "/promo/promo1.webp"
+    "/promo/precios.webp"
   ],
-  "hash": "promo1.webp:155653",
+  "hash": "precios.webp:1272483",
   "config": {
     "activa": true,
     "noMostrarDuracionHoras": 24,
