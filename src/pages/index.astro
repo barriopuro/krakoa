@@ -1005,14 +1005,16 @@ const marqueeText = [
             </button>
 
             <div class="promo-stage">
-              <button
-                id="promo-prev"
-                class="promo-arrow promo-prev"
-                type="button"
-                aria-label="Imagen anterior"
-              >
-                ‹
-              </button>
+              {promo.imagenes.length > 1 && (
+                <button
+                  id="promo-prev"
+                  class="promo-arrow promo-prev"
+                  type="button"
+                  aria-label="Imagen anterior"
+                >
+                  ‹
+                </button>
+              )}
 
               <div class="promo-image-wrapper">
                 {promo.imagenes.map((src, index) => (
@@ -1026,14 +1028,16 @@ const marqueeText = [
                 ))}
               </div>
 
-              <button
-                id="promo-next"
-                class="promo-arrow promo-next"
-                type="button"
-                aria-label="Imagen siguiente"
-              >
-                ›
-              </button>
+              {promo.imagenes.length > 1 && (
+                <button
+                  id="promo-next"
+                  class="promo-arrow promo-next"
+                  type="button"
+                  aria-label="Imagen siguiente"
+                >
+                  ›
+                </button>
+              )}
             </div>
 
             {promo.imagenes.length > 1 && (
@@ -4987,11 +4991,53 @@ const marqueeText = [
   transition: opacity 0.4s ease;
   pointer-events: none;
   user-select: none;
+  z-index: 2;
 }
 
+/* 1. Flicker de encendido + 3. Pulso de brillo (Neon Glow) */
 :global(.promo-image-el.active) {
   opacity: 1;
   pointer-events: auto;
+  /* El flicker dura 0.8s. Después arranca el pulso de neón en bucle. */
+  animation: promoFlickerOn 0.8s ease-out forwards, 
+             promoNeonPulse 2.5s infinite alternate 0.8s;
+}
+
+/* 2. Capa de Scanlines animadas (Rayas de TV) */
+:global(.promo-image-wrapper::after) {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  /* Subimos la opacidad a 0.15 (15%) para que se note */
+  background: linear-gradient(
+    to bottom,
+    transparent 50%,
+    rgba(0, 255, 240, 0.15) 50%
+  );
+  background-size: 100% 4px; /* Rayas horizontales de 2px */
+  animation: promoScanlines 6s linear infinite;
+}
+
+@keyframes promoFlickerOn {
+  0%   { opacity: 0; filter: brightness(3); }
+  10%  { opacity: 1; filter: brightness(1); }
+  20%  { opacity: 0.2; filter: brightness(2); }
+  30%  { opacity: 1; filter: brightness(1); }
+  45%  { opacity: 0.5; filter: brightness(1.5); }
+  60%  { opacity: 1; filter: brightness(1); }
+  100% { opacity: 1; filter: brightness(1); }
+}
+
+@keyframes promoNeonPulse {
+  0%   { box-shadow: 0 0 5px rgba(0, 255, 240, 0.2); }
+  100% { box-shadow: 0 0 25px rgba(0, 255, 240, 0.7); }
+}
+
+@keyframes promoScanlines {
+  0%   { background-position: 0 0; }
+  100% { background-position: 0 100vh; }
 }
 
 :global(.promo-arrow) {
@@ -5035,6 +5081,8 @@ const marqueeText = [
   flex-wrap: wrap;
   background: #0a0a0a;
   border-top: 1px solid #242424;
+  position: relative;
+  z-index: 5; /* Para que quede encima de las scanlines */
 }
 
 :global(.promo-thumb) {
