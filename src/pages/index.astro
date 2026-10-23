@@ -25,23 +25,10 @@ function productUrl(path) {
   return SITE_ORIGIN + BASE_PATH + path;
 }
 
-// Rango de precios para el AggregateOffer del schema.
-// Espeja PRICE_TIERS del <script> (25.000 / 23.000 / 20.000).
-// Si se cambian los precios, actualizar ACÁ TAMBIÉN.
-const SCHEMA_PRICES = {
-  lowPrice: 20000,
-  highPrice: 25000,
-  offerCount: 3,
-};
-
-// Datos de la organización, reusados en los schemas.
-const SCHEMA_ORG = {
-  "@type": "Organization",
-  name: "KRAKOA",
-  url: `${SITE_ORIGIN}${BASE_PATH}`,
-  logo: `${SITE_ORIGIN}${BASE_PATH}/logos/krakoalogo-horizontal.webp`,
-  sameAs: ["https://instagram.com/krakoa.sw"],
-};
+// (SCHEMA_PRICES y SCHEMA_ORG se eliminaron del frontmatter porque
+// el scanner de dependencias de Vite 7 (rolldown) falla al parsear
+// declaraciones const con objetos literales en este contexto.
+// Los valores van inline en el JSON-LD del head.)
 
 const marqueeText = [
   "Envíos a todo el país",
@@ -98,20 +85,26 @@ const marqueeText = [
     set:html={JSON.stringify({
       "@context": "https://schema.org",
       "@graph": [
-        SCHEMA_ORG,
+        {
+          "@type": "Organization",
+          name: "KRAKOA",
+          url: SITE_ORIGIN + BASE_PATH,
+          logo: SITE_ORIGIN + BASE_PATH + "/logos/krakoalogo-horizontal.webp",
+          sameAs: ["https://instagram.com/krakoa.sw"],
+        },
         ...catalogo.products.map((product) => ({
           "@type": "Product",
           name: product.name,
-          image: productUrl(product.modelo),
-          description: `Remera ${product.name} de KRAKOA. Categoría: ${product.categoryName}. Algodón peinado 24/1, estampa DTF premium.`,
+          image: SITE_ORIGIN + BASE_PATH + product.modelo,
+          description: "Remera " + product.name + " de KRAKOA. Categoría: " + product.categoryName + ". Algodón peinado 24/1, estampa DTF premium.",
           sku: product.id,
           brand: { "@type": "Brand", name: "KRAKOA" },
           offers: {
             "@type": "AggregateOffer",
             priceCurrency: "ARS",
-            lowPrice: String(SCHEMA_PRICES.lowPrice),
-            highPrice: String(SCHEMA_PRICES.highPrice),
-            offerCount: String(SCHEMA_PRICES.offerCount),
+            lowPrice: "20000",
+            highPrice: "25000",
+            offerCount: "3",
             availability: "https://schema.org/InStock",
           },
         })),
@@ -2426,41 +2419,42 @@ const marqueeText = [
     height: 100%;
     object-fit: cover;
     display: block;
-    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
-                transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    /* El will-change masivo está apagado: 234 imágenes generando capas
-       GPU traban el compositor en mobile. Lo activamos solo en hover. */
+    /* Solo animamos opacity. Se quitó la transición de transform
+       porque el scale(1.015) del hover causaba un shift sutil de
+       1-2px al cambiar entre las dos imágenes (el navegador
+       redondeaba la escala a píxeles distintos y "reasentaba" el
+       contenido). Con crossfade puro de opacity el cambio se
+       siente igual de fluido y no se mueve nada. */
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  @media (hover: hover) and (pointer: fine) {
-    .product-button:hover .product-image img {
-      will-change: opacity, transform;
-    }
-  }
+  /* (se eliminó el will-change en hover: promocionar la imagen a una
+     capa GPU durante la transición causaba un shift sutil de 1-2px,
+     porque la capa se rasterizaba en una posición de subpíxel
+     ligeramente distinta a la original. El navegador ya promociona
+     solo durante las transiciones de opacity, así que no perdemos
+     performance.) */
 
-  /* Imagen base: visible por defecto. */
+  /* Imagen base: visible por defecto. Sin transform (se quitó el
+     scale del hover para eliminar el shift de 1-2px). */
   .product-image-base {
     opacity: 1;
-    transform: scale(1);
     z-index: 1;
   }
 
   /* Imagen hover: oculta por defecto. */
   .product-image-hover {
     opacity: 0;
-    transform: scale(1.015);
     z-index: 0;
   }
 
-  /* Hover: la base se va, la hover aparece. */
+  /* Hover: la base se va, la hover aparece. Crossfade puro. */
   .product-button:hover .product-image-base {
     opacity: 0;
-    transform: scale(1.015);
   }
 
   .product-button:hover .product-image-hover {
     opacity: 1;
-    transform: scale(1);
   }
 
   /* Overlay con degradado abajo de la imagen. */
