@@ -218,13 +218,13 @@
       "extras": []
     },
     {
-      "id": "cypress-hill",
-      "name": "Cypress Hill",
+      "id": "blink-182",
+      "name": "Blink 182",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/cypress-hill/modelo.webp",
-      "remera": "/catalogo/musica/cypress-hill/remera.webp",
+      "modelo": "/catalogo/musica/blink-182/modelo.webp",
+      "remera": "/catalogo/musica/blink-182/remera.webp",
       "extras": []
     },
     {
@@ -291,13 +291,13 @@
       "extras": []
     },
     {
-      "id": "cypress-hill-insane-in-the-brain",
-      "name": "Cypress Hill Insane In The Brain",
+      "id": "cypress-hill",
+      "name": "Cypress Hill",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/cypress-hill-insane-in-the-brain/modelo.webp",
-      "remera": "/catalogo/musica/cypress-hill-insane-in-the-brain/remera.webp",
+      "modelo": "/catalogo/musica/cypress-hill/modelo.webp",
+      "remera": "/catalogo/musica/cypress-hill/remera.webp",
       "extras": []
     },
     {
@@ -364,13 +364,13 @@
       "extras": []
     },
     {
-      "id": "dano",
-      "name": "Dano",
+      "id": "cypress-hill-insane-in-the-brain",
+      "name": "Cypress Hill Insane In The Brain",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/dano/modelo.webp",
-      "remera": "/catalogo/musica/dano/remera.webp",
+      "modelo": "/catalogo/musica/cypress-hill-insane-in-the-brain/modelo.webp",
+      "remera": "/catalogo/musica/cypress-hill-insane-in-the-brain/remera.webp",
       "extras": []
     },
     {
@@ -427,13 +427,13 @@
       "extras": []
     },
     {
-      "id": "foo-fighters",
-      "name": "Foo Fighters",
+      "id": "dano",
+      "name": "Dano",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/foo-fighters/modelo.webp",
-      "remera": "/catalogo/musica/foo-fighters/remera.webp",
+      "modelo": "/catalogo/musica/dano/modelo.webp",
+      "remera": "/catalogo/musica/dano/remera.webp",
       "extras": []
     },
     {
@@ -489,13 +489,13 @@
       "extras": []
     },
     {
-      "id": "gorillaz",
-      "name": "Gorillaz",
+      "id": "foo-fighters",
+      "name": "Foo Fighters",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/gorillaz/modelo.webp",
-      "remera": "/catalogo/musica/gorillaz/remera.webp",
+      "modelo": "/catalogo/musica/foo-fighters/modelo.webp",
+      "remera": "/catalogo/musica/foo-fighters/remera.webp",
       "extras": []
     },
     {
@@ -551,13 +551,13 @@
       "extras": []
     },
     {
-      "id": "gustavo-cerati",
-      "name": "Gustavo Cerati",
+      "id": "gorillaz",
+      "name": "Gorillaz",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/gustavo-cerati/modelo.webp",
-      "remera": "/catalogo/musica/gustavo-cerati/remera.webp",
+      "modelo": "/catalogo/musica/gorillaz/modelo.webp",
+      "remera": "/catalogo/musica/gorillaz/remera.webp",
       "extras": []
     },
     {
@@ -613,13 +613,13 @@
       "extras": []
     },
     {
-      "id": "indio-solari",
-      "name": "Indio Solari",
+      "id": "gustavo-cerati",
+      "name": "Gustavo Cerati",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/indio-solari/modelo.webp",
-      "remera": "/catalogo/musica/indio-solari/remera.webp",
+      "modelo": "/catalogo/musica/gustavo-cerati/modelo.webp",
+      "remera": "/catalogo/musica/gustavo-cerati/remera.webp",
       "extras": []
     },
     {
@@ -675,13 +675,13 @@
       "extras": []
     },
     {
-      "id": "jimi-hendrix",
-      "name": "Jimi Hendrix",
+      "id": "indio-solari",
+      "name": "Indio Solari",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/jimi-hendrix/modelo.webp",
-      "remera": "/catalogo/musica/jimi-hendrix/remera.webp",
+      "modelo": "/catalogo/musica/indio-solari/modelo.webp",
+      "remera": "/catalogo/musica/indio-solari/remera.webp",
       "extras": []
     },
     {
@@ -735,13 +735,13 @@
       "extras": []
     },
     {
-      "id": "la-renga",
-      "name": "La Renga",
+      "id": "jimi-hendrix",
+      "name": "Jimi Hendrix",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/la-renga/modelo.webp",
-      "remera": "/catalogo/musica/la-renga/remera.webp",
+      "modelo": "/catalogo/musica/jimi-hendrix/modelo.webp",
+      "remera": "/catalogo/musica/jimi-hendrix/remera.webp",
       "extras": []
     },
     {
@@ -785,13 +785,13 @@
       "extras": []
     },
     {
-      "id": "lemmy-kilmister",
-      "name": "Lemmy Kilmister",
+      "id": "la-renga",
+      "name": "La Renga",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/lemmy-kilmister/modelo.webp",
-      "remera": "/catalogo/musica/lemmy-kilmister/remera.webp",
+      "modelo": "/catalogo/musica/la-renga/modelo.webp",
+      "remera": "/catalogo/musica/la-renga/remera.webp",
       "extras": []
     },
     {
@@ -835,13 +835,13 @@
       "extras": []
     },
     {
-      "id": "linkin-park",
-      "name": "Linkin Park",
+      "id": "lemmy-kilmister",
+      "name": "Lemmy Kilmister",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/linkin-park/modelo.webp",
-      "remera": "/catalogo/musica/linkin-park/remera.webp",
+      "modelo": "/catalogo/musica/lemmy-kilmister/modelo.webp",
+      "remera": "/catalogo/musica/lemmy-kilmister/remera.webp",
       "extras": []
     },
     {
@@ -885,13 +885,13 @@
       "extras": []
     },
     {
-      "id": "los-fabulosos-cadillacs",
-      "name": "Los Fabulosos Cadillacs",
+      "id": "linkin-park",
+      "name": "Linkin Park",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/los-fabulosos-cadillacs/modelo.webp",
-      "remera": "/catalogo/musica/los-fabulosos-cadillacs/remera.webp",
+      "modelo": "/catalogo/musica/linkin-park/modelo.webp",
+      "remera": "/catalogo/musica/linkin-park/remera.webp",
       "extras": []
     },
     {
@@ -905,13 +905,13 @@
       "extras": []
     },
     {
-      "id": "monstars-space-jam",
-      "name": "Monstars Space Jam",
+      "id": "mojo-jojo",
+      "name": "Mojo Jojo",
       "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/monstars-space-jam/modelo.webp",
-      "remera": "/catalogo/cine-series/monstars-space-jam/remera.webp",
+      "modelo": "/catalogo/cine-series/mojo-jojo/modelo.webp",
+      "remera": "/catalogo/cine-series/mojo-jojo/remera.webp",
       "extras": []
     },
     {
@@ -925,13 +925,13 @@
       "extras": []
     },
     {
-      "id": "michael-jackson",
-      "name": "Michael Jackson",
+      "id": "los-fabulosos-cadillacs",
+      "name": "Los Fabulosos Cadillacs",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/michael-jackson/modelo.webp",
-      "remera": "/catalogo/musica/michael-jackson/remera.webp",
+      "modelo": "/catalogo/musica/los-fabulosos-cadillacs/modelo.webp",
+      "remera": "/catalogo/musica/los-fabulosos-cadillacs/remera.webp",
       "extras": []
     },
     {
@@ -945,13 +945,13 @@
       "extras": []
     },
     {
-      "id": "motoratones-de-marte",
-      "name": "Motoratones De Marte",
+      "id": "monstars-space-jam",
+      "name": "Monstars Space Jam",
       "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/motoratones-de-marte/modelo.webp",
-      "remera": "/catalogo/cine-series/motoratones-de-marte/remera.webp",
+      "modelo": "/catalogo/cine-series/monstars-space-jam/modelo.webp",
+      "remera": "/catalogo/cine-series/monstars-space-jam/remera.webp",
       "extras": []
     },
     {
@@ -965,13 +965,13 @@
       "extras": []
     },
     {
-      "id": "michael-jackson-smooth-criminal",
-      "name": "Michael Jackson Smooth Criminal",
+      "id": "michael-jackson",
+      "name": "Michael Jackson",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/michael-jackson-smooth-criminal/modelo.webp",
-      "remera": "/catalogo/musica/michael-jackson-smooth-criminal/remera.webp",
+      "modelo": "/catalogo/musica/michael-jackson/modelo.webp",
+      "remera": "/catalogo/musica/michael-jackson/remera.webp",
       "extras": []
     },
     {
@@ -985,23 +985,23 @@
       "extras": []
     },
     {
-      "id": "mumm-rah-thundercats",
-      "name": "Mumm Rah Thundercats",
+      "id": "motoratones-de-marte",
+      "name": "Motoratones De Marte",
       "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/mumm-rah-thundercats/modelo.webp",
-      "remera": "/catalogo/cine-series/mumm-rah-thundercats/remera.webp",
+      "modelo": "/catalogo/cine-series/motoratones-de-marte/modelo.webp",
+      "remera": "/catalogo/cine-series/motoratones-de-marte/remera.webp",
       "extras": []
     },
     {
-      "id": "sepultura",
-      "name": "Sepultura",
+      "id": "michael-jackson-smooth-criminal",
+      "name": "Michael Jackson Smooth Criminal",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/sepultura/modelo.webp",
-      "remera": "/catalogo/musica/sepultura/remera.webp",
+      "modelo": "/catalogo/musica/michael-jackson-smooth-criminal/modelo.webp",
+      "remera": "/catalogo/musica/michael-jackson-smooth-criminal/remera.webp",
       "extras": []
     },
     {
@@ -1015,23 +1015,23 @@
       "extras": []
     },
     {
-      "id": "quien-enga-a-roger-rabbit",
-      "name": "Quien Engañó A Roger Rabbit",
+      "id": "mumm-rah-thundercats",
+      "name": "Mumm Rah Thundercats",
       "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/quien-engañó-a-roger-rabbit/modelo.webp",
-      "remera": "/catalogo/cine-series/quien-engañó-a-roger-rabbit/remera.webp",
+      "modelo": "/catalogo/cine-series/mumm-rah-thundercats/modelo.webp",
+      "remera": "/catalogo/cine-series/mumm-rah-thundercats/remera.webp",
       "extras": []
     },
     {
-      "id": "slipknot",
-      "name": "Slipknot",
+      "id": "millencolin-life-on-a-plate",
+      "name": "Millencolin Life On A Plate",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/slipknot/modelo.webp",
-      "remera": "/catalogo/musica/slipknot/remera.webp",
+      "modelo": "/catalogo/musica/millencolin-life-on-a-plate/modelo.webp",
+      "remera": "/catalogo/musica/millencolin-life-on-a-plate/remera.webp",
       "extras": []
     },
     {
@@ -1045,23 +1045,23 @@
       "extras": []
     },
     {
-      "id": "scooby-doo",
-      "name": "Scooby Doo",
+      "id": "quien-enga-a-roger-rabbit",
+      "name": "Quien Engañó A Roger Rabbit",
       "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/scooby-doo/modelo.webp",
-      "remera": "/catalogo/cine-series/scooby-doo/remera.webp",
+      "modelo": "/catalogo/cine-series/quien-engañó-a-roger-rabbit/modelo.webp",
+      "remera": "/catalogo/cine-series/quien-engañó-a-roger-rabbit/remera.webp",
       "extras": []
     },
     {
-      "id": "soulfly",
-      "name": "Soulfly",
+      "id": "sepultura",
+      "name": "Sepultura",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/soulfly/modelo.webp",
-      "remera": "/catalogo/musica/soulfly/remera.webp",
+      "modelo": "/catalogo/musica/sepultura/modelo.webp",
+      "remera": "/catalogo/musica/sepultura/remera.webp",
       "extras": []
     },
     {
@@ -1075,23 +1075,23 @@
       "extras": []
     },
     {
-      "id": "south-park",
-      "name": "South Park",
+      "id": "scooby-doo",
+      "name": "Scooby Doo",
       "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/south-park/modelo.webp",
-      "remera": "/catalogo/cine-series/south-park/remera.webp",
+      "modelo": "/catalogo/cine-series/scooby-doo/modelo.webp",
+      "remera": "/catalogo/cine-series/scooby-doo/remera.webp",
       "extras": []
     },
     {
-      "id": "the-beatles",
-      "name": "The Beatles",
+      "id": "slipknot",
+      "name": "Slipknot",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/the-beatles/modelo.webp",
-      "remera": "/catalogo/musica/the-beatles/remera.webp",
+      "modelo": "/catalogo/musica/slipknot/modelo.webp",
+      "remera": "/catalogo/musica/slipknot/remera.webp",
       "extras": []
     },
     {
@@ -1105,23 +1105,23 @@
       "extras": []
     },
     {
-      "id": "star-wars",
-      "name": "Star Wars",
+      "id": "south-park",
+      "name": "South Park",
       "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/star-wars/modelo.webp",
-      "remera": "/catalogo/cine-series/star-wars/remera.webp",
+      "modelo": "/catalogo/cine-series/south-park/modelo.webp",
+      "remera": "/catalogo/cine-series/south-park/remera.webp",
       "extras": []
     },
     {
-      "id": "tyk",
-      "name": "Tyk",
+      "id": "soulfly",
+      "name": "Soulfly",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/tyk/modelo.webp",
-      "remera": "/catalogo/musica/tyk/remera.webp",
+      "modelo": "/catalogo/musica/soulfly/modelo.webp",
+      "remera": "/catalogo/musica/soulfly/remera.webp",
       "extras": []
     },
     {
@@ -1135,23 +1135,23 @@
       "extras": []
     },
     {
-      "id": "star-wars-darth-vader",
-      "name": "Star Wars Darth Vader",
+      "id": "star-wars",
+      "name": "Star Wars",
       "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/star-wars-darth-vader/modelo.webp",
-      "remera": "/catalogo/cine-series/star-wars-darth-vader/remera.webp",
+      "modelo": "/catalogo/cine-series/star-wars/modelo.webp",
+      "remera": "/catalogo/cine-series/star-wars/remera.webp",
       "extras": []
     },
     {
-      "id": "wu-tang",
-      "name": "Wu Tang",
+      "id": "the-beatles",
+      "name": "The Beatles",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/wu-tang/modelo.webp",
-      "remera": "/catalogo/musica/wu-tang/remera.webp",
+      "modelo": "/catalogo/musica/the-beatles/modelo.webp",
+      "remera": "/catalogo/musica/the-beatles/remera.webp",
       "extras": []
     },
     {
@@ -1165,13 +1165,23 @@
       "extras": []
     },
     {
-      "id": "stranger-things",
-      "name": "Stranger Things",
+      "id": "star-wars-darth-vader",
+      "name": "Star Wars Darth Vader",
       "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/stranger-things/modelo.webp",
-      "remera": "/catalogo/cine-series/stranger-things/remera.webp",
+      "modelo": "/catalogo/cine-series/star-wars-darth-vader/modelo.webp",
+      "remera": "/catalogo/cine-series/star-wars-darth-vader/remera.webp",
+      "extras": []
+    },
+    {
+      "id": "the-offspring",
+      "name": "The Offspring",
+      "tags": [],
+      "category": "musica",
+      "categoryName": "Música",
+      "modelo": "/catalogo/musica/the-offspring/modelo.webp",
+      "remera": "/catalogo/musica/the-offspring/remera.webp",
       "extras": []
     },
     {
@@ -1185,13 +1195,23 @@
       "extras": []
     },
     {
-      "id": "street-sharks",
-      "name": "Street Sharks",
+      "id": "stranger-things",
+      "name": "Stranger Things",
       "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/street-sharks/modelo.webp",
-      "remera": "/catalogo/cine-series/street-sharks/remera.webp",
+      "modelo": "/catalogo/cine-series/stranger-things/modelo.webp",
+      "remera": "/catalogo/cine-series/stranger-things/remera.webp",
+      "extras": []
+    },
+    {
+      "id": "tyk",
+      "name": "Tyk",
+      "tags": [],
+      "category": "musica",
+      "categoryName": "Música",
+      "modelo": "/catalogo/musica/tyk/modelo.webp",
+      "remera": "/catalogo/musica/tyk/remera.webp",
       "extras": []
     },
     {
@@ -1205,13 +1225,23 @@
       "extras": []
     },
     {
-      "id": "the-warriors",
-      "name": "The Warriors",
+      "id": "street-sharks",
+      "name": "Street Sharks",
       "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/the-warriors/modelo.webp",
-      "remera": "/catalogo/cine-series/the-warriors/remera.webp",
+      "modelo": "/catalogo/cine-series/street-sharks/modelo.webp",
+      "remera": "/catalogo/cine-series/street-sharks/remera.webp",
+      "extras": []
+    },
+    {
+      "id": "wu-tang",
+      "name": "Wu Tang",
+      "tags": [],
+      "category": "musica",
+      "categoryName": "Música",
+      "modelo": "/catalogo/musica/wu-tang/modelo.webp",
+      "remera": "/catalogo/musica/wu-tang/remera.webp",
       "extras": []
     },
     {
@@ -1222,6 +1252,16 @@
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/slam-dunk/modelo.webp",
       "remera": "/catalogo/anime/slam-dunk/remera.webp",
+      "extras": []
+    },
+    {
+      "id": "the-warriors",
+      "name": "The Warriors",
+      "tags": [],
+      "category": "cine-series",
+      "categoryName": "Cine y Series",
+      "modelo": "/catalogo/cine-series/the-warriors/modelo.webp",
+      "remera": "/catalogo/cine-series/the-warriors/remera.webp",
       "extras": []
     },
     {
