@@ -785,13 +785,13 @@
       "extras": []
     },
     {
-      "id": "la-renga",
-      "name": "La Renga",
+      "id": "joey-jordison",
+      "name": "Joey Jordison",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/la-renga/modelo.webp",
-      "remera": "/catalogo/musica/la-renga/remera.webp",
+      "modelo": "/catalogo/musica/joey-jordison/modelo.webp",
+      "remera": "/catalogo/musica/joey-jordison/remera.webp",
       "extras": []
     },
     {
@@ -835,13 +835,13 @@
       "extras": []
     },
     {
-      "id": "lemmy-kilmister",
-      "name": "Lemmy Kilmister",
+      "id": "la-renga",
+      "name": "La Renga",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/lemmy-kilmister/modelo.webp",
-      "remera": "/catalogo/musica/lemmy-kilmister/remera.webp",
+      "modelo": "/catalogo/musica/la-renga/modelo.webp",
+      "remera": "/catalogo/musica/la-renga/remera.webp",
       "extras": []
     },
     {
@@ -885,13 +885,13 @@
       "extras": []
     },
     {
-      "id": "linkin-park",
-      "name": "Linkin Park",
+      "id": "lemmy-kilmister",
+      "name": "Lemmy Kilmister",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/linkin-park/modelo.webp",
-      "remera": "/catalogo/musica/linkin-park/remera.webp",
+      "modelo": "/catalogo/musica/lemmy-kilmister/modelo.webp",
+      "remera": "/catalogo/musica/lemmy-kilmister/remera.webp",
       "extras": []
     },
     {
@@ -925,13 +925,13 @@
       "extras": []
     },
     {
-      "id": "los-fabulosos-cadillacs",
-      "name": "Los Fabulosos Cadillacs",
+      "id": "linkin-park",
+      "name": "Linkin Park",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/los-fabulosos-cadillacs/modelo.webp",
-      "remera": "/catalogo/musica/los-fabulosos-cadillacs/remera.webp",
+      "modelo": "/catalogo/musica/linkin-park/modelo.webp",
+      "remera": "/catalogo/musica/linkin-park/remera.webp",
       "extras": []
     },
     {
@@ -965,13 +965,13 @@
       "extras": []
     },
     {
-      "id": "marilyn-manson",
-      "name": "Marilyn Manson",
+      "id": "los-fabulosos-cadillacs",
+      "name": "Los Fabulosos Cadillacs",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/marilyn-manson/modelo.webp",
-      "remera": "/catalogo/musica/marilyn-manson/remera.webp",
+      "modelo": "/catalogo/musica/los-fabulosos-cadillacs/modelo.webp",
+      "remera": "/catalogo/musica/los-fabulosos-cadillacs/remera.webp",
       "extras": []
     },
     {
@@ -995,13 +995,13 @@
       "extras": []
     },
     {
-      "id": "michael-jackson",
-      "name": "Michael Jackson",
+      "id": "marilyn-manson",
+      "name": "Marilyn Manson",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/michael-jackson/modelo.webp",
-      "remera": "/catalogo/musica/michael-jackson/remera.webp",
+      "modelo": "/catalogo/musica/marilyn-manson/modelo.webp",
+      "remera": "/catalogo/musica/marilyn-manson/remera.webp",
       "extras": []
     },
     {
@@ -1025,13 +1025,13 @@
       "extras": []
     },
     {
-      "id": "michael-jackson-smooth-criminal",
-      "name": "Michael Jackson Smooth Criminal",
+      "id": "michael-jackson",
+      "name": "Michael Jackson",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/michael-jackson-smooth-criminal/modelo.webp",
-      "remera": "/catalogo/musica/michael-jackson-smooth-criminal/remera.webp",
+      "modelo": "/catalogo/musica/michael-jackson/modelo.webp",
+      "remera": "/catalogo/musica/michael-jackson/remera.webp",
       "extras": []
     },
     {
@@ -1055,13 +1055,13 @@
       "extras": []
     },
     {
-      "id": "millencolin-life-on-a-plate",
-      "name": "Millencolin Life On A Plate",
+      "id": "michael-jackson-smooth-criminal",
+      "name": "Michael Jackson Smooth Criminal",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/millencolin-life-on-a-plate/modelo.webp",
-      "remera": "/catalogo/musica/millencolin-life-on-a-plate/remera.webp",
+      "modelo": "/catalogo/musica/michael-jackson-smooth-criminal/modelo.webp",
+      "remera": "/catalogo/musica/michael-jackson-smooth-criminal/remera.webp",
       "extras": []
     },
     {
@@ -1085,13 +1085,13 @@
       "extras": []
     },
     {
-      "id": "rage-against-the-machine",
-      "name": "Rage Against The Machine",
+      "id": "millencolin-life-on-a-plate",
+      "name": "Millencolin Life On A Plate",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/rage-against-the-machine/modelo.webp",
-      "remera": "/catalogo/musica/rage-against-the-machine/remera.webp",
+      "modelo": "/catalogo/musica/millencolin-life-on-a-plate/modelo.webp",
+      "remera": "/catalogo/musica/millencolin-life-on-a-plate/remera.webp",
       "extras": []
     },
     {
@@ -1115,13 +1115,13 @@
       "extras": []
     },
     {
-      "id": "sepultura",
-      "name": "Sepultura",
+      "id": "rage-against-the-machine",
+      "name": "Rage Against The Machine",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/sepultura/modelo.webp",
-      "remera": "/catalogo/musica/sepultura/remera.webp",
+      "modelo": "/catalogo/musica/rage-against-the-machine/modelo.webp",
+      "remera": "/catalogo/musica/rage-against-the-machine/remera.webp",
       "extras": []
     },
     {
@@ -1145,13 +1145,13 @@
       "extras": []
     },
     {
-      "id": "slipknot",
-      "name": "Slipknot",
+      "id": "sepultura",
+      "name": "Sepultura",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/slipknot/modelo.webp",
-      "remera": "/catalogo/musica/slipknot/remera.webp",
+      "modelo": "/catalogo/musica/sepultura/modelo.webp",
+      "remera": "/catalogo/musica/sepultura/remera.webp",
       "extras": []
     },
     {
@@ -1175,13 +1175,13 @@
       "extras": []
     },
     {
-      "id": "soulfly",
-      "name": "Soulfly",
+      "id": "slipknot",
+      "name": "Slipknot",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/soulfly/modelo.webp",
-      "remera": "/catalogo/musica/soulfly/remera.webp",
+      "modelo": "/catalogo/musica/slipknot/modelo.webp",
+      "remera": "/catalogo/musica/slipknot/remera.webp",
       "extras": []
     },
     {
@@ -1205,13 +1205,13 @@
       "extras": []
     },
     {
-      "id": "the-beatles",
-      "name": "The Beatles",
+      "id": "soulfly",
+      "name": "Soulfly",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/the-beatles/modelo.webp",
-      "remera": "/catalogo/musica/the-beatles/remera.webp",
+      "modelo": "/catalogo/musica/soulfly/modelo.webp",
+      "remera": "/catalogo/musica/soulfly/remera.webp",
       "extras": []
     },
     {
@@ -1235,13 +1235,13 @@
       "extras": []
     },
     {
-      "id": "the-offspring",
-      "name": "The Offspring",
+      "id": "the-beatles",
+      "name": "The Beatles",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/the-offspring/modelo.webp",
-      "remera": "/catalogo/musica/the-offspring/remera.webp",
+      "modelo": "/catalogo/musica/the-beatles/modelo.webp",
+      "remera": "/catalogo/musica/the-beatles/remera.webp",
       "extras": []
     },
     {
@@ -1265,13 +1265,13 @@
       "extras": []
     },
     {
-      "id": "tyk",
-      "name": "Tyk",
+      "id": "the-offspring",
+      "name": "The Offspring",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/tyk/modelo.webp",
-      "remera": "/catalogo/musica/tyk/remera.webp",
+      "modelo": "/catalogo/musica/the-offspring/modelo.webp",
+      "remera": "/catalogo/musica/the-offspring/remera.webp",
       "extras": []
     },
     {
@@ -1296,6 +1296,16 @@
           "label": "Referencia"
         }
       ]
+    },
+    {
+      "id": "tyk",
+      "name": "Tyk",
+      "tags": [],
+      "category": "musica",
+      "categoryName": "Música",
+      "modelo": "/catalogo/musica/tyk/modelo.webp",
+      "remera": "/catalogo/musica/tyk/remera.webp",
+      "extras": []
     },
     {
       "id": "wu-tang",
