@@ -1105,13 +1105,13 @@
       "extras": []
     },
     {
-      "id": "south-park",
-      "name": "South Park",
+      "id": "scream",
+      "name": "Scream",
       "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/south-park/modelo.webp",
-      "remera": "/catalogo/cine-series/south-park/remera.webp",
+      "modelo": "/catalogo/cine-series/scream/modelo.webp",
+      "remera": "/catalogo/cine-series/scream/remera.webp",
       "extras": []
     },
     {
@@ -1135,13 +1135,13 @@
       "extras": []
     },
     {
-      "id": "star-wars",
-      "name": "Star Wars",
+      "id": "south-park",
+      "name": "South Park",
       "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/star-wars/modelo.webp",
-      "remera": "/catalogo/cine-series/star-wars/remera.webp",
+      "modelo": "/catalogo/cine-series/south-park/modelo.webp",
+      "remera": "/catalogo/cine-series/south-park/remera.webp",
       "extras": []
     },
     {
@@ -1165,13 +1165,13 @@
       "extras": []
     },
     {
-      "id": "star-wars-darth-vader",
-      "name": "Star Wars Darth Vader",
+      "id": "star-wars",
+      "name": "Star Wars",
       "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/star-wars-darth-vader/modelo.webp",
-      "remera": "/catalogo/cine-series/star-wars-darth-vader/remera.webp",
+      "modelo": "/catalogo/cine-series/star-wars/modelo.webp",
+      "remera": "/catalogo/cine-series/star-wars/remera.webp",
       "extras": []
     },
     {
@@ -1195,6 +1195,36 @@
       "extras": []
     },
     {
+      "id": "star-wars-darth-vader",
+      "name": "Star Wars Darth Vader",
+      "tags": [],
+      "category": "cine-series",
+      "categoryName": "Cine y Series",
+      "modelo": "/catalogo/cine-series/star-wars-darth-vader/modelo.webp",
+      "remera": "/catalogo/cine-series/star-wars-darth-vader/remera.webp",
+      "extras": []
+    },
+    {
+      "id": "snoop-dogg",
+      "name": "Snoop Dogg",
+      "tags": [],
+      "category": "musica",
+      "categoryName": "Música",
+      "modelo": "/catalogo/musica/snoop-dogg/modelo.webp",
+      "remera": "/catalogo/musica/snoop-dogg/remera.webp",
+      "extras": []
+    },
+    {
+      "id": "saint-seiya-ikki",
+      "name": "Saint Seiya Ikki",
+      "tags": [],
+      "category": "anime",
+      "categoryName": "Anime",
+      "modelo": "/catalogo/anime/saint-seiya-ikki/modelo.webp",
+      "remera": "/catalogo/anime/saint-seiya-ikki/remera.webp",
+      "extras": []
+    },
+    {
       "id": "stranger-things",
       "name": "Stranger Things",
       "tags": [],
@@ -1215,13 +1245,13 @@
       "extras": []
     },
     {
-      "id": "saint-seiya-ikki",
-      "name": "Saint Seiya Ikki",
+      "id": "slam-dunk",
+      "name": "Slam Dunk",
       "tags": [],
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/saint-seiya-ikki/modelo.webp",
-      "remera": "/catalogo/anime/saint-seiya-ikki/remera.webp",
+      "modelo": "/catalogo/anime/slam-dunk/modelo.webp",
+      "remera": "/catalogo/anime/slam-dunk/remera.webp",
       "extras": []
     },
     {
@@ -1242,36 +1272,6 @@
       "categoryName": "Música",
       "modelo": "/catalogo/musica/the-beatles/modelo.webp",
       "remera": "/catalogo/musica/the-beatles/remera.webp",
-      "extras": []
-    },
-    {
-      "id": "slam-dunk",
-      "name": "Slam Dunk",
-      "tags": [],
-      "category": "anime",
-      "categoryName": "Anime",
-      "modelo": "/catalogo/anime/slam-dunk/modelo.webp",
-      "remera": "/catalogo/anime/slam-dunk/remera.webp",
-      "extras": []
-    },
-    {
-      "id": "the-warriors",
-      "name": "The Warriors",
-      "tags": [],
-      "category": "cine-series",
-      "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/the-warriors/modelo.webp",
-      "remera": "/catalogo/cine-series/the-warriors/remera.webp",
-      "extras": []
-    },
-    {
-      "id": "the-offspring",
-      "name": "The Offspring",
-      "tags": [],
-      "category": "musica",
-      "categoryName": "Música",
-      "modelo": "/catalogo/musica/the-offspring/modelo.webp",
-      "remera": "/catalogo/musica/the-offspring/remera.webp",
       "extras": []
     },
     {
@@ -1296,6 +1296,26 @@
           "label": "Referencia"
         }
       ]
+    },
+    {
+      "id": "the-warriors",
+      "name": "The Warriors",
+      "tags": [],
+      "category": "cine-series",
+      "categoryName": "Cine y Series",
+      "modelo": "/catalogo/cine-series/the-warriors/modelo.webp",
+      "remera": "/catalogo/cine-series/the-warriors/remera.webp",
+      "extras": []
+    },
+    {
+      "id": "the-offspring",
+      "name": "The Offspring",
+      "tags": [],
+      "category": "musica",
+      "categoryName": "Música",
+      "modelo": "/catalogo/musica/the-offspring/modelo.webp",
+      "remera": "/catalogo/musica/the-offspring/remera.webp",
+      "extras": []
     },
     {
       "id": "tyk",
