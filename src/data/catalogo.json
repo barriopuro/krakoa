@@ -168,13 +168,13 @@
       "extras": []
     },
     {
-      "id": "god-of-war",
-      "name": "God Of War",
+      "id": "doom",
+      "name": "Doom",
       "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/god-of-war/modelo.webp",
-      "remera": "/catalogo/videojuegos/god-of-war/remera.webp",
+      "modelo": "/catalogo/videojuegos/doom/modelo.webp",
+      "remera": "/catalogo/videojuegos/doom/remera.webp",
       "extras": []
     },
     {
@@ -238,13 +238,13 @@
       "extras": []
     },
     {
-      "id": "hollow-knight",
-      "name": "Hollow Knight",
+      "id": "god-of-war",
+      "name": "God Of War",
       "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/hollow-knight/modelo.webp",
-      "remera": "/catalogo/videojuegos/hollow-knight/remera.webp",
+      "modelo": "/catalogo/videojuegos/god-of-war/modelo.webp",
+      "remera": "/catalogo/videojuegos/god-of-war/remera.webp",
       "extras": []
     },
     {
@@ -291,13 +291,13 @@
       "extras": []
     },
     {
-      "id": "cypress-hill",
-      "name": "Cypress Hill",
+      "id": "celia-cruz",
+      "name": "Celia Cruz",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/cypress-hill/modelo.webp",
-      "remera": "/catalogo/musica/cypress-hill/remera.webp",
+      "modelo": "/catalogo/musica/celia-cruz/modelo.webp",
+      "remera": "/catalogo/musica/celia-cruz/remera.webp",
       "extras": []
     },
     {
@@ -311,13 +311,13 @@
       "extras": []
     },
     {
-      "id": "king-of-fighters-iori-yagami",
-      "name": "King Of Fighters Iori Yagami",
+      "id": "hollow-knight",
+      "name": "Hollow Knight",
       "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/king-of-fighters-iori-yagami/modelo.webp",
-      "remera": "/catalogo/videojuegos/king-of-fighters-iori-yagami/remera.webp",
+      "modelo": "/catalogo/videojuegos/hollow-knight/modelo.webp",
+      "remera": "/catalogo/videojuegos/hollow-knight/remera.webp",
       "extras": []
     },
     {
@@ -364,23 +364,23 @@
       "extras": []
     },
     {
-      "id": "cypress-hill-insane-in-the-brain",
-      "name": "Cypress Hill Insane In The Brain",
+      "id": "cypress-hill",
+      "name": "Cypress Hill",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/cypress-hill-insane-in-the-brain/modelo.webp",
-      "remera": "/catalogo/musica/cypress-hill-insane-in-the-brain/remera.webp",
+      "modelo": "/catalogo/musica/cypress-hill/modelo.webp",
+      "remera": "/catalogo/musica/cypress-hill/remera.webp",
       "extras": []
     },
     {
-      "id": "megaman",
-      "name": "Megaman",
+      "id": "king-of-fighters-iori-yagami",
+      "name": "King Of Fighters Iori Yagami",
       "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/megaman/modelo.webp",
-      "remera": "/catalogo/videojuegos/megaman/remera.webp",
+      "modelo": "/catalogo/videojuegos/king-of-fighters-iori-yagami/modelo.webp",
+      "remera": "/catalogo/videojuegos/king-of-fighters-iori-yagami/remera.webp",
       "extras": []
     },
     {
@@ -427,23 +427,23 @@
       "extras": []
     },
     {
-      "id": "dano",
-      "name": "Dano",
+      "id": "cypress-hill-insane-in-the-brain",
+      "name": "Cypress Hill Insane In The Brain",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/dano/modelo.webp",
-      "remera": "/catalogo/musica/dano/remera.webp",
+      "modelo": "/catalogo/musica/cypress-hill-insane-in-the-brain/modelo.webp",
+      "remera": "/catalogo/musica/cypress-hill-insane-in-the-brain/remera.webp",
       "extras": []
     },
     {
-      "id": "mortal-kombat-raiden",
-      "name": "Mortal Kombat Raiden",
+      "id": "megaman",
+      "name": "Megaman",
       "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/mortal-kombat-raiden/modelo.webp",
-      "remera": "/catalogo/videojuegos/mortal-kombat-raiden/remera.webp",
+      "modelo": "/catalogo/videojuegos/megaman/modelo.webp",
+      "remera": "/catalogo/videojuegos/megaman/remera.webp",
       "extras": []
     },
     {
@@ -489,23 +489,23 @@
       "extras": []
     },
     {
-      "id": "foo-fighters",
-      "name": "Foo Fighters",
+      "id": "dano",
+      "name": "Dano",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/foo-fighters/modelo.webp",
-      "remera": "/catalogo/musica/foo-fighters/remera.webp",
+      "modelo": "/catalogo/musica/dano/modelo.webp",
+      "remera": "/catalogo/musica/dano/remera.webp",
       "extras": []
     },
     {
-      "id": "mortal-kombat-sub-zero",
-      "name": "Mortal Kombat Sub Zero",
+      "id": "mortal-kombat-raiden",
+      "name": "Mortal Kombat Raiden",
       "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/mortal-kombat-sub-zero/modelo.webp",
-      "remera": "/catalogo/videojuegos/mortal-kombat-sub-zero/remera.webp",
+      "modelo": "/catalogo/videojuegos/mortal-kombat-raiden/modelo.webp",
+      "remera": "/catalogo/videojuegos/mortal-kombat-raiden/remera.webp",
       "extras": []
     },
     {
@@ -551,23 +551,23 @@
       "extras": []
     },
     {
-      "id": "gorillaz",
-      "name": "Gorillaz",
+      "id": "foo-fighters",
+      "name": "Foo Fighters",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/gorillaz/modelo.webp",
-      "remera": "/catalogo/musica/gorillaz/remera.webp",
+      "modelo": "/catalogo/musica/foo-fighters/modelo.webp",
+      "remera": "/catalogo/musica/foo-fighters/remera.webp",
       "extras": []
     },
     {
-      "id": "resident-evil-nemesis",
-      "name": "Resident Evil Nemesis",
+      "id": "mortal-kombat-sub-zero",
+      "name": "Mortal Kombat Sub Zero",
       "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/resident-evil-nemesis/modelo.webp",
-      "remera": "/catalogo/videojuegos/resident-evil-nemesis/remera.webp",
+      "modelo": "/catalogo/videojuegos/mortal-kombat-sub-zero/modelo.webp",
+      "remera": "/catalogo/videojuegos/mortal-kombat-sub-zero/remera.webp",
       "extras": []
     },
     {
@@ -613,23 +613,23 @@
       "extras": []
     },
     {
-      "id": "gustavo-cerati",
-      "name": "Gustavo Cerati",
+      "id": "gorillaz",
+      "name": "Gorillaz",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/gustavo-cerati/modelo.webp",
-      "remera": "/catalogo/musica/gustavo-cerati/remera.webp",
+      "modelo": "/catalogo/musica/gorillaz/modelo.webp",
+      "remera": "/catalogo/musica/gorillaz/remera.webp",
       "extras": []
     },
     {
-      "id": "silent-hill-pyramid-head",
-      "name": "Silent Hill Pyramid Head",
+      "id": "neo-geo-snk",
+      "name": "Neo Geo Snk",
       "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/silent-hill-pyramid-head/modelo.webp",
-      "remera": "/catalogo/videojuegos/silent-hill-pyramid-head/remera.webp",
+      "modelo": "/catalogo/videojuegos/neo-geo-snk/modelo.webp",
+      "remera": "/catalogo/videojuegos/neo-geo-snk/remera.webp",
       "extras": []
     },
     {
@@ -675,23 +675,23 @@
       "extras": []
     },
     {
-      "id": "indio-solari",
-      "name": "Indio Solari",
+      "id": "gustavo-cerati",
+      "name": "Gustavo Cerati",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/indio-solari/modelo.webp",
-      "remera": "/catalogo/musica/indio-solari/remera.webp",
+      "modelo": "/catalogo/musica/gustavo-cerati/modelo.webp",
+      "remera": "/catalogo/musica/gustavo-cerati/remera.webp",
       "extras": []
     },
     {
-      "id": "splatterhouse",
-      "name": "Splatterhouse",
+      "id": "resident-evil-nemesis",
+      "name": "Resident Evil Nemesis",
       "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/splatterhouse/modelo.webp",
-      "remera": "/catalogo/videojuegos/splatterhouse/remera.webp",
+      "modelo": "/catalogo/videojuegos/resident-evil-nemesis/modelo.webp",
+      "remera": "/catalogo/videojuegos/resident-evil-nemesis/remera.webp",
       "extras": []
     },
     {
@@ -735,23 +735,23 @@
       "extras": []
     },
     {
-      "id": "jimi-hendrix",
-      "name": "Jimi Hendrix",
+      "id": "indio-solari",
+      "name": "Indio Solari",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/jimi-hendrix/modelo.webp",
-      "remera": "/catalogo/musica/jimi-hendrix/remera.webp",
+      "modelo": "/catalogo/musica/indio-solari/modelo.webp",
+      "remera": "/catalogo/musica/indio-solari/remera.webp",
       "extras": []
     },
     {
-      "id": "street-fighter-dhalsim",
-      "name": "Street Fighter Dhalsim",
+      "id": "silent-hill-pyramid-head",
+      "name": "Silent Hill Pyramid Head",
       "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/street-fighter-dhalsim/modelo.webp",
-      "remera": "/catalogo/videojuegos/street-fighter-dhalsim/remera.webp",
+      "modelo": "/catalogo/videojuegos/silent-hill-pyramid-head/modelo.webp",
+      "remera": "/catalogo/videojuegos/silent-hill-pyramid-head/remera.webp",
       "extras": []
     },
     {
@@ -785,23 +785,33 @@
       "extras": []
     },
     {
-      "id": "joey-jordison",
-      "name": "Joey Jordison",
+      "id": "tony-hawk",
+      "name": "Tony Hawk",
       "tags": [],
-      "category": "musica",
-      "categoryName": "Música",
-      "modelo": "/catalogo/musica/joey-jordison/modelo.webp",
-      "remera": "/catalogo/musica/joey-jordison/remera.webp",
+      "category": "deportes",
+      "categoryName": "Deportes",
+      "modelo": "/catalogo/deportes/tony-hawk/modelo.webp",
+      "remera": "/catalogo/deportes/tony-hawk/remera.webp",
       "extras": []
     },
     {
-      "id": "super-mario-bros",
-      "name": "Super Mario Bros",
+      "id": "jimi-hendrix",
+      "name": "Jimi Hendrix",
+      "tags": [],
+      "category": "musica",
+      "categoryName": "Música",
+      "modelo": "/catalogo/musica/jimi-hendrix/modelo.webp",
+      "remera": "/catalogo/musica/jimi-hendrix/remera.webp",
+      "extras": []
+    },
+    {
+      "id": "splatterhouse",
+      "name": "Splatterhouse",
       "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/super-mario-bros/modelo.webp",
-      "remera": "/catalogo/videojuegos/super-mario-bros/remera.webp",
+      "modelo": "/catalogo/videojuegos/splatterhouse/modelo.webp",
+      "remera": "/catalogo/videojuegos/splatterhouse/remera.webp",
       "extras": []
     },
     {
@@ -835,23 +845,23 @@
       "extras": []
     },
     {
-      "id": "la-renga",
-      "name": "La Renga",
+      "id": "joey-jordison",
+      "name": "Joey Jordison",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/la-renga/modelo.webp",
-      "remera": "/catalogo/musica/la-renga/remera.webp",
+      "modelo": "/catalogo/musica/joey-jordison/modelo.webp",
+      "remera": "/catalogo/musica/joey-jordison/remera.webp",
       "extras": []
     },
     {
-      "id": "zelda-hyrule-icons",
-      "name": "Zelda Hyrule Icons",
+      "id": "street-fighter-dhalsim",
+      "name": "Street Fighter Dhalsim",
       "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/zelda-hyrule-icons/modelo.webp",
-      "remera": "/catalogo/videojuegos/zelda-hyrule-icons/remera.webp",
+      "modelo": "/catalogo/videojuegos/street-fighter-dhalsim/modelo.webp",
+      "remera": "/catalogo/videojuegos/street-fighter-dhalsim/remera.webp",
       "extras": []
     },
     {
@@ -885,13 +895,23 @@
       "extras": []
     },
     {
-      "id": "lemmy-kilmister",
-      "name": "Lemmy Kilmister",
+      "id": "la-renga",
+      "name": "La Renga",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/lemmy-kilmister/modelo.webp",
-      "remera": "/catalogo/musica/lemmy-kilmister/remera.webp",
+      "modelo": "/catalogo/musica/la-renga/modelo.webp",
+      "remera": "/catalogo/musica/la-renga/remera.webp",
+      "extras": []
+    },
+    {
+      "id": "super-mario-bros",
+      "name": "Super Mario Bros",
+      "tags": [],
+      "category": "videojuegos",
+      "categoryName": "Videojuegos",
+      "modelo": "/catalogo/videojuegos/super-mario-bros/modelo.webp",
+      "remera": "/catalogo/videojuegos/super-mario-bros/remera.webp",
       "extras": []
     },
     {
@@ -925,13 +945,23 @@
       "extras": []
     },
     {
-      "id": "linkin-park",
-      "name": "Linkin Park",
+      "id": "lemmy-kilmister",
+      "name": "Lemmy Kilmister",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/linkin-park/modelo.webp",
-      "remera": "/catalogo/musica/linkin-park/remera.webp",
+      "modelo": "/catalogo/musica/lemmy-kilmister/modelo.webp",
+      "remera": "/catalogo/musica/lemmy-kilmister/remera.webp",
+      "extras": []
+    },
+    {
+      "id": "zelda-hyrule-icons",
+      "name": "Zelda Hyrule Icons",
+      "tags": [],
+      "category": "videojuegos",
+      "categoryName": "Videojuegos",
+      "modelo": "/catalogo/videojuegos/zelda-hyrule-icons/modelo.webp",
+      "remera": "/catalogo/videojuegos/zelda-hyrule-icons/remera.webp",
       "extras": []
     },
     {
@@ -965,13 +995,13 @@
       "extras": []
     },
     {
-      "id": "los-fabulosos-cadillacs",
-      "name": "Los Fabulosos Cadillacs",
+      "id": "linkin-park",
+      "name": "Linkin Park",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/los-fabulosos-cadillacs/modelo.webp",
-      "remera": "/catalogo/musica/los-fabulosos-cadillacs/remera.webp",
+      "modelo": "/catalogo/musica/linkin-park/modelo.webp",
+      "remera": "/catalogo/musica/linkin-park/remera.webp",
       "extras": []
     },
     {
@@ -995,13 +1025,13 @@
       "extras": []
     },
     {
-      "id": "marilyn-manson",
-      "name": "Marilyn Manson",
+      "id": "los-fabulosos-cadillacs",
+      "name": "Los Fabulosos Cadillacs",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/marilyn-manson/modelo.webp",
-      "remera": "/catalogo/musica/marilyn-manson/remera.webp",
+      "modelo": "/catalogo/musica/los-fabulosos-cadillacs/modelo.webp",
+      "remera": "/catalogo/musica/los-fabulosos-cadillacs/remera.webp",
       "extras": []
     },
     {
@@ -1025,13 +1055,13 @@
       "extras": []
     },
     {
-      "id": "michael-jackson",
-      "name": "Michael Jackson",
+      "id": "marilyn-manson",
+      "name": "Marilyn Manson",
       "tags": [],
       "category": "musica",
       "categoryName": "Música",
-      "modelo": "/catalogo/musica/michael-jackson/modelo.webp",
-      "remera": "/catalogo/musica/michael-jackson/remera.webp",
+      "modelo": "/catalogo/musica/marilyn-manson/modelo.webp",
+      "remera": "/catalogo/musica/marilyn-manson/remera.webp",
       "extras": []
     },
     {
@@ -1042,6 +1072,36 @@
       "categoryName": "Anime",
       "modelo": "/catalogo/anime/naruto-rock-lee/modelo.webp",
       "remera": "/catalogo/anime/naruto-rock-lee/remera.webp",
+      "extras": []
+    },
+    {
+      "id": "predator",
+      "name": "Predator",
+      "tags": [],
+      "category": "cine-series",
+      "categoryName": "Cine y Series",
+      "modelo": "/catalogo/cine-series/predator/modelo.webp",
+      "remera": "/catalogo/cine-series/predator/remera.webp",
+      "extras": []
+    },
+    {
+      "id": "michael-jackson",
+      "name": "Michael Jackson",
+      "tags": [],
+      "category": "musica",
+      "categoryName": "Música",
+      "modelo": "/catalogo/musica/michael-jackson/modelo.webp",
+      "remera": "/catalogo/musica/michael-jackson/remera.webp",
+      "extras": []
+    },
+    {
+      "id": "naruto-uchiha-clan",
+      "name": "Naruto Uchiha Clan",
+      "tags": [],
+      "category": "anime",
+      "categoryName": "Anime",
+      "modelo": "/catalogo/anime/naruto-uchiha-clan/modelo.webp",
+      "remera": "/catalogo/anime/naruto-uchiha-clan/remera.webp",
       "extras": []
     },
     {
@@ -1065,13 +1125,13 @@
       "extras": []
     },
     {
-      "id": "naruto-uchiha-clan",
-      "name": "Naruto Uchiha Clan",
+      "id": "one-piece",
+      "name": "One Piece",
       "tags": [],
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/naruto-uchiha-clan/modelo.webp",
-      "remera": "/catalogo/anime/naruto-uchiha-clan/remera.webp",
+      "modelo": "/catalogo/anime/one-piece/modelo.webp",
+      "remera": "/catalogo/anime/one-piece/remera.webp",
       "extras": []
     },
     {
@@ -1095,13 +1155,13 @@
       "extras": []
     },
     {
-      "id": "one-piece",
-      "name": "One Piece",
+      "id": "one-piece-luffy",
+      "name": "One Piece Luffy",
       "tags": [],
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/one-piece/modelo.webp",
-      "remera": "/catalogo/anime/one-piece/remera.webp",
+      "modelo": "/catalogo/anime/one-piece-luffy/modelo.webp",
+      "remera": "/catalogo/anime/one-piece-luffy/remera.webp",
       "extras": []
     },
     {
@@ -1125,13 +1185,13 @@
       "extras": []
     },
     {
-      "id": "one-piece-luffy",
-      "name": "One Piece Luffy",
+      "id": "pokemon-squarturtle",
+      "name": "Pokemon Squarturtle",
       "tags": [],
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/one-piece-luffy/modelo.webp",
-      "remera": "/catalogo/anime/one-piece-luffy/remera.webp",
+      "modelo": "/catalogo/anime/pokemon-squarturtle/modelo.webp",
+      "remera": "/catalogo/anime/pokemon-squarturtle/remera.webp",
       "extras": []
     },
     {
@@ -1155,13 +1215,13 @@
       "extras": []
     },
     {
-      "id": "pokemon-squarturtle",
-      "name": "Pokemon Squarturtle",
+      "id": "sailor-moon",
+      "name": "Sailor Moon",
       "tags": [],
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/pokemon-squarturtle/modelo.webp",
-      "remera": "/catalogo/anime/pokemon-squarturtle/remera.webp",
+      "modelo": "/catalogo/anime/sailor-moon/modelo.webp",
+      "remera": "/catalogo/anime/sailor-moon/remera.webp",
       "extras": []
     },
     {
@@ -1185,13 +1245,13 @@
       "extras": []
     },
     {
-      "id": "sailor-moon",
-      "name": "Sailor Moon",
+      "id": "saint-seiya-ikki",
+      "name": "Saint Seiya Ikki",
       "tags": [],
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/sailor-moon/modelo.webp",
-      "remera": "/catalogo/anime/sailor-moon/remera.webp",
+      "modelo": "/catalogo/anime/saint-seiya-ikki/modelo.webp",
+      "remera": "/catalogo/anime/saint-seiya-ikki/remera.webp",
       "extras": []
     },
     {
@@ -1215,13 +1275,13 @@
       "extras": []
     },
     {
-      "id": "saint-seiya-ikki",
-      "name": "Saint Seiya Ikki",
+      "id": "slam-dunk",
+      "name": "Slam Dunk",
       "tags": [],
       "category": "anime",
       "categoryName": "Anime",
-      "modelo": "/catalogo/anime/saint-seiya-ikki/modelo.webp",
-      "remera": "/catalogo/anime/saint-seiya-ikki/remera.webp",
+      "modelo": "/catalogo/anime/slam-dunk/modelo.webp",
+      "remera": "/catalogo/anime/slam-dunk/remera.webp",
       "extras": []
     },
     {
@@ -1242,36 +1302,6 @@
       "categoryName": "Música",
       "modelo": "/catalogo/musica/soulfly/modelo.webp",
       "remera": "/catalogo/musica/soulfly/remera.webp",
-      "extras": []
-    },
-    {
-      "id": "slam-dunk",
-      "name": "Slam Dunk",
-      "tags": [],
-      "category": "anime",
-      "categoryName": "Anime",
-      "modelo": "/catalogo/anime/slam-dunk/modelo.webp",
-      "remera": "/catalogo/anime/slam-dunk/remera.webp",
-      "extras": []
-    },
-    {
-      "id": "street-sharks",
-      "name": "Street Sharks",
-      "tags": [],
-      "category": "cine-series",
-      "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/street-sharks/modelo.webp",
-      "remera": "/catalogo/cine-series/street-sharks/remera.webp",
-      "extras": []
-    },
-    {
-      "id": "the-beatles",
-      "name": "The Beatles",
-      "tags": [],
-      "category": "musica",
-      "categoryName": "Música",
-      "modelo": "/catalogo/musica/the-beatles/modelo.webp",
-      "remera": "/catalogo/musica/the-beatles/remera.webp",
       "extras": []
     },
     {
@@ -1298,13 +1328,33 @@
       ]
     },
     {
-      "id": "the-warriors",
-      "name": "The Warriors",
+      "id": "street-sharks",
+      "name": "Street Sharks",
       "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/the-warriors/modelo.webp",
-      "remera": "/catalogo/cine-series/the-warriors/remera.webp",
+      "modelo": "/catalogo/cine-series/street-sharks/modelo.webp",
+      "remera": "/catalogo/cine-series/street-sharks/remera.webp",
+      "extras": []
+    },
+    {
+      "id": "the-beatles",
+      "name": "The Beatles",
+      "tags": [],
+      "category": "musica",
+      "categoryName": "Música",
+      "modelo": "/catalogo/musica/the-beatles/modelo.webp",
+      "remera": "/catalogo/musica/the-beatles/remera.webp",
+      "extras": []
+    },
+    {
+      "id": "t800-terminator",
+      "name": "T800 Terminator",
+      "tags": [],
+      "category": "cine-series",
+      "categoryName": "Cine y Series",
+      "modelo": "/catalogo/cine-series/t800-terminator/modelo.webp",
+      "remera": "/catalogo/cine-series/t800-terminator/remera.webp",
       "extras": []
     },
     {
@@ -1315,6 +1365,16 @@
       "categoryName": "Música",
       "modelo": "/catalogo/musica/the-offspring/modelo.webp",
       "remera": "/catalogo/musica/the-offspring/remera.webp",
+      "extras": []
+    },
+    {
+      "id": "the-warriors",
+      "name": "The Warriors",
+      "tags": [],
+      "category": "cine-series",
+      "categoryName": "Cine y Series",
+      "modelo": "/catalogo/cine-series/the-warriors/modelo.webp",
+      "remera": "/catalogo/cine-series/the-warriors/remera.webp",
       "extras": []
     },
     {
@@ -1335,6 +1395,16 @@
       "categoryName": "Música",
       "modelo": "/catalogo/musica/wu-tang/modelo.webp",
       "remera": "/catalogo/musica/wu-tang/remera.webp",
+      "extras": []
+    },
+    {
+      "id": "wu-tang-tiger-style",
+      "name": "Wu Tang Tiger Style",
+      "tags": [],
+      "category": "musica",
+      "categoryName": "Música",
+      "modelo": "/catalogo/musica/wu-tang-tiger-style/modelo.webp",
+      "remera": "/catalogo/musica/wu-tang-tiger-style/remera.webp",
       "extras": []
     }
   ]
