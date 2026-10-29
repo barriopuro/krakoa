@@ -589,7 +589,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://barriopuro.github.io/krakoa/#zelda-hyrule-icons</loc>
+    <loc>https://barriopuro.github.io/krakoa/#the-last-of-us</loc>
     <lastmod>2026-10-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -614,6 +614,12 @@
   </url>
   <url>
     <loc>https://barriopuro.github.io/krakoa/#linkin-park</loc>
+    <lastmod>2026-10-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://barriopuro.github.io/krakoa/#zelda-hyrule-icons</loc>
     <lastmod>2026-10-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -697,7 +703,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://barriopuro.github.io/krakoa/#scooby-doo</loc>
+    <loc>https://barriopuro.github.io/krakoa/#samurai-jack</loc>
     <lastmod>2026-10-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -715,7 +721,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://barriopuro.github.io/krakoa/#scream</loc>
+    <loc>https://barriopuro.github.io/krakoa/#scooby-doo</loc>
     <lastmod>2026-10-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -733,7 +739,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://barriopuro.github.io/krakoa/#south-park</loc>
+    <loc>https://barriopuro.github.io/krakoa/#scream</loc>
     <lastmod>2026-10-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -751,7 +757,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://barriopuro.github.io/krakoa/#star-wars</loc>
+    <loc>https://barriopuro.github.io/krakoa/#south-park</loc>
     <lastmod>2026-10-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -769,7 +775,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://barriopuro.github.io/krakoa/#star-wars-darth-vader</loc>
+    <loc>https://barriopuro.github.io/krakoa/#star-wars</loc>
     <lastmod>2026-10-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -787,7 +793,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://barriopuro.github.io/krakoa/#stranger-things</loc>
+    <loc>https://barriopuro.github.io/krakoa/#star-wars-darth-vader</loc>
     <lastmod>2026-10-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -805,7 +811,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://barriopuro.github.io/krakoa/#street-sharks</loc>
+    <loc>https://barriopuro.github.io/krakoa/#stranger-things</loc>
     <lastmod>2026-10-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -817,7 +823,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://barriopuro.github.io/krakoa/#t800-terminator</loc>
+    <loc>https://barriopuro.github.io/krakoa/#street-sharks</loc>
     <lastmod>2026-10-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -829,7 +835,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://barriopuro.github.io/krakoa/#the-warriors</loc>
+    <loc>https://barriopuro.github.io/krakoa/#t800-terminator</loc>
     <lastmod>2026-10-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -841,7 +847,19 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://barriopuro.github.io/krakoa/#the-crow</loc>
+    <lastmod>2026-10-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://barriopuro.github.io/krakoa/#wu-tang</loc>
+    <lastmod>2026-10-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://barriopuro.github.io/krakoa/#the-warriors</loc>
     <lastmod>2026-10-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>

@@ -955,13 +955,13 @@
       "extras": []
     },
     {
-      "id": "zelda-hyrule-icons",
-      "name": "Zelda Hyrule Icons",
+      "id": "the-last-of-us",
+      "name": "The Last Of Us",
       "tags": [],
       "category": "videojuegos",
       "categoryName": "Videojuegos",
-      "modelo": "/catalogo/videojuegos/zelda-hyrule-icons/modelo.webp",
-      "remera": "/catalogo/videojuegos/zelda-hyrule-icons/remera.webp",
+      "modelo": "/catalogo/videojuegos/the-last-of-us/modelo.webp",
+      "remera": "/catalogo/videojuegos/the-last-of-us/remera.webp",
       "extras": []
     },
     {
@@ -1002,6 +1002,16 @@
       "categoryName": "Música",
       "modelo": "/catalogo/musica/linkin-park/modelo.webp",
       "remera": "/catalogo/musica/linkin-park/remera.webp",
+      "extras": []
+    },
+    {
+      "id": "zelda-hyrule-icons",
+      "name": "Zelda Hyrule Icons",
+      "tags": [],
+      "category": "videojuegos",
+      "categoryName": "Videojuegos",
+      "modelo": "/catalogo/videojuegos/zelda-hyrule-icons/modelo.webp",
+      "remera": "/catalogo/videojuegos/zelda-hyrule-icons/remera.webp",
       "extras": []
     },
     {
@@ -1135,13 +1145,13 @@
       "extras": []
     },
     {
-      "id": "scooby-doo",
-      "name": "Scooby Doo",
+      "id": "samurai-jack",
+      "name": "Samurai Jack",
       "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/scooby-doo/modelo.webp",
-      "remera": "/catalogo/cine-series/scooby-doo/remera.webp",
+      "modelo": "/catalogo/cine-series/samurai-jack/modelo.webp",
+      "remera": "/catalogo/cine-series/samurai-jack/remera.webp",
       "extras": []
     },
     {
@@ -1165,13 +1175,13 @@
       "extras": []
     },
     {
-      "id": "scream",
-      "name": "Scream",
+      "id": "scooby-doo",
+      "name": "Scooby Doo",
       "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/scream/modelo.webp",
-      "remera": "/catalogo/cine-series/scream/remera.webp",
+      "modelo": "/catalogo/cine-series/scooby-doo/modelo.webp",
+      "remera": "/catalogo/cine-series/scooby-doo/remera.webp",
       "extras": []
     },
     {
@@ -1195,13 +1205,13 @@
       "extras": []
     },
     {
-      "id": "south-park",
-      "name": "South Park",
+      "id": "scream",
+      "name": "Scream",
       "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/south-park/modelo.webp",
-      "remera": "/catalogo/cine-series/south-park/remera.webp",
+      "modelo": "/catalogo/cine-series/scream/modelo.webp",
+      "remera": "/catalogo/cine-series/scream/remera.webp",
       "extras": []
     },
     {
@@ -1225,13 +1235,13 @@
       "extras": []
     },
     {
-      "id": "star-wars",
-      "name": "Star Wars",
+      "id": "south-park",
+      "name": "South Park",
       "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/star-wars/modelo.webp",
-      "remera": "/catalogo/cine-series/star-wars/remera.webp",
+      "modelo": "/catalogo/cine-series/south-park/modelo.webp",
+      "remera": "/catalogo/cine-series/south-park/remera.webp",
       "extras": []
     },
     {
@@ -1255,13 +1265,13 @@
       "extras": []
     },
     {
-      "id": "star-wars-darth-vader",
-      "name": "Star Wars Darth Vader",
+      "id": "star-wars",
+      "name": "Star Wars",
       "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/star-wars-darth-vader/modelo.webp",
-      "remera": "/catalogo/cine-series/star-wars-darth-vader/remera.webp",
+      "modelo": "/catalogo/cine-series/star-wars/modelo.webp",
+      "remera": "/catalogo/cine-series/star-wars/remera.webp",
       "extras": []
     },
     {
@@ -1285,13 +1295,13 @@
       "extras": []
     },
     {
-      "id": "stranger-things",
-      "name": "Stranger Things",
+      "id": "star-wars-darth-vader",
+      "name": "Star Wars Darth Vader",
       "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/stranger-things/modelo.webp",
-      "remera": "/catalogo/cine-series/stranger-things/remera.webp",
+      "modelo": "/catalogo/cine-series/star-wars-darth-vader/modelo.webp",
+      "remera": "/catalogo/cine-series/star-wars-darth-vader/remera.webp",
       "extras": []
     },
     {
@@ -1328,13 +1338,13 @@
       ]
     },
     {
-      "id": "street-sharks",
-      "name": "Street Sharks",
+      "id": "stranger-things",
+      "name": "Stranger Things",
       "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/street-sharks/modelo.webp",
-      "remera": "/catalogo/cine-series/street-sharks/remera.webp",
+      "modelo": "/catalogo/cine-series/stranger-things/modelo.webp",
+      "remera": "/catalogo/cine-series/stranger-things/remera.webp",
       "extras": []
     },
     {
@@ -1348,13 +1358,13 @@
       "extras": []
     },
     {
-      "id": "t800-terminator",
-      "name": "T800 Terminator",
+      "id": "street-sharks",
+      "name": "Street Sharks",
       "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/t800-terminator/modelo.webp",
-      "remera": "/catalogo/cine-series/t800-terminator/remera.webp",
+      "modelo": "/catalogo/cine-series/street-sharks/modelo.webp",
+      "remera": "/catalogo/cine-series/street-sharks/remera.webp",
       "extras": []
     },
     {
@@ -1368,13 +1378,13 @@
       "extras": []
     },
     {
-      "id": "the-warriors",
-      "name": "The Warriors",
+      "id": "t800-terminator",
+      "name": "T800 Terminator",
       "tags": [],
       "category": "cine-series",
       "categoryName": "Cine y Series",
-      "modelo": "/catalogo/cine-series/the-warriors/modelo.webp",
-      "remera": "/catalogo/cine-series/the-warriors/remera.webp",
+      "modelo": "/catalogo/cine-series/t800-terminator/modelo.webp",
+      "remera": "/catalogo/cine-series/t800-terminator/remera.webp",
       "extras": []
     },
     {
@@ -1388,6 +1398,16 @@
       "extras": []
     },
     {
+      "id": "the-crow",
+      "name": "The Crow",
+      "tags": [],
+      "category": "cine-series",
+      "categoryName": "Cine y Series",
+      "modelo": "/catalogo/cine-series/the-crow/modelo.webp",
+      "remera": "/catalogo/cine-series/the-crow/remera.webp",
+      "extras": []
+    },
+    {
       "id": "wu-tang",
       "name": "Wu Tang",
       "tags": [],
@@ -1395,6 +1415,16 @@
       "categoryName": "Música",
       "modelo": "/catalogo/musica/wu-tang/modelo.webp",
       "remera": "/catalogo/musica/wu-tang/remera.webp",
+      "extras": []
+    },
+    {
+      "id": "the-warriors",
+      "name": "The Warriors",
+      "tags": [],
+      "category": "cine-series",
+      "categoryName": "Cine y Series",
+      "modelo": "/catalogo/cine-series/the-warriors/modelo.webp",
+      "remera": "/catalogo/cine-series/the-warriors/remera.webp",
       "extras": []
     },
     {
