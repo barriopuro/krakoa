@@ -997,4 +997,35 @@ URL corta: krakoa.netlify.app con _redirects a GitHub Pages.
 La bio de Instagram usa la URL de GitHub (Instagram agrega prefijos
 que rompen el redirect de Netlify).
 
+<!-- Pegar al final de CONTEXTO-KRAKOA.md -->
+
+## Parte A (Historial)
+
+### S21 — Cotizador offline y definición de Roadmap
+Se creó un cotizador de costos y precios completo en un archivo único (`cotizador.html`) con HTML/CSS/JS. Incluye cálculo de pliegos DTF con algoritmo "Guillotine Best-Area-Fit", configuración de márgenes de borde y entre estampas, gráfico visual SVG de los pliegos, y cálculo de precios sugeridos con margen sobre costo o venta.
+Se charló extensamente sobre mejoras a futuro para la web (Bottom Sheet, auto-rotación, lazy loading, etc.) y se definió el orden de implementación (Roadmap).
+
+---
+
+## Parte B (Cambios al cuerpo del archivo)
+
+**Buscá esto:**
+(Sección §8 — Ideas futuras)
+
+**Reemplazá por:**
+(Agregar en la sección §8 el siguiente texto antes de "Selector de color de tela")
+
+**§13 — Roadmap de Implementación (Acordado en S21)**
+Prioridad de fases para las próximas sesiones:
+- **Fase 0 (Urgente):** Lazy loading en el catálogo (cargar de a 20-30 tarjetas en vez de las 150 de golpe).
+- **Fase 1 (Mobile Flow):** Rediseño del modal a "Bottom Sheet", quitar contador "1/4" de fotos, swipe para cambiar de producto (solo desde la zona de info/título).
+- **Fase 2 (Vida):** Auto-rotación de imágenes en tarjetas, Feedback táctil (vibración y glitch al tocar).
+- **Fase 3 (Scroll):** Parallax en hero y fade+glitch en tarjetas (optimizado: Parallax y glitch completo solo en Desktop, en Mobile solo fade limpio).
+- **Fase 4 (Detalles):** Sugerencia de Tiers en el carrito, buscador con "Sin resultados" inteligente (tabla de sinónimos), página 404 personalizada.
+- **Fase 5 (Relacionados):** Productos relacionados en el modal (recomendaciones por categoría).
+- **Fase 6 (Grandes):** Selector de color de remera (con subcarpetas), Lista de favoritos (Wishlist).
+
+**Nota sobre el Cotizador:**
+Existe un archivo externo `cotizador.html` (no vive en el repo de la web) que se usa para calcular costos de DTF y precios de venta. Se mantiene independiente del deploy de KRAKOA.
+
 <!-- Próxima sesión: pegar acá abajo el bloque nuevo. -->

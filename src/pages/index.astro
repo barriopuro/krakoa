@@ -749,10 +749,7 @@ const marqueeText = [
             ›
           </button>
 
-          <div class="modal-image-overlay">
-            <span id="modal-image-label" class="modal-image-label">Modelo</span>
-            <span id="modal-image-counter" class="modal-image-counter">1 / 4</span>
-          </div>
+
         </div>
 
         <div id="modal-thumbs" class="modal-thumbs"></div>
@@ -2867,15 +2864,14 @@ const marqueeText = [
     align-items: center;
     justify-content: center;
     padding: 20px;
-    opacity: 0;
     visibility: hidden;
-    transition: opacity 0.42s ease, visibility 0s linear 0.42s;
+    pointer-events: none;
   }
 
-  .modal.open {
-    opacity: 1;
+  .modal.open,
+  .modal.is-closing {
     visibility: visible;
-    transition: opacity 0.42s ease, visibility 0s linear 0s;
+    pointer-events: auto;
   }
 
   .modal-backdrop {
@@ -2883,6 +2879,17 @@ const marqueeText = [
     inset: 0;
     background: rgba(0, 0, 0, 0.88);
     backdrop-filter: blur(8px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .modal.open .modal-backdrop {
+    opacity: 1;
+  }
+
+  .modal.is-closing .modal-backdrop {
+    opacity: 0;
+    transition: opacity 0.3s ease;
   }
 
   .modal-content {
@@ -2896,15 +2903,60 @@ const marqueeText = [
     z-index: 1;
     display: flex;
     flex-direction: column;
-    transform: translateY(60px) scale(0.97);
     opacity: 0;
-    transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.42s ease;
-    will-change: transform, opacity;
+    transform-origin: center center;
   }
 
   .modal.open .modal-content {
-    transform: translateY(0) scale(1);
+    animation: crtOpen 0.55s cubic-bezier(0.22, 1, 0.36, 1);
     opacity: 1;
+  }
+
+  .modal.is-closing .modal-content {
+    animation: crtClose 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  /* Scanlines durante la apertura del modal. Se apagan solas en 0.6s. */
+  .modal-content::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 2px,
+      rgba(0, 255, 240, 0.20) 3px,
+      rgba(0, 255, 240, 0.20) 4px
+    );
+    opacity: 0;
+  }
+
+  .modal.open .modal-content::after {
+    animation: scanlinesShow 0.6s ease;
+  }
+
+  @keyframes crtOpen {
+    0%   { opacity: 0; transform: scaleY(0.005) scaleX(0.5); filter: brightness(5); }
+    25%  { opacity: 1; transform: scaleY(0.02) scaleX(1);    filter: brightness(3); }
+    55%  { opacity: 1; transform: scaleY(1.03) scaleX(1);    filter: brightness(1.4); }
+    80%  { opacity: 1; transform: scaleY(0.99) scaleX(1);    filter: brightness(1.1); }
+    100% { opacity: 1; transform: scaleY(1) scaleX(1);       filter: brightness(1); }
+  }
+
+  @keyframes crtClose {
+    0%   { opacity: 1; transform: scaleY(1) scaleX(1);      filter: brightness(1); }
+    35%  { opacity: 1; transform: scaleY(0.06) scaleX(1);   filter: brightness(2.5); }
+    70%  { opacity: 1; transform: scaleY(0.01) scaleX(0.8); filter: brightness(4); }
+    100% { opacity: 0; transform: scaleY(0.005) scaleX(0.3); filter: brightness(6); }
+  }
+
+  @keyframes scanlinesShow {
+    0%   { opacity: 0; }
+    25%  { opacity: 1; }
+    70%  { opacity: 1; }
+    100% { opacity: 0; }
   }
 
   .modal-close {
@@ -2940,6 +2992,7 @@ const marqueeText = [
   /* GALERÍA */
 
   .modal-gallery {
+    position: relative;
     background: #0a0a0a;
     padding: 22px;
     display: flex;
@@ -3049,32 +3102,7 @@ const marqueeText = [
     right: 12px;
   }
 
-  .modal-image-overlay {
-    position: absolute;
-    bottom: 12px;
-    left: 12px;
-    right: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    pointer-events: none;
-  }
 
-  .modal-image-label,
-  .modal-image-counter {
-    padding: 4px 9px;
-    border-radius: 6px;
-    background: rgba(0, 0, 0, 0.75);
-    color: #ddd;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-  }
-
-  .modal-image-counter {
-    color: #999;
-    font-variant-numeric: tabular-nums;
-  }
 
   .modal-thumbs {
     display: grid;
@@ -3607,42 +3635,71 @@ const marqueeText = [
     }
   }
 
-  /* Animación de cambio de producto. */
-  .modal-grid.switching-next {
-    animation: switchOutLeft 0.18s ease-in forwards;
-  }
-
+   /* Animación de cambio de producto: RGB split suave + ruido teal + viñeta. */
+  .modal-grid.switching-next,
   .modal-grid.switching-prev {
-    animation: switchOutRight 0.18s ease-in forwards;
+    animation: rgbSplitSwitch 0.24s steps(7, end);
   }
 
-  .modal-grid.switching-in-next {
-    animation: switchInFromRight 0.22s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  @keyframes rgbSplitSwitch {
+    0%   { transform: translate(0);         filter: none; }
+    25%  { transform: translate(-3px, 1px); filter: drop-shadow(3px 0 rgba(255,0,85,0.4)) drop-shadow(-3px 0 rgba(0,255,240,0.4)); }
+    50%  { transform: translate(2px, -1px); filter: drop-shadow(-3px 0 rgba(255,0,85,0.4)) drop-shadow(3px 0 rgba(0,255,240,0.4)); }
+    75%  { transform: translate(-1px, 0);   filter: drop-shadow(2px 0 rgba(255,0,85,0.3)) drop-shadow(-2px 0 rgba(0,255,240,0.3)); }
+    100% { transform: translate(0);         filter: none; }
   }
 
-  .modal-grid.switching-in-prev {
-    animation: switchInFromLeft 0.22s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  /* Ruido teal (::before) + viñeta (::after) sobre el área de la imagen,
+     solo durante el switch. El ruido va abajo (z-index 1), la viñeta arriba
+     (z-index 2). Las flechas (z-index 3) y el overlay (z-index 4) quedan
+     por encima, así no se tapan. */
+  .modal-grid.switching-next .modal-image-area::before,
+  .modal-grid.switching-prev .modal-image-area::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='500' height='500'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.25' numOctaves='1' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0.03 0 0 0 0  0 0.12 0 0 0  0 0 0.10 0 0  0 0 0 1 0'/></filter><rect width='500' height='500' filter='url(%23n)'/></svg>");
+    background-repeat: repeat;
+    opacity: 0;
+    animation: switchNoise 0.3s ease;
   }
 
-  @keyframes switchOutLeft {
-    from { opacity: 1; transform: translateX(0); }
-    to   { opacity: 0; transform: translateX(-30px); }
+  .modal-grid.switching-next .modal-image-area::after,
+  .modal-grid.switching-prev .modal-image-area::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(0, 0, 0, 0.5) 0%,
+      rgba(0, 0, 0, 0.5) 25%,
+      rgba(0, 0, 0, 0.97) 100%
+    );
+    opacity: 0;
+    animation: switchVignette 0.3s ease;
   }
 
-  @keyframes switchOutRight {
-    from { opacity: 1; transform: translateX(0); }
-    to   { opacity: 0; transform: translateX(30px); }
+  @keyframes switchNoise {
+    0%   { opacity: 0;    background-position: 0 0; }
+    30%  { opacity: 0.85; }
+    60%  { opacity: 0.75; background-position: 80px -40px; }
+    100% { opacity: 0;    background-position: 0 0; }
   }
 
-  @keyframes switchInFromRight {
-    from { opacity: 0; transform: translateX(30px); }
-    to   { opacity: 1; transform: translateX(0); }
+  @keyframes switchVignette {
+    0%   { opacity: 0; }
+    30%  { opacity: 1; }
+    70%  { opacity: 1; }
+    100% { opacity: 0; }
   }
 
-  @keyframes switchInFromLeft {
-    from { opacity: 0; transform: translateX(-30px); }
-    to   { opacity: 1; transform: translateX(0); }
-  }
+  /* (el ruido de la galería era un remanente del demo anterior. Ahora
+     el único ruido es el teal dentro del .modal-image-area, y la
+     viñeta W2A va por encima.) */
 
   /* MODAL RESPONSIVE */
 
@@ -3659,17 +3716,6 @@ const marqueeText = [
       border-radius: 0;
       border: 0;
       overflow: hidden;
-      /* En mobile: fade puro, sin transform.
-         El slide se veía trabado en muchos celus por el costo del
-         re-layout del contenido grande del modal. El fade es lo más
-         liviano que existe y no se traba nunca. */
-      transform: none;
-      transition: opacity 0.3s ease;
-      will-change: opacity;
-    }
-
-    .modal.open .modal-content {
-      opacity: 1;
     }
 
     /* En mobile el modal-grid pasa a ser el ÚNICO scroller:
@@ -6510,8 +6556,7 @@ categoryButtons.forEach((button) => {
   const modalImageA = document.querySelector("#modal-image-a");
   const modalImageB = document.querySelector("#modal-image-b");
   let modalImageActive = modalImageA; // cuál de las dos está visible ahora
-  const modalImageLabel = document.querySelector("#modal-image-label");
-  const modalImageCounter = document.querySelector("#modal-image-counter");
+
   const modalTitle = document.querySelector("#modal-title");
   const modalCategory = document.querySelector("#modal-category");
   const modalThumbs = document.querySelector("#modal-thumbs");
@@ -6555,6 +6600,7 @@ categoryButtons.forEach((button) => {
   let openingFromHash = false;
   let touchStartX = 0;
   let touchEndX = 0;
+  let modalCloseTimer = null;
 
   const imageZoom = document.querySelector("#image-zoom");
   const imageZoomImg = document.querySelector("#image-zoom-img");
@@ -6625,9 +6671,6 @@ categoryButtons.forEach((button) => {
     const current = currentImages[currentImageIndex];
     if (!current) return;
 
-    // Sincronizamos label, contador y miniatura siempre.
-    modalImageLabel.textContent = current.label;
-    modalImageCounter.textContent = `${currentImageIndex + 1} / ${currentImages.length}`;
     // Marcamos el wrapper como zoomeable solo si el slide actual es una foto.
     modalImageWrapper.classList.toggle(
       "is-zoomable",
@@ -6992,6 +7035,13 @@ hidden.decoding = "async";
 
 
   function openModal(product) {
+    // Si había un cierre en curso (CRT close), lo cancelamos.
+    if (modalCloseTimer) {
+      clearTimeout(modalCloseTimer);
+      modalCloseTimer = null;
+    }
+    modal.classList.remove("is-closing");
+
     const name = product.querySelector("h3")?.textContent ?? "";
     const category = product.querySelector(".product-category");
     const overlay = product.querySelector(".product-overlay");
@@ -7125,12 +7175,11 @@ hidden.decoding = "async";
 
   function closeModalDirect() {
     // Si ya está cerrado (aria-hidden="true"), no hacemos nada.
-    // Usamos aria-hidden en vez de la clase .open porque .open se agrega
-    // dentro de un requestAnimationFrame, y el popstate puede llegar antes.
     if (modal.getAttribute("aria-hidden") === "true") return;
 
+    // Disparamos el CRT close.
     modal.classList.remove("open");
-    modal.setAttribute("aria-hidden", "true");
+    modal.classList.add("is-closing");
     unlockScroll();
 
     // Quitamos el hash del producto de la URL (sin agregar entrada nueva).
@@ -7147,6 +7196,15 @@ hidden.decoding = "async";
     // Al cerrar el modal, el título vuelve al de la categoría activa
     // (o al default si no hay filtro).
     updatePageTitle();
+
+    // Esperamos a que termine la animación CRT close para limpiar
+    // el estado (aria-hidden, is-closing).
+    if (modalCloseTimer) clearTimeout(modalCloseTimer);
+    modalCloseTimer = setTimeout(() => {
+      modal.classList.remove("is-closing");
+      modal.setAttribute("aria-hidden", "true");
+      modalCloseTimer = null;
+    }, 380);
   }
 
   // -------------------------
@@ -7287,26 +7345,23 @@ hidden.decoding = "async";
       return;
     }
 
-    const outClass = direction === "next" ? "switching-next" : "switching-prev";
-    const inClass = direction === "next" ? "switching-in-next" : "switching-in-prev";
+    // Cambio de canal: RGB split suave + ruido en la galería.
+    // Una sola animación (el nombre de la clase indica la dirección,
+    // pero visualmente el efecto es simétrico).
+    const switchClass = direction === "next" ? "switching-next" : "switching-prev";
 
-    // 1) Animación de salida.
-    modalGrid.classList.add(outClass);
+    modalGrid.classList.add(switchClass);
 
+    // A los 110ms (pico del ruido) cambiamos el contenido.
     setTimeout(() => {
-      modalGrid.classList.remove(outClass);
-
-      // 2) Cargamos el producto nuevo (sin abrir de nuevo el modal).
       loadProductIntoModal(targetProduct);
+    }, 110);
 
-      // 3) Animación de entrada.
-      modalGrid.classList.add(inClass);
-
-      setTimeout(() => {
-        modalGrid.classList.remove(inClass);
-        isSwitchingProduct = false;
-      }, 240);
-    }, 190);
+    // A los 260ms (fin de la animación + margen) limpiamos.
+    setTimeout(() => {
+      modalGrid.classList.remove(switchClass);
+      isSwitchingProduct = false;
+    }, 260);
   }
 
   // Carga el contenido de un producto en el modal ya abierto.
