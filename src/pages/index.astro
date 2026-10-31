@@ -6669,6 +6669,22 @@ categoryButtons.forEach((button) => {
   // zoomeables sin cerrar el zoom.
   let zoomImageIndex = 0;
 
+  // Escala actual del zoom de imagen (1 = tamaño original).
+  // Se modifica con la rueda del mouse en desktop.
+  let zoomScale = 1;
+  const ZOOM_MIN = 1;
+  const ZOOM_MAX = 4;
+  const ZOOM_STEP = 0.15;
+
+  // Resetea la escala y el origen del zoom a su estado inicial.
+  function resetImageZoomScale() {
+    zoomScale = 1;
+    if (imageZoomImg) {
+      imageZoomImg.style.transform = "";
+      imageZoomImg.style.transformOrigin = "";
+    }
+  }
+
   // Lista de índices zoomeables del producto actual. Se recalcula
   // cada vez que se abre un modal (porque currentImages cambia).
   let zoomableIndices = [];
@@ -7269,6 +7285,7 @@ hidden.decoding = "async";
   // Abre el zoom apuntando al slide "startIndex".
   function openImageZoom(startIndex) {
     zoomImageIndex = startIndex;
+    resetImageZoomScale();
     renderImageZoom();
     imageZoom.setAttribute("aria-hidden", "false");
     imageZoom.classList.add("open");
@@ -7281,6 +7298,7 @@ hidden.decoding = "async";
     if (pos === -1) return;
     const prevPos = (pos - 1 + zoomableIndices.length) % zoomableIndices.length;
     zoomImageIndex = zoomableIndices[prevPos];
+    resetImageZoomScale();
     renderImageZoom();
   }
 
@@ -7289,6 +7307,7 @@ hidden.decoding = "async";
     if (pos === -1) return;
     const nextPos = (pos + 1) % zoomableIndices.length;
     zoomImageIndex = zoomableIndices[nextPos];
+    resetImageZoomScale();
     renderImageZoom();
   }
 
@@ -7304,6 +7323,7 @@ hidden.decoding = "async";
     if (imageZoom.getAttribute("aria-hidden") === "true") return;
     imageZoom.classList.remove("open");
     imageZoom.setAttribute("aria-hidden", "true");
+    resetImageZoomScale();
 
     // Limpiamos la src para que no quede la imagen colgada en memoria.
     // La hacemos después de la transición.
@@ -7737,12 +7757,18 @@ hidden.decoding = "async";
     if (zoomPointerDownOnImage && upOnImage) {
       zoomPointerDownOnImage = false;
 
-      // En DESKTOP, el click sobre la imagen cierra el zoom.
-      // El cursor ya muestra lupa con "-", así que el click debe cumplir.
+      // En DESKTOP, el click sobre la imagen cierra el zoom SOLO si
+      // no está ampliada. Si el usuario ya hizo zoom con la rueda,
+      // el click resetea la escala a 1 (sin cerrar), para no
+      // frustrarlo.
       // En MOBILE no cerramos, porque el usuario podría estar haciendo
       // pinch-to-zoom nativo sobre la foto.
       if (event.pointerType === "mouse") {
-        closeImageZoom();
+        if (zoomScale > 1) {
+          resetImageZoomScale();
+        } else {
+          closeImageZoom();
+        }
       }
       return;
     }
@@ -7772,6 +7798,21 @@ hidden.decoding = "async";
     event.preventDefault();
     showZoomNext();
   });
+
+  // Zoom con la rueda del mouse (solo desktop).
+  // La imagen se escala desde el centro, de 1x a 4x.
+  // preventDefault evita que la página de fondo scrollee.
+  imageZoomImg.addEventListener(
+    "wheel",
+    (event) => {
+      event.preventDefault();
+      const delta = event.deltaY < 0 ? ZOOM_STEP : -ZOOM_STEP;
+      zoomScale = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, zoomScale + delta));
+      imageZoomImg.style.transformOrigin = "center center";
+      imageZoomImg.style.transform = `scale(${zoomScale})`;
+    },
+    { passive: false }
+  );
 
   // Swipe en mobile sobre el overlay del zoom.
   let zoomSwipeStartX = 0;
