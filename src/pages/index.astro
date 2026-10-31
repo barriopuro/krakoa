@@ -4781,6 +4781,17 @@ const marqueeText = [
   visibility: hidden;
   transition: opacity 0.22s ease, visibility 0s linear 0.22s;
   cursor: zoom-out;
+  overflow: hidden;
+}
+
+/* Cursores del zoom: grab cuando está ampliada, grabbing mientras
+   se arrastra. En 1x, el cursor base (zoom-out) se mantiene. */
+:global(.image-zoom-img.is-zoomed) {
+  cursor: grab;
+}
+
+:global(.image-zoom-img.is-grabbing) {
+  cursor: grabbing;
 }
 
 :global(.image-zoom.open) {
@@ -4815,7 +4826,6 @@ const marqueeText = [
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
   max-width: 100%;
   max-height: 100%;
 }
@@ -4831,10 +4841,15 @@ const marqueeText = [
   touch-action: pinch-zoom;
   cursor: zoom-out;
   user-select: none;
+  transition: none;
+  will-change: transform;
 }
 
 :global(.image-zoom-arrow) {
-  flex: 0 0 auto;
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
   width: 48px;
   height: 48px;
   border: 1px solid rgba(255, 255, 255, 0.18);
@@ -4849,6 +4864,14 @@ const marqueeText = [
   justify-content: center;
   transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
   user-select: none;
+}
+
+:global(.image-zoom-prev) {
+  left: 24px;
+}
+
+:global(.image-zoom-next) {
+  right: 24px;
 }
 
 :global(.image-zoom-arrow:hover) {
@@ -4896,6 +4919,14 @@ const marqueeText = [
     width: 38px;
     height: 38px;
     font-size: 22px;
+  }
+
+  :global(.image-zoom-prev) {
+    left: 12px;
+  }
+
+  :global(.image-zoom-next) {
+    right: 12px;
   }
 
   :global(.image-zoom-img) {
@@ -6669,19 +6700,64 @@ categoryButtons.forEach((button) => {
   // zoomeables sin cerrar el zoom.
   let zoomImageIndex = 0;
 
-  // Escala actual del zoom de imagen (1 = tamaño original).
-  // Se modifica con la rueda del mouse en desktop.
+  // Estado del zoom de imagen (1 = tamaño original).
   let zoomScale = 1;
+  let zoomPanX = 0;
+  let zoomPanY = 0;
+  let zoomIsDragging = false;
+  let zoomDragStartX = 0;
+  let zoomDragStartY = 0;
+  let zoomDragStartPanX = 0;
+  let zoomDragStartPanY = 0;
+  let zoomDidDrag = false;
+
   const ZOOM_MIN = 1;
   const ZOOM_MAX = 4;
   const ZOOM_STEP = 0.15;
+  const ZOOM_DRAG_THRESHOLD = 4; // px de movimiento para considerar drag
 
-  // Resetea la escala y el origen del zoom a su estado inicial.
+  // Aplica el transform actual (translate + scale) y actualiza el cursor.
+  function applyImageZoomTransform() {
+    if (!imageZoomImg) return;
+    imageZoomImg.style.transform =
+      `translate(${zoomPanX}px, ${zoomPanY}px) scale(${zoomScale})`;
+    imageZoomImg.classList.toggle("is-zoomed", zoomScale > 1);
+  }
+
+  // Limita el pan para que la imagen no se pueda arrastrar más allá de
+  // sus bordes naturales. Si la imagen es más grande que el viewport,
+  // permite pan hasta que un borde coincida con el borde opuesto.
+  function clampImageZoomPan() {
+    if (!imageZoomImg || !imageZoom) return;
+    if (zoomScale <= 1) {
+      zoomPanX = 0;
+      zoomPanY = 0;
+      return;
+    }
+
+    const rect = imageZoomImg.getBoundingClientRect();
+    const W = rect.width / zoomScale;
+    const H = rect.height / zoomScale;
+    const container = imageZoom.getBoundingClientRect();
+
+    const maxPanX = Math.max(0, (W * zoomScale - container.width) / 2);
+    const maxPanY = Math.max(0, (H * zoomScale - container.height) / 2);
+
+    zoomPanX = Math.max(-maxPanX, Math.min(maxPanX, zoomPanX));
+    zoomPanY = Math.max(-maxPanY, Math.min(maxPanY, zoomPanY));
+  }
+
+  // Resetea el zoom (escala y pan) a su estado inicial.
   function resetImageZoomScale() {
     zoomScale = 1;
+    zoomPanX = 0;
+    zoomPanY = 0;
+    zoomIsDragging = false;
+    zoomDidDrag = false;
     if (imageZoomImg) {
       imageZoomImg.style.transform = "";
       imageZoomImg.style.transformOrigin = "";
+      imageZoomImg.classList.remove("is-zoomed", "is-grabbing");
     }
   }
 
@@ -7737,12 +7813,59 @@ hidden.decoding = "async";
   // La × se maneja aparte (ver más abajo) y NO debe gatillar este handler.
   let zoomPointerDownOnImage = false;
 
+  // Pointerdown sobre el overlay del zoom.
+  // Tres casos:
+  //   1) Fue sobre la imagen con zoom > 1 (mouse): empezamos drag (pan).
+  //   2) Fue sobre la imagen con zoom === 1: marcamos para cerrar.
+  //   3) Fue fuera de la imagen: cerramos (comportamiento viejo).
   imageZoom.addEventListener("pointerdown", (event) => {
     // Ignoramos si el pointerdown fue sobre la × o sobre las flechas.
     if (imageZoomClose.contains(event.target)) return;
     if (imageZoomPrev.contains(event.target)) return;
     if (imageZoomNext.contains(event.target)) return;
-    zoomPointerDownOnImage = event.target === imageZoomImg;
+
+    const downOnImage = event.target === imageZoomImg;
+
+    if (downOnImage && zoomScale > 1 && event.pointerType === "mouse") {
+      // Empezamos drag (pan).
+      zoomIsDragging = true;
+      zoomDidDrag = false;
+      zoomDragStartX = event.clientX;
+      zoomDragStartY = event.clientY;
+      zoomDragStartPanX = zoomPanX;
+      zoomDragStartPanY = zoomPanY;
+      imageZoomImg.classList.add("is-grabbing");
+      try {
+        imageZoomImg.setPointerCapture(event.pointerId);
+      } catch (error) {
+        // Algunos navegadores viejos no soportan setPointerCapture.
+      }
+      event.preventDefault();
+      return;
+    }
+
+    zoomPointerDownOnImage = downOnImage;
+  });
+
+  // Movimiento del mouse: si estamos arrastrando, actualizamos el pan.
+  imageZoom.addEventListener("pointermove", (event) => {
+    if (!zoomIsDragging) return;
+    if (event.pointerType !== "mouse") return;
+
+    const dx = event.clientX - zoomDragStartX;
+    const dy = event.clientY - zoomDragStartY;
+
+    if (
+      !zoomDidDrag &&
+      (Math.abs(dx) > ZOOM_DRAG_THRESHOLD || Math.abs(dy) > ZOOM_DRAG_THRESHOLD)
+    ) {
+      zoomDidDrag = true;
+    }
+
+    zoomPanX = zoomDragStartPanX + dx;
+    zoomPanY = zoomDragStartPanY + dy;
+    clampImageZoomPan();
+    applyImageZoomTransform();
   });
 
   imageZoom.addEventListener("pointerup", (event) => {
@@ -7750,6 +7873,25 @@ hidden.decoding = "async";
     if (imageZoomClose.contains(event.target)) return;
     if (imageZoomPrev.contains(event.target)) return;
     if (imageZoomNext.contains(event.target)) return;
+
+    // Si estábamos arrastrando, terminamos el drag.
+    if (zoomIsDragging) {
+      zoomIsDragging = false;
+      imageZoomImg.classList.remove("is-grabbing");
+      try {
+        imageZoomImg.releasePointerCapture(event.pointerId);
+      } catch (error) {
+        // Ignoramos.
+      }
+
+      // Si NO hubo movimiento (fue un click rápido sin arrastrar),
+      // reseteamos el zoom a 1x (sin cerrar).
+      if (!zoomDidDrag && event.pointerType === "mouse") {
+        resetImageZoomScale();
+      }
+      zoomDidDrag = false;
+      return;
+    }
 
     const upOnImage = event.target === imageZoomImg;
     // Si empezó y terminó sobre la imagen, NO cerramos
@@ -7799,17 +7941,37 @@ hidden.decoding = "async";
     showZoomNext();
   });
 
-  // Zoom con la rueda del mouse (solo desktop).
-  // La imagen se escala desde el centro, de 1x a 4x.
-  // preventDefault evita que la página de fondo scrollee.
+  // Zoom con la rueda del mouse (solo desktop), anclado al cursor.
+  // El punto de la imagen bajo el mouse se queda quieto mientras la
+  // imagen escala. preventDefault evita que la página scrollee.
   imageZoomImg.addEventListener(
     "wheel",
     (event) => {
       event.preventDefault();
+
       const delta = event.deltaY < 0 ? ZOOM_STEP : -ZOOM_STEP;
-      zoomScale = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, zoomScale + delta));
-      imageZoomImg.style.transformOrigin = "center center";
-      imageZoomImg.style.transform = `scale(${zoomScale})`;
+      const oldScale = zoomScale;
+      const newScale = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, oldScale + delta));
+      if (newScale === oldScale) return;
+
+      // Posición del mouse relativa al centro del viewport (que es el
+      // centro de la imagen cuando está en 1x, o el centro del pan
+      // actual cuando está ampliada).
+      const container = imageZoom.getBoundingClientRect();
+      const centerX = container.left + container.width / 2;
+      const centerY = container.top + container.height / 2;
+      const mouseX = event.clientX - centerX;
+      const mouseY = event.clientY - centerY;
+
+      // Fórmula de zoom anclado: el punto bajo el mouse se mantiene
+      // fijo antes y después del zoom.
+      const ratio = newScale / oldScale;
+      zoomPanX = mouseX - (mouseX - zoomPanX) * ratio;
+      zoomPanY = mouseY - (mouseY - zoomPanY) * ratio;
+      zoomScale = newScale;
+
+      clampImageZoomPan();
+      applyImageZoomTransform();
     },
     { passive: false }
   );
