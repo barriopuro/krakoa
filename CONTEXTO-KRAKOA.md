@@ -1028,4 +1028,56 @@ Prioridad de fases para las próximas sesiones:
 **Nota sobre el Cotizador:**
 Existe un archivo externo `cotizador.html` (no vive en el repo de la web) que se usa para calcular costos de DTF y precios de venta. Se mantiene independiente del deploy de KRAKOA.
 
+## Parte A (Historial)
+
+### S22 — Modal: CRT + switch glitch + limpieza del carrusel
+Se reemplazó la animación de apertura/cierre del modal. Ahora usa **CRT Power On/Off con scanlines** (colapso/expansión vertical + flicker + barrido de scanlines durante la apertura), tanto en desktop como en mobile. La clase `.is-closing` se agrega al cerrar y se limpia a los ~380ms con un timer (`modalCloseTimer`) para dar tiempo a que termine la animación.
+
+Se reemplazó la animación de cambio de producto (antes era `translateX` + fade) por **RGB split suave + ruido teal + viñeta** aplicados **solo sobre la zona de la imagen** (`.modal-image-area`):
+- **RGB split** en el `.modal-grid` (drop-shadows magenta/cian, steps(7), 0.24s).
+- **Ruido teal** en `.modal-image-area::before` (SVG `feTurbulence` + `feColorMatrix` con R=0.03, G=0.12, B=0.10 — verde azulado casi negro, grano rústico `baseFrequency=0.25`, tile 500x500). z-index 1.
+- **Viñeta W2A** en `.modal-image-area::after` (radial gradient, centro 0.5, transición al 25%, borde 0.97). z-index 2.
+- Las flechas (‹ ›) y el overlay quedaron en z-index 3 y 4 respectivamente para no taparse.
+- La columna de info (título, precio, selectores) **NO** recibe ruido ni viñeta: queda limpia, así no se "flashea" el texto.
+
+Se eliminó el overlay `"Modelo" / "1 / 4"` del carrusel del modal (HTML, CSS y las 2 constantes JS `modalImageLabel` / `modalImageCounter` + sus usos en `renderModalImage`).
+
+**Bug encontrado y corregido:** había quedado un bloque CSS remanente de un demo anterior (`switchStaticNoise`, ruido fino con `baseFrequency=0.9` y z-index 15) que se **sumaba** encima del ruido teal nuevo y causaba un flash blanco. Se eliminó ese bloque completo.
+
+**Técnica del ruido (para reusar en futuros efectos):** `feTurbulence` genera píxeles blancos puros (0-255) que sobre fondo oscuro se leen como "flash" sin importar cuán bajo sea el `slope`. La solución es `feColorMatrix` para teñir el ruido de un color oscuro (verde, teal, etc.) en vez de gris/blanco.
+
+---
+
+## Parte B (Cambios al cuerpo del archivo)
+
+**Buscá esto** (en §3, sección "Modal de producto"):
+
+> **Apertura/cierre:**
+> - Desktop: `translateY(60px) scale(0.97)` → 0/1, opacity 0 → 1.
+>   0.42s, cubic-bezier(0.22, 1, 0.36, 1).
+> - Mobile: fade puro (sin transform). 0.3s.
+
+**Reemplazá por:**
+
+> **Apertura/cierre (CRT):**
+> - Desktop y mobile: CRT Power On/Off. Apertura `scaleY(0.005) scaleX(0.5)` → `scaleY(1) scaleX(1)` con overshoot (0.55s), flicker de brightness, y scanlines que aparecen y se van solas en 0.6s. Cierre inverso (0.35s). La clase `.is-closing` se agrega al cerrar y se limpia a los 380ms con `modalCloseTimer`.
+
+**Buscá esto** (en §3, sección "Modal de producto", "Navegación"):
+
+> **Navegación:** orden ACTUAL del DOM (alfabético si hay categoría
+> activa, aleatorio si es el home). Se consulta con
+> `document.querySelectorAll("#products .product-card")` en vivo
+> (NO el NodeList `products`, que no se actualiza al reordenar).
+> Wrap-around: del último al primero.
+
+**Reemplazá por:**
+
+> **Navegación:** orden ACTUAL del DOM (alfabético si hay categoría
+> activa, aleatorio si es el home). Se consulta con
+> `document.querySelectorAll("#products .product-card")` en vivo
+> (NO el NodeList `products`, que no se actualiza al reordenar).
+> Wrap-around: del último al primero.
+>
+> **Animación de cambio de producto:** RGB split + ruido teal + viñeta W2A, todos aplicados solo sobre `.modal-image-area`. El contenido se reemplaza a los 110ms (pico del efecto) y las clases se limpian a los 260ms. Ver §4 para el detalle del ruido.
+
 <!-- Próxima sesión: pegar acá abajo el bloque nuevo. -->

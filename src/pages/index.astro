@@ -4954,7 +4954,8 @@ const marqueeText = [
   transition: opacity 0.32s ease, visibility 0s linear 0.32s;
 }
 
-:global(.promo-modal.open) {
+:global(.promo-modal.open),
+:global(.promo-modal.is-closing) {
   opacity: 1;
   visibility: visible;
   transition: opacity 0.32s ease, visibility 0s linear 0s;
@@ -4978,15 +4979,37 @@ const marqueeText = [
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transform: translateY(40px) scale(0.97);
+  transform-origin: center center;
   opacity: 0;
-  transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.42s ease;
-  will-change: transform, opacity;
 }
 
 :global(.promo-modal.open .promo-content) {
-  transform: translateY(0) scale(1);
+  animation: crtOpen 0.55s cubic-bezier(0.22, 1, 0.36, 1);
   opacity: 1;
+}
+
+:global(.promo-modal.is-closing .promo-content) {
+  animation: crtClose 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+:global(.promo-content::after) {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 255, 240, 0.20) 3px,
+    rgba(0, 255, 240, 0.20) 4px
+  );
+  opacity: 0;
+}
+
+:global(.promo-modal.open .promo-content::after) {
+  animation: scanlinesShow 0.6s ease;
 }
 
 :global(.promo-close) {
@@ -5768,9 +5791,18 @@ const marqueeText = [
       }, seconds * 1000);
     }
 
+    let promoCloseTimer = null;
+
     function openPromoModal() {
       if (promoModal.classList.contains("open")) return;
       if (promoModal.getAttribute("aria-hidden") === "false") return;
+
+      // Si había un cierre en curso (CRT close), lo cancelamos.
+      if (promoCloseTimer) {
+        clearTimeout(promoCloseTimer);
+        promoCloseTimer = null;
+      }
+      promoModal.classList.remove("is-closing");
 
       promoModal.setAttribute("aria-hidden", "false");
 
@@ -5794,9 +5826,23 @@ const marqueeText = [
 
     function closePromoModalDirect() {
       if (promoModal.getAttribute("aria-hidden") === "true") return;
+      if (promoCloseTimer) {
+        clearTimeout(promoCloseTimer);
+        promoCloseTimer = null;
+      }
+
+      // Disparamos el CRT close.
       promoModal.classList.remove("open");
+      promoModal.classList.add("is-closing");
       promoModal.setAttribute("aria-hidden", "true");
       stopAutoRotate();
+
+      // Limpiamos .is-closing después de la animación (380ms) para
+      // que el contenedor vuelva a quedar oculto del todo.
+      promoCloseTimer = setTimeout(() => {
+        promoModal.classList.remove("is-closing");
+        promoCloseTimer = null;
+      }, 380);
     }
 
     // Exponemos la función para que closeTopOverlay() la use cuando
