@@ -2173,8 +2173,14 @@ const marqueeText = [
    visible y los spans .cat-glitch-a/b muestran la versión scrambled
    encima, posicionados de forma absoluta. */
   .cat-text {
-    display: inline-block;
-    position: relative;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 1;
+    white-space: nowrap;
   }
 
 :global(.cat-glitch-a),
@@ -2801,10 +2807,23 @@ const marqueeText = [
   .categories.compact .categories-compact-search-toggle { order: 4; flex-shrink: 0; }
   .categories.compact .categories-compact-cart { order: 5; flex-shrink: 0; }
 
+  /* Animaciones de entrada: el logo aparece desde la izquierda y
+     el carrito desde la derecha, con fade in. */
+  @keyframes compactBrandIn {
+    from { opacity: 0; transform: translateX(-12px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes compactCartIn {
+    from { opacity: 0; transform: translateX(12px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
   .categories.compact .categories-compact-brand {
     display: flex;
     align-items: center;
     flex-shrink: 0;
+    animation: compactBrandIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
   .categories.compact .categories-compact-cart {
@@ -2812,6 +2831,7 @@ const marqueeText = [
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    animation: compactCartIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
   /* Logo compacto: horizontal en desktop, isotipo en mobile. */
@@ -3079,9 +3099,10 @@ const marqueeText = [
     }
 
     /* Padding lateral 1.5vw (~6px en 390px) y gap 0px (pegados
-       del todo). El padding-top se mantiene en 26px para el badge. */
+       del todo). El padding-top se reduce a 16px para pegar la
+       barra más arriba, dejando justo el espacio del badge activo. */
     .categories.compact {
-      padding: 26px 1.5vw 12px;
+      padding: 16px 1.5vw 10px;
       gap: 0;
     }
 
