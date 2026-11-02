@@ -371,7 +371,26 @@ const marqueeText = [
         <div class="catalog-tint" id="catalogTintB" aria-hidden="true"></div>
 
         <nav class="categories" aria-label="Categorías">
-          {
+          <!-- Logo compacto: aparece cuando el header sale de vista.
+               En desktop se ve el horizontal, en mobile el isotipo. -->
+          <div class="categories-compact-brand" aria-hidden="true">
+            <img class="categories-compact-logo-horizontal" src={`${base}/logos/krakoalogo-horizontal.webp`} alt="KRAKOA" />
+            <img class="categories-compact-logo-isotipo" src={`${base}/logos/krakoalogo-isotipo.webp`} alt="" />
+          </div>
+
+          <!-- Lupa compacta: solo visible en desktop cuando la barra
+               está en modo compacto. Al clickear reemplaza las
+               categorías por el input. -->
+          <button class="categories-compact-search-toggle" type="button" aria-label="Buscar">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="7"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </button>
+
+          <!-- Wrapper de los botones de categoría. -->
+          <div class="categories-buttons">
+            {
   categories.map((category) => (
     <span
       class="category-wrap"
@@ -390,6 +409,25 @@ const marqueeText = [
     </span>
   ))
 }
+          </div>
+
+          <!-- Panel del buscador compacto: aparece cuando el usuario
+               clickea la lupa (solo desktop). Reemplaza a las
+               categorías en el centro. -->
+          <div class="categories-compact-search-panel" id="categories-search-panel">
+            <input id="search-compact" type="search" placeholder="Buscar diseño..." autocomplete="off" aria-label="Buscar diseño" />
+            <button id="search-compact-close" class="categories-compact-search-close" type="button" aria-label="Cerrar búsqueda">×</button>
+          </div>
+
+          <!-- Carrito compacto. -->
+          <button class="categories-compact-cart cart-button" type="button" aria-label="Ver mi pedido">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+              <path d="M3 6h18" />
+              <path d="M16 10a4 4 0 0 1-8 0" />
+            </svg>
+            <span id="cart-count-compact" class="cart-count" hidden>0</span>
+          </button>
         </nav>
 
         <div id="products" class="products">
@@ -2718,6 +2756,174 @@ const marqueeText = [
     margin-bottom: 25px;
   }
 
+  /* --------------------------- */
+  /* BARRA COMPACTA (logo + carrito) */
+  /* --------------------------- */
+
+  /* Elementos que aparecen solo en modo compacto. Ocultos por
+     defecto (cuando el header todavía está visible). */
+  .categories-compact-brand,
+  .categories-compact-search-toggle,
+  .categories-compact-cart,
+  .categories-compact-search-panel {
+    display: none;
+  }
+
+  /* Wrapper de los botones de categoría. En el estado normal ocupa
+     todo el ancho de la barra y centra los botones adentro. En modo
+     compacto pasa a ser la columna del medio. */
+  .categories-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* Cuando el header sale de vista, la barra se pone en modo
+     compacto: flex horizontal en UNA sola línea.
+     Orden visual: logo | categorías | lupa | carrito. */
+  .categories.compact {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 12px;
+  }
+
+  /* Reordenamos los hijos para que quede logo | categorías | lupa |
+     carrito, independientemente del orden del HTML. Cuando el panel
+     de búsqueda está abierto, la lupa y los botones están ocultos
+     y el panel toma su lugar (columna del medio). */
+  .categories.compact .categories-compact-brand { order: 1; flex-shrink: 0; }
+  .categories.compact .categories-buttons { order: 2; flex: 1; gap: 4px; width: auto; }
+  .categories.compact .categories-compact-search-panel { order: 3; }
+  .categories.compact .categories-compact-search-toggle { order: 4; flex-shrink: 0; }
+  .categories.compact .categories-compact-cart { order: 5; flex-shrink: 0; }
+
+  .categories.compact .categories-compact-brand {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .categories.compact .categories-compact-cart {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* Logo compacto: horizontal en desktop, isotipo en mobile. */
+  .categories-compact-logo-horizontal {
+    display: block;
+    width: 120px;
+    height: auto;
+  }
+
+  .categories-compact-logo-isotipo {
+    display: none;
+    width: 38px;
+    height: 38px;
+    object-fit: contain;
+  }
+
+  /* Lupa compacta (solo desktop). Mismos estilos que el search-toggle
+     del header, pero con clase propia para no chocar. */
+  .categories-compact-search-toggle {
+    width: 42px;
+    height: 42px;
+    border: 1px solid #242424;
+    border-radius: 8px;
+    background: transparent;
+    color: #ddd;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .categories-compact-search-toggle:hover {
+    background: #1a1a1a;
+    border-color: #3a3a3a;
+    color: #fff;
+  }
+
+  .categories-compact-search-toggle svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* En desktop, la lupa compacta aparece cuando la barra está en
+     modo compacto. En mobile no (no la queremos en mobile). */
+  @media (min-width: 701px) {
+    .categories.compact .categories-compact-search-toggle {
+      display: flex;
+    }
+  }
+
+  /* Buscador compacto (solo desktop). Ocupa toda la columna del
+     centro cuando está abierto, reemplazando a las categorías. */
+  .categories-compact-search-panel {
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .categories-compact-search-panel input {
+    flex: 1;
+    width: 100%;
+    padding: 9px 14px;
+    border: 1px solid #333;
+    border-radius: 8px;
+    outline: none;
+    background: #111;
+    color: #fff;
+    font-size: 13px;
+    transition: border-color 0.2s ease;
+  }
+
+  .categories-compact-search-panel input:focus {
+    border-color: #777;
+  }
+
+  .categories-compact-search-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border: 1px solid #242424;
+    border-radius: 8px;
+    background: transparent;
+    color: #ddd;
+    cursor: pointer;
+    font-size: 22px;
+    line-height: 1;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .categories-compact-search-close:hover {
+    background: #1a1a1a;
+    border-color: #3a3a3a;
+    color: #fff;
+  }
+
+  /* Cuando el buscador compacto está abierto: ocultar botones y
+     lupa, mostrar el input ocupando el centro. Solo desktop. */
+  @media (min-width: 701px) {
+    .categories.compact.search-open .categories-buttons,
+    .categories.compact.search-open .categories-compact-search-toggle {
+      display: none;
+    }
+    .categories.compact.search-open .categories-compact-search-panel {
+      display: flex;
+    }
+  }
+
   /* Tablet: achicamos el buscador y ocultamos el label de Instagram
      para que todo entre sin apretarse. */
   @media (max-width: 1000px) {
@@ -2850,6 +3056,66 @@ const marqueeText = [
       padding: 8px 11px;
       font-size: 12px;
       border-radius: 0;
+    }
+
+    /* En mobile, la barra compacta muestra isotipo (no horizontal). */
+    .categories-compact-logo-horizontal {
+      display: none;
+    }
+
+    /* Isotipo más chico que en desktop: 32px (antes 38px). Le
+       devuelve ancho a las categorías sin que quede ilegible. */
+    .categories-compact-logo-isotipo {
+      display: block;
+      width: 32px;
+      height: 32px;
+    }
+
+    /* Isotipo a 32px. */
+    .categories-compact-logo-isotipo {
+      display: block;
+      width: 32px;
+      height: 32px;
+    }
+
+    /* Padding lateral 1.5vw (~6px en 390px) y gap 0px (pegados
+       del todo). El padding-top se mantiene en 26px para el badge. */
+    .categories.compact {
+      padding: 26px 1.5vw 12px;
+      gap: 0;
+    }
+
+    /* Carrito compacto: 32px (igual que el isotipo). */
+    .categories.compact .categories-compact-cart {
+      width: 32px;
+      height: 32px;
+    }
+
+    /* Botones de categoría en modo compacto. Subimos el font a 12px
+       y el padding para aprovechar el espacio sobrante del centrado.
+       Ahora que los botones son más grandes, el "colchón" entre los
+       iconos y las categorías se reduce solo. */
+    .categories.compact .categories-buttons {
+      gap: 4px;
+    }
+
+    .categories.compact .category-button {
+      padding: 8px 11px;
+      font-size: 12px;
+    }
+
+    .categories.compact .category-count {
+      min-width: 16px;
+      height: 16px;
+      padding: 0 4px;
+      font-size: 9px;
+      top: -6px;
+      right: -6px;
+    }
+
+    /* En mobile ocultamos la lupa del modo compacto. */
+    .categories.compact .categories-compact-search-toggle {
+      display: none;
     }
   }
       /* --------------------------- */
@@ -6035,6 +6301,67 @@ const marqueeText = [
   searchToggle?.addEventListener("click", openSearch);
   searchClose?.addEventListener("click", closeSearch);
 
+  // -------------------------
+  // BUSCADOR COMPACTO (dentro de la barra de categorías)
+  // -------------------------
+  // La lupa compacta reemplaza las categorías por un input en el
+  // centro de la barra. El × cierra y limpia.
+  const categoriesCompactSearchToggle = document.querySelector(
+    ".categories-compact-search-toggle"
+  );
+  const searchCompact = document.querySelector("#search-compact");
+  const searchCompactClose = document.querySelector("#search-compact-close");
+
+  function openCompactSearch() {
+    if (!categoriesBar) return;
+    // Copiamos el valor actual del input del header.
+    if (searchInput && searchCompact) {
+      searchCompact.value = searchInput.value;
+    }
+    categoriesBar.classList.add("search-open");
+    requestAnimationFrame(() => {
+      searchCompact?.focus();
+    });
+  }
+
+  function closeCompactSearch() {
+    if (!categoriesBar) return;
+    categoriesBar.classList.remove("search-open");
+    // Sincronizamos el valor al input del header (por si el usuario
+    // dejó una búsqueda activa: así al volver al header la ve).
+    if (searchInput && searchCompact) {
+      searchInput.value = searchCompact.value;
+    }
+    searchCompact?.blur();
+  }
+
+  categoriesCompactSearchToggle?.addEventListener("click", openCompactSearch);
+
+  searchCompactClose?.addEventListener("click", () => {
+    // Solo re-filtramos si había algo escrito. Si no, era un no-op
+    // y reanimar toda la grilla se ve como una recarga innecesaria.
+    const hadValue =
+      (searchCompact && searchCompact.value !== "") ||
+      (searchInput && searchInput.value !== "");
+    if (searchCompact) searchCompact.value = "";
+    if (searchInput) searchInput.value = "";
+    if (hadValue) {
+      // Sin animación: las tarjetas vuelven a aparecer de golpe.
+      filterProducts({ animate: false });
+    }
+    closeCompactSearch();
+  });
+
+  searchCompact?.addEventListener(
+    "input",
+    debounce(() => {
+      // Sincronizamos el valor al input del header para que al
+      // volver al header el campo esté actualizado.
+      if (searchInput) searchInput.value = searchCompact.value;
+      filterProducts();
+    }, 150)
+  );
+
   // En desktop, al hacer focus en el input (click para escribir),
   // disparamos el mismo glitch del header. En mobile NO, porque
   // openSearch ya lo dispara y el focus automático duplicaría el efecto.
@@ -6239,7 +6566,7 @@ function normalizeText(str) {
     .replace(/[\u0300-\u036f]/g, "");
 }
 
-function filterProducts() {
+function filterProducts({ animate = true } = {}) {
   const raw = normalizeText(searchInput.value).trim();
   // Partimos la búsqueda por espacios: cada palabra se busca por separado.
   // Así "dragon ball" matchea "dragon ball z" y también el tag "dragon".
@@ -6297,6 +6624,19 @@ function filterProducts() {
   if (!grid) return;
   const allCards = Array.from(grid.querySelectorAll(".product-card"));
 
+  // Modo sin animación: desocultar las tarjetas de golpe, sin
+  // reveal animado. Se usa al limpiar el buscador desde la X, donde
+  // reanimar toda la grilla se ve como una "recarga".
+  if (!animate) {
+    allCards.forEach((product) => {
+      if (!toShowSet.has(product)) return;
+      product.classList.remove("is-hidden");
+      product.classList.remove("is-revealing");
+      product.style.removeProperty("--card-stagger");
+    });
+    return;
+  }
+
   let revealIndex = 0;
   allCards.forEach((product) => {
     // Solo animamos las que DEBEN mostrarse (toShowSet).
@@ -6319,7 +6659,39 @@ function filterProducts() {
   });
 }
 
-// Listener de animationend: cuando una tarjeta termina de animarse,
+  // -------------------------
+  // BARRA DE CATEGORÍAS COMPACTA
+  // -------------------------
+  // Cuando el header sale de vista (por arriba), la barra de
+  // categorías se pone en modo compacto: agrega el logo a la
+  // izquierda, el carrito a la derecha, y (en desktop) la lupa.
+  // Al volver el header, la barra vuelve a su estado normal.
+  const categoriesBar = document.querySelector(".categories");
+
+  if (siteHeader && categoriesBar && "IntersectionObserver" in window) {
+    const headerObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          // El header salió de vista por arriba.
+          const isOut = !entry.isIntersecting && entry.boundingClientRect.top < 0;
+          if (isOut) {
+            categoriesBar.classList.add("compact");
+          } else {
+            categoriesBar.classList.remove("compact");
+            // Si el buscador compacto estaba abierto, lo cerramos
+            // al volver al header.
+            if (categoriesBar.classList.contains("search-open")) {
+              closeCompactSearch();
+            }
+          }
+        });
+      },
+      { threshold: 0 }
+    );
+    headerObserver.observe(siteHeader);
+  }
+
+  // Listener de animationend: cuando una tarjeta termina de animarse,
 // actualizamos su estado definitivo. Se agrega UNA SOLA VEZ al inicio
 // (no en cada filtro, para no acumular listeners).
 //   - cardHide termina → pasar a is-hidden (display: none).
@@ -8161,13 +8533,18 @@ hidden.decoding = "async";
 
   function updateCartBadge() {
     const total = getTotalCount();
+    // Ahora hay dos badges: el del header y el de la barra compacta.
+    const cartCountCompact = document.querySelector("#cart-count-compact");
 
-    if (total > 0) {
-      cartCount.textContent = total;
-      cartCount.classList.add("is-visible");
-    } else {
-      cartCount.classList.remove("is-visible");
-    }
+    [cartCount, cartCountCompact].forEach((el) => {
+      if (!el) return;
+      if (total > 0) {
+        el.textContent = total;
+        el.classList.add("is-visible");
+      } else {
+        el.classList.remove("is-visible");
+      }
+    });
 
     // Actualizamos también el botón "Ver carrito" del modal.
     // Si hay 0 prendas, mostramos "Ver carrito" pelado; si hay, "Ver carrito (N)".
@@ -8436,6 +8813,11 @@ hidden.decoding = "async";
 
 
   cartToggle?.addEventListener("click", openCartDrawer);
+
+  // El carrito de la barra compacta también abre el drawer.
+  const cartToggleCompact = document.querySelector(".categories-compact-cart");
+  cartToggleCompact?.addEventListener("click", openCartDrawer);
+
   cartDrawerClose?.addEventListener("click", closeCartDrawer);
   cartDrawerBackdrop?.addEventListener("click", closeCartDrawer);
 
@@ -8485,6 +8867,17 @@ hidden.decoding = "async";
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && cartDrawer.classList.contains("open")) {
       closeCartDrawer();
+    }
+  });
+
+  // Escape también cierra el buscador compacto de la barra de categorías.
+  document.addEventListener("keydown", (event) => {
+    if (
+      event.key === "Escape" &&
+      categoriesBar &&
+      categoriesBar.classList.contains("search-open")
+    ) {
+      closeCompactSearch();
     }
   });
 
