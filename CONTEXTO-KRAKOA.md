@@ -1080,4 +1080,53 @@ Se eliminó el overlay `"Modelo" / "1 / 4"` del carrusel del modal (HTML, CSS y 
 >
 > **Animación de cambio de producto:** RGB split + ruido teal + viñeta W2A, todos aplicados solo sobre `.modal-image-area`. El contenido se reemplaza a los 110ms (pico del efecto) y las clases se limpian a los 260ms. Ver §4 para el detalle del ruido.
 
+<!-- Pegar al final de CONTEXTO-KRAKOA.md -->
+
+## Parte A (Historial)
+
+### S23 — Netlify, Promo CRT, Zoom con rueda y Barra Combinada
+Se descartó el Lazy Loading (Fase 0) porque la web ya carga bien y rompía el buscador. Se descartó el Feedback táctil (F2-b).
+
+**Netlify:** Se reemplazó el `_redirects` por un `index.html` con metadatos Open Graph (`og:image`, `og:title`, etc.) apuntando a la imagen de GitHub Pages, más un `meta refresh` y `window.location.replace`. Ahora WhatsApp muestra la thumbnail y redirige al instante.
+
+**Promo:** Se igualó la animación de apertura/cierre a la del modal (CRT Power On/Off + scanlines). Se agregó la clase `.is-closing` para el cierre y un timer para limpiarla.
+
+**Zoom con rueda:** Se agregó zoom con la rueda del mouse en desktop (de 1x a 4x), anclado al cursor. Se agregó "pan" (arrastrar) cuando el zoom es > 1x, con límites para no perder la imagen. El click sobre la imagen cierra el zoom solo si está en 1x; si está ampliada, resetea a 1x.
+
+**Barra combinada (Header + Categorías):**
+- **Desktop:** La barra de categorías sticky absorbe el logo horizontal, la lupa y el carrito. Los iconos son `position: absolute` a los costados (`left: 5vw` y `right: 5vw`). Los botones de categoría tienen `padding: 0 70px` en el contenedor para dejar espacio a los iconos. El glitch de entrada/salida de los iconos usa el keyframe `logoGlitch`.
+- **Mobile:** El logo se achica a isotipo (28px), el carrito a 28px. Las categorías se pusieron en un grid de 4 columnas (`repeat(4, 1fr)`) pero generaba problemas visuales (botones todos del mismo ancho, sombras largas). La última versión que se intentó (y falló) usaba `grid` con `justify-items: center`.
+- **Problemas pendientes de la barra en mobile:** 
+  1. Temblor del catálogo al ritmo del glitch de las categorías (el glitch modifica el DOM y el navegador refluye).
+  2. Las "sombras" de color (`background` del `.category-wrap`) miden el 100% del ancho de la celda del grid, no del botón, por lo que se asoman.
+
+**Headers con glitch:** Se reemplazó la animación de "slide+fade" de los iconos del header por el glitch real (reusando `logoGlitch`). La lupa mobile NO se anima al volver del compacto (solo desktop).
+
+---
+
+## Parte B (Cambios al cuerpo del archivo)
+
+**Buscá esto:**
+(En §7 — Decisiones descartadas)
+
+**Reemplazá por:**
+(Agregar esta fila al final de la tabla)
+| Lazy loading del catálogo (cargar de a 20-30 tarjetas) | La web ya carga bien tras la optimización de S19, y cargar en tandas rompe el buscador (filtra sobre todo el DOM). |
+| Feedback táctil (vibración + micro-glitch) | Se decidió no sumar vibración. El sitio ya tiene mucho glitch y el scale del `:active` da feedback suficiente. |
+
+**Buscá esto:**
+(En §3 — Catálogo, "Barra de categorías sticky")
+(Pegar esta nota al final de la descripción de la barra)
+
+**Reemplazá por:**
+(Agregar este texto)
+> **Nota S23:** La barra combinada en mobile quedó INESTABLE. Tiene un grid de 4 columnas que genera "sombras" anchas y un temblor del catálogo cada vez que el glitch de las categorías se dispara. Hay que rediseñar el layout mobile usando `flex-wrap` (no grid), asegurando que el `.category-wrap` tenga `display: inline-flex` y `width: auto` para que el fondo de color se ajuste al botón. Además, el glitch de las categorías debe modificarse en el JS para que NO toque el `.cat-text` (texto visible) en mobile, solo los spans absolutos de colores, o desactivarlo directamente en mobile. Ver §9 (Pendientes).
+
+**Buscá esto:**
+(En §9 — Pendientes)
+
+**Reemplazá por:**
+(Agregar al inicio de la lista)
+- **Barra combinada mobile:** Rediseñar el layout para evitar el temblor (glitch) y las sombras de los botones. Ver nota en §3.
+
 <!-- Próxima sesión: pegar acá abajo el bloque nuevo. -->

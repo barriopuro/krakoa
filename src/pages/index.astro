@@ -391,22 +391,25 @@ const marqueeText = [
           <!-- Wrapper de los botones de categoría. -->
           <div class="categories-buttons">
             {
-  categories.map((category) => (
-    <span
-      class="category-wrap"
-      style={`--category-color: ${category.color ?? "#888888"}`}
-    >
-      <button
-        class="category-button"
-        data-category={category.id}
-        data-original-text={category.name}
+  categories.map((category, index) => (
+    <>
+      <span
+        class="category-wrap"
+        style={`--category-color: ${category.color ?? "#888888"}`}
       >
-        {category.name}
-      </button>
-      <span class="category-count" aria-hidden="true">
-        {productCountByCategory[category.id] ?? 0}
+        <button
+          class="category-button"
+          data-category={category.id}
+          data-original-text={category.name}
+        >
+          {category.name}
+        </button>
+        <span class="category-count" aria-hidden="true">
+          {productCountByCategory[category.id] ?? 0}
+        </span>
       </span>
-    </span>
+      {index === 3 && <span class="category-break" aria-hidden="true"></span>}
+    </>
   ))
 }
           </div>
@@ -2032,6 +2035,7 @@ const marqueeText = [
     justify-content: center;
     gap: 8px;
     margin-bottom: 35px;
+    min-height: 88px; /* Evita que la barra cambie de alto */
   }
 
 .category-wrap {
@@ -2048,14 +2052,15 @@ const marqueeText = [
 
 .category-button {
   position: relative;
-  padding: 12px 20px;
+  padding: 14px 10px;
   border: 3px solid #333;
   border-radius: 0;
   background: #111;
   color: #ccc;
   font-size: 14px;
   font-weight: 600;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.05em; /* Más espaciado */
+  text-transform: uppercase; /* MAYÚSCULAS */
   cursor: pointer;
   font-family: inherit;
   overflow: hidden;
@@ -2172,7 +2177,7 @@ const marqueeText = [
 /* Los glitches ahora son spans REALES. .cat-text envuelve el texto
    visible y los spans .cat-glitch-a/b muestran la versión scrambled
    encima, posicionados de forma absoluta. */
-  .cat-text {
+  :global(.cat-text) {
     position: absolute;
     inset: 0;
     display: flex;
@@ -2742,24 +2747,23 @@ const marqueeText = [
     }
   }
 
-  /* Barra de categorías sticky: aplica en desktop y mobile. */
+  /* Barra de categorías sticky: misma en ambos estados. */
   .categories {
     position: sticky;
     top: 0;
     z-index: 100;
     margin-inline: -5vw;
-    /* Padding-top 26px para que el badge (22px de alto, elevado)
-       entre completo cuando la barra está sticky arriba de todo. */
     padding: 26px 5vw 12px;
     background: rgba(11, 11, 11, 0.82);
-    /* blur(6px) en vez de blur(10px): imperceptible al ojo, pero
-       reduce bastante el costo de recalcular el blur en cada frame
-       de scroll (especialmente en mobile). Subimos la opacidad del
-       fondo (0.72 → 0.82) para compensar el menor blur. */
     -webkit-backdrop-filter: blur(6px);
             backdrop-filter: blur(6px);
     border-bottom: 1px solid #1f1f1f;
     margin-bottom: 25px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
   }
 
   /* --------------------------- */
@@ -2775,9 +2779,9 @@ const marqueeText = [
     display: none;
   }
 
-  /* Wrapper de los botones de categoría. En el estado normal ocupa
-     todo el ancho de la barra y centra los botones adentro. En modo
-     compacto pasa a ser la columna del medio. */
+  /* Wrapper de los botones de categoría. Padding lateral constante
+     (70px) para que los iconos NO se superpongan con los botones
+     de los extremos en modo compacto. */
   .categories-buttons {
     display: flex;
     flex-wrap: wrap;
@@ -2785,54 +2789,85 @@ const marqueeText = [
     gap: 8px;
     width: 100%;
     min-width: 0;
+    padding: 0 70px;
   }
 
-  /* Cuando el header sale de vista, la barra se pone en modo
-     compacto: flex horizontal en UNA sola línea.
-     Orden visual: logo | categorías | lupa | carrito. */
-  .categories.compact {
-    display: flex;
-    flex-wrap: nowrap;
-    align-items: center;
-    gap: 12px;
+  /* El salto solo existe en mobile. En desktop lo ocultamos. */
+  .category-break {
+    display: none;
   }
+
+  /* Los iconos flotan a los costados. */
+  .categories.compact .categories-compact-brand {
+    position: absolute;
+    left: 5vw;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    z-index: 2;
+  }
+
+  .categories.compact .categories-compact-cart {
+    position: absolute;
+    right: 5vw;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+  }
+
+
 
   /* Reordenamos los hijos para que quede logo | categorías | lupa |
      carrito, independientemente del orden del HTML. Cuando el panel
      de búsqueda está abierto, la lupa y los botones están ocultos
      y el panel toma su lugar (columna del medio). */
   .categories.compact .categories-compact-brand { order: 1; flex-shrink: 0; }
-  .categories.compact .categories-buttons { order: 2; flex: 1; gap: 4px; width: auto; }
+  .categories.compact .categories-buttons { order: 2; flex: 1; gap: 8px; width: auto; }
   .categories.compact .categories-compact-search-panel { order: 3; }
   .categories.compact .categories-compact-search-toggle { order: 4; flex-shrink: 0; }
   .categories.compact .categories-compact-cart { order: 5; flex-shrink: 0; }
 
-  /* Animaciones de entrada: el logo aparece desde la izquierda y
-     el carrito desde la derecha, con un "pop" (arrancan al 50% de
-     su tamaño, se desplazan desde afuera y rebotan al llegar). */
-  @keyframes compactBrandIn {
-    0%   { opacity: 0; transform: translateX(-30px) scale(0.5); }
-    100% { opacity: 1; transform: translateX(0) scale(1); }
+  /* Glitch de salida/entrada para los iconos del menú compacto. */
+  .categories.compact .categories-compact-brand,
+  .categories.compact .categories-compact-cart,
+  .categories.compact .categories-compact-search-toggle {
+    /* Aislamos los iconos en su propia capa para que el clip-path
+       del glitch no fuerce un repaint del contenedor padre (que
+       hacía temblar a los botones de categoría). */
+    contain: layout style paint;
+    transform: translateZ(0);
   }
 
-  @keyframes compactCartIn {
-    0%   { opacity: 0; transform: translateX(30px) scale(0.5); }
-    100% { opacity: 1; transform: translateX(0) scale(1); }
+  .categories.compact .categories-compact-brand.glitching,
+  .categories.compact .categories-compact-cart.glitching,
+  .categories.compact .categories-compact-search-toggle.glitching {
+    animation: logoGlitch 0.42s steps(9, end) 1;
+    will-change: transform, filter, clip-path;
   }
 
   .categories.compact .categories-compact-brand {
+    position: absolute;
+    left: 5vw;
+    top: 50%;
+    transform: translateY(-50%);
     display: flex;
     align-items: center;
-    flex-shrink: 0;
-    animation: compactBrandIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    z-index: 2;
   }
 
   .categories.compact .categories-compact-cart {
+    position: absolute;
+    right: 5vw;
+    top: 50%;
+    transform: translateY(-50%);
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
-    animation: compactCartIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    z-index: 2;
   }
 
   /* Logo compacto: horizontal en desktop, isotipo en mobile. */
@@ -2852,6 +2887,10 @@ const marqueeText = [
   /* Lupa compacta (solo desktop). Mismos estilos que el search-toggle
      del header, pero con clase propia para no chocar. */
   .categories-compact-search-toggle {
+    position: absolute;
+    right: calc(5vw + 54px);
+    top: 50%;
+    transform: translateY(-50%);
     width: 42px;
     height: 42px;
     border: 1px solid #242424;
@@ -2863,6 +2902,15 @@ const marqueeText = [
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    z-index: 2;
+  }
+
+  /* El buscador compacto ocupa todo el ancho, igual que los botones. */
+  .categories.compact.search-open .categories-compact-search-panel {
+    display: flex;
+    padding-left: 0;
+    padding-right: 0;
+    width: 100%;
   }
 
   .categories-compact-search-toggle:hover {
@@ -2891,12 +2939,14 @@ const marqueeText = [
     gap: 8px;
     flex: 1;
     min-width: 0;
+    height: 41px; /* Igualamos a la altura de los botones en desktop */
   }
 
   .categories-compact-search-panel input {
     flex: 1;
     width: 100%;
-    padding: 9px 14px;
+    height: 100%;
+    padding: 0 14px;
     border: 1px solid #333;
     border-radius: 8px;
     outline: none;
@@ -2904,6 +2954,21 @@ const marqueeText = [
     color: #fff;
     font-size: 13px;
     transition: border-color 0.2s ease;
+  }
+
+  .categories.compact .categories-compact-search-close {
+    height: 100%;
+  }
+
+  .categories.compact.search-open .categories-buttons,
+  .categories.compact.search-open .categories-compact-search-toggle {
+    display: none;
+  }
+
+  .categories.compact.search-open .categories-compact-search-panel {
+    display: flex;
+    padding-left: 140px;
+    padding-right: 60px;
   }
 
   .categories-compact-search-panel input:focus {
@@ -3069,14 +3134,69 @@ const marqueeText = [
 
 
     .categories {
+      padding: 14px 2vw 10px;
+      gap: 6px;
+    }
+
+    /* Grid de 4 columnas: siempre 4 arriba + 3 abajo (centrados). */
+    .categories-buttons {
+      display: flex;
       flex-wrap: wrap;
-      gap: 4px;
+      /* Espaciado horizontal de 8px. El vertical lo controlamos 
+         con margin-bottom en los primeros 4 botones, así el break 
+         invisible NO duplica el espacio. */
+      gap: 0 8px;
+      padding: 0 10px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Margen inferior solo para los primeros 4 botones (fila de arriba).
+       Esto define exactamente el espacio entre las dos filas.
+       Cambiá el "6px" por "4px" si lo querés más junto, o "8px" si 
+       lo querés más separado. */
+    .categories-buttons .category-wrap:nth-child(-n+4) {
+      margin-bottom: 6px;
+    }
+
+    /* En modo compacto (barra flotante), la regla general del compacto
+       vuelve a poner gap: 8px (que incluye 8px verticales) y pisa el
+       gap: 0 8px de mobile. Acá lo corregimos para que el espacio
+       entre filas siga siendo el margen de 6px que definimos arriba. */
+    .categories.compact .categories-buttons {
+      gap: 0 8px;
+    }
+
+    /* Salto de línea invisible después del 4to botón.
+       Fuerza 4 arriba y 3 abajo, sin importar el ancho del celular. */
+    .category-break {
+      display: block;
+      flex-basis: 100%;
+      height: 0;
+      margin: 0;
+      padding: 0;
+      pointer-events: none;
+    }
+
+    .category-wrap {
+      display: inline-flex;
+      justify-content: center;
+      width: auto;
     }
 
     .category-button {
-      padding: 8px 11px;
-      font-size: 12px;
+      width: auto;
+      max-width: 100%;
+      padding: 8px 8px;
+      font-size: 10px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       border-radius: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     /* En mobile, la barra compacta muestra isotipo (no horizontal). */
@@ -3084,55 +3204,24 @@ const marqueeText = [
       display: none;
     }
 
-    /* Isotipo más chico que en desktop: 32px (antes 38px). Le
-       devuelve ancho a las categorías sin que quede ilegible. */
     .categories-compact-logo-isotipo {
       display: block;
-      width: 32px;
-      height: 32px;
+      width: 28px;
+      height: 28px;
     }
 
-    /* Isotipo a 32px. */
-    .categories-compact-logo-isotipo {
-      display: block;
-      width: 32px;
-      height: 32px;
+    .categories-compact-search-panel {
+      height: 36px;
     }
 
-    /* Padding lateral 1.5vw (~6px en 390px) y gap 0px (pegados
-       del todo). El padding-top se reduce a 16px para pegar la
-       barra más arriba, dejando justo el espacio del badge activo. */
-    .categories.compact {
-      padding: 16px 1.5vw 10px;
-      gap: 0;
+    .categories.compact .categories-compact-brand {
+      left: 1vw;
     }
 
-    /* Carrito compacto: 32px (igual que el isotipo). */
     .categories.compact .categories-compact-cart {
-      width: 32px;
-      height: 32px;
-    }
-
-    /* Botones de categoría en modo compacto. Subimos el font a 12px
-       y el padding para aprovechar el espacio sobrante del centrado.
-       Ahora que los botones son más grandes, el "colchón" entre los
-       iconos y las categorías se reduce solo. */
-    .categories.compact .categories-buttons {
-      gap: 4px;
-    }
-
-    .categories.compact .category-button {
-      padding: 8px 11px;
-      font-size: 12px;
-    }
-
-    .categories.compact .category-count {
-      min-width: 16px;
-      height: 16px;
-      padding: 0 4px;
-      font-size: 9px;
-      top: -6px;
-      right: -6px;
+      right: 1vw;
+      width: 28px;
+      height: 28px;
     }
 
     /* En mobile ocultamos la lupa del modo compacto. */
@@ -5905,6 +5994,21 @@ const marqueeText = [
     will-change: transform, filter, clip-path;
   }
 
+  /* Glitch de los iconos del header al volver de la barra compacta.
+     Reusa logoGlitch. En mobile, la lupa NO se anima (no está en
+     la barra compacta mobile). */
+  .site-header.header-animating .logo-horizontal,
+  .site-header.header-animating .logo-isotipo,
+  .site-header.header-animating .cart-button {
+    animation: logoGlitch 0.42s steps(9, end) 1;
+  }
+
+  @media (min-width: 701px) {
+    .site-header.header-animating .search-toggle {
+      animation: logoGlitch 0.42s steps(9, end) 1;
+    }
+  }
+
 </style>
 
 <button
@@ -6691,19 +6795,56 @@ function filterProducts({ animate = true } = {}) {
   const categoriesBar = document.querySelector(".categories");
 
   if (siteHeader && categoriesBar && "IntersectionObserver" in window) {
+    let compactExitTimer = null;
+    const icons = categoriesBar.querySelectorAll('.categories-compact-brand, .categories-compact-cart, .categories-compact-search-toggle');
+
+    function triggerIconGlitch() {
+      icons.forEach(icon => {
+        icon.classList.remove('glitching');
+        void icon.offsetWidth;
+        icon.classList.add('glitching');
+        setTimeout(() => icon.classList.remove('glitching'), 420);
+      });
+    }
+
     const headerObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          // El header salió de vista por arriba.
           const isOut = !entry.isIntersecting && entry.boundingClientRect.top < 0;
+          
           if (isOut) {
+            if (compactExitTimer) {
+              clearTimeout(compactExitTimer);
+              compactExitTimer = null;
+            }
+            categoriesBar.classList.remove("compact-leaving");
             categoriesBar.classList.add("compact");
+            
+            // Glitch al entrar
+            triggerIconGlitch();
           } else {
-            categoriesBar.classList.remove("compact");
             // Si el buscador compacto estaba abierto, lo cerramos
-            // al volver al header.
             if (categoriesBar.classList.contains("search-open")) {
               closeCompactSearch();
+            }
+            
+            // Si la barra estaba compacta, disparamos la salida
+            if (categoriesBar.classList.contains("compact")) {
+              categoriesBar.classList.add("compact-leaving");
+              
+              // Glitch al salir (el menú se oculta a los 420ms, cuando termina el glitch)
+              triggerIconGlitch();
+
+              // Glitch en los iconos del header
+              siteHeader.classList.add("header-animating");
+              setTimeout(() => {
+                siteHeader.classList.remove("header-animating");
+              }, 420);
+              
+              compactExitTimer = setTimeout(() => {
+                categoriesBar.classList.remove("compact", "compact-leaving");
+                compactExitTimer = null;
+              }, 420); 
             }
           }
         });
@@ -9621,18 +9762,15 @@ if (footerParticles) {
       if (!btn.classList.contains("glitching")) {
         const original = btn.dataset.originalText || "";
         const scrambled = scrambleText(original, 0.5);
-        const textSpan = btn.querySelector(".cat-text");
         const ga = btn.querySelector(".cat-glitch-a");
         const gb = btn.querySelector(".cat-glitch-b");
-        // Cambiamos el texto PRINCIPAL (el que siempre se ve) durante el glitch.
-        if (textSpan) textSpan.textContent = scrambled;
-        // Los spans de color llevan el mismo texto scrambled (para los slices).
+        // NO tocamos el .cat-text. El texto visible sigue siendo el original.
+        // Los spans de color son los que muestran el scramble.
         if (ga) ga.textContent = scrambled;
         if (gb) gb.textContent = scrambled;
         btn.classList.add("glitching");
         setTimeout(() => {
           btn.classList.remove("glitching");
-          if (textSpan) textSpan.textContent = original;
           if (ga) ga.textContent = "";
           if (gb) gb.textContent = "";
         }, GLITCH_DURATION);
