@@ -485,6 +485,14 @@ const marqueeText = [
             })
           }
         </div>
+
+        <div id="no-results" class="no-results" hidden>
+          <h3 class="no-results-title">No encontramos diseños con esa búsqueda</h3>
+          <p class="no-results-sub">Revisá la ortografía o navegá por nuestro catálogo.</p>
+          <button id="no-results-reset" type="button" class="no-results-button">
+            Ver todo el catálogo
+          </button>
+        </div>
            </section>
 
       <!-- CÓMO COMPRAR -->
@@ -1798,6 +1806,86 @@ const marqueeText = [
     padding-bottom: 100px;
   }
 
+  /* --------------------------- */
+  /* SIN RESULTADOS              */
+  /* --------------------------- */
+
+  /* Bloque que aparece cuando el filtro de búsqueda + categoría deja
+     la grilla vacía. Vive como hermano de #products (no adentro),
+     así ocupa todo el ancho del catálogo y no entra en el grid.
+     El JS lo togglea con el atributo `hidden`. */
+  :global(.no-results) {
+    /* Mismo truco que #products: salimos del main (que tiene
+       max-width) y ocupamos todo el ancho del viewport, así el
+       centro del bloque coincide con el centro de las tarjetas. */
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100vw;
+    max-width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-align: center;
+    padding: 70px 20px 90px;
+  }
+
+  :global(.no-results[hidden]) {
+    display: none;
+  }
+
+  :global(.no-results-title) {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: #fff;
+    line-height: 1.2;
+  }
+
+  :global(.no-results-sub) {
+    margin: 0;
+    color: #888;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  :global(.no-results-button) {
+    margin-top: 14px;
+    padding: 12px 22px;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    background: transparent;
+    color: #ddd;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+
+  :global(.no-results-button:hover) {
+    background: #1a1a1a;
+    border-color: #3a3a3a;
+    color: #fff;
+  }
+
+  @media (max-width: 700px) {
+    :global(.no-results) {
+      padding: 50px 20px 70px;
+    }
+
+    :global(.no-results-title) {
+      font-size: 17px;
+    }
+
+    :global(.no-results-sub) {
+      font-size: 13px;
+    }
+  }
+
   .catalog-tint {
     position: absolute;
     top: -13;
@@ -2797,49 +2885,58 @@ const marqueeText = [
     display: none;
   }
 
-  /* Los iconos flotan a los costados. */
+  /* Modo compacto: flexbox puro. Sin absolute, sin translateY.
+     El padre (.categories) ya tiene align-items: center, así que
+     todos los hijos se centran verticalmente solos. */
+  .categories.compact {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+  }
+
   .categories.compact .categories-compact-brand {
-    position: absolute;
-    left: 5vw;
-    top: 50%;
-    transform: translateY(-50%);
+    position: static;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
-    z-index: 2;
+    order: 1;
   }
 
   .categories.compact .categories-compact-cart {
-    position: absolute;
-    right: 5vw;
-    top: 50%;
-    transform: translateY(-50%);
+    position: static;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 2;
+    order: 5;
   }
 
 
 
-  /* Reordenamos los hijos para que quede logo | categorías | lupa |
-     carrito, independientemente del orden del HTML. Cuando el panel
-     de búsqueda está abierto, la lupa y los botones están ocultos
-     y el panel toma su lugar (columna del medio). */
-  .categories.compact .categories-compact-brand { order: 1; flex-shrink: 0; }
-  .categories.compact .categories-buttons { order: 2; flex: 1; gap: 8px; width: auto; }
-  .categories.compact .categories-compact-search-panel { order: 3; }
-  .categories.compact .categories-compact-search-toggle { order: 4; flex-shrink: 0; }
-  .categories.compact .categories-compact-cart { order: 5; flex-shrink: 0; }
+  /* Orders de flexbox para el modo compacto. */
+  .categories.compact .categories-buttons {
+    order: 2;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+  }
 
-  /* Glitch de salida/entrada para los iconos del menú compacto. */
+  .categories.compact .categories-compact-search-panel {
+    order: 3;
+    flex: 1;
+  }
+
+  .categories.compact .categories-compact-search-toggle {
+    order: 4;
+    flex-shrink: 0;
+  }
+
+  /* Aislamiento para el glitch: contain evita que el clip-path
+     dispare repaint del contenedor padre (temblor en S23). SIN
+     transform acá, porque ahora no necesitamos compensar nada. */
   .categories.compact .categories-compact-brand,
   .categories.compact .categories-compact-cart,
   .categories.compact .categories-compact-search-toggle {
-    /* Aislamos los iconos en su propia capa para que el clip-path
-       del glitch no fuerce un repaint del contenedor padre (que
-       hacía temblar a los botones de categoría). */
     contain: layout style paint;
-    transform: translateZ(0);
   }
 
   .categories.compact .categories-compact-brand.glitching,
@@ -2847,27 +2944,6 @@ const marqueeText = [
   .categories.compact .categories-compact-search-toggle.glitching {
     animation: logoGlitch 0.42s steps(9, end) 1;
     will-change: transform, filter, clip-path;
-  }
-
-  .categories.compact .categories-compact-brand {
-    position: absolute;
-    left: 5vw;
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    align-items: center;
-    z-index: 2;
-  }
-
-  .categories.compact .categories-compact-cart {
-    position: absolute;
-    right: 5vw;
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2;
   }
 
   /* Logo compacto: horizontal en desktop, isotipo en mobile. */
@@ -2885,12 +2961,8 @@ const marqueeText = [
   }
 
    /* Lupa compacta (solo desktop). */
-  .categories-compact-search-toggle {
-    position: absolute;
-    right: calc(5vw + 54px);
-    top: 0;
-    bottom: 0;
-    margin: auto;
+  .categories.compact .categories-compact-search-toggle {
+    position: static;
     width: 42px;
     height: 42px;
     padding: 0;
@@ -2904,7 +2976,6 @@ const marqueeText = [
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    z-index: 2;
   }
 
   /* El buscador compacto ocupa todo el ancho, igual que los botones. */
@@ -5926,16 +5997,16 @@ const marqueeText = [
      Misma duración (420ms) y misma cantidad de pasos (9) que el hero,
      para que se sienta como la misma familia visual. */
   @keyframes logoGlitch {
-    0%   { clip-path: inset(10% 0 80% 0);     transform: translate(-2px, 0);           filter: drop-shadow(4px 0 #ff0055) drop-shadow(-4px 0 #00fff0) drop-shadow(0 0 8px #ff0055); }
-    11%  { clip-path: inset(60% 0 10% 0);     transform: translate(3px, 0);            filter: drop-shadow(-5px 0 #ff0055) drop-shadow(5px 0 #00fff0) drop-shadow(0 0 8px #00fff0); }
-    22%  { clip-path: inset(30% 55% 55% 10%); transform: translate(-2px, 0) scaleY(-1); filter: drop-shadow(4px 0 #ff0055) drop-shadow(-4px 0 #00fff0) drop-shadow(0 0 10px #ff0055); }
-    33%  { clip-path: inset(80% 0 5% 0);      transform: translate(4px, 0);            filter: drop-shadow(-6px 0 #ff0055) drop-shadow(6px 0 #00fff0) drop-shadow(0 0 10px #00fff0); }
-    44%  { clip-path: inset(20% 30% 60% 25%); transform: translate(-3px, 0) scaleX(-1); filter: drop-shadow(5px 0 #ff0055) drop-shadow(-5px 0 #00fff0) drop-shadow(0 0 12px #ff0055); }
-    55%  { clip-path: inset(45% 0 40% 0);     transform: translate(2px, 0);            filter: drop-shadow(-4px 0 #ff0055) drop-shadow(4px 0 #00fff0) drop-shadow(0 0 8px #00fff0); }
-    66%  { clip-path: inset(70% 45% 15% 0);   transform: translate(-3px, 0);           filter: drop-shadow(5px 0 #ff0055) drop-shadow(-5px 0 #00fff0) drop-shadow(0 0 10px #ff0055); }
-    77%  { clip-path: inset(5% 0 85% 0);      transform: translate(1px, 0) scaleX(-1); filter: drop-shadow(-4px 0 #ff0055) drop-shadow(4px 0 #00fff0) drop-shadow(0 0 8px #00fff0); }
-    88%  { clip-path: inset(40% 20% 35% 30%); transform: translate(-3px, 0);           filter: drop-shadow(3px 0 #ff0055) drop-shadow(-3px 0 #00fff0) drop-shadow(0 0 6px #ff0055); }
-    100% { clip-path: inset(10% 0 80% 0);     transform: translate(0, 0);              filter: none; }
+    0%   { clip-path: inset(10% 0 80% 0);     translate: -2px 0;  scale: 1 1;   filter: drop-shadow(4px 0 #ff0055) drop-shadow(-4px 0 #00fff0) drop-shadow(0 0 8px #ff0055); }
+    11%  { clip-path: inset(60% 0 10% 0);     translate: 3px 0;   scale: 1 1;   filter: drop-shadow(-5px 0 #ff0055) drop-shadow(5px 0 #00fff0) drop-shadow(0 0 8px #00fff0); }
+    22%  { clip-path: inset(30% 55% 55% 10%); translate: -2px 0;  scale: 1 -1;  filter: drop-shadow(4px 0 #ff0055) drop-shadow(-4px 0 #00fff0) drop-shadow(0 0 10px #ff0055); }
+    33%  { clip-path: inset(80% 0 5% 0);      translate: 4px 0;   scale: 1 1;   filter: drop-shadow(-6px 0 #ff0055) drop-shadow(6px 0 #00fff0) drop-shadow(0 0 10px #00fff0); }
+    44%  { clip-path: inset(20% 30% 60% 25%); translate: -3px 0;  scale: -1 1;  filter: drop-shadow(5px 0 #ff0055) drop-shadow(-5px 0 #00fff0) drop-shadow(0 0 12px #ff0055); }
+    55%  { clip-path: inset(45% 0 40% 0);     translate: 2px 0;   scale: 1 1;   filter: drop-shadow(-4px 0 #ff0055) drop-shadow(4px 0 #00fff0) drop-shadow(0 0 8px #00fff0); }
+    66%  { clip-path: inset(70% 45% 15% 0);   translate: -3px 0;  scale: 1 1;   filter: drop-shadow(5px 0 #ff0055) drop-shadow(-5px 0 #00fff0) drop-shadow(0 0 10px #ff0055); }
+    77%  { clip-path: inset(5% 0 85% 0);      translate: 1px 0;   scale: -1 1;  filter: drop-shadow(-4px 0 #ff0055) drop-shadow(4px 0 #00fff0) drop-shadow(0 0 8px #00fff0); }
+    88%  { clip-path: inset(40% 20% 35% 30%); translate: -3px 0;  scale: 1 1;   filter: drop-shadow(3px 0 #ff0055) drop-shadow(-3px 0 #00fff0) drop-shadow(0 0 6px #ff0055); }
+    100% { clip-path: inset(10% 0 80% 0);     translate: 0 0;     scale: 1 1;   filter: none; }
   }
 
   /* --------------------------- */
@@ -6481,6 +6552,27 @@ const marqueeText = [
     closeCompactSearch();
   });
 
+  // Botón "Ver todo el catálogo" del bloque "sin resultados".
+  // Limpia búsqueda + categoría, cierra el buscador compacto si
+  // estaba abierto, y sube al inicio de la grilla.
+  const noResultsReset = document.querySelector("#no-results-reset");
+  noResultsReset?.addEventListener("click", () => {
+    if (searchInput) searchInput.value = "";
+    if (searchCompact) searchCompact.value = "";
+    if (categoriesBar) categoriesBar.classList.remove("search-open");
+    // Sin push al history: es un reset, no una navegación. Sin scroll:
+    // manejamos el scroll abajo, con "smooth" para que se sienta como
+    // una transición y no como un salto.
+    applyCategoryFilter(null, { push: false, scroll: false });
+
+    const productsGrid = document.querySelector("#products");
+    if (productsGrid) {
+      const top =
+        productsGrid.getBoundingClientRect().top + window.scrollY - 110;
+      window.scrollTo({ top, behavior: "smooth" });
+    }
+  });
+
   searchCompact?.addEventListener(
     "input",
     debounce(() => {
@@ -6488,6 +6580,23 @@ const marqueeText = [
       // volver al header el campo esté actualizado.
       if (searchInput) searchInput.value = searchCompact.value;
       filterProducts();
+
+      // Al buscar desde la barra compacta (que solo aparece cuando
+      // el usuario ya scrolleó), subimos al inicio de la grilla para
+      // que vea los resultados en primer plano. Sin esto, el
+      // scroll-anchoring del navegador nos deja pegados a la última
+      // sección (Preguntas Frecuentes).
+      // Usamos "auto" (no "smooth") porque el buscador se dispara con
+      // debounce 150ms: mientras el usuario sigue escribiendo, el
+      // scroll ya está en el destino y no se reinicia la animación.
+      const productsGrid = document.querySelector("#products");
+      if (productsGrid) {
+        const top =
+          productsGrid.getBoundingClientRect().top + window.scrollY - 110;
+        if (window.scrollY > top) {
+          window.scrollTo({ top, behavior: "auto" });
+        }
+      }
     }, 150)
   );
 
@@ -6732,6 +6841,15 @@ function filterProducts({ animate = true } = {}) {
       }
     }
   });
+
+  // ── Paso 1.5: mostrar u ocultar el bloque "sin resultados" según
+  // si quedó alguna tarjeta visible. Se hace acá (antes de tocar el
+  // DOM de las tarjetas) para que el mensaje aparezca en el mismo
+  // frame en que se oculta la última tarjeta.
+  const noResults = document.querySelector("#no-results");
+  if (noResults) {
+    noResults.hidden = toShowSet.size > 0;
+  }
 
   // ── Paso 2: reordenar el DOM (ahora que las ocultas ya no ocupan
   // lugar, el reorder no genera saltos visuales).
