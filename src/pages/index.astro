@@ -2884,21 +2884,23 @@ const marqueeText = [
     object-fit: contain;
   }
 
-  /* Lupa compacta (solo desktop). Mismos estilos que el search-toggle
-     del header, pero con clase propia para no chocar. */
+   /* Lupa compacta (solo desktop). */
   .categories-compact-search-toggle {
     position: absolute;
     right: calc(5vw + 54px);
-    top: 50%;
-    transform: translateY(-50%);
+    top: 0;
+    bottom: 0;
+    margin: auto;
     width: 42px;
     height: 42px;
+    padding: 0;
     border: 1px solid #242424;
     border-radius: 8px;
     background: transparent;
     color: #ddd;
     cursor: pointer;
     transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    display: none;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
@@ -2920,13 +2922,14 @@ const marqueeText = [
   }
 
   .categories-compact-search-toggle svg {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
+    display: block;
   }
 
   /* En desktop, la lupa compacta aparece cuando la barra está en
      modo compacto. En mobile no (no la queremos en mobile). */
-  @media (min-width: 701px) {
+    @media (min-width: 701px) {
     .categories.compact .categories-compact-search-toggle {
       display: flex;
     }
