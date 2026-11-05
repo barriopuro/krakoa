@@ -150,7 +150,7 @@ Tarjetas:
 
 Dos <img>: base (modelo) y hover (remera).
 
-Hover (desktop ≥901px): crossfade puro de opacity. Sin scale ni transform.
+Hover (desktop ≥901px) y auto-slide (mobile + desktop): misma animación. La remera entra desde la derecha (translateX(100%) → 0), se sostiene, y sale hacia la derecha (0 → translateX(100%)). Sin scale. 0.32s ease. Modelo es el estado base. La animación vive 100% en JS (no en CSS). Ver §4 "Auto-slide + hover slide".
 
 Overlay con degradado tintado. En hover se desliza abajo y desvanece.
 
@@ -438,6 +438,30 @@ URL y título dinámicos
 
 <title>: producto → "KRAKOA | Nombre", filtro → "KRAKOA | Categoría", default → "KRAKOA | REMERAS".
 
+Auto-slide + hover slide (tarjetas)
+Una única animación para auto-slide y hover: la remera entra desde la derecha, se sostiene 3-5s (random), y sale hacia la derecha. Modelo es el estado base (siempre al final del ciclo).
+
+Sistema:
+- Global, no por tarjeta. Un solo timer cada 2-10s (random) elige 1-2 tarjetas visibles al azar y las anima.
+- Visible = 75% del contenedor en el viewport (IntersectionObserver, threshold 0.75).
+- Cooldown de 6 turnos por tarjeta (lastTurn = turnCounter). Si todas las visibles están en cooldown, se resetean los lastTurn.
+- Cuando rotan 2, no pueden ser adyacentes (ni misma fila ni misma columna). Se verifica con getBoundingClientRect().
+- Precarga condicional: en mobile la remera se descarga al rotar (new Image() + onload + src = data-src). En desktop se descarga al 10% visible (equivale a lazy).
+- Pausas: document.hidden, filtro en curso (.is-revealing), cualquier overlay abierto (.modal.open, .cart-drawer.open, .mobile-menu.open, .image-zoom.open, .promo-modal.open).
+
+Hover (desktop ≥901px):
+- Misma animación que el auto-slide.
+- Hover durante "holding": se cancela el holdTimer, la remera queda visible hasta mouseleave.
+- Hover durante "out": rebota y vuelve a entrar.
+- Hover durante "in": no interrumpe.
+
+Estado por tarjeta (_state.phase): "idle" | "in" | "holding" | "out". Es lo que permite que hover y auto-slide compartan la animación sin pisarse.
+
+Template: .product-image-hover usa data-src (no src). El JS decide cuándo setear src.
+CSS: se eliminó el display: none de mobile y el :has(). Toda la animación vive en JS.
+
+Diferencia con el modal: el modal es un carrusel real (bidireccional: next = derecha→izquierda, prev = izquierda→derecha). Las tarjetas son unidireccionales (siempre entran desde derecha y salen hacia derecha). Pendiente S27: unificar el slide del modal al estilo de las tarjetas.
+
 §5 — Reglas técnicas críticas
 :global() en Astro
 Ante la duda, :global(). Astro auto-limita CSS en .astro con data-astro-cid-.... Elementos creados por JS no lo tienen y quedan sin estilo.
@@ -544,6 +568,10 @@ Al cerrar un bloque importante, la IA entrega un solo bloque para pegar al final
 
 §7 — Decisiones descartadas (no re-proponer)
 Decisión	Motivo
+
+| "Sin resultados" con chips de categorías (Opción 2) | Suma complejidad visual para un caso de borde. Se implementó mensaje + botón "Ver todo" (Opción 1). |
+| "Sin resultados" con sinónimos (Opción 3) | Requiere mantener tabla de sinónimos a mano. Mismo motivo que el override de nombres. |
+
 Integrar Mercado Pago en la web	Proyecto aparte (credenciales, webhooks, rechazos). Se coordina por WhatsApp.
 Migrar el .bat a npm scripts	"Si algo anda no se toca". El usuario no domina terminal.
 Content Collections de Astro	Catálogo se genera con script propio.
@@ -560,6 +588,7 @@ Productos relacionados en el modal	Casi descartado. Retomable si surge.
 Lazy loading del catálogo (cargar de a 20-30 tarjetas)	La web ya carga bien tras S19. Cargar en tandas rompe el buscador (filtra sobre todo el DOM).
 Feedback táctil (vibración + micro-glitch)	Se decidió no sumar vibración. El :active da feedback suficiente.
 Bottom Sheet para el modal en mobile	Descartado definitivamente en S24.
+
 §8 — Ideas futuras (vivas, sin implementar)
 Selector de color de tela
 Algunos modelos con 2-3 colores (blanco, negro, otros). Plan:
@@ -592,32 +621,31 @@ Pantalla 404 custom.
 
 Página "Gracias por tu pedido".
 
-Productos relacionados en el modal (casi descartado)
+Bloque "sin resultados" — RESUELTO en S25
+Implementado como Opción 1: mensaje + botón "Ver todo el catálogo" que resetea búsqueda y categoría. Vive en #no-results (hermano de #products). Se togglea con hidden desde filterProducts.
+
+Descartadas (no re-proponer):
+
+Opción 2 (mensaje + chips de categorías clickeables): suma complejidad visual para un caso de borde, y el usuario prefiere una salida única y clara.
+
+Opción 3 (búsqueda con sinónimos / "¿quisiste decir X?"): requiere mantener tabla de sinónimos a mano, mismo motivo por el que se descartó el override de nombres (§7).
+
 Cotizador offline (cotizador.html)
 Archivo externo (no vive en el repo). Calcula costos DTF (Guillotine Best-Area-Fit) + precios de venta. Independiente del deploy.
 
 §9 — Pendientes
+
+La barra compacta ya no está pendiente (resuelta en S25). El auto-slide en tarjetas ya no está pendiente (resuelto en S26). Los pendientes que quedan son: slide del carrusel del modal (S27), roadmap Fase 3-6.
+
 Nada urgente. Web estable.
 
-Auto-slide en tarjetas (próxima sesión)
-Rotación aleatoria de imágenes (modelo/remera) en mobile. Reglas acordadas:
+Auto-slide + hover slide en tarjetas — RESUELTO en S26
+Implementado como sistema global con cooldown, no-adyacencia y precarga condicional. Ver §4 "Auto-slide + hover slide".
 
-En desktop, si la tarjeta está en hover, el auto-slide se cancela.
+Próximo pendiente: S27 — unificar el slide del carrusel del modal al estilo de las tarjetas. Ver §11 S26 "Próxima sesión".
 
-Ritmo aleatorio con lapsos cortos y largos.
 
-La foto de la remera se muestra 3 o 4 segundos.
-
-Varias tarjetas desfasadas al mismo tiempo.
-
-Solo aplica a tarjetas visibles en el viewport.
-
-Usar la misma transición direccional que el carrusel del modal.
-
-Respetar prefers-reduced-motion.
-
-Lupa compacta (Desktop)
-El ícono y la altura se igualaron al carrito en S24, pero quedan detalles finos por pulir (posiblemente alineación milimétrica del SVG).
+Lupa compacta (Desktop) — RESUELTA en S25. Ya no aplica: el centrado pasó a flexbox, la lupa es un hijo más y se alinea automáticamente.
 
 Performance de backdrop-filter en mobile de gama muy baja
 Hoy blur(6px). No se reprodujo problema hasta ahora.
@@ -742,5 +770,118 @@ Fase 4: Sugerencia de tiers en carrito, buscador "sin resultados" con sinónimos
 Fase 5: Productos relacionados (casi descartado).
 
 Fase 6: Selector de color (subcarpetas), Wishlist.
+
+
+Parte A (Historial)
+S25 — Barra compacta definitiva, búsqueda sin scroll, "sin resultados"
+Recompresión del contexto: se reescribió el archivo entero. Pasó de ~500 líneas a ~330. Historial viejo (S1–S15) comprimido a una línea cada uno. Se unificaron las "Partes B" de S21–S24 en el cuerpo. Roadmap de S21 al final como referencia.
+
+Barra compacta — solución definitiva: los 3 problemas de alineación (logo/lupa/carrito desalineados de los botones, panel de búsqueda descolgado, carrito hundiéndose durante el glitch) se debían a que se estaba mezclando position: absolute + transform: translateY(-50%) para centrar, y luego se intentaba compensar con top/bottom + translateY(5px). El glitch pisaba el translateY, y el contain de S24 pisaba todo con transform: translateZ(0). Se resolvió eliminando el position: absolute de los 3 iconos y dejando que el align-items: center del padre .categories haga el centrado. Se limpió el transform: translateZ(0) del bloque contain. El centrado ya no depende de ningún translateY, así que el glitch no puede hundir nada.
+
+Búsqueda desde la barra compacta: al escribir, filterProducts() reordena el DOM y el scroll-anchoring nativo dejaba al usuario pegado a la última sección (Preguntas Frecuentes). Se agregó scroll explícito al inicio de la grilla dentro del listener de input del buscador compacto (con behavior: "auto" porque el debounce reinicia la animación).
+
+Bloque "sin resultados": nuevo bloque #no-results (hermano de #products, no adentro) que aparece cuando el filtro deja la grilla vacía. Título + subtítulo ("Revisá la ortografía o navegá por nuestro catálogo.") + botón "Ver todo el catálogo" que limpia búsqueda y categoría, sube al inicio con smooth. filterProducts() togglea hidden según toShowSet.size > 0. El bloque usa el mismo truco full-width que #products (left: 50%; width: 100vw; transform: translateX(-50%)) para que el centro coincida con el centro de las tarjetas.
+
+Lección técnica: centrar con position: absolute + translateY(-50%) es frágil — cualquier transform que aplique otra regla o animación lo rompe. Para barras con hijos de distinto alto, usar flexbox (align-items: center) y dejar que el layout haga el centrado.
+
+Parte A — Historial de sesión
+S26 — Auto-slide + hover slide unificado en tarjetas
+Qué se hizo: rotación automática aleatoria de las tarjetas del catálogo entre las dos imágenes existentes (modelo ↔ remera), en mobile y desktop, con precarga condicional. Además se unificó el hover de desktop con la misma animación.
+
+Sistema del auto-slide:
+
+Global, no por tarjeta. Un solo timer cada 2-10s (random) elige 1-2 tarjetas visibles al azar y las anima.
+
+Solo tarjetas al 75% visibles (threshold 0.75 del IntersectionObserver). Si el modal tapa todo, ninguna rota; si deja algunas visibles al 75%, siguen.
+
+Cooldown de 6 turnos por tarjeta: una que ya rotó no vuelve a ser candidata hasta que pasen 6 disparos globales (~30-60s según el ritmo). Si todas las visibles están en cooldown, se resetean los lastTurn para que vuelvan a ser candidatas.
+
+No contiguas: cuando se eligen 2, no pueden ser adyacentes ni en la misma fila (a distancia de un gap) ni en la misma columna. Se verifica con getBoundingClientRect().
+
+Hold 3-5s (random): la remera entra, se sostiene, y sale. Modelo es el estado base al que siempre vuelve.
+
+Dirección única: la remera entra desde la derecha (translateX(100%) → 0) y sale hacia la derecha (0 → translateX(100%)). Sin scale. 0.32s con ease. La base (modelo) nunca se mueve.
+
+Precarga condicional: en mobile la remera se descarga solo cuando le toca rotar (new Image() + onload + recién ahí src = data-src). En desktop se descarga al 10% visible (equivale a lazy).
+
+Pausas: document.hidden, filtro/búsqueda en curso (.is-revealing), y cualquier overlay abierto (.modal.open, .cart-drawer.open, .mobile-menu.open, .image-zoom.open, .promo-modal.open).
+
+Hover unificado (desktop ≥901px):
+
+Misma animación que el auto-slide: la remera entra desde la derecha, se sostiene, y sale hacia la derecha.
+
+Hover durante "holding": se cancela el holdTimer, la remera queda visible hasta que el mouse salga.
+
+Hover durante "out" (la remera se está yendo): rebota y vuelve a entrar.
+
+Hover durante "in": no interrumpe, deja terminar la entrada.
+
+Se eliminó el :has() y la transición base del CSS de las imágenes. La animación vive 100% en JS. Esto resuelve el caso "hover antes de que la remera esté cargada" sin CSS.
+
+Cambios al template:
+
+.product-image-hover: src → data-src (con data-src={...} en el render de Astro). El JS decide cuándo setear src.
+
+Se eliminó el @media (max-width: 900px) { .product-image-hover { display: none; } }. En mobile la remera ya no está oculta por CSS: la maneja el JS.
+
+Lecciones técnicas:
+
+El display: none en mobile ahorraba ~10 MB de descargas. Con el auto-slide, la remera se baja igual, pero la precarga condicional evita bajarla si nunca rota.
+
+El :has() en CSS era necesario para que el hover no mostrara una imagen vacía antes de que cargara. Se resolvió moviendo todo al JS: la animación no arranca hasta que la imagen está cargada.
+
+La máquina de estados por tarjeta (_state.phase: idle / in / holding / out) es lo que permite que hover y auto-slide compartan la misma animación sin pisarse.
+
+Cómo se probó: verificado en mobile (DevTools + real) y desktop. Rotaciones de a 1-2, no contiguas, cooldown funcionando, hover con rebote al entrar durante "out", hover cierra el holdTimer si estaba en "holding", pausas por overlay/hidden/filtro funcionando. Regresión ok: click abre modal, modal muestra la remera en galería, swipe mobile sigue funcionando.
+
+⏭️ Próxima sesión: S27 — Slide del carrusel del modal
+Objetivo: unificar el slide del carrusel del modal de producto con el estilo del auto-slide de las tarjetas.
+
+Decisiones ya tomadas (respuestas del usuario):
+
+Dirección: mantener la bidireccionalidad del carrusel (next: la nueva entra por derecha y la vieja sale por izquierda; prev: al revés). Es un carrusel real, no la tarjeta.
+
+Scale: sacar el scale(0.98) actual. Solo translateX + opacity.
+
+Timing: mantener el cubic-bezier(0.22, 1, 0.36, 1) del modal (más "premium" para imagen grande). El auto-slide de la tarjeta usa ease porque la tarjeta es chica, pero en el modal se siente mejor el bezier.
+
+"Ver tabla de talles" y thumbnails: en lugar de saltar directo con fade, hacer un "fast-forward": recorrer todos los slides intermedios con animación direccional corta, en lugar de un fade.
+
+Preguntas pendientes para S27 (a resolver con el usuario antes de escribir):
+
+Sobre el slide del carrusel (cambios 1-3):
+
+Confirmar que los valores actuales de animación del modal (translateX(±30px) + scale(0.98) + 0.32s + bezier) pasan a translateX(±100%) + sin scale + 0.32s + bezier.
+
+Confirmar que el will-change de las dos capas del modal (modal-image-a / modal-image-b) se mantiene o se ajusta.
+
+Sobre el fast-forward (cambio 4):
+
+Duración por paso intermedio: ¿cuánto dura cada transición intermedia? Recomiendo 120-150ms (más rápido que el paso normal, para que se sienta "rápido" y no un recorrido manual).
+
+Duración total: ¿fija (ej. 300ms totales sin importar cuántos pasos) o variable (120ms × cantidad de pasos)? Recomiendo variable: es más simple y se siente natural.
+
+Cancelación: ¿el fast-forward se puede interrumpir tocando una flecha o un thumbnail mientras corre? Recomiendo sí: cancelar el recorrido y saltar directo al destino tocado.
+
+Tabla destino: cuando "Ver tabla de talles" llega al slide final, ¿la tabla entra con el mismo slide direccional que las fotos, o con un fade suave (porque es una tabla, no una foto)? Recomiendo fade suave para diferenciar.
+
+Tabla de talles destino: "Ver tabla de talles" salta a la tabla del corte actual (Oversize: length - 2; Regular: length - 1). En el fast-forward, ¿pasa también por la otra tabla si está en el camino? Ejemplo: si estoy en modelo (índice 0) y pido Oversize (índice 3), paso por 1, 2, 3. No paso por 4 (Regular), que está después. Pero si pido Regular (índice 4) estando en 0, paso por 1, 2, 3, 4. ¿Está bien? Recomiendo sí, es coherente con "pila real".
+
+Detalles técnicos para S27:
+
+El renderModalImage(direction) actual solo maneja un paso. Para el fast-forward, se necesita una función nueva (o extender la actual) que reciba un array de índices intermedios y los anime en cadena. O bien, un loop for que llame a renderModalImage("next") con un await sleep(stepDuration) entre cada uno.
+
+Hay un timer de cleanup de 340ms después de cada transición (setTimeout(cleanup, 340) dentro de renderModalImage). Con fast-forward, hay que asegurarse de que no se solapen ni se cancelen entre pasos. Posible solución: guardar un ID de la operación actual y chequear antes de cada cleanup.
+
+El listener de swipe (modalImageWrapper touchstart/touchend) y el de click (para zoom) deben seguir funcionando igual durante y después del fast-forward.
+
+Otros pendientes que siguen abiertos (no bloquean S27):
+
+Roadmap Fase 3-6 (parallax hero, fade+glitch tarjetas, sugerencia de tiers en carrito, buscador con sinónimos, 404 custom, productos relacionados, selector de color, wishlist). Nada urgente.
+
+Performance de backdrop-filter en mobile de gama muy baja: hoy blur(6px). No se reprodujo problema hasta ahora.
+
+
+
 
 <!-- Próxima sesión: pegar acá abajo el bloque nuevo. -->

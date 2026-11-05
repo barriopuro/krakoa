@@ -457,7 +457,7 @@ const marqueeText = [
 
                     <img
                       class="product-image-hover"
-                      src={`${base}/${product.remera}`}
+                      data-src={`${base}/${product.remera}`}
                       alt=""
                       loading="lazy"
                       aria-hidden="true"
@@ -2560,13 +2560,9 @@ const marqueeText = [
     height: 100%;
     object-fit: cover;
     display: block;
-    /* Solo animamos opacity. Se quitó la transición de transform
-       porque el scale(1.015) del hover causaba un shift sutil de
-       1-2px al cambiar entre las dos imágenes (el navegador
-       redondeaba la escala a píxeles distintos y "reasentaba" el
-       contenido). Con crossfade puro de opacity el cambio se
-       siente igual de fluido y no se mueve nada. */
-    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    /* La transición real la setea el JS (inline) al animar cada
+       slide. Acá no seteamos nada para no pisar la máquina de
+       estados del auto-slide/hover. */
   }
 
   /* (se eliminó el will-change en hover: promocionar la imagen a una
@@ -2589,14 +2585,10 @@ const marqueeText = [
     z-index: 0;
   }
 
-  /* Hover: la base se va, la hover aparece. Crossfade puro. */
-  .product-button:hover .product-image-base {
-    opacity: 0;
-  }
-
-  .product-button:hover .product-image-hover {
-    opacity: 1;
-  }
+  /* El hover comparte la misma animación que el auto-slide: la
+     remera entra desde la derecha, se sostiene, y sale hacia la
+     derecha. Todo se maneja desde JS (ver bloque "AUTO-SLIDE +
+     HOVER" en el <script>). La base (modelo) nunca se mueve. */
 
   /* Overlay con degradado abajo de la imagen. */
   .product-overlay {
@@ -2829,10 +2821,8 @@ const marqueeText = [
       padding: 28px 10px 10px;
     }
 
-    /* En mobile no hay hover: la imagen hover nunca se muestra. */
-    .product-image-hover {
-      display: none;
-    }
+    /* La segunda imagen (remera) se maneja desde JS (auto-slide
+       y precarga condicional). No se oculta desde CSS. */
   }
 
   /* Barra de categorías sticky: misma en ambos estados. */
@@ -3476,6 +3466,11 @@ const marqueeText = [
     padding: 16px;
   }
 
+  /* (bloque de fast-forward eliminado en S27 tras feedback del usuario:
+     el recorrido por slides intermedios resultó más denso que útil.
+     Ahora thumbnails y "Ver tabla de talles" saltan directo con la
+     transición normal de un slide.) */
+
   :global(.modal-image-el) {
     position: absolute;
     inset: 16px;
@@ -3498,26 +3493,18 @@ const marqueeText = [
   }
 
   :global(.modal-image-el.enter-from-right) {
-    transform: translateX(30px) scale(0.98);
+    transform: translateX(100%);
   }
   :global(.modal-image-el.enter-from-left) {
-    transform: translateX(-30px) scale(0.98);
+    transform: translateX(-100%);
   }
   :global(.modal-image-el.leave-to-left) {
     opacity: 0;
-    transform: translateX(-30px) scale(0.98);
+    transform: translateX(-100%);
   }
   :global(.modal-image-el.leave-to-right) {
     opacity: 0;
-    transform: translateX(30px) scale(0.98);
-  }
-
-  :global(.modal-image-el.enter-fade) {
-    transform: translateX(0) scale(1);
-  }
-  :global(.modal-image-el.leave-fade) {
-    opacity: 0;
-    transform: translateX(0) scale(1);
+    transform: translateX(100%);
   }
 
   .modal-arrow {
@@ -6738,6 +6725,350 @@ const marqueeText = [
     });
   })();
 
+  // -------------------------
+  // AUTO-SLIDE + HOVER (modelo ↔ remera)
+  // -------------------------
+  // Una única animación para auto-slide y hover: la remera entra
+  // desde la derecha, se sostiene, y sale hacia la derecha. Modelo
+  // es el estado base (siempre al final del ciclo).
+  //
+  // El auto-slide es global: cada 2-10s elige 1-2 tarjetas al azar
+  // de las visibles (threshold 0.75, no contiguas en la grilla), las
+  // anima con un hold de 3-5s, y aplica un cooldown de 6 turnos para
+  // que una tarjeta no repita antes de que otras hayan tenido turno.
+  //
+  // Precarga condicional: en mobile la remera se descarga al rotar.
+  // En desktop se descarga al 10% visible (equivale a lazy).
+  //
+  // Pausas: document.hidden, hover (desktop), filtro en curso,
+  // overlays abiertos (modal, carrito, menú, zoom, promo).
+  (() => {
+    const cards = Array.from(document.querySelectorAll(".product-card"));
+    if (cards.length === 0) return;
+
+    const isDesktop = window.matchMedia("(min-width: 901px)").matches;
+    const visibleCards = new Set();
+    const SLIDE_DURATION = 320; // 0.32s
+    const COOLDOWN_TURNS = 6;
+    let turnCounter = 0;
+
+    // Estado por tarjeta: phase = "idle" | "in" | "holding" | "out"
+    cards.forEach((card) => {
+      card._state = {
+        phase: "idle",
+        transitionTimer: null,
+        holdTimer: null,
+        lastTurn: -Infinity,
+      };
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const card = entry.target;
+          if (entry.intersectionRatio >= 0.75) {
+            visibleCards.add(card);
+          } else {
+            visibleCards.delete(card);
+          }
+          if (isDesktop && entry.intersectionRatio >= 0.1) {
+            const hover = card.querySelector(".product-image-hover");
+            if (hover && !hover.src && hover.dataset.src) {
+              hover.src = hover.dataset.src;
+            }
+          }
+        });
+      },
+      { threshold: [0.1, 0.75] }
+    );
+
+    cards.forEach((card) => observer.observe(card));
+
+    function getHover(card) {
+      return card.querySelector(".product-image-hover");
+    }
+
+    function isHovered(card) {
+      return card.matches(":hover");
+    }
+
+    function loadImage(src) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve();
+        img.onerror = () => reject(new Error("No se pudo cargar: " + src));
+        img.src = src;
+      });
+    }
+
+    // Cuenta cuántas tarjetas están animándose AHORA (en entrada o
+    // en hold). Lo usa scheduleNextSlide para decidir si tiene que
+    // disparar rápido (no hay ninguna activa) o esperar normal (ya
+    // hay alguna animándose, dejamos que se superpongan).
+    function countActiveSlides() {
+      let count = 0;
+      visibleCards.forEach((card) => {
+        const phase = card._state.phase;
+        if (phase === "in" || phase === "holding") count++;
+      });
+      return count;
+    }
+
+    // x: 0 = visible en su lugar, 100 = oculta a la derecha.
+    function applyHoverPosition(hover, x, opacity) {
+      hover.style.transition =
+        `transform ${SLIDE_DURATION}ms ease, opacity ${SLIDE_DURATION}ms ease`;
+      hover.style.transform = `translateX(${x}%)`;
+      hover.style.opacity = String(opacity);
+      hover.style.zIndex = "2";
+    }
+
+    function slideIn(card) {
+      const state = card._state;
+      if (state.phase === "in" || state.phase === "holding") return;
+      if (state.transitionTimer) {
+        clearTimeout(state.transitionTimer);
+        state.transitionTimer = null;
+      }
+      const hover = getHover(card);
+      if (!hover) return;
+
+      // Desde idle: setear posición inicial sin transición y forzar
+      // reflow para que la animación arranque desde el borde derecho.
+      if (state.phase === "idle") {
+        hover.style.transition = "none";
+        hover.style.zIndex = "2";
+        hover.style.transform = "translateX(100%)";
+        hover.style.opacity = "0";
+        hover.getBoundingClientRect();
+      }
+
+      state.phase = "in";
+      applyHoverPosition(hover, 0, 1);
+
+      state.transitionTimer = setTimeout(() => {
+        state.transitionTimer = null;
+        if (state.phase === "in") state.phase = "holding";
+      }, SLIDE_DURATION);
+    }
+
+    function slideOut(card) {
+      const state = card._state;
+      if (state.phase === "idle" || state.phase === "out") return;
+      if (state.holdTimer) {
+        clearTimeout(state.holdTimer);
+        state.holdTimer = null;
+      }
+      if (state.transitionTimer) {
+        clearTimeout(state.transitionTimer);
+        state.transitionTimer = null;
+      }
+      const hover = getHover(card);
+      if (!hover) return;
+
+      state.phase = "out";
+      applyHoverPosition(hover, 100, 0);
+
+      state.transitionTimer = setTimeout(() => {
+        state.transitionTimer = null;
+        if (state.phase === "out") {
+          state.phase = "idle";
+          hover.style.transition = "";
+          hover.style.zIndex = "";
+          hover.style.transform = "";
+          hover.style.opacity = "";
+        }
+      }, SLIDE_DURATION);
+    }
+
+    // ¿Dos tarjetas son adyacentes en la grilla?
+    // - Misma fila + distancia horizontal ≈ ancho + gap.
+    // - Misma columna + distancia vertical ≈ alto + gap.
+    function areAdjacent(card1, card2) {
+      if (card1 === card2) return false;
+      const r1 = card1.getBoundingClientRect();
+      const r2 = card2.getBoundingClientRect();
+      const TOL = 20;
+
+      const sameRow =
+        Math.abs(r1.top - r2.top) < TOL &&
+        Math.abs(r1.bottom - r2.bottom) < TOL;
+      const sameCol =
+        Math.abs(r1.left - r2.left) < TOL &&
+        Math.abs(r1.right - r2.right) < TOL;
+
+      if (sameRow) {
+        const gap = 14;
+        const expectedGap = r1.width + gap;
+        if (Math.abs(r1.left - r2.left) <= expectedGap * 1.15) return true;
+      }
+      if (sameCol) {
+        const gap = 14;
+        const expectedGap = r1.height + gap;
+        if (Math.abs(r1.top - r2.top) <= expectedGap * 1.15) return true;
+      }
+      return false;
+    }
+
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    async function triggerSlide(card) {
+      const state = card._state;
+      if (state.phase !== "idle") return;
+
+      const hover = getHover(card);
+      if (!hover) return;
+
+      // Precarga condicional (mobile).
+      if (!hover.src && hover.dataset.src) {
+        try {
+          await loadImage(hover.dataset.src);
+          hover.src = hover.dataset.src;
+        } catch (error) {
+          return;
+        }
+      }
+
+      // Re-chequear después del await (puede haber cambiado todo).
+      if (!visibleCards.has(card)) return;
+      if (state.phase !== "idle") return;
+      if (isDesktop && isHovered(card)) return;
+
+      card._state.lastTurn = turnCounter;
+      slideIn(card);
+
+      const holdTime = 3000 + Math.random() * 2000; // 3-5s
+      state.holdTimer = setTimeout(() => {
+        state.holdTimer = null;
+        if (!isHovered(card)) slideOut(card);
+      }, holdTime);
+    }
+
+    function triggerRandomSlides() {
+      turnCounter++;
+
+      // Cooldown dinámico: si hay pocas tarjetas visibles, esperar 6
+      // turnos para que vuelva a rotar la misma es demasiado (con 1
+      // sola visible, son ~18s entre rotaciones). Lo ajustamos según
+      // cuántas hay, con un mínimo de 2 y un máximo de COOLDOWN_TURNS.
+      const effectiveCooldown = Math.min(
+        COOLDOWN_TURNS,
+        Math.max(2, visibleCards.size * 2)
+      );
+
+      const candidates = Array.from(visibleCards).filter((card) => {
+        if (card._state.phase !== "idle") return false;
+        if (isDesktop && isHovered(card)) return false;
+        return (turnCounter - card._state.lastTurn) >= effectiveCooldown;
+      });
+
+      // Si no hay suficientes por cooldown, resetear los de las
+      // visibles para que vuelvan a ser candidatas.
+      if (candidates.length === 0) {
+        visibleCards.forEach((card) => {
+          card._state.lastTurn = -Infinity;
+        });
+        return;
+      }
+
+      const wantTwo = candidates.length >= 2 && Math.random() < 0.5;
+      shuffle(candidates);
+
+      const chosen = [candidates[0]];
+      if (wantTwo) {
+        for (let i = 1; i < candidates.length; i++) {
+          if (!chosen.some((c) => areAdjacent(c, candidates[i]))) {
+            chosen.push(candidates[i]);
+            break;
+          }
+        }
+      }
+
+      chosen.forEach((card) => triggerSlide(card));
+    }
+
+    let slideTimer = null;
+
+    function scheduleNextSlide() {
+      if (slideTimer) clearTimeout(slideTimer);
+
+      // Delay adaptativo: si no hay ninguna tarjeta animándose ahora,
+      // disparamos rápido (300-800ms) para que nunca se sienta "muerto".
+      // Si ya hay alguna activa, esperamos normal (1.5-5s) para que las
+      // animaciones se superpongan sin amontonarse.
+      const hasActive = countActiveSlides() > 0;
+      const delay = hasActive
+        ? 1500 + Math.random() * 3500   // 1.5-5s
+        : 300 + Math.random() * 500;    // 0.3-0.8s
+
+      slideTimer = setTimeout(() => {
+        if (!document.hidden) {
+          const isRevealing = document.querySelector(
+            ".product-card.is-revealing"
+          );
+          const hasOverlay = document.querySelector(
+            ".modal.open, .cart-drawer.open, .mobile-menu.open, .image-zoom.open, .promo-modal.open"
+          );
+          if (!isRevealing && !hasOverlay) {
+            triggerRandomSlides();
+          }
+        }
+        scheduleNextSlide();
+      }, delay);
+    }
+
+    // Listeners de hover (solo desktop).
+    if (isDesktop) {
+      cards.forEach((card) => {
+        card.addEventListener("mouseenter", () => {
+          const state = card._state;
+
+          // Cancelar el holdTimer del auto-slide si lo había: el
+          // mouse toma el control hasta que salga.
+          if (state.holdTimer) {
+            clearTimeout(state.holdTimer);
+            state.holdTimer = null;
+          }
+
+          if (state.phase === "idle") {
+            // Entrada por hover normal.
+            slideIn(card);
+          } else if (state.phase === "out") {
+            // Rebote: la remera estaba saliendo, vuelve a entrar.
+            if (state.transitionTimer) {
+              clearTimeout(state.transitionTimer);
+              state.transitionTimer = null;
+            }
+            state.phase = "in";
+            applyHoverPosition(getHover(card), 0, 1);
+            state.transitionTimer = setTimeout(() => {
+              state.transitionTimer = null;
+              if (state.phase === "in") state.phase = "holding";
+            }, SLIDE_DURATION);
+          }
+          // Si phase === "in" o "holding": ya está visible, no
+          // hace falta hacer nada. Solo se cancela el holdTimer
+          // (ya hecho arriba).
+        });
+
+        card.addEventListener("mouseleave", () => {
+          const state = card._state;
+          if (state.phase === "in" || state.phase === "holding") {
+            slideOut(card);
+          }
+        });
+      });
+    }
+
+    scheduleNextSlide();
+  })();
+
   const tintLayers = [
   document.querySelector("#catalogTintA"),
   document.querySelector("#catalogTintB"),
@@ -7290,6 +7621,11 @@ categoryButtons.forEach((button) => {
   const modalImageB = document.querySelector("#modal-image-b");
   let modalImageActive = modalImageA; // cuál de las dos está visible ahora
 
+  // Token para cancelar renders de imagen en curso.
+  // Cada renderModalImage lo incrementa. Si otro render arranca antes
+  // de que corra el cleanup, el anterior se descarta.
+  let renderToken = 0;
+
   const modalTitle = document.querySelector("#modal-title");
   const modalCategory = document.querySelector("#modal-category");
   const modalThumbs = document.querySelector("#modal-thumbs");
@@ -7448,6 +7784,7 @@ categoryButtons.forEach((button) => {
       thumb.appendChild(img);
 
       thumb.addEventListener("click", () => {
+        if (index === currentImageIndex) return;
         const direction = index > currentImageIndex ? "next" : "prev";
         currentImageIndex = index;
         renderModalImage(direction);
@@ -7461,7 +7798,12 @@ categoryButtons.forEach((button) => {
   // Renderiza la imagen del modal con una transición direccional.
   // direction: "next" (entra desde la derecha), "prev" (entra desde la izquierda),
   // "fade" (sin desplazamiento, para saltos como "Ver gráfico").
-  function renderModalImage(direction = "next") {
+  // Renderiza la imagen del modal con una transición direccional.
+  // direction: "next" (entra desde la derecha) o "prev" (entra desde la izquierda).
+  // cleanupDelay: cuánto esperar antes de swapear los roles de las capas.
+  //   340ms en modo normal (0.32s de transición + 20ms de margen).
+  //   140ms en fast-forward (0.12s de transición + 20ms de margen).
+  function renderModalImage(direction = "next", cleanupDelay = 340) {
     const current = currentImages[currentImageIndex];
     if (!current) return;
 
@@ -7470,7 +7812,6 @@ categoryButtons.forEach((button) => {
       "is-zoomable",
       isZoomableSlide(currentImageIndex, currentImages.length)
     );
-
 
     const thumbs = modalThumbs.querySelectorAll(".modal-thumb");
     thumbs.forEach((thumb, index) => {
@@ -7485,11 +7826,11 @@ categoryButtons.forEach((button) => {
     const isFirstRender = !visible.src;
 
     if (isFirstRender) {
-     visible.src = current.src;
-visible.alt = `${currentProductName} — ${current.label}`;
-visible.decoding = "async";
-visible.classList.add("active");
-return;
+      visible.src = current.src;
+      visible.alt = `${currentProductName} — ${current.label}`;
+      visible.decoding = "async";
+      visible.classList.add("active");
+      return;
     }
 
     // Las clases de animación según la dirección.
@@ -7497,28 +7838,34 @@ return;
     if (direction === "next") {
       enterClass = "enter-from-right";
       leaveClass = "leave-to-left";
-    } else if (direction === "prev") {
+    } else {
       enterClass = "enter-from-left";
       leaveClass = "leave-to-right";
-    } else {
-      // "fade"
-      enterClass = "enter-fade";
-      leaveClass = "leave-fade";
     }
 
     // 1) Preparamos la capa oculta: src nuevo, posición inicial, sin transición.
     hidden.src = current.src;
-hidden.alt = `${currentProductName} — ${current.label}`;
-hidden.decoding = "async";
-    hidden.classList.remove("active", "enter-from-right", "enter-from-left", "enter-fade");
+    hidden.alt = `${currentProductName} — ${current.label}`;
+    hidden.decoding = "async";
+    hidden.classList.remove(
+      "active",
+      "enter-from-right",
+      "enter-from-left"
+    );
     hidden.classList.add(enterClass);
     // Forzamos reflow para que el navegador registre la posición inicial
     // antes de animar hacia la posición final. Sin esto, a veces el navegador
     // agrupa los cambios de clase y saltea la animación.
     hidden.getBoundingClientRect();
 
+    // Capturamos el token de este render. Si otro render arranca antes
+    // de que corra el cleanup, este cleanup se descarta.
+    const myToken = ++renderToken;
+
     // 2) Disparamos la animación.
     requestAnimationFrame(() => {
+      if (myToken !== renderToken) return;
+
       hidden.classList.remove(enterClass);
       hidden.classList.add("active");
 
@@ -7527,13 +7874,14 @@ hidden.decoding = "async";
 
       // Cuando termina la transición, limpiamos y swapeamos el rol.
       const cleanup = () => {
+        if (myToken !== renderToken) return;
         visible.classList.remove(leaveClass);
         visible.classList.remove("active");
         // La que era "visible" pasa a ser la oculta (se queda con el src viejo
         // hasta el próximo render).
         modalImageActive = hidden;
       };
-      setTimeout(cleanup, 340); // 320ms de transición + 20ms de margen
+      setTimeout(cleanup, cleanupDelay);
     });
   }
 
@@ -7875,6 +8223,15 @@ hidden.decoding = "async";
       { src: `${base}/talles/regular.webp`, label: "Talles Regular" },
     ];
 
+    // Precargamos todas las imágenes del producto en paralelo.
+    // Con esto, cuando el usuario hace fast-forward (o navega rápido
+    // con las flechas), las imágenes intermedias ya están en cache
+    // y el efecto se ve fluido, especialmente en mobile.
+    currentImages.forEach((image) => {
+      const preload = new Image();
+      preload.src = image.src;
+    });
+
     currentImageIndex = 0;
     currentProductName = name;
     currentProductId = product.dataset.id || "";
@@ -8195,6 +8552,15 @@ hidden.decoding = "async";
       { src: `${base}/talles/regular.webp`, label: "Talles Regular" },
     ];
 
+    // Precargamos todas las imágenes del producto en paralelo.
+    // Con esto, cuando el usuario hace fast-forward (o navega rápido
+    // con las flechas), las imágenes intermedias ya están en cache
+    // y el efecto se ve fluido, especialmente en mobile.
+    currentImages.forEach((image) => {
+      const preload = new Image();
+      preload.src = image.src;
+    });
+
     currentImageIndex = 0;
     currentProductName = name;
     currentProductId = product.dataset.id || "";
@@ -8351,8 +8717,11 @@ hidden.decoding = "async";
   //   - Regular:  length - 1
   modalSeeChart.addEventListener("click", () => {
     const total = currentImages.length;
-    currentImageIndex = selectedFit === "Oversize" ? total - 2 : total - 1;
-    renderModalImage("fade");
+    const targetIndex = selectedFit === "Oversize" ? total - 2 : total - 1;
+    if (targetIndex === currentImageIndex) return;
+    const direction = targetIndex > currentImageIndex ? "next" : "prev";
+    currentImageIndex = targetIndex;
+    renderModalImage(direction);
   });
 
 
