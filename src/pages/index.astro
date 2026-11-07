@@ -2924,9 +2924,16 @@ const marqueeText = [
      dispare repaint del contenedor padre (temblor en S23). SIN
      transform acá, porque ahora no necesitamos compensar nada. */
   .categories.compact .categories-compact-brand,
-  .categories.compact .categories-compact-cart,
   .categories.compact .categories-compact-search-toggle {
     contain: layout style paint;
+  }
+
+  /* El carrito necesita mostrar el badge (top: -6px; right: -6px)
+     fuera de su caja. `contain: paint` recortaba el badge en la
+     esquina superior derecha (S28). Dejamos solo layout + style:
+     alcanza para aislar el glitch sin recortar nada. */
+  .categories.compact .categories-compact-cart {
+    contain: layout style;
   }
 
   .categories.compact .categories-compact-brand.glitching,
@@ -3206,10 +3213,12 @@ const marqueeText = [
     .categories-buttons {
       display: flex;
       flex-wrap: wrap;
-      /* Espaciado horizontal de 8px. El vertical lo controlamos 
-         con margin-bottom en los primeros 4 botones, así el break 
+      /* S28: gap horizontal unificado con el modo compacto (4px).
+         Antes era 8px en fija y 4px en compacta, y el salto al
+         scrollear se notaba. El vertical lo controlamos con
+         margin-bottom en los primeros 4 botones, así el break
          invisible NO duplica el espacio. */
-      gap: 0 8px;
+      gap: 0 4px;
       padding: 0 10px;
       justify-content: center;
       align-items: center;
@@ -3223,15 +3232,12 @@ const marqueeText = [
       margin-bottom: 6px;
     }
 
-    /* En modo compacto (barra flotante), achicamos el gap horizontal
-       entre botones a 4px y el padding lateral a 4px (S28). Con el
-       logo y el carrito visibles a los costados, el ancho útil para
-       los botones se reduce: sin estos ajustes, la primera fila
-       (4 botones) no entraba y la barra pasaba a 3 filas. El
-       espacio vertical entre filas sigue viniendo del margin-bottom
-       de 6px de los primeros 4 botones. */
+    /* En modo compacto (barra flotante), achicamos solo el padding
+       lateral a 4px (S28). El gap horizontal ya es 4px en ambos
+       estados (fija y compacta), así no cambia al scrollear.
+       El espacio vertical entre filas sigue viniendo del
+       margin-bottom de 6px de los primeros 4 botones. */
     .categories.compact .categories-buttons {
-      gap: 0 4px;
       padding: 0 4px;
     }
 
