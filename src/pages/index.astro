@@ -390,9 +390,13 @@ const marqueeText = [
                está en modo compacto. Al clickear reemplaza las
                categorías por el input. -->
           <button class="categories-compact-search-toggle" type="button" aria-label="Buscar">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <svg class="icon-search" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <circle cx="11" cy="11" r="7"></circle>
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
           </button>
 
@@ -2596,7 +2600,8 @@ const marqueeText = [
   /* El hover comparte la misma animación que el auto-slide: la
      remera entra desde la derecha, se sostiene, y sale hacia la
      derecha. Todo se maneja desde JS (ver bloque "AUTO-SLIDE +
-     HOVER" en el <script>). La base (modelo) nunca se mueve. */
+     HOVER" en el bloque JS del final del archivo). La base
+     (modelo) nunca se mueve. */
 
   /* Overlay con degradado abajo de la imagen. */
   .product-overlay {
@@ -2982,18 +2987,20 @@ const marqueeText = [
     object-fit: contain;
   }
 
-   /* Lupa compacta (solo desktop). */
+   /* Lupa compacta (desktop). S28: mismo aspecto que el carrito
+      compacto y que el toggle de mobile — fondo blanco, ícono
+      oscuro. */
   .categories.compact .categories-compact-search-toggle {
     position: static;
     width: 42px;
     height: 42px;
     padding: 0;
-    border: 1px solid #242424;
+    border: 0;
     border-radius: 8px;
-    background: transparent;
-    color: #ddd;
+    background: #fff;
+    color: #111;
     cursor: pointer;
-    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    transition: background 0.2s ease;
     display: none;
     align-items: center;
     justify-content: center;
@@ -3009,9 +3016,7 @@ const marqueeText = [
   }
 
   .categories-compact-search-toggle:hover {
-    background: #1a1a1a;
-    border-color: #3a3a3a;
-    color: #fff;
+    background: #e5e5e5;
   }
 
   .categories-compact-search-toggle svg {
@@ -3020,8 +3025,24 @@ const marqueeText = [
     display: block;
   }
 
+  /* Íconos del toggle de búsqueda compacta. Lupa por defecto; X
+     cuando el panel está abierto (search-open). Solo se ve la
+     alternancia en mobile: en desktop el toggle se oculta cuando
+     search-open, así que el cambio es inocuo. */
+  .categories-compact-search-toggle .icon-close {
+    display: none;
+  }
+
+  .categories.compact.search-open .categories-compact-search-toggle .icon-search {
+    display: none;
+  }
+
+  .categories.compact.search-open .categories-compact-search-toggle .icon-close {
+    display: block;
+  }
+
   /* En desktop, la lupa compacta aparece cuando la barra está en
-     modo compacto. En mobile no (no la queremos en mobile). */
+     modo compacto. */
     @media (min-width: 701px) {
     .categories.compact .categories-compact-search-toggle {
       display: flex;
@@ -3035,7 +3056,15 @@ const marqueeText = [
     gap: 8px;
     flex: 1;
     min-width: 0;
-    height: 41px; /* Igualamos a la altura de los botones en desktop */
+    /* S28.3: el panel debe medir lo mismo que los botones
+       (~51px) para que la barra no cambie de alto al abrir
+       la búsqueda en desktop. Usamos height fija (no
+       min-height) porque el input interno tiene
+       height: 100%, y el 100% necesita un padre con
+       altura definida para estirarse. Con min-height, el
+       input colapsaba al alto de su contenido y el panel
+       quedaba "super chico". */
+    height: 51px;
   }
 
   .categories-compact-search-panel input {
@@ -3056,15 +3085,32 @@ const marqueeText = [
     height: 100%;
   }
 
-  .categories.compact.search-open .categories-buttons,
-  .categories.compact.search-open .categories-compact-search-toggle {
+  .categories.compact.search-open .categories-buttons {
     display: none;
+  }
+
+  /* S28: el toggle NO se oculta en search-open. Pasa a ser el
+     botón de cierre (X) del panel, en el mismo lugar donde
+     estaba la lupa (a la derecha del panel, antes del carrito). */
+  .categories.compact.search-open .categories-compact-search-toggle {
+    display: flex;
   }
 
   .categories.compact.search-open .categories-compact-search-panel {
     display: flex;
-    padding-left: 140px;
-    padding-right: 60px;
+    /* S28: eliminamos el padding-right (que dejaba un hueco
+       entre el input y el toggle X) y reducimos el padding-left
+       a 8px (el brand ya está separado por el flex). El panel
+       ocupa el espacio de los botones, y el toggle X queda
+       pegado a su derecha, donde estaba la lupa. */
+    padding-left: 8px;
+    padding-right: 0;
+  }
+
+  /* En search-open, ocultamos el botón × interno del panel
+     (el cierre lo maneja el toggle, que se ve como X). */
+  .categories.compact.search-open #search-compact-close {
+    display: none;
   }
 
   .categories-compact-search-panel input:focus {
@@ -3094,11 +3140,20 @@ const marqueeText = [
     color: #fff;
   }
 
-  /* Cuando el buscador compacto está abierto: ocultar botones y
-     lupa, mostrar el input ocupando el centro. Solo desktop. */
+  /* S28.3: en search-open de desktop ocultamos SOLO los botones.
+     El toggle se queda visible con la X, reemplazando a la lupa.
+     Para que la barra NO cambie de altura al abrir/cerrar el
+     panel, usamos height fija (no min-height). El estado con
+     botones mide ~89-91px (botón ~51-53px + padding 38px del
+     .categories); con panel mide 51 + 38 = 89px. Con height
+     fija de 95px ambos estados se ven idénticos. Los hijos se
+     centran verticalmente con el align-items: center que ya
+     está en .categories.compact. */
   @media (min-width: 701px) {
-    .categories.compact.search-open .categories-buttons,
-    .categories.compact.search-open .categories-compact-search-toggle {
+    .categories.compact {
+      height: 95px;
+    }
+    .categories.compact.search-open .categories-buttons {
       display: none;
     }
     .categories.compact.search-open .categories-compact-search-panel {
@@ -3261,8 +3316,13 @@ const marqueeText = [
        lateral a 4px (S28). El gap horizontal ya es 4px en ambos
        estados (fija y compacta), así no cambia al scrollear.
        El espacio vertical entre filas sigue viniendo del
-       margin-bottom de 6px de los primeros 4 botones. */
+       margin-bottom de 6px de los primeros 4 botones.
+       S28: en mobile el compacto es grid 3×2, así que asignamos
+       la celda "buttons" (columna del medio, ambas filas) y
+       centramos verticalmente el bloque dentro de ella. */
     .categories.compact .categories-buttons {
+      grid-area: buttons;
+      align-self: center;
       padding: 0 4px;
     }
 
@@ -3313,27 +3373,103 @@ const marqueeText = [
       height: 36px;
     }
 
-    /* S28: bajamos el gap del compacto a 2px. Es el mínimo
-       que deja respirar al bloque de botones cuando el .active
-       mantiene el translate(-14px, -14px). Probado: no se
-       pega visualmente al logo ni al carrito. */
+    /* S28: el compacto en mobile pasa a grid de 3 columnas × 2 filas:
+         - Col 1: logo (ocupa ambas filas, centrado).
+         - Col 2: botones (o panel de búsqueda cuando search-open).
+         - Col 3: carrito arriba, lupa abajo.
+       La lupa entra sin robar ancho horizontal: usa el espacio
+       vertical que sobraba en la columna derecha (el carrito solo
+       ocupa 1 de las 2 filas que dan los 4+3 botones). */
     .categories.compact {
-      gap: 2px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      grid-template-rows: minmax(28px, 1fr) minmax(28px, 1fr);
+      grid-template-areas:
+        "brand buttons cart"
+        "brand buttons search";
+      align-items: center;
+      column-gap: 2px;
+      row-gap: 2px;
+      flex-wrap: nowrap;
+      /* S28: altura estable. Con botones el contenido real mide
+         ~79-80px (2 filas de 36px + 6px margen + subpíxeles de
+         grid) + 24px de padding vertical del .categories =
+         ~103-104px. Subimos a 105px para cubrir ambos estados
+         sin que el min-height se quede corto (S28.1). */
+      min-height: 105px;
     }
 
     .categories.compact .categories-compact-brand {
+      grid-area: brand;
+      align-self: center;
       left: 1vw;
     }
 
     .categories.compact .categories-compact-cart {
+      grid-area: cart;
+      justify-self: end;
+      align-self: center;
       right: 1vw;
       width: 28px;
       height: 28px;
     }
 
-    /* En mobile ocultamos la lupa del modo compacto. */
+    /* S28: la lupa vuelve al compacto mobile, apilada debajo del
+       carrito en la columna derecha. Mismo tamaño y estilo que el
+       carrito compacto (fondo blanco, ícono oscuro). Cuando
+       search-open, el ícono cambia a X (ver bloque de íconos). */
     .categories.compact .categories-compact-search-toggle {
+      grid-area: search;
+      justify-self: end;
+      align-self: center;
+      display: flex;
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      border: 0;
+      border-radius: 8px;
+      background: #fff;
+      color: #111;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .categories.compact .categories-compact-search-toggle:hover {
+      background: #e5e5e5;
+    }
+
+    .categories.compact .categories-compact-search-toggle svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Cuando el panel de búsqueda está abierto, ocupa la celda de
+       los botones (grid-area: buttons), con alto de 36px (igual a
+       los botones). El close interno del panel se oculta: el cierre
+       lo maneja el toggle, que pasa a X. */
+    .categories.compact.search-open .categories-compact-search-panel {
+      grid-area: buttons;
+      align-self: center;
+      padding: 0;
+      height: 36px;
+      width: 100%;
+    }
+
+    .categories.compact.search-open #search-compact {
+      height: 36px;
+      font-size: 13px;
+    }
+
+    .categories.compact.search-open #search-compact-close {
       display: none;
+    }
+
+    /* El toggle NO se oculta cuando search-open en mobile: pasa a
+       ser el botón de cierre (X). Neutraliza la regla global de
+       ocultación (que aplica en desktop). */
+    .categories.compact.search-open .categories-compact-search-toggle {
+      display: flex;
     }
   }
       /* --------------------------- */
@@ -6549,6 +6685,7 @@ const marqueeText = [
       searchCompact.value = searchInput.value;
     }
     categoriesBar.classList.add("search-open");
+    categoriesCompactSearchToggle?.setAttribute("aria-label", "Cerrar búsqueda");
     requestAnimationFrame(() => {
       searchCompact?.focus();
     });
@@ -6563,13 +6700,13 @@ const marqueeText = [
       searchInput.value = searchCompact.value;
     }
     searchCompact?.blur();
+    categoriesCompactSearchToggle?.setAttribute("aria-label", "Buscar");
   }
 
-  categoriesCompactSearchToggle?.addEventListener("click", openCompactSearch);
-
-  searchCompactClose?.addEventListener("click", () => {
-    // Solo re-filtramos si había algo escrito. Si no, era un no-op
-    // y reanimar toda la grilla se ve como una recarga innecesaria.
+  // Cierra el panel Y limpia el input / restaura el catálogo.
+  // Se usa desde: × del panel (desktop), toggle-X (mobile),
+  // y Escape.
+  function handleCloseCompactSearch() {
     const hadValue =
       (searchCompact && searchCompact.value !== "") ||
       (searchInput && searchInput.value !== "");
@@ -6580,7 +6717,20 @@ const marqueeText = [
       filterProducts({ animate: false });
     }
     closeCompactSearch();
+  }
+
+  categoriesCompactSearchToggle?.addEventListener("click", () => {
+    // S28: en mobile el mismo toggle abre y cierra (cambia a X).
+    // En desktop el toggle se oculta cuando search-open, así que
+    // este branch solo se ejecuta en mobile.
+    if (categoriesBar && categoriesBar.classList.contains("search-open")) {
+      handleCloseCompactSearch();
+      return;
+    }
+    openCompactSearch();
   });
+
+  searchCompactClose?.addEventListener("click", handleCloseCompactSearch);
 
   // Botón "Ver todo el catálogo" del bloque "sin resultados".
   // Limpia búsqueda + categoría, cierra el buscador compacto si
@@ -9576,14 +9726,15 @@ categoryButtons.forEach((button) => {
     }
   });
 
-  // Escape también cierra el buscador compacto de la barra de categorías.
+  // Escape también cierra el buscador compacto de la barra de categorías
+  // y limpia el input (vuelve al catálogo completo).
   document.addEventListener("keydown", (event) => {
     if (
       event.key === "Escape" &&
       categoriesBar &&
       categoriesBar.classList.contains("search-open")
     ) {
-      closeCompactSearch();
+      handleCloseCompactSearch();
     }
   });
 
