@@ -2316,6 +2316,37 @@ const marqueeText = [
   text-shadow: -2px 0 rgba(0, 255, 240, 0.95);
 }
 
+/* S29: tipografía grande de las palabras de categoría. El texto
+   visible (.cat-text + los spans del glitch) se agranda y se sale
+   del recuadro, que lo recorta gracias a su overflow: hidden. El
+   ancho del recuadro NO cambia porque lo sigue fijando
+   .category-button::before (que hereda font: inherit del botón
+   original, sin tocar). Es el efecto "ventana".
+
+   font-weight: 900 + letter-spacing: -0.135em comprimen el texto al
+   máximo. line-height: 1 evita que el line-box empuje la altura del
+   botón (aunque .cat-text es absolute, mejor no darle margen a dudas).
+
+   Aplica igual en barra fija y flotante, porque es el mismo elemento.
+   En mobile baja a 15.5px para no quedar ilegible. */
+.category-button :global(.cat-text),
+.category-button :global(.cat-glitch-a),
+.category-button :global(.cat-glitch-b) {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 900;
+  font-size: 21px;
+  line-height: 1;
+  letter-spacing: -0.135em;
+}
+
+@media (max-width: 700px) {
+  .category-button :global(.cat-text),
+  .category-button :global(.cat-glitch-a),
+  .category-button :global(.cat-glitch-b) {
+    font-size: 15.5px;
+  }
+}
+
 :global(.category-button.glitching) :global(.cat-glitch-a) {
   opacity: 1;
   animation: catGlitchA 0.4s steps(9, end) 1,
@@ -10487,29 +10518,36 @@ if (footerParticles) {
     btn.dataset.originalText = text;
   });
 
+  // Aplica el glitch a un botón específico (no elige al azar).
+  // Se usa tanto para el glitch aleatorio como para el hover/click.
+  // El chequeo de .glitching evita solapar dos glitches en el mismo botón.
+  function triggerGlitchOnButton(btn) {
+    if (!btn || btn.classList.contains("glitching")) return;
+    const original = btn.dataset.originalText || "";
+    const scrambled = scrambleText(original, 0.5);
+    const ga = btn.querySelector(".cat-glitch-a");
+    const gb = btn.querySelector(".cat-glitch-b");
+    // NO tocamos el .cat-text. El texto visible sigue siendo el original.
+    // Los spans de color son los que muestran el scramble.
+    if (ga) ga.textContent = scrambled;
+    if (gb) gb.textContent = scrambled;
+    btn.classList.add("glitching");
+    setTimeout(() => {
+      btn.classList.remove("glitching");
+      if (ga) ga.textContent = "";
+      if (gb) gb.textContent = "";
+    }, GLITCH_DURATION);
+  }
+
+  // Glitch aleatorio (el que ya existía): elige un botón al azar
+  // entre los NO activos.
   function triggerGlitch() {
     const candidates = buttons.filter(
       (btn) => !btn.classList.contains("active")
     );
-
     if (candidates.length > 0) {
       const btn = candidates[Math.floor(Math.random() * candidates.length)];
-      if (!btn.classList.contains("glitching")) {
-        const original = btn.dataset.originalText || "";
-        const scrambled = scrambleText(original, 0.5);
-        const ga = btn.querySelector(".cat-glitch-a");
-        const gb = btn.querySelector(".cat-glitch-b");
-        // NO tocamos el .cat-text. El texto visible sigue siendo el original.
-        // Los spans de color son los que muestran el scramble.
-        if (ga) ga.textContent = scrambled;
-        if (gb) gb.textContent = scrambled;
-        btn.classList.add("glitching");
-        setTimeout(() => {
-          btn.classList.remove("glitching");
-          if (ga) ga.textContent = "";
-          if (gb) gb.textContent = "";
-        }, GLITCH_DURATION);
-      }
+      triggerGlitchOnButton(btn);
     }
   }
 
@@ -10523,6 +10561,50 @@ if (footerParticles) {
     }
     scheduleNext();
   }
+
+  // S29: glitch cuando una categoría se eleva.
+  //
+  // - Hover (solo desktop con puntero fino): el botón se eleva por CSS.
+  //   Disparamos glitch al entrar al botón, solo si NO está activo.
+  //   Si ya está activo (elevado), el hover no lo eleva más, así que
+  //   no disparamos.
+  //
+  // - Click/tap: el filtro (listener registrado antes, en el bloque de
+  //   filtros) actualiza .active. Después verificamos: si el botón
+  //   quedó activo (elevado), disparamos glitch. Si se desactivó
+  //   (se bajó), no disparamos.
+  //   Usamos requestAnimationFrame por seguridad (por si el orden de
+  //   los listeners cambia en el futuro).
+  //
+  //   El listener va en el botón Y en el wrap: el wrap tiene área
+  //   clickeable cuando el botón está elevado (la "sombra" de color).
+  //   El botón hace stopPropagation en su listener de filtro, así que
+  //   un click en el botón no dispara el del wrap (y viceversa).
+  const isDesktopPointer = window.matchMedia(
+    "(hover: hover) and (pointer: fine)"
+  ).matches;
+
+  buttons.forEach((btn) => {
+    const wrap = btn.closest(".category-wrap");
+
+    if (isDesktopPointer) {
+      btn.addEventListener("mouseenter", () => {
+        if (!btn.classList.contains("active")) {
+          triggerGlitchOnButton(btn);
+        }
+      });
+    }
+
+    const handleClickGlitch = () => {
+      requestAnimationFrame(() => {
+        if (btn.classList.contains("active")) {
+          triggerGlitchOnButton(btn);
+        }
+      });
+    };
+    btn.addEventListener("click", handleClickGlitch);
+    wrap?.addEventListener("click", handleClickGlitch);
+  });
 
   // Dos cadenas arrancan desfasadas. Los glitches pueden pisarse.
   setTimeout(startChain, 800);
