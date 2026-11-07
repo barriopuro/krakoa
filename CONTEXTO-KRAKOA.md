@@ -96,11 +96,13 @@ Categorías (en categoryConfig del script):
 id	name	color
 anime	Anime	#e53935
 comics	Comics	#e84393
-cine-series	Cine y Series	#f2c94c
+cine-series	Cine y TV	#f2c94c
 deportes	Deportes	#f2994a
 musica	Música	#2f80ed
-videojuegos	Videojuegos	#27ae60
+videojuegos	VideoGames	#27ae60
 otros	Otros	#bb86fc
+
+Nota (S28): los nombres visibles cambiaron en S28 para ahorrar ancho en la barra compacta mobile ("Cine y Series" → "Cine y TV", "Videojuegos" → "VideoGames"). Los ids internos (cine-series, videojuegos) NO cambiaron: las URLs ?cat=cine-series y data-category siguen funcionando.
 Para agregar categoría: crear carpeta en catalogo/ + entrada en categoryConfig. El catálogo se ordena con intercalado round-robin por categoría.
 
 §3 — Mapa del sitio
@@ -158,7 +160,7 @@ object-fit: cover, object-position: 50% 50%.
 
 Skeleton loader (shimmer).
 
-Nota: La barra combinada en mobile se estabilizó en S24 (contain + flex-wrap + category-break). Si se retoca, ver §11 S23/S24.
+Nota: La barra combinada en mobile se estabilizó en S24 (contain + flex-wrap + category-break). En S28 se reescribió el compacto mobile: ahora es un grid 3×2 (logo | botones | carrito arriba / lupa abajo). Si se retoca, ver §11 S24/S28.
 
 Cómo Comprar (#como-comprar)
 Acordeón de 5 preguntas, header centrado, bloque "¿Consulta especial?" con WhatsApp. Solo uno abierto a la vez.
@@ -462,6 +464,30 @@ CSS: se eliminó el display: none de mobile y el :has(). Toda la animación vive
 
 Diferencia con el modal: el modal es un carrusel real (bidireccional: next = derecha→izquierda, prev = izquierda→derecha). Las tarjetas son unidireccionales (siempre entran desde derecha y salen hacia derecha). Pendiente S27: unificar el slide del modal al estilo de las tarjetas.
 
+Barra compacta (Desktop + Mobile)
+La barra de categorías (.categories) entra en modo compacto (.compact) cuando el header sale de vista por arriba (IntersectionObserver sobre .site-header).
+
+Desktop (≥701px): flex row. Logo horizontal (120px) a la izquierda, lupa (42px, fondo blanco, ícono oscuro), botones en el centro, carrito (42px) a la derecha. Altura fija: 95px.
+
+Mobile (≤700px): grid 3 columnas × 2 filas:
+  - Col 1: isotipo (28px), centrado verticalmente en ambas filas.
+  - Col 2: botones de categoría (4 arriba, 3 abajo) o panel de búsqueda. Ocupa ambas filas.
+  - Col 3: carrito (28px, arriba), lupa (28px, abajo).
+Altura mínima: 105px.
+
+Toggle lupa ↔ X (S28):
+  - El toggle (.categories-compact-search-toggle) tiene 2 SVGs (lupa y X). CSS alterna cuál se ve según .search-open.
+  - Mobile: al tocar la lupa se abre el panel de búsqueda (.categories-compact-search-panel) en la celda de los botones, y la lupa se transforma en X EN EL MISMO LUGAR. Al tocar la X, se cierra el panel y se limpia el input.
+  - Desktop: mismo comportamiento. El toggle (lupa/X) se queda visible en search-open, y el × interno del panel se oculta.
+  - Escape también cierra + limpia (handleCloseCompactSearch).
+
+Logo compacto clickeable (S28): el .categories-compact-brand es un `<button>` que scrollea al top al clickear. Al subir, el header vuelve a la vista y la barra sale del modo compacto sola.
+
+Alturas (S28.3):
+  - Desktop: .categories.compact { height: 95px } + .categories-compact-search-panel { height: 51px }. Ambos fijos. Los botones miden ~51-53px, así que en search-open el panel ocupa lo mismo y la barra no cambia de alto.
+  - Mobile: .categories.compact { min-height: 105px }. El grid mantiene la altura aunque el panel (36px) sea más bajo que los botones.
+  - Lección: usar height fija (no min-height) cuando el contenido puede variar y el layout depende del hijo más alto. Con min-height, el input (height: 100%) colapsa al alto de su contenido y el panel queda chico.
+
 §5 — Reglas técnicas críticas
 :global() en Astro
 Ante la duda, :global(). Astro auto-limita CSS en .astro con data-astro-cid-.... Elementos creados por JS no lo tienen y quedan sin estilo.
@@ -524,6 +550,12 @@ No hidden (rompería el sticky).
 
 Ruido para efectos (lección S22)
 feTurbulence genera píxeles blancos puros que sobre fondo oscuro se leen como "flash" sin importar el slope. Solución: feColorMatrix para teñir de un color oscuro (verde, teal, etc.) en vez de gris/blanco.
+
+`<script>` literal en comentarios CSS rompe rolldown (lección S28)
+El scanner de dependencias de Vite 7 (rolldown) busca la subcadena `<script` en cualquier parte del archivo, incluso dentro de comentarios CSS/JS. Si encuentra `<script>` en un comentario, intenta parsear lo que sigue como JavaScript y falla con `PARSE_ERROR`. Solución: nunca poner `<script>` literal en comentarios. Referirse como "el bloque JS" o "el script del final". Aplica a este proyecto.
+
+`height` fija vs `min-height` en layouts de altura dependiente (lección S28)
+Si el layout depende del hijo más alto (ej: barra con botones ~51px vs panel ~41px), `min-height` no alcanza: el navegador usa la altura del contenido real, que cambia según el estado. Usar `height` fija + `align-items: center` en el padre. Y si un hijo tiene `height: 100%` (ej: input dentro de panel), el padre necesita `height` fija (no min-height) para que el 100% resuelva.
 
 §6 — Convenciones de trabajo con la IA
 Idioma y tono
@@ -647,7 +679,7 @@ Implementado como sistema global con cooldown, no-adyacencia y precarga condicio
 Auto-slide adaptativo y slide del carrusel del modal — RESUELTOS en S27. El fast-forward (recorrido por intermedios) se implementó y se descartó por denso + inestable en mobile. No re-proponer.
 
 
-Lupa compacta (Desktop) — RESUELTA en S25. Ya no aplica: el centrado pasó a flexbox, la lupa es un hijo más y se alinea automáticamente.
+Lupa compacta — RESUELTA en S28. La lupa volvió a mobile en S28, apilada debajo del carrito (grid 3×2). En desktop sigue funcionando. Ambas con el mismo aspecto (fondo blanco, ícono oscuro). Ver §4 "Barra compacta".
 
 Performance de backdrop-filter en mobile de gama muy baja
 Hoy blur(6px). No se reprodujo problema hasta ahora.
@@ -907,5 +939,39 @@ Lección técnica: un timer "cada X segundos" no garantiza actividad continua si
 Cómo se probó: verificado en desktop y mobile. Rotaciones frecuentes sin rachas muertas de 8-10s, no más de 2-3 tarjetas activas al mismo tiempo, hover pausa la tarjeta apuntada sin frenar las otras, overlays abiertos pausan todo, cambio de categoría no dispara durante .is-revealing. Carrusel del modal: slide direccional sin scale, thumbnails y "Ver tabla de talles" saltan directo, sin recorrido.
 
 ⏭️ Próxima sesión: S28 — correcciones sobre otros temas de la página (a definir con el usuario: ajustes de CSS/HTML de secciones existentes, detalles finos, mantenimiento).
+
+
+S28 — Barra compacta mobile: grid 3×2 + lupa, logo clickeable, fix badge, categorías renombradas
+Recompresión: no (se mantiene la compresión de S25).
+
+Barra compacta mobile: las categorías volvían a 3 filas al entrar en modo compacto (el logo y el carrito robaban ancho). Se resolvió con:
+- Renombrar categorías: "Cine y Series" → "Cine y TV", "Videojuegos" → "VideoGames" (libera ~30px). Los ids NO cambiaron.
+- Gap horizontal de .categories-buttons unificado a 4px (antes 8px en fija, 4px en compacta) — el cambio de gap al scrollear se notaba.
+- Padding lateral de .categories-buttons en compacto: 10px → 4px.
+- Gap del .categories.compact: 6px → 4px → 2px.
+Total liberado: ~55-60px. Los 4 botones de la primera fila entran en 320px.
+
+Fix del badge del carrito recortado: el `contain: paint` del .categories-compact-cart recortaba el badge (top: -6px; right: -6px). Se sacó `paint` solo del carrito (queda `contain: layout style`). Logo y lupa mantienen `paint`.
+
+Logo compacto clickeable: el .categories-compact-brand pasó de `<div aria-hidden="true">` a `<button>` con listener de click que scrollea al top (mismo comportamiento que el botón "volver arriba"). Al subir, el header vuelve a la vista y la barra sale del modo compacto sola.
+
+Lupa de vuelta en mobile: se reintentó la lupa en el compacto mobile (descartada en S23/S24 por falta de ancho). Esta vez la lupa se apila DEBAJO del carrito, en una tercera columna del grid:
+- Mobile: .categories.compact pasa a grid 3 columnas × 2 filas (areas: "brand buttons cart" / "brand buttons search"). Col 1: isotipo (centrado vertical). Col 2: botones (4+3) o panel de búsqueda. Col 3: carrito (arriba) + lupa (abajo).
+- Desktop: sin cambios estructurales (sigue flex row), pero la lupa ahora comparte aspecto con mobile (fondo blanco, ícono oscuro).
+
+Toggle lupa ↔ X: el .categories-compact-search-toggle tiene 2 SVGs (lupa + X). CSS alterna según .search-open. En mobile, al abrir el panel la lupa se transforma en X en el mismo lugar (reemplaza, no se oculta). El × interno del panel (#search-compact-close) se oculta en search-open. Cierre limpia input y restaura catálogo (handleCloseCompactSearch, usada por toggle-X, × de desktop y Escape).
+
+Bug crítico de rolldown: al correr `npm run dev`, el scanner de Vite 7 fallaba con `PARSE_ERROR: Unexpected token` en `virtual-module:.../index.astro`. Causa: había un `<script>` literal dentro de un comentario CSS (el bloque "Auto-slide + hover slide" decía "(ver bloque AUTO-SLIDE + HOVER en el <script>)"). El scanner busca la subcadena `<script` en cualquier parte del archivo, incluso en comentarios, y trata de parsear lo que sigue como JS. Solución: cambiar `<script>` por "el bloque JS del final del archivo" en el comentario. Va a §5 como lección.
+
+Alturas del compacto: la barra cambiaba de alto al abrir/cerrar la búsqueda. Primer intento (min-height 89px desktop / 102px mobile) no alcanzó. Segundo intento (min-height 95px / 105px) tampoco: el input tiene `height: 100%` y con min-height el padre no le da altura, así que colapsaba. Solución definitiva: `height` fija (no min-height) en el panel (51px desktop) y en la barra (95px desktop). Mobile queda con `min-height: 105px` que ya funcionaba (el grid mantiene la altura aunque el panel sea más bajo).
+
+Lecciones técnicas:
+1. `<script>` literal en comentarios CSS rompe rolldown. Nunca ponerlo; referirse como "el bloque JS".
+2. `min-height` no sirve si el layout depende del hijo más alto y el estado cambia. Usar `height` fija + align-items: center. Y si un hijo tiene `height: 100%`, el padre necesita height fija.
+3. El scanner de rolldown puede fallar "silenciosamente" en sesiones anteriores (cacheado) y explotar al invalidar el cache. Si aparece un PARSE_ERROR raro, buscar `<script` en comentarios.
+
+Cómo se probó: verificado en mobile (DevTools 375px, 320px) y desktop. 2 filas (4+3) en compacto, gap de 2px entre logo/bloque y bloque/carrito, badge sin recorte, logo clickeable (scroll al top), lupa apilada debajo del carrito, toggle lupa↔X, panel de búsqueda estable en altura, Escape cierra + limpia, error de rolldown resuelto.
+
+⏭️ Próxima sesión: S29 — a definir.
 
 <!-- Próxima sesión: pegar acá abajo el bloque nuevo. -->

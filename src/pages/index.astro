@@ -2953,9 +2953,17 @@ const marqueeText = [
   /* Aislamiento para el glitch: contain evita que el clip-path
      dispare repaint del contenedor padre (temblor en S23). SIN
      transform acá, porque ahora no necesitamos compensar nada. */
-  .categories.compact .categories-compact-brand,
-  .categories.compact .categories-compact-search-toggle {
+  .categories.compact .categories-compact-brand {
     contain: layout style paint;
+  }
+
+  /* S29: el toggle perdió `paint` para que el drop-shadow del glitch
+     se vea completo (igual que el cart desde S28). Con `paint`, el
+     halo de color del glitch quedaba recortado al box del botón y el
+     efecto casi no se notaba. Se mantiene `layout style` para aislar
+     el glitch y evitar temblor en mobile. */
+  .categories.compact .categories-compact-search-toggle {
+    contain: layout style;
   }
 
   /* El carrito necesita mostrar el badge (top: -6px; right: -6px)
@@ -3150,9 +3158,31 @@ const marqueeText = [
      centran verticalmente con el align-items: center que ya
      está en .categories.compact. */
   @media (min-width: 701px) {
+    /* S29: 95px → 89px para que la altura del compacto coincida con
+       la del modo normal (padding 26+12 + contenido 51 = 89px). Con
+       95px, el content-box quedaba en 57px y `align-items: center`
+       centraba los botones (51px) con 3px de aire arriba y abajo,
+       desplazándolos 3px respecto al modo normal → saltito vertical
+       al volver al header. */
     .categories.compact {
-      height: 95px;
+      height: 89px;
     }
+
+    /* S29: en compacto, el brand (120px) es más ancho que toggle+cart
+       (42+8+42 = 92px). Esa asimetría corre los botones ~14px a la
+       derecha respecto al centro del viewport (offset =
+       (120-92)/2). Al volver al modo normal, el `.categories-buttons`
+       (con padding simétrico 70/70) los recentra → saltito
+       horizontal. Compensamos con padding asimétrico:
+       70-14 = 56px a la izquierda, 70+14 = 84px a la derecha.
+       Si cambian los anchos del brand o de los iconos, recalcular:
+       padding-left = 70 - (brand - toggle - gap - cart)/2,
+       padding-right = 70 + (brand - toggle - gap - cart)/2. */
+    .categories.compact .categories-buttons {
+      padding-left: 56px;
+      padding-right: 84px;
+    }
+
     .categories.compact.search-open .categories-buttons {
       display: none;
     }
@@ -6239,14 +6269,25 @@ const marqueeText = [
      la barra compacta mobile). */
   .site-header.header-animating .logo-horizontal,
   .site-header.header-animating .logo-isotipo,
-  .site-header.header-animating .cart-button {
+  .site-header.header-animating .cart-button,
+  .site-header.header-animating .search-toggle {
     animation: logoGlitch 0.42s steps(9, end) 1;
   }
 
-  @media (min-width: 701px) {
-    .site-header.header-animating .search-toggle {
-      animation: logoGlitch 0.42s steps(9, end) 1;
-    }
+  /* S29: en desktop, el input del buscador también participa del
+     glitch al volver del compacto. No usamos logoGlitch porque hace
+     clip-path + scale flips, y en un input con texto/placeholder
+     eso se ve como "el texto se refleja y se corta". Reusamos el
+     glitch que ya tiene el buscador (borde magenta/cian + shake +
+     RGB split en el placeholder), que respeta el layout y encaja
+     con el resto. */
+  .site-header.header-animating #search {
+    animation: searchFieldGlitch 0.42s steps(9, end) 1,
+               searchShake 0.42s steps(4, end) 1;
+  }
+
+  .site-header.header-animating #search::placeholder {
+    animation: searchPlaceholderGlitch 0.42s steps(7, end) 1;
   }
 
 </style>
