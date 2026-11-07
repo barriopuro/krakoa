@@ -254,9 +254,9 @@ Mobile (<800px): una columna. .modal-grid es el único scroller.
 
 Body de arriba a abajo: corte → talle (+alto × ancho cm) → cantidad → precio.
 
-Galería: dos <img> apiladas (#modal-image-a / #modal-image-b) para transición direccional. Slides: modelo, remera, extras, y siempre las 2 tablas de talles.
+Galería: dos <img> apiladas (#modal-image-a / #modal-image-b) para transición direccional. Slides: modelo, remera, extras, y siempre las 2 tablas de talles. Al abrir el modal (openModal y loadProductIntoModal) se precargan TODAS las imágenes del producto con new Image() en paralelo, para que las flechas rápidas y el cambio de producto se sientan fluidos.
 
-Transición: renderModalImage(direction) con "next" / "prev" / "fade". 0.32s.
+Transición: renderModalImage(direction, cleanupDelay = 340). "next" / "prev" únicamente (el modo "fade" se eliminó en S27). La imagen entra desde el costado con translateX(±100%) y la vieja sale hacia el opuesto, sin scale. 0.32s + cubic-bezier(0.22, 1, 0.36, 1). renderToken cancela cleanups huérfanos si el usuario clickea rápido. Thumbnails y "Ver tabla de talles" saltan DIRECTO con renderModalImage (sin recorrido por slides intermedios; el fast-forward se probó en S27 y se descartó).
 
 Flechas de producto:
 
@@ -442,9 +442,9 @@ Auto-slide + hover slide (tarjetas)
 Una única animación para auto-slide y hover: la remera entra desde la derecha, se sostiene 3-5s (random), y sale hacia la derecha. Modelo es el estado base (siempre al final del ciclo).
 
 Sistema:
-- Global, no por tarjeta. Un solo timer cada 2-10s (random) elige 1-2 tarjetas visibles al azar y las anima.
+- Global, no por tarjeta. Un solo timer ADAPTATIVO elige 1-2 tarjetas visibles al azar y las anima. Si countActiveSlides() === 0 (ninguna en fase "in" o "holding"), delay 300-800ms para que nunca se sienta "muerto". Si ya hay alguna activa, delay 1.5-5s para que se superpongan sin amontonarse.
 - Visible = 75% del contenedor en el viewport (IntersectionObserver, threshold 0.75).
-- Cooldown de 6 turnos por tarjeta (lastTurn = turnCounter). Si todas las visibles están en cooldown, se resetean los lastTurn.
+- Cooldown DINÁMICO: effectiveCooldown = min(6, max(2, visibleCards.size * 2)). Con pocas tarjetas visibles rota más seguido. Si todas las candidatas quedan en cooldown, se resetean los lastTurn.
 - Cuando rotan 2, no pueden ser adyacentes (ni misma fila ni misma columna). Se verifica con getBoundingClientRect().
 - Precarga condicional: en mobile la remera se descarga al rotar (new Image() + onload + src = data-src). En desktop se descarga al 10% visible (equivale a lazy).
 - Pausas: document.hidden, filtro en curso (.is-revealing), cualquier overlay abierto (.modal.open, .cart-drawer.open, .mobile-menu.open, .image-zoom.open, .promo-modal.open).
@@ -635,14 +635,16 @@ Archivo externo (no vive en el repo). Calcula costos DTF (Guillotine Best-Area-F
 
 §9 — Pendientes
 
-La barra compacta ya no está pendiente (resuelta en S25). El auto-slide en tarjetas ya no está pendiente (resuelto en S26). Los pendientes que quedan son: slide del carrusel del modal (S27), roadmap Fase 3-6.
+Fast-forward del carrusel del modal (recorrido por slides intermedios al tocar un thumbnail o "Ver tabla de talles"): probado en S27, descartado por denso + inestable en mobile. Thumbnails y tabla de talles saltan directo. No re-proponer.
+
+La barra compacta ya no está pendiente (resuelta en S25). El auto-slide en tarjetas ya no está pendiente (resuelto en S26). Los pendientes que quedan son: roadmap Fase 3-6.
 
 Nada urgente. Web estable.
 
 Auto-slide + hover slide en tarjetas — RESUELTO en S26
 Implementado como sistema global con cooldown, no-adyacencia y precarga condicional. Ver §4 "Auto-slide + hover slide".
 
-Próximo pendiente: S27 — unificar el slide del carrusel del modal al estilo de las tarjetas. Ver §11 S26 "Próxima sesión".
+Auto-slide adaptativo y slide del carrusel del modal — RESUELTOS en S27. El fast-forward (recorrido por intermedios) se implementó y se descartó por denso + inestable en mobile. No re-proponer.
 
 
 Lupa compacta (Desktop) — RESUELTA en S25. Ya no aplica: el centrado pasó a flexbox, la lupa es un hijo más y se alinea automáticamente.
@@ -882,6 +884,28 @@ Roadmap Fase 3-6 (parallax hero, fade+glitch tarjetas, sugerencia de tiers en ca
 Performance de backdrop-filter en mobile de gama muy baja: hoy blur(6px). No se reprodujo problema hasta ahora.
 
 
+S27 — Slide del modal sin scale, fast-forward descartado, auto-slide adaptativo
+Tres temas, uno de ellos con ida y vuelta.
 
+Slide del carrusel del modal (pendiente de S26). Se unificó al estilo de las tarjetas: la imagen entra desde el costado con translateX(±100%) y la vieja sale hacia el opuesto, sin scale, sin fade. Mantiene 0.32s + cubic-bezier(0.22, 1, 0.36, 1) (el bezier "premium" que ya tenía). Se eliminó el modo "fade" (enter-fade / leave-fade) del CSS y del JS: ya no se usa. renderModalImage ahora recibe (direction, cleanupDelay = 340) y usa renderToken para descartar cleanups huérfanos cuando el usuario clickea rápido. El will-change de las dos capas se mantiene.
+
+Fast-forward (recorrido por slides intermedios). Se implementó primero para "Ver tabla de talles" (que tenía el bug de saltar por todos los slides con fade, sin importar la distancia) y después para thumbnails. Funcionó técnicamente pero el usuario lo descartó tras probarlo:
+- El recorrido por intermedios resulta más denso que útil: "quiero ver la última foto, no pasear por las del medio".
+- En mobile se veía mal (imágenes sin cargar + duración muy corta se leían como bug).
+- La curva ease-in-out (amp 0.6) ayudó pero no rescató la idea.
+Decisión final: thumbnails y "Ver tabla de talles" saltan DIRECTO con renderModalImage (un solo slide direccional), sin recorrido. La función fastForwardToSlide se eliminó por completo, junto con ffToken, la clase .is-fastforwarding y la variable CSS --ff-step-duration. No re-proponer.
+
+Queda como mejora independiente: precarga de imágenes al abrir el modal (openModal y loadProductIntoModal recorren currentImages con new Image() en paralelo). Útil para flechas rápidas y para el cambio de producto.
+
+Auto-slide del catálogo (S26 dejó un hueco). El timer global disparaba cada 2-10s, pero con hold de 3-5s por tarjeta eso dejaba ventanas de hasta 10s sin ninguna animación en pantalla. Dos ajustes:
+- Delay adaptativo en scheduleNextSlide: si countActiveSlides() === 0 (ninguna tarjeta en fase "in" o "holding"), delay 300-800ms para que arranque rápido. Si ya hay alguna activa, delay 1.5-5s para que se superpongan sin amontonarse.
+- Cooldown dinámico en triggerRandomSlides: effectiveCooldown = min(6, max(2, visibleCards.size * 2)). Con pocas tarjetas visibles (viewport angosto), el cooldown baja a 2 para que roten más seguido. Con muchas, se mantiene en 6.
+Nueva función countActiveSlides() recorre visibleCards y cuenta las que están en "in" o "holding".
+
+Lección técnica: un timer "cada X segundos" no garantiza actividad continua si cada acción dura menos que X. Hace falta que el scheduler mire el estado actual (¿hay algo animándose?) y ajuste el próximo delay en función de eso. Es el patrón "scheduler reactivo" en vez de "scheduler fijo".
+
+Cómo se probó: verificado en desktop y mobile. Rotaciones frecuentes sin rachas muertas de 8-10s, no más de 2-3 tarjetas activas al mismo tiempo, hover pausa la tarjeta apuntada sin frenar las otras, overlays abiertos pausan todo, cambio de categoría no dispara durante .is-revealing. Carrusel del modal: slide direccional sin scale, thumbnails y "Ver tabla de talles" saltan directo, sin recorrido.
+
+⏭️ Próxima sesión: S28 — correcciones sobre otros temas de la página (a definir con el usuario: ajustes de CSS/HTML de secciones existentes, detalles finos, mantenimiento).
 
 <!-- Próxima sesión: pegar acá abajo el bloque nuevo. -->

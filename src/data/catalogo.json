@@ -7,7 +7,7 @@
     },
     {
       "id": "cine-series",
-      "name": "Cine y Series",
+      "name": "Cine y TV",
       "color": "#f2c94c"
     },
     {
@@ -32,7 +32,7 @@
     },
     {
       "id": "videojuegos",
-      "name": "Videojuegos",
+      "name": "VideoGames",
       "color": "#27ae60"
     }
   ],
@@ -52,7 +52,7 @@
       "name": "Aku Samurai Jack",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/aku-samurai-jack/modelo.webp",
       "remera": "/catalogo/cine-series/aku-samurai-jack/remera.webp",
       "extras": []
@@ -102,7 +102,7 @@
       "name": "Castlevania",
       "tags": [],
       "category": "videojuegos",
-      "categoryName": "Videojuegos",
+      "categoryName": "VideoGames",
       "modelo": "/catalogo/videojuegos/castlevania/modelo.webp",
       "remera": "/catalogo/videojuegos/castlevania/remera.webp",
       "extras": []
@@ -122,7 +122,7 @@
       "name": "Alien",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/alien/modelo.webp",
       "remera": "/catalogo/cine-series/alien/remera.webp",
       "extras": []
@@ -172,7 +172,7 @@
       "name": "Doom",
       "tags": [],
       "category": "videojuegos",
-      "categoryName": "Videojuegos",
+      "categoryName": "VideoGames",
       "modelo": "/catalogo/videojuegos/doom/modelo.webp",
       "remera": "/catalogo/videojuegos/doom/remera.webp",
       "extras": []
@@ -192,7 +192,7 @@
       "name": "Animaniacs",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/animaniacs/modelo.webp",
       "remera": "/catalogo/cine-series/animaniacs/remera.webp",
       "extras": []
@@ -242,7 +242,7 @@
       "name": "God Of War",
       "tags": [],
       "category": "videojuegos",
-      "categoryName": "Videojuegos",
+      "categoryName": "VideoGames",
       "modelo": "/catalogo/videojuegos/god-of-war/modelo.webp",
       "remera": "/catalogo/videojuegos/god-of-war/remera.webp",
       "extras": []
@@ -262,7 +262,7 @@
       "name": "Better Call Saul",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/better-call-saul/modelo.webp",
       "remera": "/catalogo/cine-series/better-call-saul/remera.webp",
       "extras": []
@@ -315,7 +315,7 @@
       "name": "Hollow Knight",
       "tags": [],
       "category": "videojuegos",
-      "categoryName": "Videojuegos",
+      "categoryName": "VideoGames",
       "modelo": "/catalogo/videojuegos/hollow-knight/modelo.webp",
       "remera": "/catalogo/videojuegos/hollow-knight/remera.webp",
       "extras": []
@@ -335,7 +335,7 @@
       "name": "Bruce Lee Enter The Dragon",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/bruce-lee-enter-the-dragon/modelo.webp",
       "remera": "/catalogo/cine-series/bruce-lee-enter-the-dragon/remera.webp",
       "extras": []
@@ -378,7 +378,7 @@
       "name": "King Of Fighters Iori Yagami",
       "tags": [],
       "category": "videojuegos",
-      "categoryName": "Videojuegos",
+      "categoryName": "VideoGames",
       "modelo": "/catalogo/videojuegos/king-of-fighters-iori-yagami/modelo.webp",
       "remera": "/catalogo/videojuegos/king-of-fighters-iori-yagami/remera.webp",
       "extras": []
@@ -398,7 +398,7 @@
       "name": "Cazafantasmas",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/cazafantasmas/modelo.webp",
       "remera": "/catalogo/cine-series/cazafantasmas/remera.webp",
       "extras": []
@@ -441,7 +441,7 @@
       "name": "Megaman",
       "tags": [],
       "category": "videojuegos",
-      "categoryName": "Videojuegos",
+      "categoryName": "VideoGames",
       "modelo": "/catalogo/videojuegos/megaman/modelo.webp",
       "remera": "/catalogo/videojuegos/megaman/remera.webp",
       "extras": []
@@ -461,7 +461,7 @@
       "name": "Chicas Superpoderosas",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/chicas-superpoderosas/modelo.webp",
       "remera": "/catalogo/cine-series/chicas-superpoderosas/remera.webp",
       "extras": []
@@ -503,7 +503,7 @@
       "name": "Mortal Kombat Raiden",
       "tags": [],
       "category": "videojuegos",
-      "categoryName": "Videojuegos",
+      "categoryName": "VideoGames",
       "modelo": "/catalogo/videojuegos/mortal-kombat-raiden/modelo.webp",
       "remera": "/catalogo/videojuegos/mortal-kombat-raiden/remera.webp",
       "extras": []
@@ -523,7 +523,7 @@
       "name": "Coraje El Perro Cobarde",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/coraje-el-perro-cobarde/modelo.webp",
       "remera": "/catalogo/cine-series/coraje-el-perro-cobarde/remera.webp",
       "extras": []
@@ -565,7 +565,7 @@
       "name": "Mortal Kombat Sub Zero",
       "tags": [],
       "category": "videojuegos",
-      "categoryName": "Videojuegos",
+      "categoryName": "VideoGames",
       "modelo": "/catalogo/videojuegos/mortal-kombat-sub-zero/modelo.webp",
       "remera": "/catalogo/videojuegos/mortal-kombat-sub-zero/remera.webp",
       "extras": []
@@ -585,7 +585,7 @@
       "name": "Ed Edd Y Eddy",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/ed-edd-y-eddy/modelo.webp",
       "remera": "/catalogo/cine-series/ed-edd-y-eddy/remera.webp",
       "extras": []
@@ -627,7 +627,7 @@
       "name": "Neo Geo Snk",
       "tags": [],
       "category": "videojuegos",
-      "categoryName": "Videojuegos",
+      "categoryName": "VideoGames",
       "modelo": "/catalogo/videojuegos/neo-geo-snk/modelo.webp",
       "remera": "/catalogo/videojuegos/neo-geo-snk/remera.webp",
       "extras": []
@@ -647,7 +647,7 @@
       "name": "El Señor De Los Anillos",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/el-señor-de-los-anillos/modelo.webp",
       "remera": "/catalogo/cine-series/el-señor-de-los-anillos/remera.webp",
       "extras": []
@@ -689,7 +689,7 @@
       "name": "Resident Evil Nemesis",
       "tags": [],
       "category": "videojuegos",
-      "categoryName": "Videojuegos",
+      "categoryName": "VideoGames",
       "modelo": "/catalogo/videojuegos/resident-evil-nemesis/modelo.webp",
       "remera": "/catalogo/videojuegos/resident-evil-nemesis/remera.webp",
       "extras": []
@@ -709,7 +709,7 @@
       "name": "Freddy Krueger Nightmare On Elm Street",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/freddy-krueger-nightmare-on-elm-street/modelo.webp",
       "remera": "/catalogo/cine-series/freddy-krueger-nightmare-on-elm-street/remera.webp",
       "extras": []
@@ -749,7 +749,7 @@
       "name": "Resident Evil Umbrella.co",
       "tags": [],
       "category": "videojuegos",
-      "categoryName": "Videojuegos",
+      "categoryName": "VideoGames",
       "modelo": "/catalogo/videojuegos/resident-evil-umbrella.co/modelo.webp",
       "remera": "/catalogo/videojuegos/resident-evil-umbrella.co/remera.webp",
       "extras": []
@@ -769,7 +769,7 @@
       "name": "Friday 13th",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/friday-13th/modelo.webp",
       "remera": "/catalogo/cine-series/friday-13th/remera.webp",
       "extras": []
@@ -809,7 +809,7 @@
       "name": "Silent Hill Pyramid Head",
       "tags": [],
       "category": "videojuegos",
-      "categoryName": "Videojuegos",
+      "categoryName": "VideoGames",
       "modelo": "/catalogo/videojuegos/silent-hill-pyramid-head/modelo.webp",
       "remera": "/catalogo/videojuegos/silent-hill-pyramid-head/remera.webp",
       "extras": []
@@ -829,7 +829,7 @@
       "name": "Friday 13th Jason",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/friday-13th-jason/modelo.webp",
       "remera": "/catalogo/cine-series/friday-13th-jason/remera.webp",
       "extras": []
@@ -859,7 +859,7 @@
       "name": "Splatterhouse",
       "tags": [],
       "category": "videojuegos",
-      "categoryName": "Videojuegos",
+      "categoryName": "VideoGames",
       "modelo": "/catalogo/videojuegos/splatterhouse/modelo.webp",
       "remera": "/catalogo/videojuegos/splatterhouse/remera.webp",
       "extras": []
@@ -879,7 +879,7 @@
       "name": "Hellboy",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/hellboy/modelo.webp",
       "remera": "/catalogo/cine-series/hellboy/remera.webp",
       "extras": []
@@ -909,7 +909,7 @@
       "name": "Street Fighter Dhalsim",
       "tags": [],
       "category": "videojuegos",
-      "categoryName": "Videojuegos",
+      "categoryName": "VideoGames",
       "modelo": "/catalogo/videojuegos/street-fighter-dhalsim/modelo.webp",
       "remera": "/catalogo/videojuegos/street-fighter-dhalsim/remera.webp",
       "extras": []
@@ -929,7 +929,7 @@
       "name": "It",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/it/modelo.webp",
       "remera": "/catalogo/cine-series/it/remera.webp",
       "extras": []
@@ -959,7 +959,7 @@
       "name": "Super Mario Bros",
       "tags": [],
       "category": "videojuegos",
-      "categoryName": "Videojuegos",
+      "categoryName": "VideoGames",
       "modelo": "/catalogo/videojuegos/super-mario-bros/modelo.webp",
       "remera": "/catalogo/videojuegos/super-mario-bros/remera.webp",
       "extras": []
@@ -979,7 +979,7 @@
       "name": "Joker Batman Dark Knight",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/joker-batman-dark-knight/modelo.webp",
       "remera": "/catalogo/cine-series/joker-batman-dark-knight/remera.webp",
       "extras": []
@@ -1009,7 +1009,7 @@
       "name": "The King Of Fighters 97",
       "tags": [],
       "category": "videojuegos",
-      "categoryName": "Videojuegos",
+      "categoryName": "VideoGames",
       "modelo": "/catalogo/videojuegos/the-king-of-fighters-97/modelo.webp",
       "remera": "/catalogo/videojuegos/the-king-of-fighters-97/remera.webp",
       "extras": []
@@ -1029,7 +1029,7 @@
       "name": "Karate Kid",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/karate-kid/modelo.webp",
       "remera": "/catalogo/cine-series/karate-kid/remera.webp",
       "extras": []
@@ -1059,7 +1059,7 @@
       "name": "The Last Of Us",
       "tags": [],
       "category": "videojuegos",
-      "categoryName": "Videojuegos",
+      "categoryName": "VideoGames",
       "modelo": "/catalogo/videojuegos/the-last-of-us/modelo.webp",
       "remera": "/catalogo/videojuegos/the-last-of-us/remera.webp",
       "extras": []
@@ -1079,7 +1079,7 @@
       "name": "Mojo Jojo",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/mojo-jojo/modelo.webp",
       "remera": "/catalogo/cine-series/mojo-jojo/remera.webp",
       "extras": []
@@ -1099,7 +1099,7 @@
       "name": "Zelda Hyrule Icons",
       "tags": [],
       "category": "videojuegos",
-      "categoryName": "Videojuegos",
+      "categoryName": "VideoGames",
       "modelo": "/catalogo/videojuegos/zelda-hyrule-icons/modelo.webp",
       "remera": "/catalogo/videojuegos/zelda-hyrule-icons/remera.webp",
       "extras": []
@@ -1119,7 +1119,7 @@
       "name": "Monstars Space Jam",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/monstars-space-jam/modelo.webp",
       "remera": "/catalogo/cine-series/monstars-space-jam/remera.webp",
       "extras": []
@@ -1149,7 +1149,7 @@
       "name": "Motoratones De Marte",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/motoratones-de-marte/modelo.webp",
       "remera": "/catalogo/cine-series/motoratones-de-marte/remera.webp",
       "extras": []
@@ -1179,7 +1179,7 @@
       "name": "Mumm Rah Thundercats",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/mumm-rah-thundercats/modelo.webp",
       "remera": "/catalogo/cine-series/mumm-rah-thundercats/remera.webp",
       "extras": []
@@ -1209,7 +1209,7 @@
       "name": "Pinky Y Cerebro",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/pinky-y-cerebro/modelo.webp",
       "remera": "/catalogo/cine-series/pinky-y-cerebro/remera.webp",
       "extras": []
@@ -1239,7 +1239,7 @@
       "name": "Predator",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/predator/modelo.webp",
       "remera": "/catalogo/cine-series/predator/remera.webp",
       "extras": []
@@ -1269,7 +1269,7 @@
       "name": "Quien Engañó A Roger Rabbit",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/quien-engañó-a-roger-rabbit/modelo.webp",
       "remera": "/catalogo/cine-series/quien-engañó-a-roger-rabbit/remera.webp",
       "extras": []
@@ -1299,7 +1299,7 @@
       "name": "Samurai Jack",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/samurai-jack/modelo.webp",
       "remera": "/catalogo/cine-series/samurai-jack/remera.webp",
       "extras": []
@@ -1329,7 +1329,7 @@
       "name": "Scooby Doo",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/scooby-doo/modelo.webp",
       "remera": "/catalogo/cine-series/scooby-doo/remera.webp",
       "extras": []
@@ -1359,7 +1359,7 @@
       "name": "Scream",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/scream/modelo.webp",
       "remera": "/catalogo/cine-series/scream/remera.webp",
       "extras": []
@@ -1389,7 +1389,7 @@
       "name": "South Park",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/south-park/modelo.webp",
       "remera": "/catalogo/cine-series/south-park/remera.webp",
       "extras": []
@@ -1432,7 +1432,7 @@
       "name": "Star Wars",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/star-wars/modelo.webp",
       "remera": "/catalogo/cine-series/star-wars/remera.webp",
       "extras": []
@@ -1452,7 +1452,7 @@
       "name": "Star Wars Darth Vader",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/star-wars-darth-vader/modelo.webp",
       "remera": "/catalogo/cine-series/star-wars-darth-vader/remera.webp",
       "extras": []
@@ -1472,7 +1472,7 @@
       "name": "Stranger Things",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/stranger-things/modelo.webp",
       "remera": "/catalogo/cine-series/stranger-things/remera.webp",
       "extras": []
@@ -1492,7 +1492,7 @@
       "name": "Street Sharks",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/street-sharks/modelo.webp",
       "remera": "/catalogo/cine-series/street-sharks/remera.webp",
       "extras": []
@@ -1512,7 +1512,7 @@
       "name": "T800 Terminator",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/t800-terminator/modelo.webp",
       "remera": "/catalogo/cine-series/t800-terminator/remera.webp",
       "extras": []
@@ -1532,7 +1532,7 @@
       "name": "The Crow",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/the-crow/modelo.webp",
       "remera": "/catalogo/cine-series/the-crow/remera.webp",
       "extras": []
@@ -1542,7 +1542,7 @@
       "name": "The Warriors",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/the-warriors/modelo.webp",
       "remera": "/catalogo/cine-series/the-warriors/remera.webp",
       "extras": []
@@ -1552,7 +1552,7 @@
       "name": "Tomy Y Daly Los Simpsons",
       "tags": [],
       "category": "cine-series",
-      "categoryName": "Cine y Series",
+      "categoryName": "Cine y TV",
       "modelo": "/catalogo/cine-series/tomy-y-daly-los-simpsons/modelo.webp",
       "remera": "/catalogo/cine-series/tomy-y-daly-los-simpsons/remera.webp",
       "extras": []

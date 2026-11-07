@@ -3223,12 +3223,16 @@ const marqueeText = [
       margin-bottom: 6px;
     }
 
-    /* En modo compacto (barra flotante), la regla general del compacto
-       vuelve a poner gap: 8px (que incluye 8px verticales) y pisa el
-       gap: 0 8px de mobile. Acá lo corregimos para que el espacio
-       entre filas siga siendo el margen de 6px que definimos arriba. */
+    /* En modo compacto (barra flotante), achicamos el gap horizontal
+       entre botones a 4px y el padding lateral a 4px (S28). Con el
+       logo y el carrito visibles a los costados, el ancho útil para
+       los botones se reduce: sin estos ajustes, la primera fila
+       (4 botones) no entraba y la barra pasaba a 3 filas. El
+       espacio vertical entre filas sigue viniendo del margin-bottom
+       de 6px de los primeros 4 botones. */
     .categories.compact .categories-buttons {
-      gap: 0 8px;
+      gap: 0 4px;
+      padding: 0 4px;
     }
 
     /* Salto de línea invisible después del 4to botón.
@@ -3276,6 +3280,10 @@ const marqueeText = [
 
     .categories-compact-search-panel {
       height: 36px;
+    }
+
+    .categories.compact {
+      gap: 4px;
     }
 
     .categories.compact .categories-compact-brand {

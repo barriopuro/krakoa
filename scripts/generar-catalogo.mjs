@@ -75,7 +75,7 @@ const categoryConfig = {
   },
 
   "cine-series": {
-    name: "Cine y Series",
+    name: "Cine y TV",
     color: "#f2c94c",
   },
 
@@ -90,7 +90,7 @@ const categoryConfig = {
   },
 
   videojuegos: {
-    name: "Videojuegos",
+    name: "VideoGames",
     color: "#27ae60",
   },
 
