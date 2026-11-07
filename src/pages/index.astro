@@ -372,11 +372,19 @@ const marqueeText = [
 
         <nav class="categories" aria-label="Categorías">
           <!-- Logo compacto: aparece cuando el header sale de vista.
-               En desktop se ve el horizontal, en mobile el isotipo. -->
-          <div class="categories-compact-brand" aria-hidden="true">
-            <img class="categories-compact-logo-horizontal" src={`${base}/logos/krakoalogo-horizontal.webp`} alt="KRAKOA" />
+               En desktop se ve el horizontal, en mobile el isotipo.
+               S28: es un <button> clickeable que scrollea al tope
+               (mismo comportamiento que el botón "volver arriba").
+               Los <img> van con alt="" porque el nombre accesible
+               lo aporta el aria-label del botón. -->
+          <button
+            class="categories-compact-brand"
+            type="button"
+            aria-label="Volver arriba"
+          >
+            <img class="categories-compact-logo-horizontal" src={`${base}/logos/krakoalogo-horizontal.webp`} alt="" />
             <img class="categories-compact-logo-isotipo" src={`${base}/logos/krakoalogo-isotipo.webp`} alt="" />
-          </div>
+          </button>
 
           <!-- Lupa compacta: solo visible en desktop cuando la barra
                está en modo compacto. Al clickear reemplaza las
@@ -2889,6 +2897,23 @@ const marqueeText = [
     display: flex;
     align-items: center;
     order: 1;
+    /* S28: el brand ahora es un <button> clickeable (scroll al tope).
+       Reseteamos los estilos default del UA para que se vea idéntico
+       al <div> de antes. */
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  /* Feedback de foco por teclado. Usamos box-shadow: inset (no outline)
+     porque el brand tiene contain: layout style paint, que recortaría
+     un outline dibujado por fuera del box. El inset pinta adentro y
+     no se recorta. */
+  .categories.compact .categories-compact-brand:focus-visible {
+    box-shadow: inset 0 0 0 2px rgba(0, 255, 240, 0.85);
+    border-radius: 6px;
   }
 
   .categories.compact .categories-compact-cart {
@@ -3288,8 +3313,12 @@ const marqueeText = [
       height: 36px;
     }
 
+    /* S28: bajamos el gap del compacto a 2px. Es el mínimo
+       que deja respirar al bloque de botones cuando el .active
+       mantiene el translate(-14px, -14px). Probado: no se
+       pega visualmente al logo ni al carrito. */
     .categories.compact {
-      gap: 4px;
+      gap: 2px;
     }
 
     .categories.compact .categories-compact-brand {
@@ -7542,6 +7571,16 @@ categoryButtons.forEach((button) => {
   updateScrollProgress();
 
   backToTop.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  // S28: click/tap en el logo del modo compacto → scroll al tope,
+  // igual que el botón "volver arriba". Al subir, el header vuelve
+  // a la vista y la barra sale del modo compacto sola.
+  const categoriesCompactBrand = document.querySelector(
+    ".categories-compact-brand"
+  );
+  categoriesCompactBrand?.addEventListener("click", () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 
