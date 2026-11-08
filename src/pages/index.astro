@@ -1961,6 +1961,14 @@ const marqueeText = [
     justify-content: flex-start;
     gap: 0;
     pointer-events: none;
+    /* S31: aislamiento de performance. Le dice al navegador que
+       nada de lo que pase acá adentro afecta el layout/paint de
+       afuera. Ayuda a que el compositor trate toda la marquesina
+       como un bloque aislado y no recalcule el catálogo entero
+       mientras los renglones se mueven. Sin esto, en mobile de
+       gama baja podía haber jank al scrollear con la marquesina
+       activa. */
+    contain: layout paint style;
   }
 
   :global(.catalog-tint .tint-marquee-row) {
@@ -7598,10 +7606,17 @@ function renderTintMarquee(layer, categoryName) {
   // Cantidad de renglones: la diagonal del catálogo dividida por un
   // promedio de 70px por renglón. El +10 es margen. El Math.max(30, ...)
   // asegura un mínimo para catálogos chicos.
+  //
+  // S31: cap a 90 renglones. El inset -60% -40% del .tint-marquee ya
+  // nos da margen de sobra para cubrir las esquinas; antes generábamos
+  // 130-240 renglones (400+ spans animados en mobile), lo cual era
+  // overkill. Con 90 alcanza para cubrir la sección sin huecos visibles
+  // y baja a la mitad la cantidad de capas de compositor. Si algún día
+  // ves un hueco al fondo (no debería pasar), subí este número.
   const diagonal = Math.sqrt(
     height * height + window.innerWidth * window.innerWidth
   );
-  const rowCount = Math.max(30, Math.ceil(diagonal / 70) + 10);
+  const rowCount = Math.min(90, Math.max(30, Math.ceil(diagonal / 70) + 10));
 
   // Tamaños que se alternan (todos entre 60px y 110px).
   const sizes = [95, 75, 110, 60, 85, 105, 70, 90];
