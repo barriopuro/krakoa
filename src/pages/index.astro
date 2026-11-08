@@ -3005,6 +3005,20 @@ const marqueeText = [
     gap: 8px;
   }
 
+  /* S31: en mobile, bajar el blur de la barra sticky. Como es
+     `sticky`, al scrollear el navegador tiene que re-blurear el fondo
+     en cada frame. blur(6px) es caro en mobile de gama media;
+     blur(3px) mantiene la sensación de "fondo borroso" con la mitad
+     del costo. Subimos levemente la opacidad del fondo (0.82 → 0.88)
+     para compensar la pérdida visual del blur. */
+  @media (max-width: 700px) {
+    .categories {
+      background: rgba(11, 11, 11, 0.88);
+      -webkit-backdrop-filter: blur(3px);
+              backdrop-filter: blur(3px);
+    }
+  }
+
   /* --------------------------- */
   /* BARRA COMPACTA (logo + carrito) */
   /* --------------------------- */
@@ -6298,14 +6312,18 @@ const marqueeText = [
     top: 0;
     left: 0;
     height: 2px;
-    width: 0%;
+    /* S31: el ancho es fijo (100%) y el progreso se expresa con
+       transform: scaleX(). Eso lo hace compositor-only: el navegador
+       no recalcula layout ni repinta la línea en cada frame de scroll.
+       Antes animábamos `width` (layout + paint), que en mobile se
+       notaba como micro-jank constante. */
+    width: 100%;
+    transform: scaleX(0);
+    transform-origin: left center;
     background: linear-gradient(90deg, #ff0055 0%, #00fff0 100%);
     z-index: 9500;
     pointer-events: none;
-    /* Sin transition: el ancho lo actualiza el JS en cada frame de
-       scroll. Una transition acá produciría lag (la barra iría
-       "persiguiendo" al scroll). */
-    will-change: width;
+    will-change: transform;
   }
 
   /* --------------------------- */
@@ -8122,7 +8140,8 @@ categoryButtons.forEach((button) => {
     // Si la página no scrollea (contenido más corto que la ventana),
     // dejamos la barra en 0.
     const percent = docHeight > 0 ? (window.scrollY / docHeight) * 100 : 0;
-    scrollProgress.style.width = `${percent}%`;
+    // S31: scaleX en vez de width (compositor-only). 0 → 1.
+    scrollProgress.style.transform = `scaleX(${percent / 100})`;
 
     // Anillo del botón "volver arriba": se llena de 0 a 100.
     // dashoffset va de C (vacío) a 0 (lleno).
