@@ -1997,9 +1997,17 @@ const marqueeText = [
     animation-name: tintMarqueeR;
   }
 
-  /* S31: pausa global del marquee (scroll + off-viewport).
-     Solo afecta a los spans del marquee, no al resto del sitio. */
-  :global(body.tint-paused .catalog-tint .tint-marquee-row span) {
+  /* S31: pausa global del marquee.
+     - body.tint-paused: durante scroll y off-viewport (lo maneja el JS).
+     - body.modal-open / cart-open / menu-open: cuando hay un overlay
+       con backdrop-filter abierto. Si el marquee sigue animándose
+       detrás, el navegador tiene que re-blurear el fondo en cada
+       frame → jank fuerte en mobile. Pausándolo, el blur se calcula
+       una sola vez y se cachea. */
+  :global(body.tint-paused .catalog-tint .tint-marquee-row span),
+  :global(body.modal-open .catalog-tint .tint-marquee-row span),
+  :global(body.cart-open .catalog-tint .tint-marquee-row span),
+  :global(body.menu-open .catalog-tint .tint-marquee-row span) {
     animation-play-state: paused;
   }
 
@@ -4494,6 +4502,17 @@ const marqueeText = [
     .modal {
       padding: 0;
       align-items: stretch;
+    }
+
+    /* S31: en mobile, el backdrop-filter blur(8px) es lo más caro del
+       modal. Lo bajamos a blur(4px) y subimos la opacidad del fondo
+       (0.88 → 0.92) para mantener la misma sensación de "oscurecido".
+       El blur se nota menos en pantalla chica, así que la pérdida
+       visual es casi nula. */
+    .modal-backdrop {
+      background: rgba(0, 0, 0, 0.92);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
     }
 
     .modal-content {
