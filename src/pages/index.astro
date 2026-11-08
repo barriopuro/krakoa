@@ -635,7 +635,7 @@ const marqueeText = [
             <span class="section-kicker">Materia Prima & Confección</span>
             <h2>Algodón Pesado & Estampas Inalterables</h2>
             <p class="quality-sub">
-              Cada prenda de <span class="hero-kra">KRA</span>KOA está pensada bajo estándares de alta calidad.
+              Cada prenda de <span class="brand-inline"><span class="hero-kra">KRA</span>KOA</span> está pensada bajo estándares de alta calidad.
               No usamos telas livianas ni estampas que se cuartean tras el primer lavado.
             </p>
           </div>
@@ -1144,7 +1144,7 @@ const marqueeText = [
 
     <div class="footer-col footer-col--text">
       <p>
-        <span class="hero-kra">KRA</span>KOA es una marca argentina de remeras inspiradas en anime,
+        <span class="brand-inline"><span class="hero-kra">KRA</span>KOA</span> es una marca argentina de remeras inspiradas en anime,
         música, cine, series, deportes y videojuegos. Trabajamos con
         algodón peinado 24/1 premium, estampas DTF de alta durabilidad y
         moldería propia en cortes Oversize y Regular Fit. Envíos a todo
@@ -1168,7 +1168,7 @@ const marqueeText = [
   </div>
 
   <div class="footer-bottom">
-    <span>© 2026 KRAKOA powered by BARRIOPURO</span>
+    <span>© 2026 <span class="brand-inline"><span class="hero-kra">KRA</span>KOA</span> powered by BARRIOPURO</span>
    
   </div>
 </footer>
@@ -1526,7 +1526,11 @@ const marqueeText = [
   overflow: hidden;
   background: #141414;
   left: 50%;
-  width: 100vw;
+  /* S29: restamos --sbw (ancho de la scrollbar) para que el bloque
+     mida exactamente el viewport visible en ambos estados (con y sin
+     scrollbar). Sin esto, se ensancha al abrir overlays y el
+     contenido centrado se mueve. */
+  width: calc(100vw - var(--sbw, 0px));
   transform: translateX(-50%);
 }
 
@@ -1716,12 +1720,18 @@ const marqueeText = [
     letter-spacing: 0.00em;
   }
 
-  /* "KRAKOA" en el título de "Cómo Comprar". Misma fuente que el hero,
-     sin amarillo, para reforzar marca sin robarle protagonismo. */
+  /* "KRAKOA" con la fuente de marca. Se usa en "Cómo Comprar",
+     Calidad y footer (párrafo y copyright). */
   :global(.brand-inline) {
     font-family: "KrakoaFont", Arial, Helvetica, sans-serif;
     font-weight: normal;
     letter-spacing: 0.00em;
+    /* S29: "KOA" siempre en blanco, sin importar el color del
+       bloque de texto contenedor (quality-sub gris, footer #888,
+       footer-bottom #555, etc.). La "KRA" mantiene su amarillo
+       porque .hero-kra (hijo) tiene su propio color, que gana
+       sobre el color heredado del padre. */
+    color: #fff;
   }
 
   :global(.hero-glitch-b) {
@@ -1829,12 +1839,14 @@ const marqueeText = [
   :global(.no-results) {
     /* Mismo truco que #products: salimos del main (que tiene
        max-width) y ocupamos todo el ancho del viewport, así el
-       centro del bloque coincide con el centro de las tarjetas. */
+       centro del bloque coincide con el centro de las tarjetas.
+       S29: restamos --sbw (ancho de la scrollbar) para no ensancharse
+       al abrir overlays. */
     position: relative;
     left: 50%;
     transform: translateX(-50%);
-    width: 100vw;
-    max-width: 100vw;
+    width: calc(100vw - var(--sbw, 0px));
+    max-width: calc(100vw - var(--sbw, 0px));
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1903,7 +1915,9 @@ const marqueeText = [
     top: -13;
     bottom: 0;
     left: 50%;
-    width: 100vw;
+    /* S29: restamos --sbw (ancho de la scrollbar) para no ensancharse
+       al abrir overlays y mantener el tinte alineado con la grilla. */
+    width: calc(100vw - var(--sbw, 0px));
     transform: translateX(-50%);
     z-index: -1;
     pointer-events: none;
@@ -2444,12 +2458,14 @@ const marqueeText = [
     gap: 14px;
 
     /* Truco para salir del `main` (que tiene max-width) y ocupar
-       todo el ancho de la ventana. Mismo truco que el hero. */
+       todo el ancho de la ventana. Mismo truco que el hero.
+       S29: restamos --sbw (ancho de la scrollbar) para que no se
+       ensanche al abrir overlays. */
     position: relative;
     left: 50%;
     transform: translateX(-50%);
-    width: 100vw;
-    max-width: 100vw;
+    width: calc(100vw - var(--sbw, 0px));
+    max-width: calc(100vw - var(--sbw, 0px));
 
     /* Padding interno para que las tarjetas no toquen los bordes. */
     padding: 0 14px;
@@ -5184,11 +5200,15 @@ const marqueeText = [
     letter-spacing: 0.03em;
     text-transform: uppercase;
     transition: background 0.2s ease, transform 0.15s ease;
+    /* S30: mismo glow pulsante que el botón "Enviar Pedido" del carrito. */
+    animation: whatsappGlowPulse 2.5s ease-in-out infinite;
   }
 
   .faq-cta-button:hover {
     background: #35e276;
     transform: translateY(-1px);
+    /* S30: pausamos el glow al hover (el usuario ya está sobre el botón). */
+    animation-play-state: paused;
   }
 
     @media (max-width: 700px) {
@@ -6321,6 +6341,101 @@ const marqueeText = [
     animation: searchPlaceholderGlitch 0.42s steps(7, end) 1;
   }
 
+  /* ============================================ */
+  /* S30: GLITCH + EFECTOS EN SECCIONES PRE-GLITCH */
+  /* (Cómo Comprar, Calidad, Footer)              */
+  /* ============================================ */
+
+  /* Glitch de entrada al viewport: h2 de Cómo Comprar y Calidad.
+     Se dispara una sola vez, la primera vez que la sección entra
+     al viewport. Reusa modalTitleGlitch (clip-path slices + text-shadow
+     RGB split doble, sin flips) que ya existe para el título del modal. */
+  :global(.faq-head h2.glitching),
+  :global(.quality-head h2.glitching) {
+    animation: modalTitleGlitch 0.45s steps(9, end) 1;
+  }
+
+  /* Glitch al abrir/cerrar pregunta del FAQ.
+     El CSS solo anima el <span> interno, así el chevron SVG queda
+     quieto (el chevron rota con su transición normal, sin glitch). */
+  :global(.faq-question.glitching > span) {
+    animation: modalTitleGlitch 0.32s steps(9, end) 1;
+    display: inline-block;
+    will-change: transform, filter, clip-path;
+  }
+
+  /* Glitch ocasional de los títulos de los 4 pilares de Calidad.
+     Uno al azar cada 20-30s (lo maneja el JS), solo si la sección
+     está en viewport. 400ms de duración. */
+  :global(.quality-pillar h3.glitching) {
+    animation: modalTitleGlitch 0.4s steps(9, end) 1;
+  }
+
+  /* Íconos de los 4 pilares de Calidad: al hover del pilar, flicker
+     corto + drop-shadow con su color (currentColor, que ya está
+     definido por .quality-icon--green/amber/sky/indigo svg). */
+  .quality-pillar:hover .quality-icon svg {
+    animation: iconFlicker 0.35s ease;
+    filter: drop-shadow(0 0 8px currentColor);
+    transition: filter 0.3s ease;
+  }
+
+  .quality-pillar:not(:hover) .quality-icon svg {
+    transition: filter 0.4s ease;
+  }
+
+  @keyframes iconFlicker {
+    0%   { opacity: 1; }
+    20%  { opacity: 0.4; }
+    40%  { opacity: 1; }
+    55%  { opacity: 0.5; }
+    70%  { opacity: 1; }
+    100% { opacity: 1; }
+  }
+
+  /* Footer: scanlines horizontales ultra sutiles (mismo patrón que
+     el hero, pero blanco con opacidad mínima). Van por debajo de
+     las partículas y del contenido. */
+  :global(.site-footer)::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image: repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 2px,
+      rgba(255, 255, 255, 0.02) 3px,
+      rgba(255, 255, 255, 0.02) 4px
+    );
+  }
+
+  /* Logo vertical del footer: glitch ocasional (reusa logoGlitch,
+     el mismo keyframe del logo horizontal del header). */
+  :global(.footer-logo.glitching) {
+    animation: logoGlitch 0.42s steps(9, end) 1;
+    will-change: transform, filter, clip-path;
+  }
+
+  /* Reducir movimiento: ninguna de estas animaciones corre. */
+  @media (prefers-reduced-motion: reduce) {
+    :global(.faq-head h2.glitching),
+    :global(.quality-head h2.glitching),
+    :global(.faq-question.glitching > span),
+    :global(.quality-pillar h3.glitching),
+    :global(.footer-logo.glitching) {
+      animation: none !important;
+    }
+    .faq-cta-button {
+      animation: none;
+    }
+    .quality-pillar:hover .quality-icon svg {
+      animation: none;
+      filter: drop-shadow(0 0 8px currentColor);
+    }
+  }
+
 </style>
 
 <button
@@ -6691,6 +6806,19 @@ const marqueeText = [
   })();
 
   const searchInput = document.querySelector("#search");
+
+  // S29: seteamos --sbw en el html con el ancho actual de la scrollbar.
+  // Los bloques con width: 100vw (hero, products, no-results, tint)
+  // la restan con calc(100vw - var(--sbw, 0px)) para no moverse al
+  // abrir overlays (que hacen desaparecer la scrollbar). Se recalcula
+  // al cargar y al resize. NO se recalcula al abrir overlays (queremos
+  // que el valor sea el "con scrollbar", que es el estado por defecto).
+  function updateScrollbarVariable() {
+    const sbw = window.innerWidth - document.documentElement.clientWidth;
+    document.documentElement.style.setProperty("--sbw", sbw + "px");
+  }
+  updateScrollbarVariable();
+  window.addEventListener("resize", updateScrollbarVariable);
 
   // -------------------------
   // BUSCADOR EN EL HEADER
@@ -8420,16 +8548,39 @@ categoryButtons.forEach((button) => {
     return window.innerWidth - document.documentElement.clientWidth;
   }
 
-  function lockScroll() {
-    const scrollbarWidth = getScrollbarWidth();
-    if (scrollbarWidth > 0) {
-      document.body.style.paddingRight = `${scrollbarWidth}px`;
+  // S29: contador de locks de scroll. Varias capas (modal, carrito,
+  // menú mobile) pueden pedir bloquear el scroll simultáneamente.
+  // IMPORTANTE: lockBodyScroll debe llamarse ANTES de aplicar la
+  // clase que dispara `overflow: hidden` (cart-open, modal-open,
+  // menu-open), porque getScrollbarWidth() necesita que la scrollbar
+  // todavía esté visible para devolver un valor > 0.
+  let scrollLockCount = 0;
+
+  function lockBodyScroll() {
+    scrollLockCount++;
+    if (scrollLockCount === 1) {
+      const scrollbarWidth = getScrollbarWidth();
+      if (scrollbarWidth > 0) {
+        document.body.style.paddingRight = `${scrollbarWidth}px`;
+      }
     }
+  }
+
+  function unlockBodyScroll() {
+    if (scrollLockCount === 0) return;
+    scrollLockCount--;
+    if (scrollLockCount === 0) {
+      document.body.style.paddingRight = "";
+    }
+  }
+
+  function lockScroll() {
+    lockBodyScroll();
     document.body.classList.add("modal-open");
   }
 
   function unlockScroll() {
-    document.body.style.paddingRight = "";
+    unlockBodyScroll();
     document.body.classList.remove("modal-open");
   }
 
@@ -9717,6 +9868,12 @@ categoryButtons.forEach((button) => {
 
     cartDrawer.classList.add("open");
     cartDrawer.setAttribute("aria-hidden", "false");
+
+    // S29: lockBodyScroll ANTES de cart-open. cart-open dispara
+    // `overflow: hidden`, que hace desaparecer la scrollbar. Si
+    // lockBodyScroll corriera después, getScrollbarWidth() devolvería
+    // 0 y el padding-right no se aplicaría → shift horizontal.
+    lockBodyScroll();
     document.body.classList.add("cart-open");
 
     // Lo empujamos a la pila. Si había un modal debajo, la pila queda
@@ -9737,6 +9894,8 @@ categoryButtons.forEach((button) => {
     cartDrawer.classList.remove("open");
     cartDrawer.setAttribute("aria-hidden", "true");
     document.body.classList.remove("cart-open");
+    // S29: liberamos el lock (con contador, por si el modal sigue abierto).
+    unlockBodyScroll();
   }
 
 
@@ -9854,6 +10013,16 @@ categoryButtons.forEach((button) => {
     if (!question || !answer) return;
 
     question.addEventListener("click", () => {
+      // S30: glitch breve del texto de la pregunta. Aplica la clase
+      // al <button>, pero el CSS solo anima el <span> interno, así
+      // el chevron SVG queda quieto.
+      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        if (!question.classList.contains("glitching")) {
+          question.classList.add("glitching");
+          setTimeout(() => question.classList.remove("glitching"), 340);
+        }
+      }
+
       const isOpen = item.classList.contains("open");
 
       // Cerrar todos los demás (solo uno abierto a la vez).
@@ -9894,6 +10063,8 @@ categoryButtons.forEach((button) => {
     mobileMenu.classList.add("open");
     mobileMenu.setAttribute("aria-hidden", "false");
     menuToggle.setAttribute("aria-expanded", "true");
+    // S29: lockBodyScroll ANTES de menu-open (mismo fix que el carrito).
+    lockBodyScroll();
     document.body.classList.add("menu-open");
     pushHistory("mobile-menu");
   }
@@ -9911,6 +10082,7 @@ categoryButtons.forEach((button) => {
     mobileMenu.setAttribute("aria-hidden", "true");
     menuToggle.setAttribute("aria-expanded", "false");
     document.body.classList.remove("menu-open");
+    unlockBodyScroll();
   }
 
   menuToggle?.addEventListener("click", openMobileMenu);
@@ -10646,6 +10818,21 @@ if (footerParticles) {
           // Dejamos de vigilar esta sección: ya se animó, no queremos
           // que se re-anime cada vez que el usuario sube y baja.
           observer.unobserve(entry.target);
+
+          // S30: glitch breve del h2 de la sección, una sola vez.
+          // Esperamos 250ms para que el fade+slide arranque primero,
+          // y después disparamos el glitch (reusa modalTitleGlitch).
+          // Si la sección no tiene h2 (ej: footer), no pasa nada.
+          const heading = entry.target.querySelector("h2");
+          if (
+            heading &&
+            !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          ) {
+            setTimeout(() => {
+              heading.classList.add("glitching");
+              setTimeout(() => heading.classList.remove("glitching"), 480);
+            }, 250);
+          }
         }
       });
     },
@@ -10695,6 +10882,86 @@ if (footerParticles) {
   }
 
   scheduleNext();
+})();
+
+// -------------------------
+// GLITCH OCASIONAL: PILARES DE CALIDAD (S30)
+// -------------------------
+
+// Cada 20-30s, un pilar al azar (si la sección Calidad está en
+// viewport) hace un glitch breve (400ms) en su título h3. Si la
+// sección no está visible cuando toca el turno, se salta ese
+// turno (no acumula). Respeta prefers-reduced-motion.
+(() => {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const pillars = Array.from(document.querySelectorAll(".quality-pillar h3"));
+  if (pillars.length === 0) return;
+
+  const MIN_DELAY = 20000;
+  const MAX_DELAY = 30000;
+  const GLITCH_DURATION = 400;
+
+  function triggerGlitch() {
+    const candidates = pillars.filter((p) => !p.classList.contains("glitching"));
+    if (candidates.length === 0) return;
+    const el = candidates[Math.floor(Math.random() * candidates.length)];
+    el.classList.add("glitching");
+    setTimeout(() => el.classList.remove("glitching"), GLITCH_DURATION);
+  }
+
+  function isCalidadVisible() {
+    const section = document.querySelector("#calidad");
+    if (!section) return false;
+    const rect = section.getBoundingClientRect();
+    return rect.top < window.innerHeight && rect.bottom > 0;
+  }
+
+  function scheduleNext() {
+    const delay = MIN_DELAY + Math.random() * (MAX_DELAY - MIN_DELAY);
+    setTimeout(() => {
+      if (isCalidadVisible()) triggerGlitch();
+      scheduleNext();
+    }, delay);
+  }
+
+  setTimeout(scheduleNext, 5000);
+})();
+
+// -------------------------
+// GLITCH OCASIONAL: LOGO DEL FOOTER (S30)
+// -------------------------
+
+// Cada 25-40s, si el footer está en viewport, el logo vertical hace
+// un glitch breve (420ms). Reusa el keyframe logoGlitch (el mismo
+// del logo horizontal del header). Respeta prefers-reduced-motion.
+(() => {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const logo = document.querySelector(".footer-logo");
+  if (!logo) return;
+
+  const MIN_DELAY = 25000;
+  const MAX_DELAY = 40000;
+  const GLITCH_DURATION = 420;
+
+  function isFooterVisible() {
+    const footer = document.querySelector(".site-footer");
+    if (!footer) return false;
+    const rect = footer.getBoundingClientRect();
+    return rect.top < window.innerHeight && rect.bottom > 0;
+  }
+
+  function scheduleNext() {
+    const delay = MIN_DELAY + Math.random() * (MAX_DELAY - MIN_DELAY);
+    setTimeout(() => {
+      if (isFooterVisible() && !logo.classList.contains("glitching")) {
+        logo.classList.add("glitching");
+        setTimeout(() => logo.classList.remove("glitching"), GLITCH_DURATION);
+      }
+      scheduleNext();
+    }, delay);
+  }
+
+  setTimeout(scheduleNext, 5000);
 })();
 
 </script>

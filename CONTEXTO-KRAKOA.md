@@ -164,9 +164,11 @@ Nota: La barra combinada en mobile se estabilizó en S24 (contain + flex-wrap + 
 
 Cómo Comprar (#como-comprar)
 Acordeón de 5 preguntas, header centrado, bloque "¿Consulta especial?" con WhatsApp. Solo uno abierto a la vez.
+S30: el h2 hace glitch de entrada al viewport (una sola vez, ~450ms). Cada pregunta hace glitch al abrir/cerrar (~320ms, solo el span del texto; el chevron rota normal). El CTA "Hablar por WhatsApp" tiene glow pulsante (reusa whatsappGlowPulse del carrito; se pausa al hover).
 
 Calidad y Materiales (#calidad)
 4 pilares + guía de cuidado. Header centrado. Tarjetas con texto interno a la izquierda.
+S30: el h2 hace glitch de entrada al viewport (una sola vez, ~450ms). Un título de pilar al azar hace glitch cada 20-30s (solo si la sección está en viewport). Al hover del pilar, el ícono hace flicker (~0.35s) + drop-shadow con su color propio (currentColor).
 
 Footer
 Tres columnas centradas (logo vertical + texto + links).
@@ -174,6 +176,8 @@ Tres columnas centradas (logo vertical + texto + links).
 Partículas blancas subiendo (22, por JS).
 
 Copyright ("© 2026 KRAKOA powered by BARRIOPURO").
+
+S30: scanlines horizontales ultra sutiles de fondo (2% blanco, mismo patrón que el hero pero más tenue), por debajo de las partículas y del contenido. El logo vertical del footer hace glitch ocasional (25-40s, solo si el footer está en viewport). El copyright NO tiene glitch (a 11px los cortes no se leen).
 
 Overlays (z-index)
 z-index	Overlay
@@ -383,7 +387,21 @@ Buscador: borde + placeholder + × + ícono SVG. Triggers: openSearch/closeSearc
 
 Modal: título. Al abrir (200ms delay, 400ms) y cada 15-20s (300ms).
 
-Logo del header: cada 15-30s, 420ms.
+Glitch del logo del header: cada 15-30s, 420ms.
+
+Glitch de la lupa del header (S29): al volver del modo compacto, la lupa del header (mobile) hace glitch junto con logo y carrito. Antes solo animaba en desktop, donde el `.search-toggle` está `display: none` (animaba algo invisible). El cuadro de búsqueda del header (desktop) también hace glitch, usando `searchFieldGlitch` + `searchShake` + `searchPlaceholderGlitch` (NO `logoGlitch`, porque este último tiene `scale: -1 1` que refleja el texto del input).
+
+Glitch al hover/click de categorías (S29): cada categoría hace glitch cuando se eleva.
+  - Hover (solo `hover: hover and pointer: fine`): glitch al `mouseenter`, solo si NO está activo.
+  - Click/tap: después de aplicar el filtro, si el botón quedó `.active` (elevado), glitch. Listener en botón y en wrap.
+  - El glitch aleatorio (cada 3-7s en un botón al azar) sigue funcionando. Los dos no se pisan gracias al chequeo de `.glitching`.
+
+S30 — Glitches en secciones pre-glitch:
+
+- Cómo Comprar: h2 glitch al entrar al viewport (una vez, 450ms, delay 250ms tras el fade+slide). Cada pregunta glitch al abrir/cerrar (320ms, solo el span del texto; el chevron rota normal).
+- Calidad: h2 glitch al entrar al viewport (una vez, 450ms). Un título de pilar al azar cada 20-30s (400ms, solo si la sección está en viewport).
+- Footer: logo vertical glitch cada 25-40s (420ms, solo si el footer está en viewport). El copyright NO.
+- Reusan modalTitleGlitch (h2, preguntas, pilares) o logoGlitch (logo del footer). Sin keyframes nuevos (excepto iconFlicker de los íconos de pilar).
 
 Todos respetan prefers-reduced-motion: reduce.
 
@@ -409,7 +427,19 @@ Hero: cuando el typewriter escribe "KRAKOA".
 
 "Cómo Comprar en KRAKOA": con <span class="brand-inline">.
 
-NO en footer ni copyright (a 12-14px no se leen los cortes).
+Sección Calidad (subtítulo): con <span class="brand-inline"> (S29).
+
+Footer, párrafo descriptivo: con <span class="brand-inline"> (S29).
+
+Footer, copyright: con <span class="brand-inline"> (S29). A 11px los cortes no se leen perfecto, pero el usuario lo aprobó.
+
+Reglas de uso (S29):
+
+La marca visible siempre va como <span class="brand-inline"><span class="hero-kra">KRA</span>KOA</span>. "KRA" amarillo, "KOA" blanco. "KOA" es blanco SIEMPRE, sin importar el color del bloque contenedor, porque .brand-inline tiene color: #fff. El amarillo de "KRA" gana porque .hero-kra (hijo) tiene su propio color.
+
+NO se aplica en: logos (son imágenes), title/meta/JSON-LD/alt/aria (no son texto visible), handle de Instagram @krakoa.sw (es un handle, no la marca).
+
+Histórico: hasta S28, la regla era "NO en footer ni copyright". Se cambió en S29 porque el usuario lo aprobó tras verlo.
 
 Reglas de uso:
 
@@ -483,10 +513,15 @@ Toggle lupa ↔ X (S28):
 
 Logo compacto clickeable (S28): el .categories-compact-brand es un `<button>` que scrollea al top al clickear. Al subir, el header vuelve a la vista y la barra sale del modo compacto sola.
 
-Alturas (S28.3):
-  - Desktop: .categories.compact { height: 95px } + .categories-compact-search-panel { height: 51px }. Ambos fijos. Los botones miden ~51-53px, así que en search-open el panel ocupa lo mismo y la barra no cambia de alto.
+Alturas (S29):
+  - Desktop: .categories.compact { height: 89px } + .categories-compact-search-panel { height: 51px }. Los 89px coinciden con la altura del modo normal (padding 26+12 + contenido 51 = 89), así los botones quedan en la MISMA posición vertical al pasar de compacto a estático (sin saltito de 3px). Antes era 95px.
   - Mobile: .categories.compact { min-height: 105px }. El grid mantiene la altura aunque el panel (36px) sea más bajo que los botones.
-  - Lección: usar height fija (no min-height) cuando el contenido puede variar y el layout depende del hijo más alto. Con min-height, el input (height: 100%) colapsa al alto de su contenido y el panel queda chico.
+  - Lección: usar height fija (no min-height) cuando el contenido puede variar y el layout depende del hijo más alto. Y la altura del compacto DEBE coincidir con la del normal para no generar saltito vertical.
+
+Padding horizontal del compacto desktop (S29):
+  - .categories.compact .categories-buttons { padding-left: 56px; padding-right: 84px }. Antes era 0 70px (simétrico).
+  - El padding asimétrico compensa que el brand (120px) sea más ancho que toggle+cart (42+8+42 = 92px), lo que corre los botones 14px a la derecha respecto al centro del viewport. Al volver al estático, el padding simétrico 0 70px los recentra, generando un saltito de 14px.
+  - Fórmula: padding-left = 70 - (brand - toggle - gap - cart)/2; padding-right = 70 + (...). Si cambian los anchos, recalcular.
 
 §5 — Reglas técnicas críticas
 :global() en Astro
@@ -557,6 +592,17 @@ El scanner de dependencias de Vite 7 (rolldown) busca la subcadena `<script` en 
 `height` fija vs `min-height` en layouts de altura dependiente (lección S28)
 Si el layout depende del hijo más alto (ej: barra con botones ~51px vs panel ~41px), `min-height` no alcanza: el navegador usa la altura del contenido real, que cambia según el estado. Usar `height` fija + `align-items: center` en el padre. Y si un hijo tiene `height: 100%` (ej: input dentro de panel), el padre necesita `height` fija (no min-height) para que el 100% resuelva.
 
+`contain: paint` recorta `filter: drop-shadow` (lección S29)
+Si un elemento tiene `contain: paint` y el glitch usa `filter: drop-shadow` para el RGB split, el `paint` recorta el halo al box del elemento y el glitch casi no se ve. Mismo caso que el badge del carrito en S28. Solución: `contain: layout style` (sin `paint`). Aplica al toggle del compacto (.categories-compact-search-toggle) y al cart (.categories-compact-cart). El brand mantiene `paint` porque es una imagen con alpha y no tiene drop-shadow que recortar.
+
+`scrollbar-gutter: stable` NO es la solución al scroll-shift de overlays (lección S29)
+Va en `<html>`, no en `<body>`. Y aunque funcione, no cubre elementos con `width: 100vw` (100vw es viewport completo, no afecta el padding del body). Para layouts full-width que no deben cambiar de ancho al abrir overlays, la solución es:
+  1. CSS variable `--sbw` (scrollbar width) seteada por JS al cargar y al resize.
+  2. Bloques full-width con `width: calc(100vw - var(--sbw, 0px))` en vez de `100vw`.
+  3. `lockBodyScroll` ANTES de aplicar `overflow: hidden` (para que `getScrollbarWidth()` devuelva > 0).
+  4. Counter en `scrollLockCount` para overlays apilados (carrito sobre modal, etc.).
+El counter previene que el padding-right se sume dos veces o se quite cuando otra capa todavía lo necesita.
+
 §6 — Convenciones de trabajo con la IA
 Idioma y tono
 Español rioplatense, informal pero claro. Analogías cuando haga falta. Evitar tecnicismos innecesarios.
@@ -619,9 +665,18 @@ Cálculo de envío en la web	Idea futura (§8). Por ahora "a coordinar".
 Productos relacionados en el modal	Casi descartado. Retomable si surge.
 Lazy loading del catálogo (cargar de a 20-30 tarjetas)	La web ya carga bien tras S19. Cargar en tandas rompe el buscador (filtra sobre todo el DOM).
 Feedback táctil (vibración + micro-glitch)	Se decidió no sumar vibración. El :active da feedback suficiente.
-Bottom Sheet para el modal en mobile	Descartado definitivamente en S24.
-
+| Bottom Sheet para el modal en mobile | Descartado definitivamente en S24. |
+| Parallax del hero (Fase 3) | Descartado en S30. El hero ya tiene zoom + paneo lento en las imágenes rotativas; sumar parallax scrolleado se sentía cargado y "de más". |
 §8 — Ideas futuras (vivas, sin implementar)
+
+🔴 Próximos (S31–S33, prioridad acordada en S30):
+
+- **Selector de color de tela — prioridad alta.** El cliente está pidiendo muchos cambios de color en remeras, así que pasa a urgente. El plan completo está más abajo en esta misma sección.
+- **404 custom — en breve.** Pantalla con KrakoaFont + glitch, siguiendo el estilo del hero. Archivo nuevo: `src/pages/404.astro`.
+- **Sugerencia de tiers en carrito — en breve.** En el footer del carrito, cuando el pedido está cerca del próximo tier, mostrar "Agregá N más y todas salen a $X c/u". Reusar `getNextTier()` + el banner verde que ya existe (`cart-tier-banner`).
+
+🟡 Otras ideas (sin fecha):
+
 Selector de color de tela
 Algunos modelos con 2-3 colores (blanco, negro, otros). Plan:
 
@@ -667,25 +722,29 @@ Archivo externo (no vive en el repo). Calcula costos DTF (Guillotine Best-Area-F
 
 §9 — Pendientes
 
-Fast-forward del carrusel del modal (recorrido por slides intermedios al tocar un thumbnail o "Ver tabla de talles"): probado en S27, descartado por denso + inestable en mobile. Thumbnails y tabla de talles saltan directo. No re-proponer.
+🔴 Próximos (ver §8 para detalle):
+- 404 custom — en breve.
+- Sugerencia de tiers en carrito — en breve.
+- Selector de color de tela — prioridad alta, en breve.
+- Swipe para cambiar de producto en el modal mobile (Fase 1 del roadmap) — sin fecha.
+- Resto del roadmap Fase 4/6 — sin fecha.
 
-La barra compacta ya no está pendiente (resuelta en S25). El auto-slide en tarjetas ya no está pendiente (resuelto en S26). Los pendientes que quedan son: roadmap Fase 3-6.
+🟡 Descartados (no re-proponer):
+- Fast-forward del carrusel del modal (recorrido por slides intermedios): probado en S27, descartado por denso + inestable en mobile. Thumbnails y tabla de talles saltan directo.
+- Parallax del hero: descartado en S30 (§7).
+
+🟢 Resueltos (no volver a proponer):
+- Barra compacta: resuelta en S25.
+- Auto-slide en tarjetas: resuelto en S26.
+- Auto-slide adaptativo + slide del carrusel del modal: resueltos en S27.
+- Lupa compacta: resuelta en S28 (volvió en mobile apilada debajo del carrito).
+- Alineación del SVG de la lupa del compacto mobile: resuelta (confirmado por el usuario en S30).
+- _redirects (Netlify): reemplazado por index.html con meta OG + refresh en S23.
+
+🟣 Otros:
+- Performance de backdrop-filter en mobile de gama muy baja: hoy blur(6px). No se reprodujo problema hasta ahora.
 
 Nada urgente. Web estable.
-
-Auto-slide + hover slide en tarjetas — RESUELTO en S26
-Implementado como sistema global con cooldown, no-adyacencia y precarga condicional. Ver §4 "Auto-slide + hover slide".
-
-Auto-slide adaptativo y slide del carrusel del modal — RESUELTOS en S27. El fast-forward (recorrido por intermedios) se implementó y se descartó por denso + inestable en mobile. No re-proponer.
-
-
-Lupa compacta — RESUELTA en S28. La lupa volvió a mobile en S28, apilada debajo del carrito (grid 3×2). En desktop sigue funcionando. Ambas con el mismo aspecto (fondo blanco, ícono oscuro). Ver §4 "Barra compacta".
-
-Performance de backdrop-filter en mobile de gama muy baja
-Hoy blur(6px). No se reprodujo problema hasta ahora.
-
-_redirects (Netlify)
-Reemplazado por index.html con meta OG + refresh en S23. Ya no aplica.
 
 §10 — Protocolo para abrir chat nuevo
 Cuándo: cada ~20-30 mensajes, al cerrar un bloque grande, o cuando las respuestas del asistente empiecen a sentirse lentas.
@@ -973,5 +1032,113 @@ Lecciones técnicas:
 Cómo se probó: verificado en mobile (DevTools 375px, 320px) y desktop. 2 filas (4+3) en compacto, gap de 2px entre logo/bloque y bloque/carrito, badge sin recorte, logo clickeable (scroll al top), lupa apilada debajo del carrito, toggle lupa↔X, panel de búsqueda estable en altura, Escape cierra + limpia, error de rolldown resuelto.
 
 ⏭️ Próxima sesión: S29 — a definir.
+
+S29 — Glitch de lupa, efecto "ventana" en categorías, fix del scroll-shift
+Recompresión: no (se mantiene la compresión de S25).
+
+Sesión de detalles finos + un bug de layout arrastrado desde hacía rato.
+
+**1. Lupa del header hace glitch al volver del compacto (mobile).**
+La regla `.site-header.header-animating .search-toggle` estaba dentro de un `@media (min-width: 701px)`, así que en desktop animaba algo que está `display: none` (el `.search-toggle` está oculto en desktop) y en mobile NO se aplicaba. Se sacó el media query y se agregó `.search-toggle` al selector global. Ahora la lupa del header (mobile) hace glitch al volver, igual que logo y carrito.
+
+**2. Cuadro de búsqueda del header hace glitch al volver (desktop).**
+El input `#search` no participaba del glitch al volver del compacto. Aplicarle `logoGlitch` directo NO sirve porque ese keyframe hace `clip-path` + `scale: -1 1` (flips) y el texto del input se refleja y se corta raro. Se reusó el glitch existente del buscador:
+- `.site-header.header-animating #search` → `searchFieldGlitch` + `searchShake` (borde magenta/cian + shake, sin flips).
+- `.site-header.header-animating #search::placeholder` → `searchPlaceholderGlitch` (RGB split en el placeholder).
+Se siente de la misma familia que el glitch del logo/carrito, sin romper el layout.
+
+**3. Toggle del compacto ahora sí se ve el glitch (contain: paint recortaba el drop-shadow).**
+En S28 el carrito perdió `contain: paint` porque recortaba el badge. El toggle del compacto seguía con `contain: layout style paint`, y el `paint` recortaba el `drop-shadow` del glitch (el halo de color se perdía). Fix: `.categories-compact-search-toggle` ahora tiene `contain: layout style` (sin `paint`). El brand mantiene `paint` porque es una imagen con alpha y no tiene el problema.
+
+**4. Saltito de la barra al pasar de compacta a estática (desktop).**
+Dos causas, dos fixes:
+- **Vertical (3px)**: la altura fija del compacto era `95px` pero el modo normal mide `89px` (padding 26+12 + contenido 51 = 89). El content-box quedaba en 57px con 95px, y `align-items: center` centraba los botones con 3px de aire arriba y abajo, 3px más abajo que en el estático. Fix: `height: 89px` en el compacto desktop.
+- **Horizontal (~14px)**: en compacto, el brand (120px) es más ancho que toggle+cart (42+8+42 = 92px), lo que corre los botones 14px a la derecha respecto al centro del viewport. El `.categories-buttons` del compacto ahora tiene padding asimétrico `56px 84px` (antes `0 70px`). Fórmula: `padding-left = 70 - (brand - toggle - gap - cart)/2`, `padding-right = 70 + (...)`. Si cambian los anchos, recalcular.
+
+**5. Efecto "ventana" en los botones de categoría (tipografía grande).**
+Las palabras de los botones ahora se ven Arial 900, grandes, comprimidas, y se salen del recuadro como una "ventana" (el `overflow: hidden` del botón las recorta). Cero cambios de layout:
+- `.cat-text`, `.cat-glitch-a`, `.cat-glitch-b` reciben `font-family: Arial`, `font-weight: 900`, `font-size: 21px` desktop / `15.5px` mobile, `line-height: 1`, `letter-spacing: -0.135em`.
+- El `::before` invisible (que fija el ancho del botón con `font: inherit` del `.category-button` original) NO se toca. Los recuadros miden exactamente lo mismo.
+- El badge del conteo (`.category-count`) tampoco se toca (sigue en Arial, mismo lugar).
+- Aplica igual en barra fija y flotante (es el mismo elemento).
+
+**6. Glitch al elevarse una categoría (hover y click).**
+Refactor: `triggerGlitchOnButton(btn)` aplica el glitch a un botón específico. `triggerGlitch()` (el aleatorio) ahora la llama. Nuevos listeners:
+- **Hover** (solo `hover: hover and pointer: fine`): glitch al `mouseenter` del botón, SOLO si NO está activo (si ya está elevado, no se eleva de nuevo).
+- **Click/tap**: después de que el filtro aplique, si el botón quedó `.active` (elevado), glitch. Listener en `btn` y en `wrap`. Usa `requestAnimationFrame` por si el orden de los listeners cambia en el futuro.
+- El chequeo de `.glitching` evita solapar dos glitches en el mismo botón (si el aleatorio ya lo está animando, el hover/click no lo reinicia).
+
+**7. Fix del scroll-shift al abrir carrito / menú mobile (bug grande arrastrado).**
+Al abrir carrito, la página se corría ~15px a la derecha. Causa doble:
+- **Orden mal**: en `openCartDrawer`, `cart-open` (que dispara `overflow: hidden`) se aplicaba ANTES de `lockBodyScroll`. Cuando `lockBodyScroll` corría, `getScrollbarWidth()` devolvía `0` (scrollbar ya oculta) → `padding-right` nunca se aplicaba.
+- **`100vw` ignora padding**: los bloques con `width: 100vw` (hero, products, no-results, catalog-tint) no se benefician del `padding-right` del body. Al perder la scrollbar, `100vw` crece y esos bloques se ensanchan.
+
+Solución robusta:
+- **CSS variable `--sbw`** (scrollbar width) en `<html>`, seteada por JS al cargar y al resize.
+- **Bloques full-width** usan `width: calc(100vw - var(--sbw, 0px))` en vez de `100vw`.
+- **`lockBodyScroll` ANTES de aplicar `overflow: hidden`** (carrito y menú mobile). Así `getScrollbarWidth()` devuelve un valor > 0 y el padding se aplica correctamente.
+- **Counter en `scrollLockCount`**: si el carrito se abre encima del modal (que ya bloqueó), el padding no se suma dos veces. Al cerrar el carrito, el padding NO se quita (el modal sigue necesitando). Al cerrar el modal, se quita.
+- **`scrollbar-gutter: stable`** se probó primero y NO funciona: hay que ponerlo en `<html>`, no en `<body>`. Y aunque funcione, no cubre los `width: 100vw`. Descartado.
+
+**8. KrakoaFont en más lugares (KRA amarillo + KOA blanco).**
+La marca "KRAKOA" ahora usa `<span class="brand-inline"><span class="hero-kra">KRA</span>KOA</span>` en TODOS los lugares donde aparece como texto visible:
+- Sección Calidad (`.quality-sub`): tenía `hero-kra` pero le faltaba `brand-inline`.
+- Footer párrafo (`.footer-col--text p`): mismo caso.
+- Footer copyright (`.footer-bottom`): no tenía tratamiento. La CONTEXTO §4 decía que NO usar KrakoaFont ahí (a 11px no se leen los cortes), pero se aplicó igual y se ve bien.
+
+`.brand-inline` recibió `color: #fff` para que "KOA" sea SIEMPRE blanco, sin importar el color del bloque contenedor (quality-sub gris, footer #888, footer-bottom #555). La "KRA" mantiene su amarillo porque `.hero-kra` (hijo) tiene su propio color, y el color del hijo gana sobre el heredado del padre.
+
+Los otros lugares ya estaban bien: hero h1 (maneja el typewriter), "Cómo Comprar en KRAKOA", logos (imágenes), title/meta/JSON-LD/alt/aria (no son texto visible). El handle `@krakoa.sw` de Instagram NO se tocó (es un handle, no la marca).
+
+**Lecciones técnicas:**
+1. `contain: paint` recorta `drop-shadow` de `filter`. Si el glitch usa `drop-shadow` para el RGB split, `paint` lo mata. Mismo caso que el badge del carrito en S28. Solución: `contain: layout style` (sin `paint`).
+2. En un `<input>`, NO aplicar `logoGlitch` (tiene `scale: -1 1` que refleja el texto). Usar `searchFieldGlitch` + `searchShake` + `searchPlaceholderGlitch` (solo borde, placeholder y posición).
+3. Si el layout depende del hijo más alto y el estado cambia (compacto vs estático), la altura del compacto DEBE coincidir con la del normal. `align-items: center` es sensible a diferencias de content-box. Usar `height` fija que coincida, no `min-height`.
+4. `scrollbar-gutter: stable` va en `<html>`, no en `<body>`. Y no cubre elementos con `width: 100vw` (100vw es viewport completo, no afecta padding). Para scroll-shift en layouts full-width, la solución es CSS variable `--sbw` + `calc(100vw - var(--sbw))`.
+5. `lockBodyScroll` debe llamarse ANTES de aplicar `overflow: hidden`. Si se llama después, `getScrollbarWidth()` devuelve 0 y el padding nunca se aplica.
+6. Counter en `scrollLockCount` previene conflictos entre overlays apilados (carrito sobre modal, menú sobre modal, etc.).
+7. Para tipografía "efecto ventana" (texto más grande que el recuadro, recortado): `::before` invisible fija el ancho (con `font: inherit`), texto visible se agranda con `font-size` y se escapa con `overflow: hidden` del padre. Cero cambios de layout.
+8. `.brand-inline { color: #fff }` hace que "KOA" sea siempre blanco. El hijo `.hero-kra` mantiene su amarillo porque el color del hijo gana sobre el heredado.
+
+Cómo se probó: verificado en desktop (ventana ancha con scrollbar visible) y mobile (DevTools 375px + real). Lupa del header hace glitch al volver en ambos. Cuadro de búsqueda hace glitch al volver (desktop). Toggle del compacto muestra el drop-shadow completo. Saltito de la barra compacta desktop eliminado (vertical 3px y horizontal 14px). Categorías con efecto "ventana" sin cambios de layout. Glitch al hover/click de categorías funciona en ambos. Carrito y menú mobile abren sin scroll-shift. Modal + carrito apilados sin conflictos de padding. KrakoaFont se ve en Calidad, footer párrafo y footer copyright, con KRA amarillo + KOA blanco en los tres. Regresión ok: hero typewriter, "Cómo Comprar", logos, todo sin cambios.
+
+⏭️ Próxima sesión: S30 — a definir.
+
+S30 — Efectos en secciones pre-glitch (Cómo Comprar, Calidad, Footer) + aclaraciones de roadmap
+Recompresión: no (se mantiene la compresión de S25).
+
+Sesión corta, un solo tema: las secciones "Cómo Comprar", "Calidad" y "Footer" quedaron de la era pre-glitch (solo fade+slide, sin efectos). Se propusieron 6 ideas, el usuario aprobó todas y se implementaron en una sola tanda.
+
+Cómo Comprar:
+- Glitch de entrada del h2 al viewport (una sola vez, ~450ms, delay 250ms tras el fade+slide). Reusa modalTitleGlitch. Vive en el observer existente de section-observe, con querySelector("h2") del section target. Si el section no tiene h2 (footer), no pasa nada.
+- Glitch al abrir/cerrar cada pregunta del FAQ (320ms). El CSS solo anima el <span> interno (.faq-question.glitching > span), el chevron SVG rota normal sin glitch.
+- CTA "Hablar por WhatsApp" del FAQ: glow pulsante, reusa whatsappGlowPulse (la misma animación del botón del carrito). Pausa al hover.
+
+Calidad:
+- Glitch de entrada del h2 al viewport (mismo patrón que Cómo Comprar).
+- Glitch ocasional de los títulos de pilar (uno al azar cada 20-30s, 400ms). Solo si #calidad está en viewport cuando toca el turno; si no, se salta ese turno (no acumula). Función isCalidadVisible() con getBoundingClientRect.
+- Hover en el pilar: el ícono hace flicker corto (~0.35s) + drop-shadow con currentColor (el color del ícono, que ya estaba definido por .quality-icon--green/amber/sky/indigo svg). Fade-out del drop-shadow al sacar el mouse.
+
+Footer:
+- Scanlines horizontales ultra sutiles de fondo (.site-footer::before, z-index 0, rgba(255,255,255,0.02) en el repeating-linear-gradient). Mismo patrón que el hero pero blanco y más tenue.
+- Logo vertical del footer con glitch ocasional (25-40s, 420ms, solo si el footer está en viewport). Reusa logoGlitch (el del logo horizontal del header).
+- El copyright NO lleva glitch.
+
+Decisiones de intensidad (a criterio de la IA, aprobadas por el usuario):
+- Frecuencia: nivel "categorías", no nivel hero. Los h2 glitchean UNA vez al entrar (no cada Xs). Los pilares y el logo del footer tienen su timer ocasional (20-40s).
+- Copyright del footer SIN glitch: a 11px con letter-spacing 0.08em, los cortes de clip-path no se leen. Se evaluó y se descartó.
+- Reveal por letra del h2 (estilo hero) DESCARTADO: pisaría el glitch de entrada. Es uno u otro, y el glitch unifica mejor con el resto del sitio.
+
+Correcciones al contexto (aclaradas por el usuario en S30):
+- "Alineación fina del SVG de la lupa del compacto mobile" (anotada como pendiente en S24): YA RESUELTA en una sesión posterior. Se quitó de §9.
+- "Swipe para cambiar de producto en el modal mobile": se mantiene en roadmap, sin fecha.
+- "Parallax hero": DESCARTADO definitivamente (§7).
+- "404 custom", "sugerencia de tiers en carrito" y "selector de color": próximos, prioridad alta (§8). El selector de color pasa a ser urgente por pedidos del cliente (muchos cambios de color en remeras).
+
+Lección técnica: no hubo bug ni lección nueva. Todos los efectos reusan keyframes existentes (modalTitleGlitch, logoGlitch, whatsappGlowPulse) salvo iconFlicker (nuevo). El glitch de entrada del h2 se engancha en el observer de section-observe que ya existía (no hace falta un observer nuevo).
+
+Cómo se probó: verificado en desktop y mobile. Glitch de entrada del h2 en ambas secciones, glitch al abrir/cerrar preguntas del FAQ (chevron sin glitch), glow pulsante del CTA WhatsApp (pausa al hover), glitch aleatorio de pilares (uno al azar cada 20-30s, solo con la sección visible), hover de pilares con flicker + drop-shadow del color, scanlines del footer visibles cerca de las partículas, glitch ocasional del logo del footer. Todo respeta prefers-reduced-motion: reduce.
+
+⏭️ Próxima sesión: S31 — 404 custom, sugerencia de tiers en carrito o selector de color (a definir con el usuario en orden).
 
 <!-- Próxima sesión: pegar acá abajo el bloque nuevo. -->
