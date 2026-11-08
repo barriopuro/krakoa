@@ -465,7 +465,7 @@ const marqueeText = [
 
         <div id="products" class="products">
           {
-            catalogo.products.map((product) => {
+            catalogo.products.map((product, index) => {
               return (
                 <article
                   class="product-card"
@@ -484,12 +484,15 @@ const marqueeText = [
                       sizes="(max-width: 900px) 50vw, (max-width: 1400px) 33vw, 25vw"
                       alt={`Remera ${product.name}`}
                       loading="lazy"
-                      fetchpriority="low"
+                      decoding="async"
+                      fetchpriority={index >= 6 ? "low" : "auto"}
                     />
 
                     <img
                       class="product-image-hover"
                       data-src={`${base}/${product.remera}`}
+                      data-src-400={`${base}/${product.remera400}`}
+                      data-src-600={`${base}/${product.remera600}`}
                       alt=""
                       loading="lazy"
                       aria-hidden="true"
@@ -7417,6 +7420,18 @@ const marqueeText = [
       });
     }
 
+    // S31: elige la variante correcta de la imagen hover según el
+    // tamaño de la tarjeta y el DPR del device. En desktop, 1000w
+    // (tarjeta de 300-400px CSS × DPR 2 = 600-800px reales).
+    // En mobile, 400w con DPR 2 (tarjeta ~180px × 2 = 360px) o
+    // 600w con DPR 3 (~540px). Ahorra ~550KB por sesión mobile.
+    function pickHoverSrc(hover) {
+      if (isDesktop) return hover.dataset.src;
+      const dpr = window.devicePixelRatio || 1;
+      if (dpr >= 3) return hover.dataset.src600 || hover.dataset.src;
+      return hover.dataset.src400 || hover.dataset.src;
+    }
+
     // Cuenta cuántas tarjetas están animándose AHORA (en entrada o
     // en hold). Lo usa scheduleNextSlide para decidir si tiene que
     // disparar rápido (no hay ninguna activa) o esperar normal (ya
@@ -7544,8 +7559,9 @@ const marqueeText = [
       // Precarga condicional (mobile).
       if (!hover.src && hover.dataset.src) {
         try {
-          await loadImage(hover.dataset.src);
-          hover.src = hover.dataset.src;
+          const src = pickHoverSrc(hover);
+          await loadImage(src);
+          hover.src = src;
         } catch (error) {
           return;
         }
@@ -7624,7 +7640,7 @@ const marqueeText = [
         : 300 + Math.random() * 500;    // 0.3-0.8s
 
       slideTimer = setTimeout(() => {
-        if (!document.hidden) {
+        if (!document.hidden && visibleCards.size > 0) {
           const isRevealing = document.querySelector(
             ".product-card.is-revealing"
           );
