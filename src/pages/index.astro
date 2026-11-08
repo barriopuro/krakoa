@@ -6359,6 +6359,16 @@ const marqueeText = [
     background-repeat: repeat;
   }
 
+  /* S31: en mobile, el grano se desactiva. A 0.045 de opacidad es
+     imperceptible en pantalla chica, y mantener la capa full-viewport
+     con feTurbulence tileado consume GPU/composición en cada frame de
+     scroll. En desktop se mantiene (ahí sí se nota la textura). */
+  @media (max-width: 700px) {
+    :global(body)::before {
+      display: none;
+    }
+  }
+
   /* --------------------------- */
   /* GLITCH OCASIONAL DEL LOGO   */
   /* --------------------------- */
