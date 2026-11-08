@@ -1632,6 +1632,17 @@ const marqueeText = [
   animation: marqueeScroll 45s linear infinite;
 }
 
+/* S31: pausar la marquesina de keywords cuando hay un overlay
+   abierto. Si no, el backdrop-filter del overlay tiene que
+   re-blurear una cinta en movimiento en cada frame → jank. */
+:global(body.modal-open .marquee-track),
+:global(body.cart-open .marquee-track),
+:global(body.menu-open .marquee-track),
+:global(body.zoom-open .marquee-track),
+:global(body.promo-open .marquee-track) {
+  animation-play-state: paused;
+}
+
 .marquee-item {
   display: inline-flex;
   align-items: center;
@@ -6805,6 +6816,7 @@ const marqueeText = [
       promoModal.classList.remove("is-closing");
 
       promoModal.setAttribute("aria-hidden", "false");
+      document.body.classList.add("promo-open");
 
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
@@ -6835,6 +6847,7 @@ const marqueeText = [
       promoModal.classList.remove("open");
       promoModal.classList.add("is-closing");
       promoModal.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("promo-open");
       stopAutoRotate();
 
       // Limpiamos .is-closing después de la animación (380ms) para
@@ -6969,6 +6982,23 @@ const marqueeText = [
   }
   updateScrollbarVariable();
   window.addEventListener("resize", updateScrollbarVariable);
+
+  // S31: helper global de "¿hay algún overlay abierto?". Lo usan
+  // los schedulers de efectos (glitch, typewriter, rotación, etc.)
+  // para pausarse cuando hay algo encima. Incluye los estados
+  // "is-closing" para que los efectos sigan pausados durante el
+  // cierre animado (CRT close, 380ms).
+  function isAnyOverlayOpen() {
+    return !!(
+      document.querySelector(".modal.open") ||
+      document.querySelector(".modal.is-closing") ||
+      document.querySelector(".cart-drawer.open") ||
+      document.querySelector(".mobile-menu.open") ||
+      document.querySelector(".image-zoom.open") ||
+      document.querySelector(".promo-modal.open") ||
+      document.querySelector(".promo-modal.is-closing")
+    );
+  }
 
   // -------------------------
   // BUSCADOR EN EL HEADER
@@ -9066,6 +9096,7 @@ categoryButtons.forEach((button) => {
     renderImageZoom();
     imageZoom.setAttribute("aria-hidden", "false");
     imageZoom.classList.add("open");
+    document.body.classList.add("zoom-open");
     pushHistory("image-zoom");
   }
 
@@ -9100,6 +9131,7 @@ categoryButtons.forEach((button) => {
     if (imageZoom.getAttribute("aria-hidden") === "true") return;
     imageZoom.classList.remove("open");
     imageZoom.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("zoom-open");
     resetImageZoomScale();
 
     // Limpiamos la src para que no quede la imagen colgada en memoria.
@@ -10488,6 +10520,9 @@ if (heroBg) {
       function startHeroRotation() {
         if (heroRotationInterval) return;
         heroRotationInterval = setInterval(() => {
+          // S31: si hay un overlay abierto, salteamos este turno.
+          // Se reanuda solo al cerrar (próximo ciclo de 5.5s).
+          if (isAnyOverlayOpen()) return;
           heroImgs[heroIndex].classList.remove("active");
           heroIndex = (heroIndex + 1) % heroImgs.length;
           heroImgs[heroIndex].classList.add("active");
@@ -10601,7 +10636,7 @@ function formatHeroText(text) {
     setTimeout(() => {
       // Si el hero no está a la vista, saltamos este ciclo para
       // no gastar CPU. Reagendamos directamente.
-      if (!heroInView) {
+      if (!heroInView || isAnyOverlayOpen()) {
         scheduleNextGlitch();
         return;
       }
@@ -10725,7 +10760,7 @@ function formatHeroText(text) {
     const delay = MIN_CYCLE + Math.random() * (MAX_CYCLE - MIN_CYCLE);
     setTimeout(async () => {
       // Si el hero no está a la vista, saltamos el ciclo completo.
-      if (!typewriterInView) {
+      if (!typewriterInView || isAnyOverlayOpen()) {
         scheduleNext();
         return;
       }
@@ -10867,6 +10902,22 @@ function formatHeroText(text) {
   // terminara la animación.
   const GLITCH_DURATION = 420;
 
+  // S31: pausar el glitch cuando el header no está visible
+  // (usuario scrolleado) o cuando hay overlay abierto.
+  let logoVisible = true;
+  const headerEl = document.querySelector(".site-header");
+  if (headerEl && "IntersectionObserver" in window) {
+    const logoObs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          logoVisible = entry.isIntersecting;
+        });
+      },
+      { threshold: 0 }
+    );
+    logoObs.observe(headerEl);
+  }
+
   function triggerLogoGlitch() {
     if (logo.classList.contains("glitching")) return;
     logo.classList.add("glitching");
@@ -10876,7 +10927,7 @@ function formatHeroText(text) {
   function scheduleNext() {
     const delay = MIN_DELAY + Math.random() * (MAX_DELAY - MIN_DELAY);
     setTimeout(() => {
-      triggerLogoGlitch();
+      if (logoVisible && !isAnyOverlayOpen()) triggerLogoGlitch();
       scheduleNext();
     }, delay);
   }
@@ -11014,9 +11065,27 @@ if (footerParticles) {
     }, GLITCH_DURATION);
   }
 
+  // S31: pausa del glitch aleatorio de categorías cuando la barra
+  // no está en viewport (usuario en hero o footer) o cuando hay
+  // overlay abierto.
+  let categoriesVisible = true;
+  const categoriesEl = document.querySelector(".categories");
+  if (categoriesEl && "IntersectionObserver" in window) {
+    const catObs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          categoriesVisible = entry.isIntersecting;
+        });
+      },
+      { threshold: 0 }
+    );
+    catObs.observe(categoriesEl);
+  }
+
   // Glitch aleatorio (el que ya existía): elige un botón al azar
   // entre los NO activos.
   function triggerGlitch() {
+    if (!categoriesVisible || isAnyOverlayOpen()) return;
     const candidates = buttons.filter(
       (btn) => !btn.classList.contains("active")
     );
@@ -11222,7 +11291,8 @@ if (footerParticles) {
   function scheduleNext() {
     const delay = MIN_DELAY + Math.random() * (MAX_DELAY - MIN_DELAY);
     setTimeout(() => {
-      if (isCalidadVisible()) triggerGlitch();
+      // S31: skip si hay overlay abierto.
+      if (isCalidadVisible() && !isAnyOverlayOpen()) triggerGlitch();
       scheduleNext();
     }, delay);
   }
@@ -11256,7 +11326,8 @@ if (footerParticles) {
   function scheduleNext() {
     const delay = MIN_DELAY + Math.random() * (MAX_DELAY - MIN_DELAY);
     setTimeout(() => {
-      if (isFooterVisible() && !logo.classList.contains("glitching")) {
+      // S31: skip si hay overlay abierto.
+      if (isFooterVisible() && !isAnyOverlayOpen() && !logo.classList.contains("glitching")) {
         logo.classList.add("glitching");
         setTimeout(() => logo.classList.remove("glitching"), GLITCH_DURATION);
       }
@@ -11265,6 +11336,34 @@ if (footerParticles) {
   }
 
   setTimeout(scheduleNext, 5000);
+})();
+
+// -------------------------
+// S31: PAUSA DEL MARQUEE TOP OFF-VIEWPORT
+// -------------------------
+// La marquesina de keywords (la del top del sitio) corre siempre.
+// La pausamos cuando sale de viewport para ahorrar GPU. La pausa
+// por overlay abierto va por CSS (body classes), así que acá solo
+// manejamos el off-viewport con inline style (que gana sobre la
+// clase, pero se resetea a "" cuando vuelve a entrar).
+(() => {
+  const marquee = document.querySelector(".marquee");
+  if (!marquee || !("IntersectionObserver" in window)) return;
+  const track = marquee.querySelector(".marquee-track");
+  if (!track) return;
+  const obs = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) {
+          track.style.animationPlayState = "paused";
+        } else {
+          track.style.animationPlayState = "";
+        }
+      });
+    },
+    { threshold: 0 }
+  );
+  obs.observe(marquee);
 })();
 
 </script>
