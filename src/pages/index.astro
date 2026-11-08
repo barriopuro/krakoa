@@ -1921,10 +1921,88 @@ const marqueeText = [
     transform: translateX(-50%);
     z-index: -1;
     pointer-events: none;
-    background: var(--tint-color, #888888);
-    opacity: 0.16;
+    /* S31: la opacity se movió al ::before (fondo plano) para que el
+       texto de la marquesina (que vive adentro) pueda tener su propia
+       opacidad sin multiplicarse por la del padre. Sin opacity acá, el
+       clip-path del barrido recorta el ::before y la marquesina juntos
+       (siguen funcionando como una sola capa visual). */
     clip-path: inset(0 0 0 100%);
     transition: clip-path 0.55s ease;
+    /* Recorta la marquesina rotada que se sale de la sección. */
+    overflow: hidden;
+  }
+
+  /* Fondo plano del tinte. Tiene su propia opacidad (16%, igual que
+     antes) para no teñir el texto de la marquesina. */
+  .catalog-tint::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--tint-color, #888888);
+    opacity: 0.16;
+    z-index: 0;
+  }
+
+  /* S31: marquesina decorativa del tinte (nombre de la categoría en
+     diagonal, varios renglones, direcciones alternadas). Se genera
+     desde JS con renderTintMarquee(). El contenedor está rotado -45deg
+     y con inset negativo para cubrir toda la sección (incluso las
+     esquinas) sin importar cuánto mida el catálogo. */
+  :global(.catalog-tint .tint-marquee) {
+    position: absolute;
+    /* Con inset negativo grande, el contenedor rotado cubre la
+       diagonal del catálogo. Como el padre tiene overflow: hidden,
+       lo que sobra se recorta. */
+    inset: -60% -40%;
+    z-index: 1;
+    transform: rotate(-45deg);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 0;
+    pointer-events: none;
+  }
+
+  :global(.catalog-tint .tint-marquee-row) {
+    display: flex;
+    flex-shrink: 0;
+    white-space: nowrap;
+    line-height: 1;
+    color: var(--tint-color, #888888);
+    /* S31: bajamos de 0.32 a 0.20 para que el texto se sienta más
+       "de fondo" y no compita con las tarjetas. El color sigue siendo
+       el mismo (--tint-color); solo se transparenta más. */
+    opacity: 0.05;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 900;
+    letter-spacing: -0.04em;
+  }
+
+  :global(.catalog-tint .tint-marquee-row span) {
+    flex-shrink: 0;
+    display: inline-block;
+    animation: tintMarqueeL 80s linear infinite;
+  }
+
+  :global(.catalog-tint .tint-marquee-row:nth-child(even) span) {
+    animation-name: tintMarqueeR;
+  }
+
+  @keyframes tintMarqueeL {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  @keyframes tintMarqueeR {
+    from { transform: translateX(-50%); }
+    to   { transform: translateX(0); }
+  }
+
+  /* Reducir movimiento: sin animación, solo renglones estáticos. */
+  @media (prefers-reduced-motion: reduce) {
+    :global(.catalog-tint .tint-marquee-row span) {
+      animation: none;
+    }
   }
 
   .catalog-tint.visible {
@@ -4766,6 +4844,16 @@ const marqueeText = [
     color: #f87171;
   }
 
+  /* Sugerencia persistente del próximo tier ("Agregá N más y todas
+     salen a $X c/u"). Usa el amarillo de marca (KRA) para no competir
+     con el verde (éxito) ni el rojo (alerta) del banner temporal de
+     cambio de tier. */
+  .cart-tier-banner.banner-hint {
+    background: rgba(255, 214, 85, 0.10);
+    border: 1px solid rgba(255, 214, 85, 0.28);
+    color: #ffd655;
+  }
+
   @keyframes flashCartGreen {
     0%   { background: rgba(37, 211, 102, 0.35); }
     100% { background: transparent; }
@@ -7478,7 +7566,66 @@ function commitTintSwap() {
   old.classList.remove("visible", "leaving");
 }
 
-function showTint(color) {
+// S31: altura máxima vista del catálogo. La usa renderTintMarquee para
+// calcular cuántos renglones generar. Solo crece (Math.max), así si el
+// usuario filtra a una categoría con menos productos, los renglones
+// siguen cubriendo la altura máxima anterior (evita "huecos" al volver
+// a una categoría con más productos).
+let maxCatalogHeight = 0;
+
+// S31: genera el contenido del marquee decorativo dentro de una capa
+// de tinte. Crea N renglones con el nombre de la categoría repetido,
+// tamaños alternados, direcciones alternadas y delay aleatorio por
+// renglón para que no se muevan todos sincronizados.
+function renderTintMarquee(layer, categoryName) {
+  if (!layer) return;
+
+  const name = (categoryName || "KRAKOA").toUpperCase();
+  // 20 repeticiones del nombre + espacio. Cada span mide ~4000px,
+  // suficiente para cubrir el viewport en desktop y mobile.
+  const text = (name + " ").repeat(20);
+
+  // Medimos la altura actual del catálogo y la acumulamos con la mayor
+  // vista hasta ahora. Esto se hace ANTES de aplicar el filtro de
+  // categoría (showTint se llama antes de filterProducts), así que la
+  // medición corresponde al catálogo completo.
+  const catalog = document.querySelector(".catalog");
+  if (catalog) {
+    maxCatalogHeight = Math.max(maxCatalogHeight, catalog.offsetHeight);
+  }
+  const height = maxCatalogHeight || window.innerHeight * 2;
+
+  // Cantidad de renglones: la diagonal del catálogo dividida por un
+  // promedio de 70px por renglón. El +10 es margen. El Math.max(30, ...)
+  // asegura un mínimo para catálogos chicos.
+  const diagonal = Math.sqrt(
+    height * height + window.innerWidth * window.innerWidth
+  );
+  const rowCount = Math.max(30, Math.ceil(diagonal / 70) + 10);
+
+  // Tamaños que se alternan (todos entre 60px y 110px).
+  const sizes = [95, 75, 110, 60, 85, 105, 70, 90];
+
+  let html = '<div class="tint-marquee">';
+  for (let i = 0; i < rowCount; i++) {
+    const size = sizes[i % sizes.length];
+    // Delay aleatorio negativo: cada renglón empieza en un punto
+    // distinto del ciclo de 80s, así no van todos sincronizados.
+    const delay = (Math.random() * 80).toFixed(2);
+    html += `<div class="tint-marquee-row" style="font-size:${size}px">`;
+    html += `<span style="animation-delay:-${delay}s">${text}</span>`;
+    html += `<span aria-hidden="true" style="animation-delay:-${delay}s">${text}</span>`;
+    html += `</div>`;
+  }
+  html += '</div>';
+
+  layer.innerHTML = html;
+}
+
+// showTint ahora recibe también el NOMBRE de la categoría para pintar
+// la marquesina con el texto correcto. Si name no viene, usa "KRAKOA"
+// como fallback.
+function showTint(color, name) {
   // Si había un swap en curso, lo cerramos ya.
   if (tintTimer) commitTintSwap();
 
@@ -7488,6 +7635,7 @@ function showTint(color) {
   // Primer tinte: no había nada visible, solo entra la capa activa.
   if (!active.classList.contains("visible")) {
     active.style.setProperty("--tint-color", color);
+    renderTintMarquee(active, name);
     active.classList.add("visible");
     return;
   }
@@ -7495,6 +7643,7 @@ function showTint(color) {
   // Cambio de categoría: capa nueva entra desde la derecha,
   // capa vieja sale hacia la izquierda.
   next.style.setProperty("--tint-color", color);
+  renderTintMarquee(next, name);
   next.classList.remove("visible", "leaving");
   void next.offsetWidth; // forzar reflow
   next.classList.add("visible");
@@ -7741,7 +7890,10 @@ function applyCategoryFilter(categoryId, { push = true, scroll = true } = {}) {
     const color =
       wrap?.style.getPropertyValue("--category-color")?.trim() ||
       "#888888";
-    showTint(color);
+    // S31: pasamos también el nombre visible de la categoría para
+    // que la marquesina decorativa muestre "ANIME", "CINE Y TV", etc.
+    const name = btn?.dataset.originalText || "KRAKOA";
+    showTint(color, name);
   }
 
   filterProducts();
@@ -9713,9 +9865,45 @@ categoryButtons.forEach((button) => {
     cartTierBanner.classList.add(isCheaper ? "banner-green" : "banner-red");
 
     cartTierBannerTimer = setTimeout(() => {
-      cartTierBanner.hidden = true;
       cartTierBannerTimer = null;
+      // Al vencer el banner temporal, devolvemos el turno a la
+      // sugerencia persistente (si aplica).
+      updateCartTierBanner();
     }, 4000);
+  }
+
+  // Sugerencia persistente en el footer del carrito: cuando el pedido
+  // está cerca del próximo tier, mostramos "Agregá N más y todas salen
+  // a $X c/u". Reusa getNextTier() y el mismo banner que el feedback
+  // de cambio de tier, pero con estilo amarillo (banner-hint) para
+  // diferenciarse del verde/rojo temporal.
+  //
+  // Regla de turnos: si hay un banner temporal en curso (timer activo),
+  // esta función NO hace nada. Eso evita pisar el feedback de cambio
+  // de tier.
+  function updateCartTierBanner() {
+    if (!cartTierBanner) return;
+    if (cartTierBannerTimer) return;
+
+    const total = getTotalCount();
+    if (total === 0) {
+      cartTierBanner.hidden = true;
+      return;
+    }
+
+    const next = getNextTier(total);
+    // Sin próximo tier (ya está en el máximo) o falta demasiado para
+    // el siguiente: no mostramos nada.
+    if (!next || next.unitsNeeded > 3) {
+      cartTierBanner.hidden = true;
+      return;
+    }
+
+    const word = next.unitsNeeded === 1 ? "remera" : "remeras";
+    cartTierBanner.textContent = `Agregá ${next.unitsNeeded} ${word} más y todas salen a ${formatPrice(next.price)} c/u`;
+    cartTierBanner.hidden = false;
+    cartTierBanner.classList.remove("banner-green", "banner-red");
+    cartTierBanner.classList.add("banner-hint");
   }
 
   function renderCartDrawer(animate = false) {
@@ -9833,6 +10021,11 @@ categoryButtons.forEach((button) => {
       showCartTierBanner(total, unitPrice, isCheaper);
     }
     lastCartUnitPrice = unitPrice;
+
+    // Sugerencia persistente del próximo tier. Si hay un banner
+    // temporal en curso (se acaba de cambiar de tier), esta llamada
+    // no hace nada y el banner sigue visible hasta los 4s.
+    updateCartTierBanner();
   }
 
 
