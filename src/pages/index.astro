@@ -1962,13 +1962,14 @@ const marqueeText = [
     gap: 0;
     pointer-events: none;
     /* S31: aislamiento de performance. Le dice al navegador que
-       nada de lo que pase acá adentro afecta el layout/paint de
-       afuera. Ayuda a que el compositor trate toda la marquesina
-       como un bloque aislado y no recalcule el catálogo entero
-       mientras los renglones se mueven. Sin esto, en mobile de
-       gama baja podía haber jank al scrollear con la marquesina
-       activa. */
-    contain: layout paint style;
+       nada de lo que pase acá adentro afecta el layout/style de
+       afuera. SIN `paint`: en la práctica, `paint` hacía que el
+       navegador repintara el marquee en cada frame de scroll
+       (porque el clip-path del padre + el transform de los spans
+       combinados se llevaban mal con el recorte de paint), y en
+       mobile eso generaba jank. Con `layout style` el compositor
+       puede mover las capas GPU sin repintar. */
+    contain: layout style;
   }
 
   :global(.catalog-tint .tint-marquee-row) {
@@ -1994,6 +1995,12 @@ const marqueeText = [
 
   :global(.catalog-tint .tint-marquee-row:nth-child(even) span) {
     animation-name: tintMarqueeR;
+  }
+
+  /* S31: pausa global del marquee (scroll + off-viewport).
+     Solo afecta a los spans del marquee, no al resto del sitio. */
+  :global(body.tint-paused .catalog-tint .tint-marquee-row span) {
+    animation-play-state: paused;
   }
 
   @keyframes tintMarqueeL {
@@ -7607,16 +7614,14 @@ function renderTintMarquee(layer, categoryName) {
   // promedio de 70px por renglón. El +10 es margen. El Math.max(30, ...)
   // asegura un mínimo para catálogos chicos.
   //
-  // S31: cap a 90 renglones. El inset -60% -40% del .tint-marquee ya
-  // nos da margen de sobra para cubrir las esquinas; antes generábamos
-  // 130-240 renglones (400+ spans animados en mobile), lo cual era
-  // overkill. Con 90 alcanza para cubrir la sección sin huecos visibles
-  // y baja a la mitad la cantidad de capas de compositor. Si algún día
-  // ves un hueco al fondo (no debería pasar), subí este número.
+  // S31: sin cap. Volvimos al cálculo original porque el cap de 90
+  // dejaba hueco al fondo de la sección. La performance se maneja
+  // pausando las animaciones cuando el usuario scrollea y cuando el
+  // catálogo no está en viewport (ver más abajo).
   const diagonal = Math.sqrt(
     height * height + window.innerWidth * window.innerWidth
   );
-  const rowCount = Math.min(90, Math.max(30, Math.ceil(diagonal / 70) + 10));
+  const rowCount = Math.max(30, Math.ceil(diagonal / 70) + 10);
 
   // Tamaños que se alternan (todos entre 60px y 110px).
   const sizes = [95, 75, 110, 60, 85, 105, 70, 90];
@@ -7636,6 +7641,48 @@ function renderTintMarquee(layer, categoryName) {
 
   layer.innerHTML = html;
 }
+
+// S31: pausa de la marquesina. El navegador no está obligado a
+// detener las animaciones cuando el usuario scrollea, y en mobile
+// de gama media eso causaba jank (muchas capas GPU activas
+// compitiendo con el scroll). Pausamos con una clase en <body>
+// que solo afecta a los spans del marquee (regla CSS scopeada).
+//
+// - Durante scroll: pausa. Se reanuda 150ms después de que el
+//   usuario deja de scrollear (debounce).
+// - Off-viewport: pausa cuando el catálogo no está en pantalla
+//   (IntersectionObserver). Ahorra batería cuando el usuario
+//   está en el hero, el footer o leyendo Cómo Comprar.
+const tintMarqueePause = (() => {
+  let scrollTimer = null;
+  let catalogInView = true;
+
+  function setPaused(paused) {
+    document.body.classList.toggle("tint-paused", paused);
+  }
+
+  window.addEventListener("scroll", () => {
+    setPaused(true);
+    if (scrollTimer) clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(() => {
+      scrollTimer = null;
+      setPaused(!catalogInView);
+    }, 150);
+  }, { passive: true });
+
+  const catalog = document.querySelector("#catalogo");
+  if (catalog && "IntersectionObserver" in window) {
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        catalogInView = entry.isIntersecting;
+        if (!scrollTimer) setPaused(!catalogInView);
+      });
+    }, { threshold: 0 });
+    obs.observe(catalog);
+  }
+
+  return { setPaused };
+})();
 
 // showTint ahora recibe también el NOMBRE de la categoría para pintar
 // la marquesina con el texto correcto. Si name no viene, usa "KRAKOA"
