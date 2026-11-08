@@ -1,0 +1,394 @@
+---
+const base = import.meta.env.BASE_URL;
+---
+
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>KRAKOA | 404 — Página no encontrada</title>
+  <meta name="robots" content="noindex, follow" />
+  <meta name="theme-color" content="#0a0a0a" />
+  <link rel="icon" type="image/webp" href={`${base}/logos/krakoalogo-isotipo.webp`} />
+
+  <style is:inline set:html={`
+    @font-face {
+      font-family: "KrakoaFont";
+      src: url("${base}/fonts/krakoafont.ttf") format("truetype");
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+  `}></style>
+  <link rel="preload" as="font" type="font/ttf" href={`${base}/fonts/krakoafont.ttf`} crossorigin />
+</head>
+
+<body>
+  <div class="err-scanlines" aria-hidden="true"></div>
+
+  <main class="err-page">
+    <a href={`${base}/`} class="err-logo" aria-label="Volver a KRAKOA">
+      <img src={`${base}/logos/krakoalogo-horizontal.webp`} alt="KRAKOA" />
+    </a>
+
+    <div class="err-code-wrap">
+      <h1 id="err-code" class="err-code" data-text="404">
+        <span class="err-code-text">404</span>
+        <span class="err-glitch-a" aria-hidden="true"></span>
+        <span class="err-glitch-b" aria-hidden="true"></span>
+      </h1>
+      <span class="err-cursor" aria-hidden="true">_</span>
+    </div>
+
+    <p class="err-brand">
+      <span class="brand-inline"><span class="hero-kra">KRA</span>KOA</span>
+    </p>
+
+    <p class="err-kicker">// SEÑAL PERDIDA</p>
+    <h2 class="err-title">Esta página no existe</h2>
+    <p class="err-text">
+      Puede que el link esté roto o que el diseño ya no esté disponible.
+      Volvé al catálogo y encontrá tu próxima remera.
+    </p>
+
+    <div class="err-actions">
+      <a href={`${base}/`} class="err-btn err-btn-primary">
+        ← Volver al catálogo
+      </a>
+      <a
+        href="https://instagram.com/krakoa.sw"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="err-btn err-btn-secondary"
+      >
+        @krakoa.sw
+      </a>
+    </div>
+  </main>
+
+  <style>
+    :global(*),
+    :global(*::before),
+    :global(*::after) {
+      box-sizing: border-box;
+    }
+
+    :global(html),
+    :global(body) {
+      margin: 0;
+      padding: 0;
+    }
+
+    :global(body) {
+      background: #0a0a0a;
+      color: #f2f2f2;
+      font-family: Arial, Helvetica, sans-serif;
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      overflow-x: hidden;
+    }
+
+    /* Scanlines sutiles de fondo (mismo patrón que el hero). */
+    .err-scanlines {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image: repeating-linear-gradient(
+        0deg,
+        transparent 0px,
+        transparent 3px,
+        rgba(255, 255, 255, 0.02) 3px,
+        rgba(255, 255, 255, 0.02) 4px
+      );
+    }
+
+    .err-page {
+      position: relative;
+      z-index: 1;
+      width: min(560px, 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 0;
+    }
+
+    .err-logo {
+      display: inline-block;
+      margin-bottom: 44px;
+      opacity: 0.9;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .err-logo:hover {
+      opacity: 1;
+      transform: translateY(-2px);
+    }
+
+    .err-logo img {
+      display: block;
+      width: 140px;
+      height: auto;
+    }
+
+    /* Código 404 con glitch */
+    .err-code-wrap {
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+
+    .err-code {
+      position: relative;
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: 900;
+      font-size: clamp(110px, 22vw, 200px);
+      line-height: 0.9;
+      letter-spacing: -0.06em;
+      color: #fff;
+      height: calc(clamp(110px, 22vw, 200px) * 0.9);
+    }
+
+    .err-code-text {
+      position: relative;
+      z-index: 2;
+    }
+
+    .err-glitch-a,
+    .err-glitch-b {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      user-select: none;
+      opacity: 0;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+    }
+
+    .err-glitch-a {
+      color: #ff0055;
+      text-shadow: 3px 0 rgba(255, 0, 85, 0.9);
+    }
+
+    .err-glitch-b {
+      color: #00fff0;
+      text-shadow: -3px 0 rgba(0, 255, 240, 0.9);
+    }
+
+    .err-code.glitching .err-glitch-a,
+    .err-code.glitching .err-glitch-b {
+      opacity: 1;
+      animation: errGlitchMain 0.42s steps(9, end) 1;
+    }
+
+    .err-code.glitching .err-glitch-b {
+      animation-delay: 0.04s;
+    }
+
+    @keyframes errGlitchMain {
+      0%   { clip-path: inset(10% 0 80% 0);     transform: translate(-4px, 0);           }
+      11%  { clip-path: inset(60% 0 10% 0);     transform: translate(5px, 0);            }
+      22%  { clip-path: inset(30% 55% 55% 10%); transform: translate(-3px, 0) scaleY(-1); }
+      33%  { clip-path: inset(80% 0 5% 0);      transform: translate(6px, 0);            }
+      44%  { clip-path: inset(20% 30% 60% 25%); transform: translate(-5px, 0) scaleX(-1); }
+      55%  { clip-path: inset(45% 0 40% 0);     transform: translate(3px, 0);            }
+      66%  { clip-path: inset(70% 45% 15% 0);   transform: translate(-4px, 0);           }
+      77%  { clip-path: inset(5% 0 85% 0);      transform: translate(2px, 0) scaleX(-1); }
+      88%  { clip-path: inset(40% 20% 35% 30%); transform: translate(-5px, 0);           }
+      100% { clip-path: inset(10% 0 80% 0);     transform: translate(0, 0);              }
+    }
+
+    /* Cursor titilante al lado del 404 */
+    .err-cursor {
+      display: inline-block;
+      align-self: flex-end;
+      margin-bottom: 18px;
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: 900;
+      font-size: clamp(50px, 8vw, 80px);
+      line-height: 1;
+      color: #ffd655;
+      animation: errCursorBlink 1s step-end infinite;
+    }
+
+    @keyframes errCursorBlink {
+      0%, 50%   { opacity: 1; }
+      50.01%, 100% { opacity: 0; }
+    }
+
+    /* KRAKOA en KrakoaFont (KRA amarillo + KOA blanco) */
+    .err-brand {
+      margin: 0 0 22px;
+      font-size: 14px;
+      letter-spacing: 0.14em;
+    }
+
+    .brand-inline {
+      font-family: "KrakoaFont", Arial, Helvetica, sans-serif;
+      font-weight: normal;
+      letter-spacing: 0;
+      color: #fff;
+    }
+
+    .hero-kra {
+      color: #ffd655;
+    }
+
+    .err-kicker {
+      margin: 0 0 10px;
+      font-family: monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      color: #ffd655;
+      text-transform: uppercase;
+    }
+
+    .err-title {
+      margin: 0 0 14px;
+      font-size: clamp(20px, 4vw, 26px);
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+      color: #fff;
+      line-height: 1.1;
+    }
+
+    .err-text {
+      margin: 0 0 32px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #888;
+      max-width: 380px;
+    }
+
+    .err-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .err-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease, filter 0.2s ease;
+    }
+
+    .err-btn:active {
+      transform: scale(0.96);
+    }
+
+    .err-btn-primary {
+      background: #ffd655;
+      color: #0a0a0a;
+      border: 1px solid #ffd655;
+    }
+
+    .err-btn-primary:hover {
+      filter: brightness(1.08);
+      transform: translateY(-1px);
+    }
+
+    .err-btn-secondary {
+      background: transparent;
+      color: #ddd;
+      border: 1px solid #2a2a2a;
+    }
+
+    .err-btn-secondary:hover {
+      border-color: #444;
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    @media (max-width: 480px) {
+      .err-logo {
+        margin-bottom: 32px;
+      }
+
+      .err-logo img {
+        width: 118px;
+      }
+
+      .err-actions {
+        flex-direction: column;
+        width: 100%;
+      }
+
+      .err-btn {
+        width: 100%;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .err-code.glitching .err-glitch-a,
+      .err-code.glitching .err-glitch-b {
+        animation: none;
+        opacity: 0;
+      }
+      .err-cursor {
+        animation: none;
+        opacity: 1;
+      }
+    }
+  </style>
+
+  <script>
+    // Glitch ocasional del "404": cada 4-8s, igual que el logo del
+    // header. Los spans se rellenan acá para que no aparezcan si JS
+    // falla (opacity 0 en CSS base).
+    (() => {
+      const code = document.querySelector("#err-code");
+      if (!code) return;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+      const ga = code.querySelector(".err-glitch-a");
+      const gb = code.querySelector(".err-glitch-b");
+      if (ga) ga.textContent = "404";
+      if (gb) gb.textContent = "404";
+
+      const MIN_DELAY = 4000;
+      const MAX_DELAY = 8000;
+      const DURATION = 420;
+
+      function trigger() {
+        if (code.classList.contains("glitching")) return;
+        code.classList.add("glitching");
+        setTimeout(() => code.classList.remove("glitching"), DURATION);
+      }
+
+      function schedule() {
+        const delay = MIN_DELAY + Math.random() * (MAX_DELAY - MIN_DELAY);
+        setTimeout(() => {
+          trigger();
+          schedule();
+        }, delay);
+      }
+
+      // Primer glitch a los 1.5s (después de que se pinte la página).
+      setTimeout(schedule, 1500);
+    })();
+  </script>
+</body>
+</html>
