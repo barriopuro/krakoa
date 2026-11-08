@@ -40,15 +40,20 @@ const optimizedCatalogoDir = path.join(
   "catalogo"
 );
 
-async function optimizeImage(sourcePath, destinationPath) {
+async function optimizeImage(sourcePath, destinationPath, maxWidth = 1000) {
   await sharp(sourcePath)
-    // Redimensionamos a un máximo de 1000px de ancho (y alto).
+    // Redimensionamos a un máximo de `maxWidth` px de ancho (y alto).
     // withoutEnlargement: true evita que las imágenes chicas se
-    // estiren si el original era menor a 1000px.
+    // estiren si el original era menor al máximo.
     // fit: "inside" mantiene la proporción original.
+    //
+    // S31: ahora se llama varias veces por imagen (1000w para el
+    // modal/hero/zoom/promo, 600w y 400w para las tarjetas del
+    // catálogo con srcset). El parámetro `maxWidth` permite
+    // reutilizar la misma función sin duplicar código.
     .resize({
-      width: 1000,
-      height: 1000,
+      width: maxWidth,
+      height: maxWidth,
       fit: "inside",
       withoutEnlargement: true,
     })
@@ -266,18 +271,42 @@ async function processCatalogoImages() {
       // Reemplazamos el nombre de la carpeta del modelo por el limpio.
       const cleanRelative = path.join(category, cleanModel, ...rest);
 
-      const relativeWebp = cleanRelative.replace(
+      // S31: separamos el "base" (sin extensión) para poder armar
+      // las 3 variantes (1000w, 600w, 400w).
+      const relativeBase = cleanRelative.replace(
         new RegExp(`${extension}$`, "i"),
-        ".webp"
+        ""
       );
 
-      const destinationPath = path.join(publicCatalogoDir, relativeWebp);
+      const destinationPath = path.join(
+        publicCatalogoDir,
+        relativeBase + ".webp"
+      );
 
       fs.mkdirSync(path.dirname(destinationPath), {
         recursive: true,
       });
 
+      // 1000w siempre (modal, hero, zoom, promo, tablas).
       await optimizeImage(sourcePath, destinationPath);
+
+      // S31: 400w y 600w SOLO para modelo y remera. Son las únicas
+      // imágenes que se muestran en las tarjetas del catálogo, donde
+      // el srcset ayuda. Los extras solo se ven en el modal (1000w),
+      // así que no necesitan versiones chicas.
+      const baseName = path.basename(relativeBase).toLowerCase();
+      if (baseName === "modelo" || baseName === "remera") {
+        await optimizeImage(
+          sourcePath,
+          path.join(publicCatalogoDir, relativeBase + "-600.webp"),
+          600
+        );
+        await optimizeImage(
+          sourcePath,
+          path.join(publicCatalogoDir, relativeBase + "-400.webp"),
+          400
+        );
+      }
       continue;
     }
 
@@ -437,14 +466,25 @@ categories.push({
     // es como processCatalogoImages() guardó las imágenes optimizadas.
     // En la carpeta original (catalogo/) el nombre es rawFolderName
     // (con tags), pero en public/catalogo/ está limpio.
+    // S31: paths "base" (sin extensión) para armar las 3 variantes
+    // sin repetir strings. `modelo` y `remera` (1000w) se mantienen
+    // porque los usa el hero, el modal, el zoom y el auto-slide.
+    // Los `-400` / `-600` son solo para el srcset de la tarjeta.
+    const modeloClean = modelo.replace(/\.[^.]+$/, "");
+    const remeraClean = remera.replace(/\.[^.]+$/, "");
+
     products.push({
       id: productId,
       name: productName,
       tags,
       category: categoryId,
       categoryName: config?.name ?? formatName(categoryId),
-      modelo: `/catalogo/${categoryId}/${cleanName}/${modelo.replace(/\.[^.]+$/, ".webp")}`,
-      remera: `/catalogo/${categoryId}/${cleanName}/${remera.replace(/\.[^.]+$/, ".webp")}`,
+      modelo: `/catalogo/${categoryId}/${cleanName}/${modeloClean}.webp`,
+      modelo400: `/catalogo/${categoryId}/${cleanName}/${modeloClean}-400.webp`,
+      modelo600: `/catalogo/${categoryId}/${cleanName}/${modeloClean}-600.webp`,
+      remera: `/catalogo/${categoryId}/${cleanName}/${remeraClean}.webp`,
+      remera400: `/catalogo/${categoryId}/${cleanName}/${remeraClean}-400.webp`,
+      remera600: `/catalogo/${categoryId}/${cleanName}/${remeraClean}-600.webp`,
       extras: extras.map((extra) => ({
         src: `/catalogo/${categoryId}/${cleanName}/${extra.file.replace(/\.[^.]+$/, ".webp")}`,
         label: extra.label,

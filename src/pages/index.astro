@@ -480,6 +480,8 @@ const marqueeText = [
                     <img
                       class="product-image-base"
                       src={`${base}/${product.modelo}`}
+                      srcset={`${base}/${product.modelo400} 400w, ${base}/${product.modelo600} 600w, ${base}/${product.modelo} 1000w`}
+                      sizes="(max-width: 900px) 50vw, (max-width: 1400px) 33vw, 25vw"
                       alt={`Remera ${product.name}`}
                       loading="lazy"
                       fetchpriority="low"
