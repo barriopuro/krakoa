@@ -115,12 +115,30 @@ const marqueeText = [
     })}
   ></script>
 
+  <!-- S31: Clarity se carga diferido. El snippet original corría en
+       el arranque (async, pero competía con el render inicial por
+       CPU/red en mobile). Ahora espera a la primera interacción del
+       usuario (scroll, click, touch, tecla) o a los 5s como
+       fallback. El usuario que rebota en <1s no se trackea (pérdida
+       aceptable). El usuario real se trackea igual, un instante más
+       tarde. -->
   <script is:inline>
-    (function(c,l,a,r,i,t,y){
-      c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-      t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-      y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-    })(window, document, "clarity", "script", "yuh7dq7teh");
+    (function(){
+      var loaded = false;
+      function loadClarity() {
+        if (loaded) return;
+        loaded = true;
+        (function(c,l,a,r,i,t,y){
+          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "yuh7dq7teh");
+      }
+      ["scroll", "click", "touchstart", "keydown", "pointerdown"].forEach(function(ev){
+        window.addEventListener(ev, loadClarity, { once: true, passive: true });
+      });
+      setTimeout(loadClarity, 5000);
+    })();
   </script>
 
   <!-- Fuente custom (Payback, renombrada a KrakoaFont).
@@ -1420,6 +1438,15 @@ const marqueeText = [
     inset: 0;
     background: rgba(0, 0, 0, 0.75);
     backdrop-filter: blur(4px);
+  }
+
+  /* S31: mismo criterio que el carrito. En mobile, blur más liviano. */
+  @media (max-width: 700px) {
+    .mobile-menu-backdrop {
+      background: rgba(0, 0, 0, 0.88);
+      -webkit-backdrop-filter: blur(2px);
+              backdrop-filter: blur(2px);
+    }
   }
 
   .mobile-menu-panel {
@@ -2850,7 +2877,10 @@ const marqueeText = [
     background: #fff;
     opacity: 0;
     animation: floatUp linear infinite;
-    will-change: transform, opacity;
+    /* S31: sin will-change. Con 22 partículas, cada una era una capa
+       GPU "reservada" permanente (22 capas solo en el footer). El
+       navegador ya promueve la capa automáticamente mientras dura la
+       animación; el will-change era overkill y sumaba memoria de GPU. */
   }
 
   @keyframes floatUp {
@@ -4702,6 +4732,17 @@ const marqueeText = [
     inset: 0;
     background: rgba(0, 0, 0, 0.75);
     backdrop-filter: blur(4px);
+  }
+
+  /* S31: en mobile, el backdrop-filter del carrito es caro.
+     Bajar a blur(2px) + subir opacidad mantiene el look "oscurecido"
+     con menos costo de GPU. Misma lógica que el modal. */
+  @media (max-width: 700px) {
+    .cart-drawer-backdrop {
+      background: rgba(0, 0, 0, 0.88);
+      -webkit-backdrop-filter: blur(2px);
+              backdrop-filter: blur(2px);
+    }
   }
 
   .cart-drawer-panel {
@@ -10944,7 +10985,11 @@ function formatHeroText(text) {
 const footerParticles = document.querySelector(".footer-particles");
 
 if (footerParticles) {
-  const PARTICLE_COUNT = 22;
+  // S31: en mobile, 22 partículas son muchas capas GPU simultáneas
+  // para un efecto decorativo. Con 10 se ve igual de "mágico" y
+  // libera 12 capas. En desktop se mantienen 22.
+  const isMobileParticles = window.matchMedia("(max-width: 700px)").matches;
+  const PARTICLE_COUNT = isMobileParticles ? 10 : 22;
 
   for (let i = 0; i < PARTICLE_COUNT; i++) {
     const p = document.createElement("span");
