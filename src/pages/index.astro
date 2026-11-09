@@ -2628,6 +2628,21 @@ const marqueeText = [
 
   .product-card {
     min-width: 0;
+    /* S32: el navegador se salta el renderizado (layout, paint,
+       style) de las tarjetas que están muy fuera de pantalla.
+       Cuando el usuario scrollea y la tarjeta se acerca, se
+       renderiza al toque. El elemento sigue en el DOM, así que
+       el buscador, el auto-slide y el historial no se enteran. */
+    content-visibility: auto;
+    /* Altura "estimada" para que el scrollbar no salte. Sin esto,
+       el navegador no sabe cuánto mide una tarjeta no renderizada
+       y la página se "estira" a medida que scrolleás.
+       1/1.18 es el aspect-ratio de .product-image, más ~50px
+       de overlay/título. En mobile las tarjetas son más angostas
+       y la altura real es distinta, pero como el valor solo se
+       usa como estimación para el scrollbar, no necesita ser
+       exacto. */
+    contain-intrinsic-size: auto 380px;
   }
 
   /* Animación de revelado al filtrar (cambio de categoría o búsqueda).
