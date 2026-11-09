@@ -66,6 +66,41 @@ async function optimizeImage(sourcePath, destinationPath, maxWidth = 1000) {
     .toFile(destinationPath);
 }
 
+// S32: genera la imagen Open Graph por producto.
+// Toma el JPG original de la remera, lo redimensiona para que
+// entre con margen en un canvas 1200×630 (formato estándar de OG)
+// y lo centra sobre fondo negro KRAKOA (#0b0b0b). El resultado es
+// un JPG (no WebP) para máxima compatibilidad con scrapers de
+// redes (WhatsApp en versiones viejas, principalmente).
+async function generateOgImage(sourcePath, destinationPath) {
+  const OG_WIDTH = 1200;
+  const OG_HEIGHT = 630;
+  const OG_BG = { r: 11, g: 11, b: 11, alpha: 1 }; // #0b0b0b
+
+  // 520px de alto sobre 630 de canvas deja 55px de aire arriba y
+  // abajo. Se ve prolijo y deja espacio para que el texto del
+  // scraper (si agrega overlay) no tape la remera.
+  const resized = await sharp(sourcePath)
+    .resize({ height: 520, fit: "inside", withoutEnlargement: true })
+    .toBuffer();
+
+  const meta = await sharp(resized).metadata();
+  const left = Math.floor((OG_WIDTH - meta.width) / 2);
+  const top = Math.floor((OG_HEIGHT - meta.height) / 2);
+
+  await sharp({
+    create: {
+      width: OG_WIDTH,
+      height: OG_HEIGHT,
+      channels: 3,
+      background: OG_BG,
+    },
+  })
+    .composite([{ input: resized, left, top }])
+    .jpeg({ quality: 82 })
+    .toFile(destinationPath);
+}
+
 const imageExtensions = [".jpg", ".jpeg", ".png", ".webp"];
 
 const categoryConfig = {
@@ -307,6 +342,16 @@ async function processCatalogoImages() {
           400
         );
       }
+
+      // S32: generamos también la imagen OG (JPG 1200×630, fondo
+      // negro, remera centrada) SOLO para las remeras. Es la que
+      // usan los scrapers de redes para la preview del link.
+      if (baseName === "remera") {
+        await generateOgImage(
+          sourcePath,
+          path.join(publicCatalogoDir, relativeBase + "-og.jpg")
+        );
+      }
       continue;
     }
 
@@ -485,6 +530,7 @@ categories.push({
       remera: `/catalogo/${categoryId}/${cleanName}/${remeraClean}.webp`,
       remera400: `/catalogo/${categoryId}/${cleanName}/${remeraClean}-400.webp`,
       remera600: `/catalogo/${categoryId}/${cleanName}/${remeraClean}-600.webp`,
+      ogImage: `/catalogo/${categoryId}/${cleanName}/${remeraClean}-og.jpg`,
       extras: extras.map((extra) => ({
         src: `/catalogo/${categoryId}/${cleanName}/${extra.file.replace(/\.[^.]+$/, ".webp")}`,
         label: extra.label,

@@ -6671,6 +6671,16 @@ const marqueeText = [
 
 <script define:vars={{ base, PROMO_DATA: promo }}>
 
+  // S32: constantes del sitio para armar URLs absolutas.
+  // - SITE_ORIGIN: origen real desde donde corre la página
+  //   (https://barriopuro.github.io en prod, http://localhost:4321
+  //   en dev). Lo usa el botón "Compartir" para armar la URL de la
+  //   página puente /producto/slug/.
+  // - BASE_PATH: `base` sin el trailing slash (/krakoa/ → /krakoa).
+  //   Mismo cálculo que hace el frontmatter.
+  const SITE_ORIGIN = window.location.origin;
+  const BASE_PATH = base.endsWith("/") ? base.slice(0, -1) : base;
+
   // Loader de carga inicial
   (() => {
     const loader = document.querySelector("#krakoa-loader");
@@ -9539,12 +9549,16 @@ categoryButtons.forEach((button) => {
 
 
   modalShare.addEventListener("click", async () => {
-    // Armamos la URL con el hash del producto (ej: .../?cat=anime#remera-naruto).
-    // Preservamos la query string (?cat=anime) si el usuario está
-    // filtrando por categoría, así el receptor ve el mismo filtro activo.
-    const urlObj = new URL(window.location.href);
-    urlObj.hash = currentProductId ? `#${currentProductId}` : "";
-    const url = urlObj.toString();
+    // S32: compartimos la URL de la página puente (/producto/slug/),
+    // que tiene los meta tags OG correctos (og:image = foto de la
+    // remera) para que WhatsApp/Facebook/Twitter muestren la
+    // miniatura en la preview. Esa página redirige a /#slug, así
+    // el receptor cae en el modal abierto como siempre.
+    // Si por algún motivo no hay id (no debería pasar), caemos a
+    // la home genérica.
+    const url = currentProductId
+      ? `${SITE_ORIGIN}${BASE_PATH}/producto/${currentProductId}/`
+      : `${SITE_ORIGIN}${BASE_PATH}/`;
     const title = currentProductName;
 
     if (navigator.share) {

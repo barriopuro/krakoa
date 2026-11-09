@@ -68,7 +68,9 @@ text
 └── src/
     ├── data/catalogo.json               (generado)
     ├── data/promo.json                  (generado)
-    └── pages/index.astro                ← TODA la web
+    └── pages/
+        ├── index.astro                  ← TODA la web
+        └── 404.astro                    ← página 404 custom (S31)
 Sin componentes separados ni layouts. Todo vive en index.astro.
 
 Script de publicación (ACTUALIZAR WEB.bat):
@@ -148,6 +150,8 @@ Grilla full-width (100vw + translateX(-50%)).
 
 Tinte de fondo por categoría: dos capas (#catalogTintA/B) con clip-path. Slide derecha→izquierda al cambiar categoría (0.55s).
 
+Marquesina diagonal del tinte (S31): el nombre de la categoría repetido ("ANIME ANIME ANIME...") en diagonal a -45°, varios renglones con tamaños alternados (60-110px), direcciones alternadas (pares a la izquierda, impares a la derecha), velocidad 80s por loop. Vive dentro del tinte, se hereda el barrido entre categorías del `clip-path` del padre (se va con la capa vieja, entra con la nueva). Opacidad del texto 0.05 (muy sutil, no compite con las tarjetas). Se genera desde JS con `renderTintMarquee(layer, categoryName)`. Tamaños en `sizes = [95, 75, 110, 60, 85, 105, 70, 90]`. Delay aleatorio negativo por renglón para que no se muevan sincronizados. Pausa al scrollear, off-viewport, y con overlays abiertos (body classes).
+
 Tarjetas:
 
 Dos <img>: base (modelo) y hover (remera).
@@ -194,6 +198,9 @@ Botón atrás deshace la última acción (ver §4 "History stack").
 
 Loader inicial (#krakoa-loader)
 Fade in del isotipo + glitch. Se oculta en DOMContentLoaded (o 1.5s por seguridad). Dispara krakoa:loaded para el reveal por letra del hero.
+
+404 custom (`src/pages/404.astro`, S31)
+Página independiente. "404" en Arial 900 (Payback no tiene numerales) con glitch ocasional cada 4-8s. "KRAKOA" en KrakoaFont (KRA amarillo + KOA blanco) abajo del 404. Botones "Volver al catálogo" (amarillo KRA) e "@krakoa.sw". `<meta name="robots" content="noindex, follow" />`. Astro la publica como `dist/404.html` automáticamente; no requiere cambios en el `.bat` ni en `astro.config.mjs`.
 
 §4 — Sistemas transversales
 Sistema de precios
@@ -457,6 +464,12 @@ Ver §3 "Catálogo".
 Skeleton loader
 ::before en .product-image. Sin .loaded: opaco + shimmer. Con .loaded (agregado por JS al cargar imagen base): desvanece.
 
+Sugerencia de tiers en carrito (S31)
+Función `updateCartTierBanner()` llamada al final de `renderCartDrawer()`. Si el pedido está a ≤3 unidades del próximo tier, muestra "Agregá N más y todas salen a $X c/u" en el `#cart-tier-banner` existente con estilo `banner-hint` (amarillo KRA #ffd655). **Regla de turnos**: si hay un banner temporal de cambio de tier en curso (`cartTierBannerTimer` activo), la sugerencia no hace nada; al vencer los 4s del banner temporal, `updateCartTierBanner()` recupera el turno. Reusa `getNextTier()`. Si ya está en el tier máximo (`next === null`) o falta demasiado (>3 unidades), el banner queda oculto.
+
+Pausa global de efectos con overlays abiertos (S31)
+Helper `isAnyOverlayOpen()` devuelve true si hay modal, cart, mobile-menu, image-zoom o promo abiertos (incluye estados `.is-closing`). Los schedulers de efectos (glitch hero, typewriter, rotación hero, glitch logo header, glitch categorías, glitch pilares Calidad, glitch logo footer, marquee top) consultan este helper antes de disparar. Los marquees (top y del tinte) se pausan por CSS con las clases `body.modal-open/cart-open/menu-open/zoom-open/promo-open` + `body.tint-paused` (scroll + off-viewport). Clases `body.zoom-open` y `body.promo-open` agregadas en S31 (openImageZoom/closeImageZoomDirect y openPromoModal/closePromoModalDirect).
+
 Fade-in al scrollear
 Secciones "Cómo Comprar", "Calidad" y footer arrancan con .section-observe (opacity 0, translateY 30px). IntersectionObserver agrega .is-visible al entrar. Si reduce-motion, ni se agrega la clase.
 
@@ -595,6 +608,18 @@ Si el layout depende del hijo más alto (ej: barra con botones ~51px vs panel ~4
 `contain: paint` recorta `filter: drop-shadow` (lección S29)
 Si un elemento tiene `contain: paint` y el glitch usa `filter: drop-shadow` para el RGB split, el `paint` recorta el halo al box del elemento y el glitch casi no se ve. Mismo caso que el badge del carrito en S28. Solución: `contain: layout style` (sin `paint`). Aplica al toggle del compacto (.categories-compact-search-toggle) y al cart (.categories-compact-cart). El brand mantiene `paint` porque es una imagen con alpha y no tiene drop-shadow que recortar.
 
+Clases creadas con `innerHTML` también necesitan `:global()` (lección S31)
+No solo las clases que agrega `classList.add` sobre estáticos. Cuando el JS crea nodos con `innerHTML` (por ejemplo `renderTintMarquee()` con `.tint-marquee`, `.tint-marquee-row`, `<span>`), esos nodos NO tienen `data-astro-cid-xxx`. Sin `:global()` en TODOS sus selectores (incluyendo hijos y `:nth-child`), ninguna regla matchea: el elemento queda como `div` block sin estilos, hereda Arial blanco del body, y el efecto no se ve. **Regla**: cualquier clase que agregue el JS con `innerHTML` (no solo `classList.add` sobre estáticos) lleva `:global()` en todos sus selectores CSS.
+
+`<` dentro de `{...}` en Astro puede romper el parser (lección S31)
+En expresiones de atributo (`attr={cond < N ? "a" : "b"}`), el `<` a veces se interpreta como inicio de etiqueta y rompe el build con `Expected '>' but found '<'`. Solución: invertir la lógica (`attr={N <= cond ? "b" : "a"}` o `attr={cond >= N ? "b" : "a"}`) y usar solo `>` / `>=` / `>` en lugar de `<` / `<=`. Aplica a cualquier expresión con `<` en el template.
+
+Verificar que no queden restos al reemplazar bloques multilínea grandes (lección S31)
+Un copy-paste mal encadenado puede dejar dos aperturas de la misma etiqueta superpuestas y un bloque huérfano de atributos al final (pasó con `<img class="product-image-hover">` en la Tanda C.1). El error de Astro (`Expected '>' but found '<'`) apunta a la línea donde está la **segunda** apertura, no donde está el resto huérfano — y a veces la columna coincide pero la línea no parece tener nada raro. **Chequeo rápido**: buscar etiquetas duplicadas con Ctrl+F en el editor (ej: buscar `<img` dos veces seguidas en un bloque) antes de correr el `.bat`.
+
+`og:image` / `twitter:image` deben ser URLs absolutas (lección S31)
+Los scrapers de redes (WhatsApp, Facebook, Twitter, LinkedIn) **NO resuelven rutas relativas** en `og:image` / `twitter:image`. Si ven `content="/krakoa/og-image.jpg"`, la ignoran y no muestran preview. Solución: usar `SITE_ORIGIN + BASE_PATH + "/ruta.jpg"` (constantes del frontmatter), que resuelven a `https://barriopuro.github.io/krakoa/ruta.jpg`. Aplica también a `og:url` (que debe ser absoluta) y a `twitter:image`. Nunca `content={"/ruta.jpg"}`.
+
 `scrollbar-gutter: stable` NO es la solución al scroll-shift de overlays (lección S29)
 Va en `<html>`, no en `<body>`. Y aunque funcione, no cubre elementos con `width: 100vw` (100vw es viewport completo, no afecta el padding del body). Para layouts full-width que no deben cambiar de ancho al abrir overlays, la solución es:
   1. CSS variable `--sbw` (scrollbar width) seteada por JS al cargar y al resize.
@@ -669,11 +694,10 @@ Feedback táctil (vibración + micro-glitch)	Se decidió no sumar vibración. El
 | Parallax del hero (Fase 3) | Descartado en S30. El hero ya tiene zoom + paneo lento en las imágenes rotativas; sumar parallax scrolleado se sentía cargado y "de más". |
 §8 — Ideas futuras (vivas, sin implementar)
 
-🔴 Próximos (S31–S33, prioridad acordada en S30):
+🔴 Próximos (S32–S34, prioridad acordada en S31):
 
 - **Selector de color de tela — prioridad alta.** El cliente está pidiendo muchos cambios de color en remeras, así que pasa a urgente. El plan completo está más abajo en esta misma sección.
-- **404 custom — en breve.** Pantalla con KrakoaFont + glitch, siguiendo el estilo del hero. Archivo nuevo: `src/pages/404.astro`.
-- **Sugerencia de tiers en carrito — en breve.** En el footer del carrito, cuando el pedido está cerca del próximo tier, mostrar "Agregá N más y todas salen a $X c/u". Reusar `getNextTier()` + el banner verde que ya existe (`cart-tier-banner`).
+- **Página OG por producto — idea futura.** Para que al compartir un link de un modelo por WhatsApp/Facebook/etc. aparezca la miniatura de la remera (no solo el logo), hace falta una página real por producto (ruta `/producto/[slug]` generada con `getStaticPaths`) con `<head>` propio (`og:image` con la foto de la remera, `og:title` con el nombre, `og:type` `product`). El hash (`#slug`) nunca se envía al servidor, así que WhatsApp siempre ve la home. Requiere: (1) crear la ruta dinámica, (2) generar una imagen OG por producto (o reusar `remera.webp`), (3) cambiar el botón "Compartir" para que use la URL nueva. **Ojo**: WhatsApp cachea agresivamente; los links viejos van a seguir sin preview. Planificado para S32/S33.
 
 🟡 Otras ideas (sin fecha):
 
@@ -723,9 +747,8 @@ Archivo externo (no vive en el repo). Calcula costos DTF (Guillotine Best-Area-F
 §9 — Pendientes
 
 🔴 Próximos (ver §8 para detalle):
-- 404 custom — en breve.
-- Sugerencia de tiers en carrito — en breve.
 - Selector de color de tela — prioridad alta, en breve.
+- Página OG por producto — idea futura, planificada.
 - Swipe para cambiar de producto en el modal mobile (Fase 1 del roadmap) — sin fecha.
 - Resto del roadmap Fase 4/6 — sin fecha.
 
@@ -740,6 +763,9 @@ Archivo externo (no vive en el repo). Calcula costos DTF (Guillotine Best-Area-F
 - Lupa compacta: resuelta en S28 (volvió en mobile apilada debajo del carrito).
 - Alineación del SVG de la lupa del compacto mobile: resuelta (confirmado por el usuario en S30).
 - _redirects (Netlify): reemplazado por index.html con meta OG + refresh en S23.
+- 404 custom: implementado en S31.
+- Sugerencia de tiers en carrito: implementada en S31.
+- Fix de og:image a URLs absolutas: implementado en S31 (WhatsApp/Facebook ahora muestran la miniatura del logo).
 
 🟣 Otros:
 - Performance de backdrop-filter en mobile de gama muy baja: hoy blur(6px). No se reprodujo problema hasta ahora.
@@ -1140,5 +1166,68 @@ Lección técnica: no hubo bug ni lección nueva. Todos los efectos reusan keyfr
 Cómo se probó: verificado en desktop y mobile. Glitch de entrada del h2 en ambas secciones, glitch al abrir/cerrar preguntas del FAQ (chevron sin glitch), glow pulsante del CTA WhatsApp (pausa al hover), glitch aleatorio de pilares (uno al azar cada 20-30s, solo con la sección visible), hover de pilares con flicker + drop-shadow del color, scanlines del footer visibles cerca de las partículas, glitch ocasional del logo del footer. Todo respeta prefers-reduced-motion: reduce.
 
 ⏭️ Próxima sesión: S31 — 404 custom, sugerencia de tiers en carrito o selector de color (a definir con el usuario en orden).
+
+S31 — 404 custom, sugerencia de tiers, marquesina diagonal, optimización de performance mobile, srcset WebP, fix de og:image
+Recompresión: no (se mantiene la compresión de S25).
+
+Sesión larga. Arrancó con el 404 y terminó con una auditoría de performance mobile completa.
+
+**1. 404 custom (`src/pages/404.astro`).**
+Página independiente con KrakoaFont + glitch ocasional del "404" cada 4-8s (reusa técnica del hero, 10 keyframes). "404" en Arial 900 (Payback no tiene numerales), "KRAKOA" abajo en KrakoaFont (KRA amarillo + KOA blanco). Botones "Volver al catálogo" (amarillo KRA) e "@krakoa.sw". `<meta name="robots" content="noindex, follow" />`. Sin tocar nada más del sitio: Astro detecta `404.astro` y lo publica como `dist/404.html` automáticamente. No requiere cambios en el `.bat`, `astro.config.mjs`, ni el workflow.
+
+**2. Sugerencia de tiers en carrito.**
+Nueva función `updateCartTierBanner()` que muestra "Agregá N más y todas salen a $X c/u" cuando el pedido está a ≤3 unidades del próximo tier. Reusa el `#cart-tier-banner` existente pero con estilo `banner-hint` (amarillo KRA #ffd655) para diferenciarse del verde/rojo temporal de cambio de tier. **Regla de turnos**: si hay un banner temporal en curso (`cartTierBannerTimer` activo), la sugerencia no hace nada. Al vencer los 4s del banner temporal, `updateCartTierBanner()` recupera el turno. Llamada al final de `renderCartDrawer()`.
+
+**3. Marquesina diagonal en el tinte del catálogo.**
+El tinte de categoría (`#catalogTintA/B`) ahora tiene el nombre de la categoría repetido en diagonal a -45°, varios renglones con tamaños alternados (60-110px), direcciones alternadas (pares van a la izquierda, impares a la derecha), velocidad 80s por loop. Vive dentro del `::before` del tinte (el `::before` mantiene la opacidad 0.16 del fondo, el texto tiene la suya propia a 0.05 para sentirse "de fondo"). Se genera desde JS con `renderTintMarquee(layer, categoryName)`, que calcula `rowCount` desde la diagonal del catálogo (sin cap). El barrido entre categorías se hereda del `clip-path` del padre (funciona como una cinta que se va y entra). Tamaños en el array `sizes = [95, 75, 110, 60, 85, 105, 70, 90]`. Delay aleatorio negativo por renglón (0-80s) para que no se muevan todos sincronizados.
+
+**4. Tanda A — Pausa global de efectos con overlays abiertos.**
+Nuevo helper `isAnyOverlayOpen()` que devuelve true si hay algún overlay abierto (modal, cart, mobile-menu, image-zoom, promo, incluye estados `is-closing`). Los schedulers de efectos consultan esto antes de disparar:
+- Rotación del hero (heroRotationInterval): skip si hay overlay.
+- Glitch del título del hero.
+- Typewriter del hero.
+- Glitch del logo del header (+ pausa off-viewport con IntersectionObserver).
+- Glitch de categorías (+ pausa off-viewport con IntersectionObserver).
+- Glitch de pilares de Calidad.
+- Glitch del logo del footer.
+- Marquee top (keywords): pausa por CSS con `body.modal-open/cart-open/menu-open/zoom-open/promo-open` + pausa off-viewport con IntersectionObserver + inline style.
+- Marquee del tinte: pausa con `body.tint-paused` (scroll + off-viewport) y las mismas clases de overlays.
+
+Se agregaron clases `body.zoom-open` y `body.promo-open` que faltaban (openImageZoom/closeImageZoomDirect y openPromoModal/closePromoModalDirect).
+
+**5. Tanda B — Tuning mobile.**
+- `will-change` eliminado de `.footer-particle` (22 capas GPU "reservadas" permanentes era overkill).
+- Partículas del footer: 10 en mobile, 22 en desktop (`matchMedia` en el JS).
+- Clarity diferido: el snippet ya no corre en el `<head>` al arranque. Se carga con `["scroll", "click", "touchstart", "keydown", "pointerdown"]` con `{ once: true }` o a los 5s como fallback. El usuario que rebota en <1s no se trackea (pérdida aceptable).
+- Blur del carrito y menú mobile: `blur(4px)` → `blur(2px)` + opacidad 0.75 → 0.88 en `@media (max-width: 700px)`.
+- `.scroll-progress`: pasa de animar `width` (layout + paint) a `transform: scaleX()` (compositor-only). Esto afecta a TODO el scroll del sitio, no solo al catálogo.
+- Blur de la barra sticky de categorías en mobile: `blur(6px)` → `blur(3px)` + opacidad 0.82 → 0.88.
+- Grano del body (`feTurbulence` tileado) off en mobile (`@media (max-width: 700px)` con `display: none`). A 0.045 de opacidad era imperceptible en mobile y costaba una capa full-viewport.
+
+**6. Tanda C.1 — srcset WebP 400w/600w/1000w en las tarjetas.**
+`generar-catalogo.mjs` ahora genera **3 variantes** por modelo y remera: `modelo.webp` (1000w, la que ya existía), `modelo-600.webp`, `modelo-400.webp`. Solo para modelo y remera (los `extra-*.webp` siguen siendo 1000w única versión, porque solo se ven en el modal).
+- `<img class="product-image-base">` en `index.astro` usa `srcset="...400w, ...600w, ...1000w"` + `sizes="(max-width: 900px) 50vw, (max-width: 1400px) 33vw, 25vw"`. `src="modelo.webp"` (1000w) como fallback.
+- `generar-catalogo.mjs` agregó `modelo400`, `modelo600`, `remera400`, `remera600` al JSON (además de `modelo` y `remera`).
+- `optimizeImage(sourcePath, destinationPath, maxWidth = 1000)` ahora acepta `maxWidth` para generar las 3 variantes.
+- **El JS del modal, hero, zoom, auto-slide NO se toca**: siguen usando `src` (1000w). El `srcset` es solo para las tarjetas del catálogo.
+
+**7. Hover del auto-slide con srcset.**
+`<img class="product-image-hover">` ahora tiene `data-src` (1000w), `data-src-400` y `data-src-600`. Nueva función `pickHoverSrc(hover)` elige la variante según `isDesktop` y `devicePixelRatio`: desktop → 1000w; mobile DPR ≥3 → 600w; mobile DPR <3 → 400w. `triggerSlide()` usa `pickHoverSrc()` en la precarga. Ahorra ~550KB por sesión mobile.
+
+**8. Fix de og:image a URLs absolutas.**
+Los `og:image` / `og:url` / `twitter:image` del `index.astro` estaban con `${base}/ruta.jpg` → ruta relativa `/krakoa/ruta.jpg`. Los scrapers de redes (WhatsApp, Facebook, Twitter, LinkedIn) **NO resuelven relativas** y no muestran preview. Ahora usan `SITE_ORIGIN + BASE_PATH + "/og-image.jpg"` (constantes del frontmatter), que resuelven a `https://barriopuro.github.io/krakoa/og-image.jpg`. Se agregaron `og:url`, `og:image:secure_url`, `og:image:type`, `og:image:alt`, `twitter:image`, `twitter:image:alt`.
+
+**Bugs del parser resueltos (para lecciones):**
+- **`<` en expresiones Astro**: `fetchpriority={index < 6 ? "auto" : "low"}` rompió el parser con `Expected '>' but found '<'`. Solución: invertir a `fetchpriority={index >= 6 ? "low" : "auto"}`. El `<` en atributos Astro se confunde con inicio de etiqueta.
+- **Restos de copy-paste al reemplazar bloques multilínea**: al hacer la Tanda C.1, quedaron dos `<img class="product-image-hover">` superpuestos y un bloque huérfano de atributos al final. El error `Expected '>' but found '<'` apuntaba a la línea 493 (segundo `<img`), no donde estaba el resto huérfano. Se detectó buscando `<img` duplicados en el editor. **Verificar siempre que no queden restos al reemplazar bloques grandes.**
+
+**Sistema de pausa global (resumen de la arquitectura):**
+- Helper: `isAnyOverlayOpen()` (devuelve true si hay modal, cart, menu, zoom o promo abiertos, incluye `is-closing`).
+- Pausa por CSS: `.marquee-track`, `.catalog-tint .tint-marquee-row span` con `body.modal-open/cart-open/menu-open/zoom-open/promo-open` y `body.tint-paused` (scroll + off-viewport del catálogo).
+- Pausa por JS: cada scheduler (hero glitch, typewriter, rotación, glitch logo, glitch categorías, glitch pilares, glitch logo footer, marquee top) consulta `isAnyOverlayOpen()` + visibilidad (IntersectionObserver donde aplica).
+- Pausa por overlap apilado: si el carrito se abre encima del modal, el scroll-lock usa `scrollLockCount` (contador) para no liberar el padding dos veces.
+
+**Cómo se probó:** verificado en desktop y mobile. 404 funciona en URLs rotas. Sugerencia de tiers aparece/desaparece correctamente al cambiar cantidad, alterna con el banner temporal. Marquesina diagonal visible en todas las categorías, cubre toda la altura, dirección alternada, pausa al scrollear y con overlays. Todas las animaciones se pausan con overlay abierto. Scroll mucho más fluido en mobile después de scaleX en scroll-progress, blur reducido y grano off. srcset: Network muestra 400w (DPR 2) o 600w (DPR 3) en mobile, 1000w en desktop; el modal sigue bajando 1000w. og:image: miniatura aparece en WhatsApp con `?v=2` (el caché de WhatsApp ignora URLs viejas).
+
 
 <!-- Próxima sesión: pegar acá abajo el bloque nuevo. -->

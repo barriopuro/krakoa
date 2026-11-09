@@ -49,6 +49,7 @@
       "remera": "/catalogo/anime/akira/remera.webp",
       "remera400": "/catalogo/anime/akira/remera-400.webp",
       "remera600": "/catalogo/anime/akira/remera-600.webp",
+      "ogImage": "/catalogo/anime/akira/remera-og.jpg",
       "extras": []
     },
     {
@@ -63,6 +64,7 @@
       "remera": "/catalogo/cine-series/aku-samurai-jack/remera.webp",
       "remera400": "/catalogo/cine-series/aku-samurai-jack/remera-400.webp",
       "remera600": "/catalogo/cine-series/aku-samurai-jack/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/aku-samurai-jack/remera-og.jpg",
       "extras": []
     },
     {
@@ -77,6 +79,7 @@
       "remera": "/catalogo/comics/batman-three-jokers/remera.webp",
       "remera400": "/catalogo/comics/batman-three-jokers/remera-400.webp",
       "remera600": "/catalogo/comics/batman-three-jokers/remera-600.webp",
+      "ogImage": "/catalogo/comics/batman-three-jokers/remera-og.jpg",
       "extras": []
     },
     {
@@ -91,6 +94,7 @@
       "remera": "/catalogo/deportes/ayrton-senna/remera.webp",
       "remera400": "/catalogo/deportes/ayrton-senna/remera-400.webp",
       "remera600": "/catalogo/deportes/ayrton-senna/remera-600.webp",
+      "ogImage": "/catalogo/deportes/ayrton-senna/remera-og.jpg",
       "extras": []
     },
     {
@@ -105,6 +109,7 @@
       "remera": "/catalogo/musica/a-perfect-circle/remera.webp",
       "remera400": "/catalogo/musica/a-perfect-circle/remera-400.webp",
       "remera600": "/catalogo/musica/a-perfect-circle/remera-600.webp",
+      "ogImage": "/catalogo/musica/a-perfect-circle/remera-og.jpg",
       "extras": []
     },
     {
@@ -119,6 +124,7 @@
       "remera": "/catalogo/otros/las-malvinas-son-argentinas/remera.webp",
       "remera400": "/catalogo/otros/las-malvinas-son-argentinas/remera-400.webp",
       "remera600": "/catalogo/otros/las-malvinas-son-argentinas/remera-600.webp",
+      "ogImage": "/catalogo/otros/las-malvinas-son-argentinas/remera-og.jpg",
       "extras": []
     },
     {
@@ -133,6 +139,7 @@
       "remera": "/catalogo/videojuegos/castlevania/remera.webp",
       "remera400": "/catalogo/videojuegos/castlevania/remera-400.webp",
       "remera600": "/catalogo/videojuegos/castlevania/remera-600.webp",
+      "ogImage": "/catalogo/videojuegos/castlevania/remera-og.jpg",
       "extras": []
     },
     {
@@ -147,6 +154,7 @@
       "remera": "/catalogo/anime/akira-kaneda-tetsuo/remera.webp",
       "remera400": "/catalogo/anime/akira-kaneda-tetsuo/remera-400.webp",
       "remera600": "/catalogo/anime/akira-kaneda-tetsuo/remera-600.webp",
+      "ogImage": "/catalogo/anime/akira-kaneda-tetsuo/remera-og.jpg",
       "extras": []
     },
     {
@@ -161,6 +169,7 @@
       "remera": "/catalogo/cine-series/alien/remera.webp",
       "remera400": "/catalogo/cine-series/alien/remera-400.webp",
       "remera600": "/catalogo/cine-series/alien/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/alien/remera-og.jpg",
       "extras": []
     },
     {
@@ -175,6 +184,7 @@
       "remera": "/catalogo/comics/batman-who-laughs/remera.webp",
       "remera400": "/catalogo/comics/batman-who-laughs/remera-400.webp",
       "remera600": "/catalogo/comics/batman-who-laughs/remera-600.webp",
+      "ogImage": "/catalogo/comics/batman-who-laughs/remera-og.jpg",
       "extras": []
     },
     {
@@ -189,6 +199,7 @@
       "remera": "/catalogo/deportes/el-flaco-traverso/remera.webp",
       "remera400": "/catalogo/deportes/el-flaco-traverso/remera-400.webp",
       "remera600": "/catalogo/deportes/el-flaco-traverso/remera-600.webp",
+      "ogImage": "/catalogo/deportes/el-flaco-traverso/remera-og.jpg",
       "extras": []
     },
     {
@@ -203,6 +214,7 @@
       "remera": "/catalogo/musica/alice-in-chains/remera.webp",
       "remera400": "/catalogo/musica/alice-in-chains/remera-400.webp",
       "remera600": "/catalogo/musica/alice-in-chains/remera-600.webp",
+      "ogImage": "/catalogo/musica/alice-in-chains/remera-og.jpg",
       "extras": []
     },
     {
@@ -217,6 +229,7 @@
       "remera": "/catalogo/otros/pulpo/remera.webp",
       "remera400": "/catalogo/otros/pulpo/remera-400.webp",
       "remera600": "/catalogo/otros/pulpo/remera-600.webp",
+      "ogImage": "/catalogo/otros/pulpo/remera-og.jpg",
       "extras": []
     },
     {
@@ -231,6 +244,7 @@
       "remera": "/catalogo/videojuegos/doom/remera.webp",
       "remera400": "/catalogo/videojuegos/doom/remera-400.webp",
       "remera600": "/catalogo/videojuegos/doom/remera-600.webp",
+      "ogImage": "/catalogo/videojuegos/doom/remera-og.jpg",
       "extras": []
     },
     {
@@ -245,6 +259,7 @@
       "remera": "/catalogo/anime/death-note/remera.webp",
       "remera400": "/catalogo/anime/death-note/remera-400.webp",
       "remera600": "/catalogo/anime/death-note/remera-600.webp",
+      "ogImage": "/catalogo/anime/death-note/remera-og.jpg",
       "extras": []
     },
     {
@@ -259,6 +274,7 @@
       "remera": "/catalogo/cine-series/animaniacs/remera.webp",
       "remera400": "/catalogo/cine-series/animaniacs/remera-400.webp",
       "remera600": "/catalogo/cine-series/animaniacs/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/animaniacs/remera-og.jpg",
       "extras": []
     },
     {
@@ -273,6 +289,7 @@
       "remera": "/catalogo/comics/cazador-2000/remera.webp",
       "remera400": "/catalogo/comics/cazador-2000/remera-400.webp",
       "remera600": "/catalogo/comics/cazador-2000/remera-600.webp",
+      "ogImage": "/catalogo/comics/cazador-2000/remera-og.jpg",
       "extras": []
     },
     {
@@ -287,6 +304,7 @@
       "remera": "/catalogo/deportes/franco-colapinto/remera.webp",
       "remera400": "/catalogo/deportes/franco-colapinto/remera-400.webp",
       "remera600": "/catalogo/deportes/franco-colapinto/remera-600.webp",
+      "ogImage": "/catalogo/deportes/franco-colapinto/remera-og.jpg",
       "extras": []
     },
     {
@@ -301,6 +319,7 @@
       "remera": "/catalogo/musica/bad-brains/remera.webp",
       "remera400": "/catalogo/musica/bad-brains/remera-400.webp",
       "remera600": "/catalogo/musica/bad-brains/remera-600.webp",
+      "ogImage": "/catalogo/musica/bad-brains/remera-og.jpg",
       "extras": []
     },
     {
@@ -315,6 +334,7 @@
       "remera": "/catalogo/otros/ramen-godzilla/remera.webp",
       "remera400": "/catalogo/otros/ramen-godzilla/remera-400.webp",
       "remera600": "/catalogo/otros/ramen-godzilla/remera-600.webp",
+      "ogImage": "/catalogo/otros/ramen-godzilla/remera-og.jpg",
       "extras": []
     },
     {
@@ -329,6 +349,7 @@
       "remera": "/catalogo/videojuegos/god-of-war/remera.webp",
       "remera400": "/catalogo/videojuegos/god-of-war/remera-400.webp",
       "remera600": "/catalogo/videojuegos/god-of-war/remera-600.webp",
+      "ogImage": "/catalogo/videojuegos/god-of-war/remera-og.jpg",
       "extras": []
     },
     {
@@ -343,6 +364,7 @@
       "remera": "/catalogo/anime/death-note-light/remera.webp",
       "remera400": "/catalogo/anime/death-note-light/remera-400.webp",
       "remera600": "/catalogo/anime/death-note-light/remera-600.webp",
+      "ogImage": "/catalogo/anime/death-note-light/remera-og.jpg",
       "extras": []
     },
     {
@@ -357,6 +379,7 @@
       "remera": "/catalogo/cine-series/better-call-saul/remera.webp",
       "remera400": "/catalogo/cine-series/better-call-saul/remera-400.webp",
       "remera600": "/catalogo/cine-series/better-call-saul/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/better-call-saul/remera-og.jpg",
       "extras": []
     },
     {
@@ -371,6 +394,7 @@
       "remera": "/catalogo/comics/cazador-90s/remera.webp",
       "remera400": "/catalogo/comics/cazador-90s/remera-400.webp",
       "remera600": "/catalogo/comics/cazador-90s/remera-600.webp",
+      "ogImage": "/catalogo/comics/cazador-90s/remera-og.jpg",
       "extras": []
     },
     {
@@ -388,6 +412,7 @@
       "remera": "/catalogo/deportes/kobe-bryant/remera.webp",
       "remera400": "/catalogo/deportes/kobe-bryant/remera-400.webp",
       "remera600": "/catalogo/deportes/kobe-bryant/remera-600.webp",
+      "ogImage": "/catalogo/deportes/kobe-bryant/remera-og.jpg",
       "extras": []
     },
     {
@@ -402,6 +427,7 @@
       "remera": "/catalogo/musica/blink-182/remera.webp",
       "remera400": "/catalogo/musica/blink-182/remera-400.webp",
       "remera600": "/catalogo/musica/blink-182/remera-600.webp",
+      "ogImage": "/catalogo/musica/blink-182/remera-og.jpg",
       "extras": []
     },
     {
@@ -416,6 +442,7 @@
       "remera": "/catalogo/otros/veneno/remera.webp",
       "remera400": "/catalogo/otros/veneno/remera-400.webp",
       "remera600": "/catalogo/otros/veneno/remera-600.webp",
+      "ogImage": "/catalogo/otros/veneno/remera-og.jpg",
       "extras": []
     },
     {
@@ -430,6 +457,7 @@
       "remera": "/catalogo/videojuegos/hollow-knight/remera.webp",
       "remera400": "/catalogo/videojuegos/hollow-knight/remera-400.webp",
       "remera600": "/catalogo/videojuegos/hollow-knight/remera-600.webp",
+      "ogImage": "/catalogo/videojuegos/hollow-knight/remera-og.jpg",
       "extras": []
     },
     {
@@ -444,6 +472,7 @@
       "remera": "/catalogo/anime/demon-slayer/remera.webp",
       "remera400": "/catalogo/anime/demon-slayer/remera-400.webp",
       "remera600": "/catalogo/anime/demon-slayer/remera-600.webp",
+      "ogImage": "/catalogo/anime/demon-slayer/remera-og.jpg",
       "extras": []
     },
     {
@@ -458,6 +487,7 @@
       "remera": "/catalogo/cine-series/bruce-lee-enter-the-dragon/remera.webp",
       "remera400": "/catalogo/cine-series/bruce-lee-enter-the-dragon/remera-400.webp",
       "remera600": "/catalogo/cine-series/bruce-lee-enter-the-dragon/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/bruce-lee-enter-the-dragon/remera-og.jpg",
       "extras": []
     },
     {
@@ -472,6 +502,7 @@
       "remera": "/catalogo/comics/deadpool/remera.webp",
       "remera400": "/catalogo/comics/deadpool/remera-400.webp",
       "remera600": "/catalogo/comics/deadpool/remera-600.webp",
+      "ogImage": "/catalogo/comics/deadpool/remera-og.jpg",
       "extras": []
     },
     {
@@ -489,6 +520,7 @@
       "remera": "/catalogo/deportes/kobe-bryant-black-mamba/remera.webp",
       "remera400": "/catalogo/deportes/kobe-bryant-black-mamba/remera-400.webp",
       "remera600": "/catalogo/deportes/kobe-bryant-black-mamba/remera-600.webp",
+      "ogImage": "/catalogo/deportes/kobe-bryant-black-mamba/remera-og.jpg",
       "extras": []
     },
     {
@@ -503,6 +535,7 @@
       "remera": "/catalogo/musica/celia-cruz/remera.webp",
       "remera400": "/catalogo/musica/celia-cruz/remera-400.webp",
       "remera600": "/catalogo/musica/celia-cruz/remera-600.webp",
+      "ogImage": "/catalogo/musica/celia-cruz/remera-og.jpg",
       "extras": []
     },
     {
@@ -517,6 +550,7 @@
       "remera": "/catalogo/videojuegos/king-of-fighters-iori-yagami/remera.webp",
       "remera400": "/catalogo/videojuegos/king-of-fighters-iori-yagami/remera-400.webp",
       "remera600": "/catalogo/videojuegos/king-of-fighters-iori-yagami/remera-600.webp",
+      "ogImage": "/catalogo/videojuegos/king-of-fighters-iori-yagami/remera-og.jpg",
       "extras": []
     },
     {
@@ -531,6 +565,7 @@
       "remera": "/catalogo/anime/demon-slayer-tanjiro/remera.webp",
       "remera400": "/catalogo/anime/demon-slayer-tanjiro/remera-400.webp",
       "remera600": "/catalogo/anime/demon-slayer-tanjiro/remera-600.webp",
+      "ogImage": "/catalogo/anime/demon-slayer-tanjiro/remera-og.jpg",
       "extras": []
     },
     {
@@ -545,6 +580,7 @@
       "remera": "/catalogo/cine-series/cazafantasmas/remera.webp",
       "remera400": "/catalogo/cine-series/cazafantasmas/remera-400.webp",
       "remera600": "/catalogo/cine-series/cazafantasmas/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/cazafantasmas/remera-og.jpg",
       "extras": []
     },
     {
@@ -559,6 +595,7 @@
       "remera": "/catalogo/comics/dr-doom/remera.webp",
       "remera400": "/catalogo/comics/dr-doom/remera-400.webp",
       "remera600": "/catalogo/comics/dr-doom/remera-600.webp",
+      "ogImage": "/catalogo/comics/dr-doom/remera-og.jpg",
       "extras": []
     },
     {
@@ -576,6 +613,7 @@
       "remera": "/catalogo/deportes/manu-ginobili/remera.webp",
       "remera400": "/catalogo/deportes/manu-ginobili/remera-400.webp",
       "remera600": "/catalogo/deportes/manu-ginobili/remera-600.webp",
+      "ogImage": "/catalogo/deportes/manu-ginobili/remera-og.jpg",
       "extras": []
     },
     {
@@ -590,6 +628,7 @@
       "remera": "/catalogo/musica/cypress-hill/remera.webp",
       "remera400": "/catalogo/musica/cypress-hill/remera-400.webp",
       "remera600": "/catalogo/musica/cypress-hill/remera-600.webp",
+      "ogImage": "/catalogo/musica/cypress-hill/remera-og.jpg",
       "extras": []
     },
     {
@@ -604,6 +643,7 @@
       "remera": "/catalogo/videojuegos/megaman/remera.webp",
       "remera400": "/catalogo/videojuegos/megaman/remera-400.webp",
       "remera600": "/catalogo/videojuegos/megaman/remera-600.webp",
+      "ogImage": "/catalogo/videojuegos/megaman/remera-og.jpg",
       "extras": []
     },
     {
@@ -618,6 +658,7 @@
       "remera": "/catalogo/anime/digimon/remera.webp",
       "remera400": "/catalogo/anime/digimon/remera-400.webp",
       "remera600": "/catalogo/anime/digimon/remera-600.webp",
+      "ogImage": "/catalogo/anime/digimon/remera-og.jpg",
       "extras": []
     },
     {
@@ -632,6 +673,7 @@
       "remera": "/catalogo/cine-series/chicas-superpoderosas/remera.webp",
       "remera400": "/catalogo/cine-series/chicas-superpoderosas/remera-400.webp",
       "remera600": "/catalogo/cine-series/chicas-superpoderosas/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/chicas-superpoderosas/remera-og.jpg",
       "extras": []
     },
     {
@@ -646,6 +688,7 @@
       "remera": "/catalogo/comics/spawn/remera.webp",
       "remera400": "/catalogo/comics/spawn/remera-400.webp",
       "remera600": "/catalogo/comics/spawn/remera-600.webp",
+      "ogImage": "/catalogo/comics/spawn/remera-og.jpg",
       "extras": []
     },
     {
@@ -662,6 +705,7 @@
       "remera": "/catalogo/deportes/maradona/remera.webp",
       "remera400": "/catalogo/deportes/maradona/remera-400.webp",
       "remera600": "/catalogo/deportes/maradona/remera-600.webp",
+      "ogImage": "/catalogo/deportes/maradona/remera-og.jpg",
       "extras": []
     },
     {
@@ -676,6 +720,7 @@
       "remera": "/catalogo/musica/cypress-hill-insane-in-the-brain/remera.webp",
       "remera400": "/catalogo/musica/cypress-hill-insane-in-the-brain/remera-400.webp",
       "remera600": "/catalogo/musica/cypress-hill-insane-in-the-brain/remera-600.webp",
+      "ogImage": "/catalogo/musica/cypress-hill-insane-in-the-brain/remera-og.jpg",
       "extras": []
     },
     {
@@ -690,6 +735,7 @@
       "remera": "/catalogo/videojuegos/mortal-kombat-raiden/remera.webp",
       "remera400": "/catalogo/videojuegos/mortal-kombat-raiden/remera-400.webp",
       "remera600": "/catalogo/videojuegos/mortal-kombat-raiden/remera-600.webp",
+      "ogImage": "/catalogo/videojuegos/mortal-kombat-raiden/remera-og.jpg",
       "extras": []
     },
     {
@@ -704,6 +750,7 @@
       "remera": "/catalogo/anime/dragon-ball-escuela-de-la-tortuga/remera.webp",
       "remera400": "/catalogo/anime/dragon-ball-escuela-de-la-tortuga/remera-400.webp",
       "remera600": "/catalogo/anime/dragon-ball-escuela-de-la-tortuga/remera-600.webp",
+      "ogImage": "/catalogo/anime/dragon-ball-escuela-de-la-tortuga/remera-og.jpg",
       "extras": []
     },
     {
@@ -718,6 +765,7 @@
       "remera": "/catalogo/cine-series/coraje-el-perro-cobarde/remera.webp",
       "remera400": "/catalogo/cine-series/coraje-el-perro-cobarde/remera-400.webp",
       "remera600": "/catalogo/cine-series/coraje-el-perro-cobarde/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/coraje-el-perro-cobarde/remera-og.jpg",
       "extras": []
     },
     {
@@ -732,6 +780,7 @@
       "remera": "/catalogo/comics/spiderman-black-suit/remera.webp",
       "remera400": "/catalogo/comics/spiderman-black-suit/remera-400.webp",
       "remera600": "/catalogo/comics/spiderman-black-suit/remera-600.webp",
+      "ogImage": "/catalogo/comics/spiderman-black-suit/remera-og.jpg",
       "extras": []
     },
     {
@@ -748,6 +797,7 @@
       "remera": "/catalogo/deportes/maradona-pelusa/remera.webp",
       "remera400": "/catalogo/deportes/maradona-pelusa/remera-400.webp",
       "remera600": "/catalogo/deportes/maradona-pelusa/remera-600.webp",
+      "ogImage": "/catalogo/deportes/maradona-pelusa/remera-og.jpg",
       "extras": []
     },
     {
@@ -762,6 +812,7 @@
       "remera": "/catalogo/musica/dano/remera.webp",
       "remera400": "/catalogo/musica/dano/remera-400.webp",
       "remera600": "/catalogo/musica/dano/remera-600.webp",
+      "ogImage": "/catalogo/musica/dano/remera-og.jpg",
       "extras": []
     },
     {
@@ -776,6 +827,7 @@
       "remera": "/catalogo/videojuegos/mortal-kombat-sub-zero/remera.webp",
       "remera400": "/catalogo/videojuegos/mortal-kombat-sub-zero/remera-400.webp",
       "remera600": "/catalogo/videojuegos/mortal-kombat-sub-zero/remera-600.webp",
+      "ogImage": "/catalogo/videojuegos/mortal-kombat-sub-zero/remera-og.jpg",
       "extras": []
     },
     {
@@ -790,6 +842,7 @@
       "remera": "/catalogo/anime/dragon-ball-goku/remera.webp",
       "remera400": "/catalogo/anime/dragon-ball-goku/remera-400.webp",
       "remera600": "/catalogo/anime/dragon-ball-goku/remera-600.webp",
+      "ogImage": "/catalogo/anime/dragon-ball-goku/remera-og.jpg",
       "extras": []
     },
     {
@@ -804,6 +857,7 @@
       "remera": "/catalogo/cine-series/ed-edd-y-eddy/remera.webp",
       "remera400": "/catalogo/cine-series/ed-edd-y-eddy/remera-400.webp",
       "remera600": "/catalogo/cine-series/ed-edd-y-eddy/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/ed-edd-y-eddy/remera-og.jpg",
       "extras": []
     },
     {
@@ -818,6 +872,7 @@
       "remera": "/catalogo/comics/spiderman-venom/remera.webp",
       "remera400": "/catalogo/comics/spiderman-venom/remera-400.webp",
       "remera600": "/catalogo/comics/spiderman-venom/remera-600.webp",
+      "ogImage": "/catalogo/comics/spiderman-venom/remera-og.jpg",
       "extras": []
     },
     {
@@ -834,6 +889,7 @@
       "remera": "/catalogo/deportes/messi/remera.webp",
       "remera400": "/catalogo/deportes/messi/remera-400.webp",
       "remera600": "/catalogo/deportes/messi/remera-600.webp",
+      "ogImage": "/catalogo/deportes/messi/remera-og.jpg",
       "extras": []
     },
     {
@@ -848,6 +904,7 @@
       "remera": "/catalogo/musica/foo-fighters/remera.webp",
       "remera400": "/catalogo/musica/foo-fighters/remera-400.webp",
       "remera600": "/catalogo/musica/foo-fighters/remera-600.webp",
+      "ogImage": "/catalogo/musica/foo-fighters/remera-og.jpg",
       "extras": []
     },
     {
@@ -862,6 +919,7 @@
       "remera": "/catalogo/videojuegos/neo-geo-snk/remera.webp",
       "remera400": "/catalogo/videojuegos/neo-geo-snk/remera-400.webp",
       "remera600": "/catalogo/videojuegos/neo-geo-snk/remera-600.webp",
+      "ogImage": "/catalogo/videojuegos/neo-geo-snk/remera-og.jpg",
       "extras": []
     },
     {
@@ -876,6 +934,7 @@
       "remera": "/catalogo/anime/dragon-ball-tao-pai-pai/remera.webp",
       "remera400": "/catalogo/anime/dragon-ball-tao-pai-pai/remera-400.webp",
       "remera600": "/catalogo/anime/dragon-ball-tao-pai-pai/remera-600.webp",
+      "ogImage": "/catalogo/anime/dragon-ball-tao-pai-pai/remera-og.jpg",
       "extras": []
     },
     {
@@ -890,6 +949,7 @@
       "remera": "/catalogo/cine-series/el-señor-de-los-anillos/remera.webp",
       "remera400": "/catalogo/cine-series/el-señor-de-los-anillos/remera-400.webp",
       "remera600": "/catalogo/cine-series/el-señor-de-los-anillos/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/el-señor-de-los-anillos/remera-og.jpg",
       "extras": []
     },
     {
@@ -904,6 +964,7 @@
       "remera": "/catalogo/comics/the-joker/remera.webp",
       "remera400": "/catalogo/comics/the-joker/remera-400.webp",
       "remera600": "/catalogo/comics/the-joker/remera-600.webp",
+      "ogImage": "/catalogo/comics/the-joker/remera-og.jpg",
       "extras": []
     },
     {
@@ -920,6 +981,7 @@
       "remera": "/catalogo/deportes/messi-10/remera.webp",
       "remera400": "/catalogo/deportes/messi-10/remera-400.webp",
       "remera600": "/catalogo/deportes/messi-10/remera-600.webp",
+      "ogImage": "/catalogo/deportes/messi-10/remera-og.jpg",
       "extras": []
     },
     {
@@ -934,6 +996,7 @@
       "remera": "/catalogo/musica/gorillaz/remera.webp",
       "remera400": "/catalogo/musica/gorillaz/remera-400.webp",
       "remera600": "/catalogo/musica/gorillaz/remera-600.webp",
+      "ogImage": "/catalogo/musica/gorillaz/remera-og.jpg",
       "extras": []
     },
     {
@@ -948,6 +1011,7 @@
       "remera": "/catalogo/videojuegos/resident-evil-nemesis/remera.webp",
       "remera400": "/catalogo/videojuegos/resident-evil-nemesis/remera-400.webp",
       "remera600": "/catalogo/videojuegos/resident-evil-nemesis/remera-600.webp",
+      "ogImage": "/catalogo/videojuegos/resident-evil-nemesis/remera-og.jpg",
       "extras": []
     },
     {
@@ -962,6 +1026,7 @@
       "remera": "/catalogo/anime/dragon-ball-z-gohan/remera.webp",
       "remera400": "/catalogo/anime/dragon-ball-z-gohan/remera-400.webp",
       "remera600": "/catalogo/anime/dragon-ball-z-gohan/remera-600.webp",
+      "ogImage": "/catalogo/anime/dragon-ball-z-gohan/remera-og.jpg",
       "extras": []
     },
     {
@@ -976,6 +1041,7 @@
       "remera": "/catalogo/cine-series/freddy-krueger-nightmare-on-elm-street/remera.webp",
       "remera400": "/catalogo/cine-series/freddy-krueger-nightmare-on-elm-street/remera-400.webp",
       "remera600": "/catalogo/cine-series/freddy-krueger-nightmare-on-elm-street/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/freddy-krueger-nightmare-on-elm-street/remera-og.jpg",
       "extras": []
     },
     {
@@ -990,6 +1056,7 @@
       "remera": "/catalogo/comics/the-punisher/remera.webp",
       "remera400": "/catalogo/comics/the-punisher/remera-400.webp",
       "remera600": "/catalogo/comics/the-punisher/remera-600.webp",
+      "ogImage": "/catalogo/comics/the-punisher/remera-og.jpg",
       "extras": []
     },
     {
@@ -1004,6 +1071,7 @@
       "remera": "/catalogo/deportes/nicolino-locche/remera.webp",
       "remera400": "/catalogo/deportes/nicolino-locche/remera-400.webp",
       "remera600": "/catalogo/deportes/nicolino-locche/remera-600.webp",
+      "ogImage": "/catalogo/deportes/nicolino-locche/remera-og.jpg",
       "extras": []
     },
     {
@@ -1018,6 +1086,7 @@
       "remera": "/catalogo/musica/gustavo-cerati/remera.webp",
       "remera400": "/catalogo/musica/gustavo-cerati/remera-400.webp",
       "remera600": "/catalogo/musica/gustavo-cerati/remera-600.webp",
+      "ogImage": "/catalogo/musica/gustavo-cerati/remera-og.jpg",
       "extras": []
     },
     {
@@ -1032,6 +1101,7 @@
       "remera": "/catalogo/videojuegos/resident-evil-umbrella.co/remera.webp",
       "remera400": "/catalogo/videojuegos/resident-evil-umbrella.co/remera-400.webp",
       "remera600": "/catalogo/videojuegos/resident-evil-umbrella.co/remera-600.webp",
+      "ogImage": "/catalogo/videojuegos/resident-evil-umbrella.co/remera-og.jpg",
       "extras": []
     },
     {
@@ -1046,6 +1116,7 @@
       "remera": "/catalogo/anime/dragon-ball-z-piccoro/remera.webp",
       "remera400": "/catalogo/anime/dragon-ball-z-piccoro/remera-400.webp",
       "remera600": "/catalogo/anime/dragon-ball-z-piccoro/remera-600.webp",
+      "ogImage": "/catalogo/anime/dragon-ball-z-piccoro/remera-og.jpg",
       "extras": []
     },
     {
@@ -1060,6 +1131,7 @@
       "remera": "/catalogo/cine-series/friday-13th/remera.webp",
       "remera400": "/catalogo/cine-series/friday-13th/remera-400.webp",
       "remera600": "/catalogo/cine-series/friday-13th/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/friday-13th/remera-og.jpg",
       "extras": []
     },
     {
@@ -1074,6 +1146,7 @@
       "remera": "/catalogo/comics/tortugas-ninja/remera.webp",
       "remera400": "/catalogo/comics/tortugas-ninja/remera-400.webp",
       "remera600": "/catalogo/comics/tortugas-ninja/remera-600.webp",
+      "ogImage": "/catalogo/comics/tortugas-ninja/remera-og.jpg",
       "extras": []
     },
     {
@@ -1088,6 +1161,7 @@
       "remera": "/catalogo/deportes/tony-hawk/remera.webp",
       "remera400": "/catalogo/deportes/tony-hawk/remera-400.webp",
       "remera600": "/catalogo/deportes/tony-hawk/remera-600.webp",
+      "ogImage": "/catalogo/deportes/tony-hawk/remera-og.jpg",
       "extras": []
     },
     {
@@ -1102,6 +1176,7 @@
       "remera": "/catalogo/musica/indio-solari/remera.webp",
       "remera400": "/catalogo/musica/indio-solari/remera-400.webp",
       "remera600": "/catalogo/musica/indio-solari/remera-600.webp",
+      "ogImage": "/catalogo/musica/indio-solari/remera-og.jpg",
       "extras": []
     },
     {
@@ -1116,6 +1191,7 @@
       "remera": "/catalogo/videojuegos/silent-hill-pyramid-head/remera.webp",
       "remera400": "/catalogo/videojuegos/silent-hill-pyramid-head/remera-400.webp",
       "remera600": "/catalogo/videojuegos/silent-hill-pyramid-head/remera-600.webp",
+      "ogImage": "/catalogo/videojuegos/silent-hill-pyramid-head/remera-og.jpg",
       "extras": []
     },
     {
@@ -1130,6 +1206,7 @@
       "remera": "/catalogo/anime/dragon-ball-z-vegeta/remera.webp",
       "remera400": "/catalogo/anime/dragon-ball-z-vegeta/remera-400.webp",
       "remera600": "/catalogo/anime/dragon-ball-z-vegeta/remera-600.webp",
+      "ogImage": "/catalogo/anime/dragon-ball-z-vegeta/remera-og.jpg",
       "extras": []
     },
     {
@@ -1144,6 +1221,7 @@
       "remera": "/catalogo/cine-series/friday-13th-jason/remera.webp",
       "remera400": "/catalogo/cine-series/friday-13th-jason/remera-400.webp",
       "remera600": "/catalogo/cine-series/friday-13th-jason/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/friday-13th-jason/remera-og.jpg",
       "extras": []
     },
     {
@@ -1158,6 +1236,7 @@
       "remera": "/catalogo/comics/tortugas-ninja-shredder/remera.webp",
       "remera400": "/catalogo/comics/tortugas-ninja-shredder/remera-400.webp",
       "remera600": "/catalogo/comics/tortugas-ninja-shredder/remera-600.webp",
+      "ogImage": "/catalogo/comics/tortugas-ninja-shredder/remera-og.jpg",
       "extras": []
     },
     {
@@ -1172,6 +1251,7 @@
       "remera": "/catalogo/musica/jimi-hendrix/remera.webp",
       "remera400": "/catalogo/musica/jimi-hendrix/remera-400.webp",
       "remera600": "/catalogo/musica/jimi-hendrix/remera-600.webp",
+      "ogImage": "/catalogo/musica/jimi-hendrix/remera-og.jpg",
       "extras": []
     },
     {
@@ -1186,6 +1266,7 @@
       "remera": "/catalogo/videojuegos/splatterhouse/remera.webp",
       "remera400": "/catalogo/videojuegos/splatterhouse/remera-400.webp",
       "remera600": "/catalogo/videojuegos/splatterhouse/remera-600.webp",
+      "ogImage": "/catalogo/videojuegos/splatterhouse/remera-og.jpg",
       "extras": []
     },
     {
@@ -1200,6 +1281,7 @@
       "remera": "/catalogo/anime/eva 01-complementado-evangelion/remera.webp",
       "remera400": "/catalogo/anime/eva 01-complementado-evangelion/remera-400.webp",
       "remera600": "/catalogo/anime/eva 01-complementado-evangelion/remera-600.webp",
+      "ogImage": "/catalogo/anime/eva 01-complementado-evangelion/remera-og.jpg",
       "extras": []
     },
     {
@@ -1214,6 +1296,7 @@
       "remera": "/catalogo/cine-series/hellboy/remera.webp",
       "remera400": "/catalogo/cine-series/hellboy/remera-400.webp",
       "remera600": "/catalogo/cine-series/hellboy/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/hellboy/remera-og.jpg",
       "extras": []
     },
     {
@@ -1228,6 +1311,7 @@
       "remera": "/catalogo/comics/x-men/remera.webp",
       "remera400": "/catalogo/comics/x-men/remera-400.webp",
       "remera600": "/catalogo/comics/x-men/remera-600.webp",
+      "ogImage": "/catalogo/comics/x-men/remera-og.jpg",
       "extras": []
     },
     {
@@ -1242,6 +1326,7 @@
       "remera": "/catalogo/musica/joey-jordison/remera.webp",
       "remera400": "/catalogo/musica/joey-jordison/remera-400.webp",
       "remera600": "/catalogo/musica/joey-jordison/remera-600.webp",
+      "ogImage": "/catalogo/musica/joey-jordison/remera-og.jpg",
       "extras": []
     },
     {
@@ -1256,6 +1341,7 @@
       "remera": "/catalogo/videojuegos/street-fighter-dhalsim/remera.webp",
       "remera400": "/catalogo/videojuegos/street-fighter-dhalsim/remera-400.webp",
       "remera600": "/catalogo/videojuegos/street-fighter-dhalsim/remera-600.webp",
+      "ogImage": "/catalogo/videojuegos/street-fighter-dhalsim/remera-og.jpg",
       "extras": []
     },
     {
@@ -1270,6 +1356,7 @@
       "remera": "/catalogo/anime/eva 01-evangelion/remera.webp",
       "remera400": "/catalogo/anime/eva 01-evangelion/remera-400.webp",
       "remera600": "/catalogo/anime/eva 01-evangelion/remera-600.webp",
+      "ogImage": "/catalogo/anime/eva 01-evangelion/remera-og.jpg",
       "extras": []
     },
     {
@@ -1284,6 +1371,7 @@
       "remera": "/catalogo/cine-series/it/remera.webp",
       "remera400": "/catalogo/cine-series/it/remera-400.webp",
       "remera600": "/catalogo/cine-series/it/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/it/remera-og.jpg",
       "extras": []
     },
     {
@@ -1298,6 +1386,7 @@
       "remera": "/catalogo/comics/x-men-uncanny/remera.webp",
       "remera400": "/catalogo/comics/x-men-uncanny/remera-400.webp",
       "remera600": "/catalogo/comics/x-men-uncanny/remera-600.webp",
+      "ogImage": "/catalogo/comics/x-men-uncanny/remera-og.jpg",
       "extras": []
     },
     {
@@ -1312,6 +1401,7 @@
       "remera": "/catalogo/musica/la-renga/remera.webp",
       "remera400": "/catalogo/musica/la-renga/remera-400.webp",
       "remera600": "/catalogo/musica/la-renga/remera-600.webp",
+      "ogImage": "/catalogo/musica/la-renga/remera-og.jpg",
       "extras": []
     },
     {
@@ -1326,6 +1416,7 @@
       "remera": "/catalogo/videojuegos/super-mario-bros/remera.webp",
       "remera400": "/catalogo/videojuegos/super-mario-bros/remera-400.webp",
       "remera600": "/catalogo/videojuegos/super-mario-bros/remera-600.webp",
+      "ogImage": "/catalogo/videojuegos/super-mario-bros/remera-og.jpg",
       "extras": []
     },
     {
@@ -1340,6 +1431,7 @@
       "remera": "/catalogo/anime/eva 01-longinus-evangelion/remera.webp",
       "remera400": "/catalogo/anime/eva 01-longinus-evangelion/remera-400.webp",
       "remera600": "/catalogo/anime/eva 01-longinus-evangelion/remera-600.webp",
+      "ogImage": "/catalogo/anime/eva 01-longinus-evangelion/remera-og.jpg",
       "extras": []
     },
     {
@@ -1354,6 +1446,7 @@
       "remera": "/catalogo/cine-series/joker-batman-dark-knight/remera.webp",
       "remera400": "/catalogo/cine-series/joker-batman-dark-knight/remera-400.webp",
       "remera600": "/catalogo/cine-series/joker-batman-dark-knight/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/joker-batman-dark-knight/remera-og.jpg",
       "extras": []
     },
     {
@@ -1368,6 +1461,7 @@
       "remera": "/catalogo/comics/x-men-wolverine/remera.webp",
       "remera400": "/catalogo/comics/x-men-wolverine/remera-400.webp",
       "remera600": "/catalogo/comics/x-men-wolverine/remera-600.webp",
+      "ogImage": "/catalogo/comics/x-men-wolverine/remera-og.jpg",
       "extras": []
     },
     {
@@ -1382,6 +1476,7 @@
       "remera": "/catalogo/musica/lemmy-kilmister/remera.webp",
       "remera400": "/catalogo/musica/lemmy-kilmister/remera-400.webp",
       "remera600": "/catalogo/musica/lemmy-kilmister/remera-600.webp",
+      "ogImage": "/catalogo/musica/lemmy-kilmister/remera-og.jpg",
       "extras": []
     },
     {
@@ -1396,6 +1491,7 @@
       "remera": "/catalogo/videojuegos/the-king-of-fighters-97/remera.webp",
       "remera400": "/catalogo/videojuegos/the-king-of-fighters-97/remera-400.webp",
       "remera600": "/catalogo/videojuegos/the-king-of-fighters-97/remera-600.webp",
+      "ogImage": "/catalogo/videojuegos/the-king-of-fighters-97/remera-og.jpg",
       "extras": []
     },
     {
@@ -1410,6 +1506,7 @@
       "remera": "/catalogo/anime/hajime-no-ippo/remera.webp",
       "remera400": "/catalogo/anime/hajime-no-ippo/remera-400.webp",
       "remera600": "/catalogo/anime/hajime-no-ippo/remera-600.webp",
+      "ogImage": "/catalogo/anime/hajime-no-ippo/remera-og.jpg",
       "extras": []
     },
     {
@@ -1424,6 +1521,7 @@
       "remera": "/catalogo/cine-series/karate-kid/remera.webp",
       "remera400": "/catalogo/cine-series/karate-kid/remera-400.webp",
       "remera600": "/catalogo/cine-series/karate-kid/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/karate-kid/remera-og.jpg",
       "extras": []
     },
     {
@@ -1438,6 +1536,7 @@
       "remera": "/catalogo/comics/x-men-x-factor-x-force-apocalipsis/remera.webp",
       "remera400": "/catalogo/comics/x-men-x-factor-x-force-apocalipsis/remera-400.webp",
       "remera600": "/catalogo/comics/x-men-x-factor-x-force-apocalipsis/remera-600.webp",
+      "ogImage": "/catalogo/comics/x-men-x-factor-x-force-apocalipsis/remera-og.jpg",
       "extras": []
     },
     {
@@ -1452,6 +1551,7 @@
       "remera": "/catalogo/musica/limp-bizkit-significant-other/remera.webp",
       "remera400": "/catalogo/musica/limp-bizkit-significant-other/remera-400.webp",
       "remera600": "/catalogo/musica/limp-bizkit-significant-other/remera-600.webp",
+      "ogImage": "/catalogo/musica/limp-bizkit-significant-other/remera-og.jpg",
       "extras": []
     },
     {
@@ -1466,6 +1566,7 @@
       "remera": "/catalogo/videojuegos/the-last-of-us/remera.webp",
       "remera400": "/catalogo/videojuegos/the-last-of-us/remera-400.webp",
       "remera600": "/catalogo/videojuegos/the-last-of-us/remera-600.webp",
+      "ogImage": "/catalogo/videojuegos/the-last-of-us/remera-og.jpg",
       "extras": []
     },
     {
@@ -1480,6 +1581,7 @@
       "remera": "/catalogo/anime/hellsing/remera.webp",
       "remera400": "/catalogo/anime/hellsing/remera-400.webp",
       "remera600": "/catalogo/anime/hellsing/remera-600.webp",
+      "ogImage": "/catalogo/anime/hellsing/remera-og.jpg",
       "extras": []
     },
     {
@@ -1494,6 +1596,7 @@
       "remera": "/catalogo/cine-series/mojo-jojo/remera.webp",
       "remera400": "/catalogo/cine-series/mojo-jojo/remera-400.webp",
       "remera600": "/catalogo/cine-series/mojo-jojo/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/mojo-jojo/remera-og.jpg",
       "extras": []
     },
     {
@@ -1508,6 +1611,7 @@
       "remera": "/catalogo/musica/linkin-park/remera.webp",
       "remera400": "/catalogo/musica/linkin-park/remera-400.webp",
       "remera600": "/catalogo/musica/linkin-park/remera-600.webp",
+      "ogImage": "/catalogo/musica/linkin-park/remera-og.jpg",
       "extras": []
     },
     {
@@ -1522,6 +1626,7 @@
       "remera": "/catalogo/videojuegos/zelda-hyrule-icons/remera.webp",
       "remera400": "/catalogo/videojuegos/zelda-hyrule-icons/remera-400.webp",
       "remera600": "/catalogo/videojuegos/zelda-hyrule-icons/remera-600.webp",
+      "ogImage": "/catalogo/videojuegos/zelda-hyrule-icons/remera-og.jpg",
       "extras": []
     },
     {
@@ -1536,6 +1641,7 @@
       "remera": "/catalogo/anime/naruto-erosenin/remera.webp",
       "remera400": "/catalogo/anime/naruto-erosenin/remera-400.webp",
       "remera600": "/catalogo/anime/naruto-erosenin/remera-600.webp",
+      "ogImage": "/catalogo/anime/naruto-erosenin/remera-og.jpg",
       "extras": []
     },
     {
@@ -1550,6 +1656,7 @@
       "remera": "/catalogo/cine-series/monstars-space-jam/remera.webp",
       "remera400": "/catalogo/cine-series/monstars-space-jam/remera-400.webp",
       "remera600": "/catalogo/cine-series/monstars-space-jam/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/monstars-space-jam/remera-og.jpg",
       "extras": []
     },
     {
@@ -1564,6 +1671,7 @@
       "remera": "/catalogo/musica/los-fabulosos-cadillacs/remera.webp",
       "remera400": "/catalogo/musica/los-fabulosos-cadillacs/remera-400.webp",
       "remera600": "/catalogo/musica/los-fabulosos-cadillacs/remera-600.webp",
+      "ogImage": "/catalogo/musica/los-fabulosos-cadillacs/remera-og.jpg",
       "extras": []
     },
     {
@@ -1578,6 +1686,7 @@
       "remera": "/catalogo/anime/naruto-rock-lee/remera.webp",
       "remera400": "/catalogo/anime/naruto-rock-lee/remera-400.webp",
       "remera600": "/catalogo/anime/naruto-rock-lee/remera-600.webp",
+      "ogImage": "/catalogo/anime/naruto-rock-lee/remera-og.jpg",
       "extras": []
     },
     {
@@ -1592,6 +1701,7 @@
       "remera": "/catalogo/cine-series/motoratones-de-marte/remera.webp",
       "remera400": "/catalogo/cine-series/motoratones-de-marte/remera-400.webp",
       "remera600": "/catalogo/cine-series/motoratones-de-marte/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/motoratones-de-marte/remera-og.jpg",
       "extras": []
     },
     {
@@ -1606,6 +1716,7 @@
       "remera": "/catalogo/musica/marilyn-manson/remera.webp",
       "remera400": "/catalogo/musica/marilyn-manson/remera-400.webp",
       "remera600": "/catalogo/musica/marilyn-manson/remera-600.webp",
+      "ogImage": "/catalogo/musica/marilyn-manson/remera-og.jpg",
       "extras": []
     },
     {
@@ -1620,6 +1731,7 @@
       "remera": "/catalogo/anime/naruto-uchiha-clan/remera.webp",
       "remera400": "/catalogo/anime/naruto-uchiha-clan/remera-400.webp",
       "remera600": "/catalogo/anime/naruto-uchiha-clan/remera-600.webp",
+      "ogImage": "/catalogo/anime/naruto-uchiha-clan/remera-og.jpg",
       "extras": []
     },
     {
@@ -1634,6 +1746,7 @@
       "remera": "/catalogo/cine-series/mumm-rah-thundercats/remera.webp",
       "remera400": "/catalogo/cine-series/mumm-rah-thundercats/remera-400.webp",
       "remera600": "/catalogo/cine-series/mumm-rah-thundercats/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/mumm-rah-thundercats/remera-og.jpg",
       "extras": []
     },
     {
@@ -1648,6 +1761,7 @@
       "remera": "/catalogo/musica/michael-jackson/remera.webp",
       "remera400": "/catalogo/musica/michael-jackson/remera-400.webp",
       "remera600": "/catalogo/musica/michael-jackson/remera-600.webp",
+      "ogImage": "/catalogo/musica/michael-jackson/remera-og.jpg",
       "extras": []
     },
     {
@@ -1662,6 +1776,7 @@
       "remera": "/catalogo/anime/one-piece/remera.webp",
       "remera400": "/catalogo/anime/one-piece/remera-400.webp",
       "remera600": "/catalogo/anime/one-piece/remera-600.webp",
+      "ogImage": "/catalogo/anime/one-piece/remera-og.jpg",
       "extras": []
     },
     {
@@ -1676,6 +1791,7 @@
       "remera": "/catalogo/cine-series/pinky-y-cerebro/remera.webp",
       "remera400": "/catalogo/cine-series/pinky-y-cerebro/remera-400.webp",
       "remera600": "/catalogo/cine-series/pinky-y-cerebro/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/pinky-y-cerebro/remera-og.jpg",
       "extras": []
     },
     {
@@ -1690,6 +1806,7 @@
       "remera": "/catalogo/musica/michael-jackson-smooth-criminal/remera.webp",
       "remera400": "/catalogo/musica/michael-jackson-smooth-criminal/remera-400.webp",
       "remera600": "/catalogo/musica/michael-jackson-smooth-criminal/remera-600.webp",
+      "ogImage": "/catalogo/musica/michael-jackson-smooth-criminal/remera-og.jpg",
       "extras": []
     },
     {
@@ -1704,6 +1821,7 @@
       "remera": "/catalogo/anime/one-piece-luffy/remera.webp",
       "remera400": "/catalogo/anime/one-piece-luffy/remera-400.webp",
       "remera600": "/catalogo/anime/one-piece-luffy/remera-600.webp",
+      "ogImage": "/catalogo/anime/one-piece-luffy/remera-og.jpg",
       "extras": []
     },
     {
@@ -1718,6 +1836,7 @@
       "remera": "/catalogo/cine-series/predator/remera.webp",
       "remera400": "/catalogo/cine-series/predator/remera-400.webp",
       "remera600": "/catalogo/cine-series/predator/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/predator/remera-og.jpg",
       "extras": []
     },
     {
@@ -1732,6 +1851,7 @@
       "remera": "/catalogo/musica/millencolin-life-on-a-plate/remera.webp",
       "remera400": "/catalogo/musica/millencolin-life-on-a-plate/remera-400.webp",
       "remera600": "/catalogo/musica/millencolin-life-on-a-plate/remera-600.webp",
+      "ogImage": "/catalogo/musica/millencolin-life-on-a-plate/remera-og.jpg",
       "extras": []
     },
     {
@@ -1746,6 +1866,7 @@
       "remera": "/catalogo/anime/pokemon-squarturtle/remera.webp",
       "remera400": "/catalogo/anime/pokemon-squarturtle/remera-400.webp",
       "remera600": "/catalogo/anime/pokemon-squarturtle/remera-600.webp",
+      "ogImage": "/catalogo/anime/pokemon-squarturtle/remera-og.jpg",
       "extras": []
     },
     {
@@ -1760,6 +1881,7 @@
       "remera": "/catalogo/cine-series/quien-engañó-a-roger-rabbit/remera.webp",
       "remera400": "/catalogo/cine-series/quien-engañó-a-roger-rabbit/remera-400.webp",
       "remera600": "/catalogo/cine-series/quien-engañó-a-roger-rabbit/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/quien-engañó-a-roger-rabbit/remera-og.jpg",
       "extras": []
     },
     {
@@ -1774,6 +1896,7 @@
       "remera": "/catalogo/musica/rage-against-the-machine/remera.webp",
       "remera400": "/catalogo/musica/rage-against-the-machine/remera-400.webp",
       "remera600": "/catalogo/musica/rage-against-the-machine/remera-600.webp",
+      "ogImage": "/catalogo/musica/rage-against-the-machine/remera-og.jpg",
       "extras": []
     },
     {
@@ -1788,6 +1911,7 @@
       "remera": "/catalogo/anime/sailor-mars/remera.webp",
       "remera400": "/catalogo/anime/sailor-mars/remera-400.webp",
       "remera600": "/catalogo/anime/sailor-mars/remera-600.webp",
+      "ogImage": "/catalogo/anime/sailor-mars/remera-og.jpg",
       "extras": []
     },
     {
@@ -1802,6 +1926,7 @@
       "remera": "/catalogo/cine-series/samurai-jack/remera.webp",
       "remera400": "/catalogo/cine-series/samurai-jack/remera-400.webp",
       "remera600": "/catalogo/cine-series/samurai-jack/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/samurai-jack/remera-og.jpg",
       "extras": []
     },
     {
@@ -1816,6 +1941,7 @@
       "remera": "/catalogo/musica/sepultura/remera.webp",
       "remera400": "/catalogo/musica/sepultura/remera-400.webp",
       "remera600": "/catalogo/musica/sepultura/remera-600.webp",
+      "ogImage": "/catalogo/musica/sepultura/remera-og.jpg",
       "extras": []
     },
     {
@@ -1830,6 +1956,7 @@
       "remera": "/catalogo/anime/sailor-moon/remera.webp",
       "remera400": "/catalogo/anime/sailor-moon/remera-400.webp",
       "remera600": "/catalogo/anime/sailor-moon/remera-600.webp",
+      "ogImage": "/catalogo/anime/sailor-moon/remera-og.jpg",
       "extras": []
     },
     {
@@ -1844,6 +1971,7 @@
       "remera": "/catalogo/cine-series/scooby-doo/remera.webp",
       "remera400": "/catalogo/cine-series/scooby-doo/remera-400.webp",
       "remera600": "/catalogo/cine-series/scooby-doo/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/scooby-doo/remera-og.jpg",
       "extras": []
     },
     {
@@ -1858,6 +1986,7 @@
       "remera": "/catalogo/musica/slipknot/remera.webp",
       "remera400": "/catalogo/musica/slipknot/remera-400.webp",
       "remera600": "/catalogo/musica/slipknot/remera-600.webp",
+      "ogImage": "/catalogo/musica/slipknot/remera-og.jpg",
       "extras": []
     },
     {
@@ -1872,6 +2001,7 @@
       "remera": "/catalogo/anime/saint-seiya-ikki/remera.webp",
       "remera400": "/catalogo/anime/saint-seiya-ikki/remera-400.webp",
       "remera600": "/catalogo/anime/saint-seiya-ikki/remera-600.webp",
+      "ogImage": "/catalogo/anime/saint-seiya-ikki/remera-og.jpg",
       "extras": []
     },
     {
@@ -1886,6 +2016,7 @@
       "remera": "/catalogo/cine-series/scream/remera.webp",
       "remera400": "/catalogo/cine-series/scream/remera-400.webp",
       "remera600": "/catalogo/cine-series/scream/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/scream/remera-og.jpg",
       "extras": []
     },
     {
@@ -1900,6 +2031,7 @@
       "remera": "/catalogo/musica/snoop-dogg/remera.webp",
       "remera400": "/catalogo/musica/snoop-dogg/remera-400.webp",
       "remera600": "/catalogo/musica/snoop-dogg/remera-600.webp",
+      "ogImage": "/catalogo/musica/snoop-dogg/remera-og.jpg",
       "extras": []
     },
     {
@@ -1914,6 +2046,7 @@
       "remera": "/catalogo/anime/slam-dunk/remera.webp",
       "remera400": "/catalogo/anime/slam-dunk/remera-400.webp",
       "remera600": "/catalogo/anime/slam-dunk/remera-600.webp",
+      "ogImage": "/catalogo/anime/slam-dunk/remera-og.jpg",
       "extras": []
     },
     {
@@ -1928,6 +2061,7 @@
       "remera": "/catalogo/cine-series/south-park/remera.webp",
       "remera400": "/catalogo/cine-series/south-park/remera-400.webp",
       "remera600": "/catalogo/cine-series/south-park/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/south-park/remera-og.jpg",
       "extras": []
     },
     {
@@ -1942,6 +2076,7 @@
       "remera": "/catalogo/musica/soulfly/remera.webp",
       "remera400": "/catalogo/musica/soulfly/remera-400.webp",
       "remera600": "/catalogo/musica/soulfly/remera-600.webp",
+      "ogImage": "/catalogo/musica/soulfly/remera-og.jpg",
       "extras": []
     },
     {
@@ -1956,6 +2091,7 @@
       "remera": "/catalogo/anime/slam-dunk-shohoku-entrenamiento/remera.webp",
       "remera400": "/catalogo/anime/slam-dunk-shohoku-entrenamiento/remera-400.webp",
       "remera600": "/catalogo/anime/slam-dunk-shohoku-entrenamiento/remera-600.webp",
+      "ogImage": "/catalogo/anime/slam-dunk-shohoku-entrenamiento/remera-og.jpg",
       "extras": [
         {
           "src": "/catalogo/anime/slam-dunk-shohoku-entrenamiento/extra-1-modelo-frente.webp",
@@ -1983,6 +2119,7 @@
       "remera": "/catalogo/cine-series/star-wars/remera.webp",
       "remera400": "/catalogo/cine-series/star-wars/remera-400.webp",
       "remera600": "/catalogo/cine-series/star-wars/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/star-wars/remera-og.jpg",
       "extras": []
     },
     {
@@ -1997,6 +2134,7 @@
       "remera": "/catalogo/musica/sumo/remera.webp",
       "remera400": "/catalogo/musica/sumo/remera-400.webp",
       "remera600": "/catalogo/musica/sumo/remera-600.webp",
+      "ogImage": "/catalogo/musica/sumo/remera-og.jpg",
       "extras": []
     },
     {
@@ -2011,6 +2149,7 @@
       "remera": "/catalogo/cine-series/star-wars-darth-vader/remera.webp",
       "remera400": "/catalogo/cine-series/star-wars-darth-vader/remera-400.webp",
       "remera600": "/catalogo/cine-series/star-wars-darth-vader/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/star-wars-darth-vader/remera-og.jpg",
       "extras": []
     },
     {
@@ -2025,6 +2164,7 @@
       "remera": "/catalogo/musica/the-beatles/remera.webp",
       "remera400": "/catalogo/musica/the-beatles/remera-400.webp",
       "remera600": "/catalogo/musica/the-beatles/remera-600.webp",
+      "ogImage": "/catalogo/musica/the-beatles/remera-og.jpg",
       "extras": []
     },
     {
@@ -2039,6 +2179,7 @@
       "remera": "/catalogo/cine-series/stranger-things/remera.webp",
       "remera400": "/catalogo/cine-series/stranger-things/remera-400.webp",
       "remera600": "/catalogo/cine-series/stranger-things/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/stranger-things/remera-og.jpg",
       "extras": []
     },
     {
@@ -2053,6 +2194,7 @@
       "remera": "/catalogo/musica/the-offspring/remera.webp",
       "remera400": "/catalogo/musica/the-offspring/remera-400.webp",
       "remera600": "/catalogo/musica/the-offspring/remera-600.webp",
+      "ogImage": "/catalogo/musica/the-offspring/remera-og.jpg",
       "extras": []
     },
     {
@@ -2067,6 +2209,7 @@
       "remera": "/catalogo/cine-series/street-sharks/remera.webp",
       "remera400": "/catalogo/cine-series/street-sharks/remera-400.webp",
       "remera600": "/catalogo/cine-series/street-sharks/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/street-sharks/remera-og.jpg",
       "extras": []
     },
     {
@@ -2081,6 +2224,7 @@
       "remera": "/catalogo/musica/tyk/remera.webp",
       "remera400": "/catalogo/musica/tyk/remera-400.webp",
       "remera600": "/catalogo/musica/tyk/remera-600.webp",
+      "ogImage": "/catalogo/musica/tyk/remera-og.jpg",
       "extras": []
     },
     {
@@ -2095,6 +2239,7 @@
       "remera": "/catalogo/cine-series/t800-terminator/remera.webp",
       "remera400": "/catalogo/cine-series/t800-terminator/remera-400.webp",
       "remera600": "/catalogo/cine-series/t800-terminator/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/t800-terminator/remera-og.jpg",
       "extras": []
     },
     {
@@ -2109,6 +2254,7 @@
       "remera": "/catalogo/musica/wu-tang/remera.webp",
       "remera400": "/catalogo/musica/wu-tang/remera-400.webp",
       "remera600": "/catalogo/musica/wu-tang/remera-600.webp",
+      "ogImage": "/catalogo/musica/wu-tang/remera-og.jpg",
       "extras": []
     },
     {
@@ -2123,6 +2269,7 @@
       "remera": "/catalogo/cine-series/the-crow/remera.webp",
       "remera400": "/catalogo/cine-series/the-crow/remera-400.webp",
       "remera600": "/catalogo/cine-series/the-crow/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/the-crow/remera-og.jpg",
       "extras": []
     },
     {
@@ -2137,6 +2284,7 @@
       "remera": "/catalogo/musica/wu-tang-tiger-style/remera.webp",
       "remera400": "/catalogo/musica/wu-tang-tiger-style/remera-400.webp",
       "remera600": "/catalogo/musica/wu-tang-tiger-style/remera-600.webp",
+      "ogImage": "/catalogo/musica/wu-tang-tiger-style/remera-og.jpg",
       "extras": []
     },
     {
@@ -2151,6 +2299,7 @@
       "remera": "/catalogo/cine-series/the-warriors/remera.webp",
       "remera400": "/catalogo/cine-series/the-warriors/remera-400.webp",
       "remera600": "/catalogo/cine-series/the-warriors/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/the-warriors/remera-og.jpg",
       "extras": []
     },
     {
@@ -2165,6 +2314,7 @@
       "remera": "/catalogo/cine-series/tomy-y-daly-los-simpsons/remera.webp",
       "remera400": "/catalogo/cine-series/tomy-y-daly-los-simpsons/remera-400.webp",
       "remera600": "/catalogo/cine-series/tomy-y-daly-los-simpsons/remera-600.webp",
+      "ogImage": "/catalogo/cine-series/tomy-y-daly-los-simpsons/remera-og.jpg",
       "extras": []
     }
   ]

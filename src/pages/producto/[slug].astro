@@ -1,0 +1,120 @@
+---
+import catalogo from "../../data/catalogo.json";
+
+// S32: página puente por producto.
+// No es una página "de verdad": el usuario casi no la ve (dura <200ms).
+// Existe solo para que los scrapers de redes (WhatsApp, Facebook,
+// Twitter, LinkedIn) lean los meta tags OG correctos antes de
+// redirigir a la home con el hash del producto (#slug), donde el
+// modal se abre como siempre.
+//
+// Usa las mismas convenciones que index.astro para no hardcodear
+// el origen ni el base path.
+
+const base = import.meta.env.BASE_URL;
+const siteOriginRaw = Astro.site ? Astro.site.origin : "https://barriopuro.github.io";
+const SITE_ORIGIN = siteOriginRaw.replace(/\/$/, "");
+const BASE_PATH = base.endsWith("/") ? base.slice(0, -1) : base;
+
+export function getStaticPaths() {
+  return catalogo.products.map((product) => ({
+    params: { slug: product.id },
+    props: { product },
+  }));
+}
+
+const { product } = Astro.props;
+
+const ogImage = SITE_ORIGIN + BASE_PATH + product.ogImage;
+const ogTitle = "KRAKOA | " + product.name;
+const ogDescription =
+  "Remera " + product.name + " de KRAKOA. Categoría: " +
+  product.categoryName + ". Algodón peinado 24/1, estampa DTF premium.";
+const ogUrl = SITE_ORIGIN + BASE_PATH + "/producto/" + product.id + "/";
+const redirectTo = BASE_PATH + "/#" + product.id;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+
+    <title>{ogTitle}</title>
+
+    <!-- No indexar: es solo una página puente. Si Google la indexa,
+         aparecería como contenido duplicado de la home. `follow`
+         permite que siga el link de redirección si hace falta. -->
+    <meta name="robots" content="noindex, follow" />
+    <meta name="description" content={ogDescription} />
+
+    <!-- Redirect automático para navegadores sin JS (o con JS
+         bloqueado). Con JS habilitado, el <script> del body gana
+         porque se ejecuta antes. -->
+    <meta http-equiv="refresh" content={"0; url=" + redirectTo} />
+
+    <!-- Open Graph (WhatsApp, Facebook, LinkedIn, Telegram) -->
+    <meta property="og:type" content="product" />
+    <meta property="og:site_name" content="KRAKOA" />
+    <meta property="og:title" content={ogTitle} />
+    <meta property="og:description" content={ogDescription} />
+    <meta property="og:url" content={ogUrl} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:url" content={ogImage} />
+    <meta property="og:image:secure_url" content={ogImage} />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={"Remera " + product.name} />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={ogTitle} />
+    <meta name="twitter:description" content={ogDescription} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={"Remera " + product.name} />
+
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: #0b0b0b;
+        color: #fff;
+        font-family: Arial, Helvetica, sans-serif;
+        min-height: 100vh;
+      }
+      .krakoa-fallback {
+        padding: 60px 20px;
+        text-align: center;
+      }
+      .krakoa-fallback p {
+        margin: 0 0 12px;
+        font-size: 14px;
+        line-height: 1.5;
+        color: #ccc;
+      }
+      .krakoa-fallback a {
+        color: #ffd655;
+        text-decoration: underline;
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Redirect inmediato con JS. Usamos replace() para que la
+         página puente NO quede en el historial: si el usuario toca
+         "atrás" después de aterrizar en el modal, vuelve a donde
+         estaba antes, no a este HTML vacío. -->
+    <script is:inline define:vars={{ redirectTo }}>
+      window.location.replace(redirectTo);
+    </script>
+
+    <noscript>
+      <div class="krakoa-fallback">
+        <p>Redirigiendo a la remera <strong>{product.name}</strong>...</p>
+        <p><a href={redirectTo}>Tocá acá si no redirige automáticamente</a></p>
+      </div>
+    </noscript>
+  </body>
+</html>
