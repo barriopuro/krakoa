@@ -79,7 +79,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://barriopuro.github.io/krakoa/#las-malvinas-son-argentinas</loc>
+    <loc>https://barriopuro.github.io/krakoa/#comodin</loc>
     <lastmod>2026-11-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -121,7 +121,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://barriopuro.github.io/krakoa/#pulpo</loc>
+    <loc>https://barriopuro.github.io/krakoa/#las-malvinas-son-argentinas</loc>
     <lastmod>2026-11-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -163,7 +163,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://barriopuro.github.io/krakoa/#ramen-godzilla</loc>
+    <loc>https://barriopuro.github.io/krakoa/#pulpo</loc>
     <lastmod>2026-11-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -205,7 +205,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://barriopuro.github.io/krakoa/#veneno</loc>
+    <loc>https://barriopuro.github.io/krakoa/#ramen-godzilla</loc>
     <lastmod>2026-11-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -242,6 +242,12 @@
   </url>
   <url>
     <loc>https://barriopuro.github.io/krakoa/#blink-182</loc>
+    <lastmod>2026-11-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://barriopuro.github.io/krakoa/#veneno</loc>
     <lastmod>2026-11-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -1028,6 +1034,12 @@
   </url>
   <url>
     <loc>https://barriopuro.github.io/krakoa/#soulfly</loc>
+    <lastmod>2026-11-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://barriopuro.github.io/krakoa/#spinetta</loc>
     <lastmod>2026-11-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
