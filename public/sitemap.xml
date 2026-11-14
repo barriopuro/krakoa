@@ -289,7 +289,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://barriopuro.github.io/krakoa/#veneno</loc>
+    <loc>https://barriopuro.github.io/krakoa/#sapo-ramen</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -326,6 +326,12 @@
   </url>
   <url>
     <loc>https://barriopuro.github.io/krakoa/#black-sabbath-cruz</loc>
+    <lastmod>2026-11-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://barriopuro.github.io/krakoa/#veneno</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -949,7 +955,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://barriopuro.github.io/krakoa/#zelda-the-minish-cap</loc>
+    <loc>https://barriopuro.github.io/krakoa/#zelda-ocarina-of-time-eponas-song</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -968,6 +974,12 @@
   </url>
   <url>
     <loc>https://barriopuro.github.io/krakoa/#linkin-park</loc>
+    <lastmod>2026-11-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://barriopuro.github.io/krakoa/#zelda-the-minish-cap</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>

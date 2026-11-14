@@ -274,11 +274,60 @@ if (!fs.existsSync(catalogoDir)) {
   console.error("ERROR: No existe la carpeta catalogo.");
   process.exit(1);
 }
-fs.rmSync(publicCatalogoDir, { recursive: true, force: true });
+
+// S32: generación incremental.
+// Ya no borramos public/catalogo/ al inicio. Cada imagen se
+// regenera SOLO si su source es más nuevo que el output ya
+// generado (o si el output no existe). Los archivos huérfanos
+// (de productos renombrados o eliminados) se borran al final,
+// cuando ya sabemos qué archivos deberían existir.
 fs.mkdirSync(publicCatalogoDir, { recursive: true });
 
+// Devuelve true si hace falta regenerar el output:
+//   - el output no existe, o
+//   - el source es más nuevo que el output.
+// Nota: si cambiás `optimizeImage` (calidad, dimensiones, etc.),
+// el mtime no cambia y las imágenes NO se regeneran solas. En ese
+// caso, borrá `public/catalogo/` a mano una vez y volvé a correr
+// el script. Es el único caso donde el incremental "no se da cuenta".
+function shouldRegenerate(sourcePath, destinationPath) {
+  try {
+    const srcStat = fs.statSync(sourcePath);
+    const dstStat = fs.statSync(destinationPath);
+    return dstStat.mtimeMs < srcStat.mtimeMs;
+  } catch (error) {
+    return true;
+  }
+}
+
+// Procesa un array de tareas con un límite de concurrencia.
+// `sharp` usa el thread pool de libuv internamente; correr 6
+// pipelines en paralelo aprovecha varios cores sin saturar la
+// máquina. Si tu compu es muy vieja, bajá el número (4 o 3) en
+// el `runWithConcurrency(pending, 6, ...)` de más abajo.
+async function runWithConcurrency(tasks, limit, worker) {
+  let index = 0;
+  async function runNext() {
+    while (index < tasks.length) {
+      const i = index++;
+      await worker(tasks[i], i);
+    }
+  }
+  const workers = Array.from(
+    { length: Math.min(limit, tasks.length) },
+    () => runNext()
+  );
+  await Promise.all(workers);
+}
+
 async function processCatalogoImages() {
+  // S32: recorremos TODOS los sources primero y armamos la lista
+  // completa de tareas (una por cada archivo a generar). Después
+  // filtramos las que ya están al día, procesamos solo las que
+  // faltan en paralelo, y al final borramos los huérfanos.
   const files = fs.readdirSync(catalogoDir, { recursive: true });
+  const tasks = [];
+  const expected = new Set();
 
   for (const relativeFile of files) {
     const sourcePath = path.join(catalogoDir, relativeFile);
@@ -303,72 +352,92 @@ async function processCatalogoImages() {
       const [category, modelFolder, ...rest] = segments;
       const { name: cleanModel } = parseProductFolder(modelFolder);
 
-      // Reemplazamos el nombre de la carpeta del modelo por el limpio.
       const cleanRelative = path.join(category, cleanModel, ...rest);
-
-      // S31: separamos el "base" (sin extensión) para poder armar
-      // las 3 variantes (1000w, 600w, 400w).
       const relativeBase = cleanRelative.replace(
         new RegExp(`${extension}$`, "i"),
         ""
       );
-
-      const destinationPath = path.join(
-        publicCatalogoDir,
-        relativeBase + ".webp"
-      );
-
-      fs.mkdirSync(path.dirname(destinationPath), {
-        recursive: true,
-      });
+      const baseName = path.basename(relativeBase).toLowerCase();
 
       // 1000w siempre (modal, hero, zoom, promo, tablas).
-      await optimizeImage(sourcePath, destinationPath);
+      const dst1000 = path.join(publicCatalogoDir, relativeBase + ".webp");
+      expected.add(dst1000);
+      tasks.push({ kind: "webp1000", src: sourcePath, dst: dst1000 });
 
-      // S31: 400w y 600w SOLO para modelo y remera. Son las únicas
-      // imágenes que se muestran en las tarjetas del catálogo, donde
-      // el srcset ayuda. Los extras solo se ven en el modal (1000w),
-      // así que no necesitan versiones chicas.
-      const baseName = path.basename(relativeBase).toLowerCase();
+      // 400w y 600w solo para modelo y remera (srcset de tarjetas).
       if (baseName === "modelo" || baseName === "remera") {
-        await optimizeImage(
-          sourcePath,
-          path.join(publicCatalogoDir, relativeBase + "-600.webp"),
-          600
-        );
-        await optimizeImage(
-          sourcePath,
-          path.join(publicCatalogoDir, relativeBase + "-400.webp"),
-          400
-        );
+        const dst600 = path.join(publicCatalogoDir, relativeBase + "-600.webp");
+        const dst400 = path.join(publicCatalogoDir, relativeBase + "-400.webp");
+        expected.add(dst600);
+        expected.add(dst400);
+        tasks.push({ kind: "webp600", src: sourcePath, dst: dst600 });
+        tasks.push({ kind: "webp400", src: sourcePath, dst: dst400 });
       }
 
-      // S32: generamos también la imagen OG (JPG 1200×630, fondo
-      // negro, remera centrada) SOLO para las remeras. Es la que
-      // usan los scrapers de redes para la preview del link.
+      // Imagen OG solo para remeras.
       if (baseName === "remera") {
-        await generateOgImage(
-          sourcePath,
-          path.join(publicCatalogoDir, relativeBase + "-og.jpg")
-        );
+        const dstOg = path.join(publicCatalogoDir, relativeBase + "-og.jpg");
+        expected.add(dstOg);
+        tasks.push({ kind: "og", src: sourcePath, dst: dstOg });
       }
       continue;
     }
 
-    // Fallback: si por algún motivo hay archivos sueltos (no debería),
-    // los copiamos como antes.
+    // Fallback para archivos sueltos (no debería pasar).
     const relativeWebp = relativeFile.replace(
       new RegExp(`${extension}$`, "i"),
       ".webp"
     );
+    const dstFallback = path.join(publicCatalogoDir, relativeWebp);
+    expected.add(dstFallback);
+    tasks.push({ kind: "webp1000", src: sourcePath, dst: dstFallback });
+  }
 
-    const destinationPath = path.join(publicCatalogoDir, relativeWebp);
+  // Filtramos las tareas que ya están al día.
+  const pending = tasks.filter((t) => shouldRegenerate(t.src, t.dst));
+  const upToDate = tasks.length - pending.length;
 
-    fs.mkdirSync(path.dirname(destinationPath), {
-      recursive: true,
-    });
+  // Aseguramos que existan las carpetas destino de las pendientes.
+  pending.forEach((t) => {
+    fs.mkdirSync(path.dirname(t.dst), { recursive: true });
+  });
 
-    await optimizeImage(sourcePath, destinationPath);
+  // Procesamos en paralelo, 6 a la vez.
+  await runWithConcurrency(pending, 6, async (task) => {
+    if (task.kind === "webp1000") {
+      await optimizeImage(task.src, task.dst);
+    } else if (task.kind === "webp600") {
+      await optimizeImage(task.src, task.dst, 600);
+    } else if (task.kind === "webp400") {
+      await optimizeImage(task.src, task.dst, 400);
+    } else if (task.kind === "og") {
+      await generateOgImage(task.src, task.dst);
+    }
+  });
+
+  // Cleanup: borramos los archivos que no deberían existir (huérfanos
+  // de productos renombrados o eliminados).
+  if (fs.existsSync(publicCatalogoDir)) {
+    const allFiles = fs.readdirSync(publicCatalogoDir, { recursive: true });
+    let removed = 0;
+    for (const relativeFile of allFiles) {
+      const fullPath = path.join(publicCatalogoDir, relativeFile);
+      if (!fs.statSync(fullPath).isFile()) continue;
+      if (!expected.has(path.normalize(fullPath))) {
+        fs.unlinkSync(fullPath);
+        removed++;
+      }
+    }
+    if (removed > 0) {
+      console.log(`Catálogo: ${removed} archivo(s) huérfano(s) eliminado(s).`);
+    }
+  }
+
+  // Log resumen (solo si hubo trabajo o cambios).
+  if (pending.length > 0 || upToDate > 0) {
+    console.log(
+      `Catálogo: ${pending.length} imagen(es) generada(s), ${upToDate} al día.`
+    );
   }
 }
 
