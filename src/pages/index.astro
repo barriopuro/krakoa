@@ -171,6 +171,22 @@ const marqueeText = [
        antes que las 234 imágenes del catálogo. El LCP debería bajar
        a ~2-3s. -->
   <link rel="preload" as="image" href={`${base}/${catalogo.products[0].modelo}`} fetchpriority="high" />
+
+  <!-- S33: precargamos las imágenes de las primeras tarjetas del
+       catálogo (productos 1, 2 y 3 del JSON — el 0 ya está precargado
+       arriba como hero). Se precargan CON srcset para que el navegador
+       elija la variante correcta según el viewport (igual que el <img>
+       de la tarjeta). Acelera el LCP del catálogo, que es lo segundo
+       que ve el usuario después del hero. -->
+  {catalogo.products.slice(1, 4).map((product) => (
+    <link
+      rel="preload"
+      as="image"
+      href={`${base}/${product.modelo}`}
+      imagesrcset={`${base}/${product.modelo400} 400w, ${base}/${product.modelo600} 600w, ${base}/${product.modelo} 1000w`}
+      imagesizes="(max-width: 900px) 50vw, (max-width: 1400px) 33vw, 25vw"
+    />
+  ))}
 </head>
 
   <body>
@@ -485,6 +501,8 @@ const marqueeText = [
                   data-category={product.category}
                   data-id={product.id}
                   data-extras={JSON.stringify(product.extras || [])}
+                  data-modelo-400={`${base}/${product.modelo400}`}
+                  data-remera-400={`${base}/${product.remera400}`}
                 >
                   <button class="product-button" type="button">
                   <div class="product-image">
@@ -8567,7 +8585,7 @@ categoryButtons.forEach((button) => {
       thumb.setAttribute("aria-label", `Ver ${image.label}`);
 
       const img = document.createElement("img");
-      img.src = image.src;
+      img.src = image.thumbSrc || image.src;
       img.alt = image.label;
       img.loading = "lazy";
 
@@ -9019,6 +9037,14 @@ categoryButtons.forEach((button) => {
     const modelo = image.getAttribute("src");
     const remera = modelo.replace("/modelo.", "/remera.");
 
+    // S33: thumbs a 400w para las miniaturas del modal.
+    // Los thumbnails miden ~56×72px CSS; a 400w sobra resolución
+    // incluso en retina. El src (1000w) se sigue usando para la
+    // imagen grande del carrusel. Si por algún motivo no hay 400w
+    // (path vacío), renderThumbs cae al src original.
+    const modelo400 = product.dataset.modelo400 || "";
+    const remera400 = product.dataset.remera400 || "";
+
     // Fotos extra: vienen del JSON generado por el script.
     // Cada extra tiene { src, label }. Si no hay, el array queda vacío.
     const extras = product.dataset.extras
@@ -9026,8 +9052,8 @@ categoryButtons.forEach((button) => {
       : [];
 
     currentImages = [
-      { src: modelo, label: "Modelo" },
-      { src: remera, label: "Remera" },
+      { src: modelo, thumbSrc: modelo400, label: "Modelo" },
+      { src: remera, thumbSrc: remera400, label: "Remera" },
       ...extras.map((extra) => ({
         src: `${base}${extra.src}`,
         label: extra.label,
@@ -9352,13 +9378,17 @@ categoryButtons.forEach((button) => {
     const modelo = image.getAttribute("src");
     const remera = modelo.replace("/modelo.", "/remera.");
 
+    // S33: thumbs a 400w (igual que en openModal).
+    const modelo400 = product.dataset.modelo400 || "";
+    const remera400 = product.dataset.remera400 || "";
+
     const extras = product.dataset.extras
       ? JSON.parse(product.dataset.extras)
       : [];
 
     currentImages = [
-      { src: modelo, label: "Modelo" },
-      { src: remera, label: "Remera" },
+      { src: modelo, thumbSrc: modelo400, label: "Modelo" },
+      { src: remera, thumbSrc: remera400, label: "Remera" },
       ...extras.map((extra) => ({
         src: `${base}${extra.src}`,
         label: extra.label,

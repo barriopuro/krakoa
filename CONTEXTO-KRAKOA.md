@@ -54,7 +54,8 @@ text
 ├── promo/{config.json,*.jpg}
 │
 ├── public/
-│   ├── catalogo/<cat>/<modelo>/*.webp   (generado)
+│   ├── catalogo/<cat>/<modelo>/*.webp   (generado incremental, S32)
+│   ├── catalogo/<cat>/<modelo>/*-og.jpg (generado, S32)
 │   ├── talles/*.webp                    (generado)
 │   ├── promo/*.webp                     (generado)
 │   ├── fonts/krakoafont.ttf
@@ -70,12 +71,18 @@ text
     ├── data/promo.json                  (generado)
     └── pages/
         ├── index.astro                  ← TODA la web
-        └── 404.astro                    ← página 404 custom (S31)
+        ├── 404.astro                    ← página 404 custom (S31)
+        └── producto/[slug].astro        ← página puente OG (S32)
 Sin componentes separados ni layouts. Todo vive en index.astro.
 
 Script de publicación (ACTUALIZAR WEB.bat):
 
-node scripts\generar-catalogo.mjs → catálogo + sitemap
+node scripts\generar-catalogo.mjs → catálogo + sitemap + imágenes
+  (S32: incremental + paralelizado. Solo regenera imágenes cuyo
+  source cambió. ~5-10s si no tocaste nada, ~10-15s por producto
+  nuevo. Caveat: si cambiás calidad/dimensiones en optimizeImage
+  o generateOgImage, hay que borrar public/catalogo/ a mano una
+  vez y volver a correr.)
 
 npm run build
 
@@ -201,6 +208,9 @@ Fade in del isotipo + glitch. Se oculta en DOMContentLoaded (o 1.5s por segurida
 
 404 custom (`src/pages/404.astro`, S31)
 Página independiente. "404" en Arial 900 (Payback no tiene numerales) con glitch ocasional cada 4-8s. "KRAKOA" en KrakoaFont (KRA amarillo + KOA blanco) abajo del 404. Botones "Volver al catálogo" (amarillo KRA) e "@krakoa.sw". `<meta name="robots" content="noindex, follow" />`. Astro la publica como `dist/404.html` automáticamente; no requiere cambios en el `.bat` ni en `astro.config.mjs`.
+
+Página puente OG (`src/pages/producto/[slug].astro`, S32)
+Genera ~99 HTML (uno por producto) vía `getStaticPaths`. Cada uno tiene los meta tags OG/Twitter correctos (`og:image` = `remera-og.jpg`, `og:title` = "KRAKOA | Nombre", `og:type=product`) y redirige a `/#slug` con `window.location.replace()` (fallback `<meta http-equiv="refresh">` + `<noscript>`). `robots: noindex, follow` para evitar contenido duplicado. El botón "Compartir" del modal arma esta URL; el navegador sigue mostrando `/#slug` mientras se navega. Los scrapers de redes leen los metas del HTML puente; el usuario cae en el modal abierto.
 
 §4 — Sistemas transversales
 Sistema de precios
@@ -697,9 +707,13 @@ Feedback táctil (vibración + micro-glitch)	Se decidió no sumar vibración. El
 🔴 Próximos (S32–S34, prioridad acordada en S31):
 
 - **Selector de color de tela — prioridad alta.** El cliente está pidiendo muchos cambios de color en remeras, así que pasa a urgente. El plan completo está más abajo en esta misma sección.
-- **Página OG por producto — idea futura.** Para que al compartir un link de un modelo por WhatsApp/Facebook/etc. aparezca la miniatura de la remera (no solo el logo), hace falta una página real por producto (ruta `/producto/[slug]` generada con `getStaticPaths`) con `<head>` propio (`og:image` con la foto de la remera, `og:title` con el nombre, `og:type` `product`). El hash (`#slug`) nunca se envía al servidor, así que WhatsApp siempre ve la home. Requiere: (1) crear la ruta dinámica, (2) generar una imagen OG por producto (o reusar `remera.webp`), (3) cambiar el botón "Compartir" para que use la URL nueva. **Ojo**: WhatsApp cachea agresivamente; los links viejos van a seguir sin preview. Planificado para S32/S33.
+- ~~Página OG por producto~~ — **RESUELTO en S32** (§3 "Página puente OG"). Se implementó como página puente con redirect. WhatsApp cachea agresivamente: los links viejos (`/#slug`) van a seguir mostrando el logo; los nuevos (`/producto/slug/`) muestran la remera.
 
 🟡 Otras ideas (sin fecha):
+
+- **Google Shopping feed (evaluado en S32, postergado).** Generar un XML con los datos de cada producto en `generar-catalogo.mjs`, subirlo a Google Merchant Center. Requisitos de Google (políticas de envío/devoluciones visibles, coherencia feed/landing) chocan con el "envío a coordinar" actual. Encarar solo si el cliente define una política de envíos concreta.
+- **`content-visibility: auto` en las tarjetas (evaluado en S32, postergado).** Mejora de performance de renderizado (~50% menos trabajo de layout/paint). Cambio de 1 regla CSS + `contain-intrinsic-size`. Riesgo bajo.
+- **Mover generación de imágenes + build a GitHub Actions (evaluado en S32, descartado).** El `.bat` pasaría de ~25-45s a ~5-10s (solo push). Requiere sacar `public/catalogo/`, `public/talles/`, `public/promo/`, `src/data/*.json` y `dist/` del repo y agregar `node scripts/generar-catalogo.mjs` al workflow. Descartado por complejidad percibida; el incremental de S32 ya deja el `.bat` en un tiempo aceptable.
 
 Selector de color de tela
 Algunos modelos con 2-3 colores (blanco, negro, otros). Plan:
@@ -757,6 +771,8 @@ Archivo externo (no vive en el repo). Calcula costos DTF (Guillotine Best-Area-F
 - Parallax del hero: descartado en S30 (§7).
 
 🟢 Resueltos (no volver a proponer):
+- Página OG por producto: resuelta en S32 (página puente + redirect).
+- Generación de imágenes del `.bat`: resuelta en S32 (incremental + paralelización, ~120s → ~5-10s).
 - Barra compacta: resuelta en S25.
 - Auto-slide en tarjetas: resuelto en S26.
 - Auto-slide adaptativo + slide del carrusel del modal: resueltos en S27.
@@ -769,6 +785,7 @@ Archivo externo (no vive en el repo). Calcula costos DTF (Guillotine Best-Area-F
 
 🟣 Otros:
 - Performance de backdrop-filter en mobile de gama muy baja: hoy blur(6px). No se reprodujo problema hasta ahora.
+- **Generación incremental del catálogo (S32) — caveat:** si se cambia la lógica de `optimizeImage` o `generateOgImage` (calidad, dimensiones, formato), el incremental NO lo detecta. Hay que borrar `public/catalogo/` a mano una vez y volver a correr el script (~40-50s por la paralelización).
 
 Nada urgente. Web estable.
 
@@ -1228,6 +1245,54 @@ Los `og:image` / `og:url` / `twitter:image` del `index.astro` estaban con `${bas
 - Pausa por overlap apilado: si el carrito se abre encima del modal, el scroll-lock usa `scrollLockCount` (contador) para no liberar el padding dos veces.
 
 **Cómo se probó:** verificado en desktop y mobile. 404 funciona en URLs rotas. Sugerencia de tiers aparece/desaparece correctamente al cambiar cantidad, alterna con el banner temporal. Marquesina diagonal visible en todas las categorías, cubre toda la altura, dirección alternada, pausa al scrollear y con overlays. Todas las animaciones se pausan con overlay abierto. Scroll mucho más fluido en mobile después de scaleX en scroll-progress, blur reducido y grano off. srcset: Network muestra 400w (DPR 2) o 600w (DPR 3) en mobile, 1000w en desktop; el modal sigue bajando 1000w. og:image: miniatura aparece en WhatsApp con `?v=2` (el caché de WhatsApp ignora URLs viejas).
+
+
+S32 — OG por producto (página puente), generación incremental de imágenes
+Recompresión: no (se mantiene la compresión de S25).
+
+Sesión en dos tandas: primero se implementó la preview de redes por producto (la deuda más vieja de §8), después se optimizó el tiempo del `.bat` que venía creciendo desde S31.
+
+**1. OG por producto — Opción 1 (página puente + redirect).**
+Se evaluaron 3 opciones para que al compartir un link de un producto por WhatsApp/Facebook/etc. se vea la foto de la remera en la preview:
+- Opción 1 (elegida): página puente `/producto/slug/` con meta tags OG correctos + redirect a `/#slug`. El usuario cae en el modal abierto como siempre.
+- Opción 2 (descartada): página real por producto, MPA. Requería extraer el modal a componente reusable, reescribir el historyStack, mover header/carrito a layout, etc. ~7-10 sesiones y riesgo de regresión alto. Descartada por desproporcionada.
+- Opción 3 (descartada): no hacer nada. Los links compartidos siguen mostrando el logo genérico.
+
+Implementación (5 cambios):
+- `generar-catalogo.mjs`: nueva función `generateOgImage(sourcePath, destinationPath)` que arma un JPG 1200×630 con fondo `#0b0b0b` y la remera centrada (520px de alto, 55px de aire arriba/abajo). Se genera SOLO para `remera` (flat lay), no para `modelo` ni extras. Formato JPG (no WebP) por compatibilidad con scrapers viejos (WhatsApp).
+- `generar-catalogo.mjs`: campo `ogImage` agregado a cada producto del JSON, apuntando a `-og.jpg`.
+- `src/pages/producto/[slug].astro` (nuevo): página puente con `getStaticPaths`, meta tags OG/Twitter completos (`og:type=product`, `og:image` absoluta, `og:image:width/height` 1200/630), `<meta name="robots" content="noindex, follow" />` (evita contenido duplicado), `<meta http-equiv="refresh">` como fallback, `<script is:inline>window.location.replace()</script>` como redirect principal, `<noscript>` con link. Usa `replace()` para no dejar la página puente en el historial.
+- `index.astro`: constantes `SITE_ORIGIN` (`window.location.origin`) y `BASE_PATH` (base sin trailing slash) al inicio del `<script>`.
+- `index.astro`: botón "Compartir" del modal ahora arma `${SITE_ORIGIN}${BASE_PATH}/producto/${currentProductId}/` en vez de `.../#slug`.
+
+Convivencia de URLs: `/producto/slug/` es la "URL de compartir" (la que usa el botón Compartir y la que ven los scrapers); `/#slug` es la que muestra el navegador mientras se navega. Caso borde aceptado: si el usuario copia la barra de direcciones a mano, copia `/#slug` (sigue mostrando el logo genérico). Los links viejos que ya circularon también siguen mostrando el logo (caché de WhatsApp, no se puede forzar).
+
+**2. Optimización del `.bat` (generación incremental + paralelización).**
+El `.bat` venía creciendo desde S31: de ~40s a ~120-150s, porque el script procesaba ~693 imágenes (antes ~200) y las regeneraba TODAS desde cero en cada corrida (`fs.rmSync(publicCatalogoDir)` al inicio).
+
+Solución en `generar-catalogo.mjs` (2 cambios):
+- **Incremental:** se eliminó el `rmSync` inicial. Nueva función `shouldRegenerate(sourcePath, destinationPath)` que compara `mtimeMs` de source vs output. Si el output es más nuevo (o el source no cambió), se skipea. **Cleanup automático al final:** se recorre `public/catalogo/` y se borran los archivos huérfanos (de productos renombrados o eliminados), comparando contra un `Set` de paths esperados. Esto resuelve el caso "renombrar un modelo" sin acumular basura.
+- **Paralelización:** `processCatalogoImages` ahora arma un array de tareas (`{ kind, src, dst }`), filtra las que ya están al día, y procesa las pendientes con `runWithConcurrency(pending, 6, worker)` (6 imágenes en paralelo, `sharp` usa el thread pool de libuv internamente).
+
+Resultados medidos:
+| Escenario | Antes | Después |
+|---|---|---|
+| Correr sin tocar nada | ~120s | ~5-10s |
+| Agregar 1 producto (7 imágenes) | ~120s | ~10-15s |
+| Regenerar todo (borraste `public/catalogo/`) | ~120s | ~40-50s |
+
+**Caveat documentado:** si se cambia la lógica de `optimizeImage` o `generateOgImage` (calidad, dimensiones, formato), el incremental NO lo detecta (el mtime del output sigue siendo más nuevo que el del source). Hay que borrar `public/catalogo/` a mano una vez y volver a correr el script. La paralelización hace que esa regeneración total tarde ~40-50s en vez de ~120s.
+
+**Descartado esta sesión:**
+- **Google Shopping feed.** Técnicamente viable (generar un XML en `generar-catalogo.mjs` y subirlo a Google Merchant Center), pero los requisitos de Google (políticas de envío/devoluciones visibles en el sitio, coherencia feed/landing) chocan con el "envío a coordinar" actual. Requiere que el cliente defina una política concreta antes de encararlo. Postergado sin fecha.
+- **`content-visibility: auto` en las tarjetas del catálogo.** Mejora de performance de renderizado (~50% menos trabajo de layout/paint en listas largas). Cambio de 1 minuto (1 regla CSS + `contain-intrinsic-size`). Interesaba pero se postergó.
+- **Mover la generación de imágenes y el build a GitHub Actions (CI).** El `.bat` pasaría de ~25-45s a ~5-10s (solo push). Requería sacar `public/catalogo/`, `public/talles/`, `public/promo/`, `src/data/*.json` y `dist/` del repo (agregarlos a `.gitignore`) y agregar `node scripts/generar-catalogo.mjs` al workflow. Se descartó por complejidad percibida; el incremental ya deja el `.bat` en un tiempo aceptable.
+
+**Lección técnica:** un script que "borra todo y regenera" es simple pero escala mal. La dupla incremental (comparar mtime) + cleanup de huérfanos (comparar contra un Set de paths esperados) es más código pero se vuelve O(cambios) en vez de O(total). Y la paralelización con límite (6 concurrentes, no "todo a la vez") es la forma correcta de usar `sharp` en lote sin saturar la máquina.
+
+Cómo se probó: preview de OG verificada en WhatsApp con un link de prueba (miniatura de la remera, no el logo). Redirect de `/producto/slug/` a `/#slug` funcionando (el modal se abre). Botón "Compartir" del modal copia la URL nueva. Regresión ok: home, modal, carrito, zoom, historyStack, todo sin cambios. Para el `.bat`: correr sin tocar nada (0 generadas, ~5-10s), agregar producto (7 generadas, ~10-15s), renombrar (7 generadas + 7 huérfanas eliminadas), borrar producto (huérfanas eliminadas, producto desaparece de la web).
+
+⏭️ Próxima sesión: S33 — a definir. Candidatos en orden de urgencia: selector de color de tela (urgente, pedido del cliente), quick wins varios (botón "Preguntar por modelo", presets de cantidad, OG del home), swipe entre productos en modal mobile. Google Shopping, `content-visibility` y CI quedan como "evaluar a futuro".
 
 
 <!-- Próxima sesión: pegar acá abajo el bloque nuevo. -->
