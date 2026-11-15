@@ -391,7 +391,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://barriopuro.github.io/krakoa/#spawn</loc>
+    <loc>https://barriopuro.github.io/krakoa/#mafalda</loc>
     <lastmod>2026-11-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -427,7 +427,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://barriopuro.github.io/krakoa/#spiderman-black-suit</loc>
+    <loc>https://barriopuro.github.io/krakoa/#spawn</loc>
     <lastmod>2026-11-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -463,7 +463,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://barriopuro.github.io/krakoa/#spiderman-venom</loc>
+    <loc>https://barriopuro.github.io/krakoa/#spiderman-black-suit</loc>
     <lastmod>2026-11-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -499,7 +499,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://barriopuro.github.io/krakoa/#the-batman</loc>
+    <loc>https://barriopuro.github.io/krakoa/#spiderman-venom</loc>
     <lastmod>2026-11-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -535,7 +535,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://barriopuro.github.io/krakoa/#the-joker</loc>
+    <loc>https://barriopuro.github.io/krakoa/#the-batman</loc>
     <lastmod>2026-11-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -565,7 +565,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://barriopuro.github.io/krakoa/#the-punisher</loc>
+    <loc>https://barriopuro.github.io/krakoa/#the-joker</loc>
     <lastmod>2026-11-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -595,7 +595,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://barriopuro.github.io/krakoa/#tortugas-ninja</loc>
+    <loc>https://barriopuro.github.io/krakoa/#the-punisher</loc>
     <lastmod>2026-11-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -625,7 +625,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://barriopuro.github.io/krakoa/#tortugas-ninja-maestro-splinter</loc>
+    <loc>https://barriopuro.github.io/krakoa/#tortugas-ninja</loc>
     <lastmod>2026-11-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -655,7 +655,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://barriopuro.github.io/krakoa/#tortugas-ninja-shredder</loc>
+    <loc>https://barriopuro.github.io/krakoa/#tortugas-ninja-maestro-splinter</loc>
     <lastmod>2026-11-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -685,7 +685,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://barriopuro.github.io/krakoa/#x-men</loc>
+    <loc>https://barriopuro.github.io/krakoa/#tortugas-ninja-shredder</loc>
     <lastmod>2026-11-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -715,7 +715,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://barriopuro.github.io/krakoa/#x-men-uncanny</loc>
+    <loc>https://barriopuro.github.io/krakoa/#x-men</loc>
     <lastmod>2026-11-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -745,7 +745,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://barriopuro.github.io/krakoa/#x-men-wolverine</loc>
+    <loc>https://barriopuro.github.io/krakoa/#x-men-uncanny</loc>
     <lastmod>2026-11-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -775,7 +775,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://barriopuro.github.io/krakoa/#x-men-x-factor-x-force-apocalipsis</loc>
+    <loc>https://barriopuro.github.io/krakoa/#x-men-wolverine</loc>
     <lastmod>2026-11-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -800,6 +800,12 @@
   </url>
   <url>
     <loc>https://barriopuro.github.io/krakoa/#it</loc>
+    <lastmod>2026-11-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://barriopuro.github.io/krakoa/#x-men-x-factor-x-force-apocalipsis</loc>
     <lastmod>2026-11-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
