@@ -704,87 +704,82 @@ Feedback táctil (vibración + micro-glitch)	Se decidió no sumar vibración. El
 | Parallax del hero (Fase 3) | Descartado en S30. El hero ya tiene zoom + paneo lento en las imágenes rotativas; sumar parallax scrolleado se sentía cargado y "de más". |
 §8 — Ideas futuras (vivas, sin implementar)
 
-🔴 Próximos (S32–S34, prioridad acordada en S31):
+🔴 Próximos (S34+, prioridad alta):
+- **Wishlist / favoritos.** Corazón en cada tarjeta + ícono con contador en el header + drawer (patrón del carrito). Guarda en `localStorage` (`krakoa_wishlist`). Integración con el modal (corazón junto a "Compartir"). Detalle de features a definir en sesión aparte (antes de codear).
+- **Badges "NUEVO" / "DESTACADO".** Campo opcional en la carpeta del producto (convención `_(nuevo)` / `_(destacado)`, o un `meta.json`). El script lo lee y pone badge en la tarjeta. Los "destacados" pueden ir primero en el orden aleatorio.
+- **WhatsApp Business + catálogo.** Prerequisito: número nuevo para KRAKOA (§9). Cargar 10-20 productos a mano alcanza para arrancar. El precio puede no mostrarse en Argentina (verificar).
 
-- **Selector de color de tela — prioridad alta.** El cliente está pidiendo muchos cambios de color en remeras, así que pasa a urgente. El plan completo está más abajo en esta misma sección.
-- ~~Página OG por producto~~ — **RESUELTO en S32** (§3 "Página puente OG"). Se implementó como página puente con redirect. WhatsApp cachea agresivamente: los links viejos (`/#slug`) van a seguir mostrando el logo; los nuevos (`/producto/slug/`) muestran la remera.
+🟡 Features web (sin fecha):
+- **Página "Gracias por tu pedido".** `/gracias/` con mensaje + código de descuento + link a IG.
+- **"Vistos recientemente".** Sección con los últimos 4-6 productos abiertos. A estudiar: dónde va (¿final del catálogo? ¿en el modal? ¿en el footer?) y cómo se renderiza.
+- **Swipe para cambiar de producto en el modal mobile.**
+- **Sistema de envíos.** Tabla de zonas con precios fijos. Hoy es "a coordinar".
+- **KrakoaFont en más lugares.** "Sobre KRAKOA", 404 custom (ya está), página "Gracias".
+- **Cotizador offline (`cotizador.html`).** Externo al repo. Ya existe.
 
-🟡 Otras ideas (sin fecha):
+🟢 Canales de venta (a explorar):
+- **Instagram Shopping.** Requiere feed XML (mismo que Google Shopping) + página de FB con actividad + revisión de Meta.
+- **Mercado Libre.** Comisiones altas (~13%) pero tráfico enorme. Carga manual o API (más trabajo).
 
-- **Google Shopping feed (evaluado en S32, postergado).** Generar un XML con los datos de cada producto en `generar-catalogo.mjs`, subirlo a Google Merchant Center. Requisitos de Google (políticas de envío/devoluciones visibles, coherencia feed/landing) chocan con el "envío a coordinar" actual. Encarar solo si el cliente define una política de envíos concreta.
-- **`content-visibility: auto` en las tarjetas (evaluado en S32, postergado).** Mejora de performance de renderizado (~50% menos trabajo de layout/paint). Cambio de 1 regla CSS + `contain-intrinsic-size`. Riesgo bajo.
-- **Mover generación de imágenes + build a GitHub Actions (evaluado en S32, descartado).** El `.bat` pasaría de ~25-45s a ~5-10s (solo push). Requiere sacar `public/catalogo/`, `public/talles/`, `public/promo/`, `src/data/*.json` y `dist/` del repo y agregar `node scripts/generar-catalogo.mjs` al workflow. Descartado por complejidad percibida; el incremental de S32 ya deja el `.bat` en un tiempo aceptable.
+📣 Difusión (a sostener):
+- **UGC.** Repostear stories/posts de clientes. Ya en curso.
+- **Contenido educativo en IG.** "Oversize vs Regular", "Cómo cuidar DTF", "Cómo medirte". Requiere constancia.
+- **TikTok / Reels.** 2-3 videos/semana, 15-30s. Mejor ROI orgánico hoy.
+- **Micro-influencers.** Canje (remera por post). Anime, cine, gaming, música (5k-30k seguidores).
 
-Selector de color de tela
-Algunos modelos con 2-3 colores (blanco, negro, otros). Plan:
+🏷️ Físico:
+- **QR en la etiqueta de las remeras.** Apunta a `krakoa.netlify.app`. Costo: imprimir etiquetas.
 
-Subcarpetas por color dentro de la carpeta del modelo.
+Otros (heredados):
+- **Selector de color de tela.** Demovido: el usuario no tiene modelos con variantes todavía. Plan completo (subcarpetas por color, `colors: { negro: {...}, blanco: {...} }`, selector arriba del corte, `key` del carrito incluye color, `COLOR_NAMES`).
+- **Google Shopping feed.** Requiere política de envíos concreta (hoy es "a coordinar"). Postergado.
+- **`content-visibility: auto` en las tarjetas.** Implementado en S32 (era un pendiente).
+- **Mover generación de imágenes + build a GitHub Actions.** Descartado en S32.
 
-Script detecta → colors: { negro: {...}, blanco: {...} }.
-
-Selector arriba del corte (solo si hay >1). Cambiar color reemplaza URLs.
-
-Tarjeta usa color default.
-
-key del carrito incluye color (rompe localStorage viejo, aceptable).
-
-Mapeo COLOR_NAMES para nombres lindos.
-
-Sistema de envíos
-Tabla de zonas con precios fijos: simple, predecible, requiere mantenimiento. Recomendado para arrancar.
-
-API Correo Argentino (MiCorreo) por CP: precio real, requiere cuenta dev, peso/medidas. No ahora.
-
-Cálculo por distancia para moto: nunca exacto. No vale la pena.
-
-Decisión actual: "a coordinar" por WhatsApp.
-
-KrakoaFont en más lugares
-Sección "Sobre KRAKOA" / "Nuestra historia".
-
-Pantalla 404 custom.
-
-Página "Gracias por tu pedido".
-
-Bloque "sin resultados" — RESUELTO en S25
-Implementado como Opción 1: mensaje + botón "Ver todo el catálogo" que resetea búsqueda y categoría. Vive en #no-results (hermano de #products). Se togglea con hidden desde filterProducts.
-
-Descartadas (no re-proponer):
-
-Opción 2 (mensaje + chips de categorías clickeables): suma complejidad visual para un caso de borde, y el usuario prefiere una salida única y clara.
-
-Opción 3 (búsqueda con sinónimos / "¿quisiste decir X?"): requiere mantener tabla de sinónimos a mano, mismo motivo por el que se descartó el override de nombres (§7).
-
-Cotizador offline (cotizador.html)
-Archivo externo (no vive en el repo). Calcula costos DTF (Guillotine Best-Area-Fit) + precios de venta. Independiente del deploy.
+Descartados (no re-proponer): ver §7.
 
 §9 — Pendientes
 
-🔴 Próximos (ver §8 para detalle):
-- Selector de color de tela — prioridad alta, en breve.
-- Página OG por producto — idea futura, planificada.
-- Swipe para cambiar de producto en el modal mobile (Fase 1 del roadmap) — sin fecha.
-- Resto del roadmap Fase 4/6 — sin fecha.
+🔴 Prerequisito (bloquea WhatsApp):
+- **Conseguir número para KRAKOA** (eSIM prepaga Movistar, sin chip físico). Camino definido: app Mi Movistar → línea nueva prepaga con eSIM → recarga inicial. Bloquea WhatsApp Business + catálogo.
+
+🔴 Próximos (S34+):
+- **Wishlist / favoritos** (feature web chica, 1 sesión).
+- **Badges "NUEVO" / "DESTACADO"** (feature web chica, media sesión).
+- **WhatsApp Business + catálogo** (después del número).
+
+🟡 Sin fecha:
+- Página "Gracias por tu pedido"
+- "Vistos recientemente" (definir "dónde" antes de codear)
+- Swipe para cambiar de producto en el modal mobile
+- Canales de venta: Instagram Shopping, Mercado Libre
+- Difusión: contenido educativo IG, TikTok, micro-influencers
+- QR en etiquetas
 
 🟡 Descartados (no re-proponer):
-- Fast-forward del carrusel del modal (recorrido por slides intermedios): probado en S27, descartado por denso + inestable en mobile. Thumbnails y tabla de talles saltan directo.
-- Parallax del hero: descartado en S30 (§7).
+- Fast-forward del carrusel del modal (probado en S27, descartado).
+- Parallax del hero (descartado en S30).
+- **Quick wins S32** (botón "Preguntar por modelo", presets de cantidad, OG del home): los 3 descartados por el usuario en S33.
+- Selector de color: demovido hasta que haya modelos con variantes de color.
 
 🟢 Resueltos (no volver a proponer):
-- Página OG por producto: resuelta en S32 (página puente + redirect).
-- Generación de imágenes del `.bat`: resuelta en S32 (incremental + paralelización, ~120s → ~5-10s).
-- Barra compacta: resuelta en S25.
-- Auto-slide en tarjetas: resuelto en S26.
-- Auto-slide adaptativo + slide del carrusel del modal: resueltos en S27.
-- Lupa compacta: resuelta en S28 (volvió en mobile apilada debajo del carrito).
-- Alineación del SVG de la lupa del compacto mobile: resuelta (confirmado por el usuario en S30).
-- _redirects (Netlify): reemplazado por index.html con meta OG + refresh en S23.
-- 404 custom: implementado en S31.
-- Sugerencia de tiers en carrito: implementada en S31.
-- Fix de og:image a URLs absolutas: implementado en S31 (WhatsApp/Facebook ahora muestran la miniatura del logo).
+- Página OG por producto (S32).
+- Generación de imágenes incremental (S32).
+- Thumbs del modal a 400w (S33).
+- Preload de las primeras 3 tarjetas (S33).
+- Barra compacta (S25).
+- Auto-slide en tarjetas (S26).
+- Auto-slide adaptativo + slide del carrusel del modal (S27).
+- Lupa compacta (S28).
+- Alineación del SVG de la lupa del compacto mobile (S29/S30).
+- _redirects (Netlify) → index.html con meta OG + refresh (S23).
+- 404 custom (S31).
+- Sugerencia de tiers en carrito (S31).
+- Fix de og:image a URLs absolutas (S31).
+- `content-visibility: auto` en tarjetas (S32).
 
 🟣 Otros:
-- Performance de backdrop-filter en mobile de gama muy baja: hoy blur(6px). No se reprodujo problema hasta ahora.
+- Performance de backdrop-filter en mobile de gama muy baja: hoy blur(6px). No se reprodujo problema.
 - **Generación incremental del catálogo (S32) — caveat:** si se cambia la lógica de `optimizeImage` o `generateOgImage` (calidad, dimensiones, formato), el incremental NO lo detecta. Hay que borrar `public/catalogo/` a mano una vez y volver a correr el script (~40-50s por la paralelización).
 
 Nada urgente. Web estable.
@@ -1293,6 +1288,40 @@ Resultados medidos:
 Cómo se probó: preview de OG verificada en WhatsApp con un link de prueba (miniatura de la remera, no el logo). Redirect de `/producto/slug/` a `/#slug` funcionando (el modal se abre). Botón "Compartir" del modal copia la URL nueva. Regresión ok: home, modal, carrito, zoom, historyStack, todo sin cambios. Para el `.bat`: correr sin tocar nada (0 generadas, ~5-10s), agregar producto (7 generadas, ~10-15s), renombrar (7 generadas + 7 huérfanas eliminadas), borrar producto (huérfanas eliminadas, producto desaparece de la web).
 
 ⏭️ Próxima sesión: S33 — a definir. Candidatos en orden de urgencia: selector de color de tela (urgente, pedido del cliente), quick wins varios (botón "Preguntar por modelo", presets de cantidad, OG del home), swipe entre productos en modal mobile. Google Shopping, `content-visibility` y CI quedan como "evaluar a futuro".
+
+
+S33 — Optimización de thumbs del modal + preload del catálogo + planificación de la próxima tanda
+
+Recompresión: no (se mantiene la compresión de S25).
+
+Sesión en dos partes. Primero dos optimizaciones de performance chicas, de cero impacto visual (pedidas explícitamente por el usuario). Después planificación extensa de la próxima tanda.
+
+**1. Thumbs del modal a 400w.**
+Los thumbnails del carrusel (`.modal-thumb`, ~56×72px CSS) bajaban la imagen a 1000w. Ahora usan la variante 400w (generada por el script desde S32). El `src` (1000w) se sigue usando para la imagen grande del carrusel, el hero, el zoom y el auto-slide.
+
+Cambios:
+- `<article class="product-card">` recibe `data-modelo-400` y `data-remera-400` con paths ya resueltos (`${base}/${product.modelo400}`).
+- `openModal()` y `loadProductIntoModal()`: agregan `thumbSrc: modelo400` / `thumbSrc: remera400` a los dos primeros items de `currentImages`. Extras y tablas de talles no tienen `thumbSrc` (fallback al `src`).
+- `renderThumbs()`: usa `image.thumbSrc || image.src` para el `<img>` del thumb.
+- Ahorro: ~1-1.5 MB por sesión si el usuario abre varios modales. Cero impacto visual.
+
+**2. Preload de las primeras 3 tarjetas del catálogo.**
+- Bloque `<link rel="preload" as="image" imagesrcset={...} imagesizes={...}>` para `catalogo.products.slice(1, 4)` (productos 1, 2 y 3; el 0 ya estaba precargado como hero).
+- Usa `imagesrcset` con las 3 variantes (400/600/1000w) + `imagesizes` que matchea el `sizes` del `<img>` de la tarjeta. El navegador elige la variante correcta.
+- Mejora el LCP del catálogo. No reduce peso.
+
+**3. Planificación de la próxima tanda.**
+Se consolidó la lista de tareas en §8 y §9 (actualizados). Novedades respecto a S32:
+- **Selector de color:** demovido. El usuario no tiene modelos con variantes todavía.
+- **Quick wins S32** (botón "Preguntar por modelo", presets de cantidad, OG del home): descartados por el usuario.
+- **Nuevas features web:** Wishlist, Badges "NUEVO"/"DESTACADO", Página "Gracias por tu pedido", "Vistos recientemente".
+- **Canales de venta:** WhatsApp Business + catálogo, Instagram Shopping, Mercado Libre.
+- **Difusión:** UGC (ya en curso), contenido educativo IG, TikTok, micro-influencers.
+- **Prerequisito:** número nuevo para KRAKOA (eSIM prepaga Movistar, sin chip físico) para pasar a WhatsApp Business sin mezclar el número personal.
+
+**Lección técnica:** el patrón "thumb 400w + src 1000w" es el mismo que ya se usa en las tarjetas (`modelo400`/`modelo600` en el srcset). Mantiene una sola fuente de verdad (las variantes las genera el script) y solo cambia qué variante consume cada parte de la UI. Cero deuda nueva.
+
+Cómo se probó: verificado en desktop y mobile. DevTools → Network filtrando `-400.webp` muestra los thumbs del modal a 400w. Las imágenes grandes (modal, hero, zoom) siguen bajando 1000w. El preload del catálogo aparece en Network antes que el resto de las imágenes lazy. Regresión ok: modal, carrusel, zoom, carrito, compartir, todo sin cambios.
 
 
 <!-- Próxima sesión: pegar acá abajo el bloque nuevo. -->
