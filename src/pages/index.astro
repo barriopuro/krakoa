@@ -503,6 +503,8 @@ const marqueeText = [
                   data-extras={JSON.stringify(product.extras || [])}
                   data-modelo-400={`${base}/${product.modelo400}`}
                   data-remera-400={`${base}/${product.remera400}`}
+                  data-colors={product.colors ? JSON.stringify(product.colors) : ""}
+                  data-default-color={product.defaultColor || ""}
                 >
                   <button class="product-button" type="button">
                   <div class="product-image">
@@ -544,6 +546,33 @@ const marqueeText = [
                     </div>
                   </div>
                 </button>
+                {product.colors && Object.keys(product.colors).length > 1 && (
+                  <span
+                    class="product-colors-badge"
+                    style={`--category-color: ${
+                      catalogo.categories.find(
+                        (category) => category.id === product.category
+                      )?.color ?? "#888888"
+                    };`}
+                  >
+                    {Object.entries(product.colors)
+                      .slice(0, 4)
+                      .map(([slug, color]) => (
+                        <span
+                          class={`product-color-dot${slug === product.defaultColor ? " active" : ""}`}
+                          data-color={slug}
+                          style={`--dot-color: ${color.hex};`}
+                          title={color.name}
+                          aria-label={color.name}
+                        ></span>
+                      ))}
+                    {Object.keys(product.colors).length > 4 && (
+                      <span class="product-colors-more">
+                        +{Object.keys(product.colors).length - 4}
+                      </span>
+                    )}
+                  </span>
+                )}
               </article>
               );
             })
@@ -898,11 +927,22 @@ const marqueeText = [
         </div>
 
         <div class="modal-info-body">
+          <!-- COLOR (S34) — se oculta si el producto no tiene colores -->
+          <div class="modal-field" id="modal-color-field" style="display: none">
+            <div class="modal-label-row">
+              <label class="modal-label">
+                <span class="modal-step" id="modal-color-step">1.</span> Color:
+                <strong id="modal-color-name" style="margin-left: 6px; color: var(--category-color, #fff)"></strong>
+              </label>
+            </div>
+            <div id="modal-colors" class="modal-colors"></div>
+          </div>
+
           <!-- CORTE -->
           <div class="modal-field">
             <div class="modal-label-row">
               <label class="modal-label">
-                <span class="modal-step">1.</span> Elegí el corte:
+                <span class="modal-step" id="modal-fit-step">1.</span> Elegí el corte:
               </label>
               
             </div>
@@ -913,7 +953,7 @@ const marqueeText = [
           <div class="modal-field">
             <div class="modal-label-row">
               <label class="modal-label">
-                <span class="modal-step">2.</span> Elegí el talle:
+                <span class="modal-step" id="modal-size-step">2.</span> Elegí el talle:
               </label>
               <span id="modal-size-cm" class="modal-size-cm"></span>
             </div>
@@ -2646,6 +2686,10 @@ const marqueeText = [
 
   .product-card {
     min-width: 0;
+    /* S36: position: relative para que el badge de colores (que
+       ahora vive fuera del <button>, como hermano) se posicione
+       respecto a la tarjeta. */
+    position: relative;
     /* S32: el navegador se salta el renderizado (layout, paint,
        style) de las tarjetas que están muy fuera de pantalla.
        Cuando el usuario scrollea y la tarjeta se acerca, se
@@ -2901,6 +2945,110 @@ const marqueeText = [
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  /* --------------------------- */
+  /* BADGE DE COLORES (S35)      */
+  /* --------------------------- */
+
+  /* Aparece arriba a la derecha de la tarjeta cuando el producto
+     tiene 2+ colores. Muestra una bolita por color (hasta 4; si
+     hay más, "+N"). S35: el fondo usa el color de la categoría
+     (mezclado con un poco de negro para que los dots y el "+N"
+     sigan legibles). */
+  .product-colors-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 5;
+    display: inline-flex;
+    align-items: center;
+    gap: 1px;
+    /* S36: padding mínimo y gap chico para maximizar el tamaño de
+       las bolitas sin agrandar el badge. Alto total del badge:
+       3 + 16 + 3 = 22px (igual que antes). */
+    padding: 3px 4px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--category-color, #888) 70%, #1a1a1a);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+    /* S36: el badge está FUERA del <button> (hermano, no
+       descendiente). Por eso el :active del botón no se activa
+       al tocarlo. Ya no hace falta isolation, mousedown, ni
+       touchstart handlers. */
+    pointer-events: auto;
+    cursor: default;
+  }
+
+  .product-color-dot {
+    position: relative;
+    /* S36: 16px (antes 14px). Compensado con padding 3px (antes
+       4px). El badge mide lo mismo (22px de alto). */
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--dot-color, #888);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+    flex-shrink: 0;
+    pointer-events: auto;
+    cursor: pointer;
+    transition: box-shadow 0.15s ease;
+  }
+
+  /* S36: hit area extendida. Al ser bolitas de 16px con padding
+     de 3px, el ::before de -3px cubre casi todo el área clickeable
+     del badge. */
+  .product-color-dot::before {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+  }
+
+  .product-color-dot:hover {
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.5),
+      0 0 0 2px rgba(255, 255, 255, 0.4);
+  }
+
+  .product-color-dot.active {
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.5),
+      0 0 0 2px rgba(0, 0, 0, 0.6),
+      0 0 0 3px #fff;
+  }
+
+  .product-colors-more {
+    font-size: 9px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+    margin-left: 2px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (max-width: 900px) {
+    .product-colors-badge {
+      top: 8px;
+      right: 8px;
+      padding: 3px 4px;
+      gap: 1px;
+    }
+
+    /* S36: en mobile los dots son 18px (antes 16px). El badge
+       crece 2px de alto, imperceptible. */
+    .product-color-dot {
+      width: 18px;
+      height: 18px;
+    }
+
+    .product-color-dot::before {
+      inset: -3px;
+    }
+
+    .product-colors-more {
+      font-size: 10px;
+    }
   }
 
   :global(.site-footer) {
@@ -4289,6 +4437,55 @@ const marqueeText = [
     font-variant-numeric: tabular-nums;
   }
 
+  /* --------------------------- */
+  /* SELECTOR DE COLOR (S34)     */
+  /* --------------------------- */
+
+  /* Círculos de color. Opción C: sin nombre visible, con title
+     (tooltip nativo del navegador). El nombre del color seleccionado
+     se muestra en el label del paso ("1. Color: Negro"). */
+  :global(.modal-colors) {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  :global(.modal-color) {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid #333;
+    background: var(--color-hex, #888);
+    cursor: pointer;
+    padding: 0;
+    transition: border-color 0.2s ease, transform 0.15s ease;
+    position: relative;
+    /* Borde interno sutil para que los colores oscuros (negro) no
+       se pierdan contra el fondo oscuro del modal, y los claros
+       (blanco) tengan un contorno. */
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  }
+
+  :global(.modal-color:hover) {
+    border-color: #666;
+    transform: scale(1.08);
+  }
+
+  :global(.modal-color.active) {
+    border-color: var(--category-color, #fff);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+      0 0 0 2px #111,
+      0 0 0 4px var(--category-color, #fff);
+  }
+
+  @media (max-width: 800px) {
+    :global(.modal-color) {
+      width: 28px;
+      height: 28px;
+    }
+  }
 
   /* FOOTER */
 
@@ -7752,6 +7949,69 @@ const marqueeText = [
       });
     }
 
+    // S35: dot click handler. Cambia el color de la tarjeta sin abrir
+    // el modal. Actualiza las dos imágenes (base + hover), marca el
+    // dot activo, resetea el hover si estaba visible, y recuerda el
+    // color para cuando se abra el modal.
+    cards.forEach((card) => {
+      const badge = card.querySelector(".product-colors-badge");
+      if (!badge) return;
+      const dots = badge.querySelectorAll(".product-color-dot");
+      if (dots.length === 0) return;
+
+      // S36: el badge está FUERA del <button>, así que el :active
+      // del botón no se activa al tocarlo (no es descendiente). Ya
+      // no hace falta mousedown/touchstart handlers.
+      //
+      // El click handler procesa el color solo si el target es un
+      // dot. Si fue en el fondo del badge, no hace nada (pero
+      // cortamos la propagación por las dudas).
+      badge.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const dot = event.target.closest(".product-color-dot");
+        if (!dot) return;
+
+        const colorSlug = dot.dataset.color;
+        if (!colorSlug) return;
+
+        const colorsRaw = card.dataset.colors || "";
+        if (!colorsRaw) return;
+
+        let colorsData;
+        try {
+          colorsData = JSON.parse(colorsRaw);
+        } catch (error) {
+          return;
+        }
+
+        const colorData = colorsData[colorSlug];
+        if (!colorData) return;
+
+        // Actualizar imágenes + dot activo.
+        if (typeof window.__krakoaUpdateCardColor === "function") {
+          window.__krakoaUpdateCardColor(
+            card.dataset.id,
+            colorSlug,
+            colorData
+          );
+        }
+
+        // Si el hover (remera) está visible, resetearlo para que
+        // no quede el color viejo hasta el próximo ciclo.
+        const state = card._state;
+        if (state && (state.phase === "in" || state.phase === "holding")) {
+          slideOut(card);
+        }
+
+        // Recordar el color para el modal.
+        if (typeof window.__krakoaSetCardColor === "function") {
+          window.__krakoaSetCardColor(card.dataset.id, colorSlug);
+        }
+      });
+    });
+
     scheduleNextSlide();
   })();
 
@@ -8459,6 +8719,204 @@ categoryButtons.forEach((button) => {
   const modalPriceBadge = document.querySelector("#modal-price-badge");
   const modalPriceTotal = document.querySelector("#modal-price-total");
 
+  // S34: selector de color.
+  const modalColorField = document.querySelector("#modal-color-field");
+  const modalColorStep = document.querySelector("#modal-color-step");
+  const modalColorName = document.querySelector("#modal-color-name");
+  const modalColors = document.querySelector("#modal-colors");
+  const modalFitStep = document.querySelector("#modal-fit-step");
+  const modalSizeStep = document.querySelector("#modal-size-step");
+
+  // Estado del color actual (null si el producto no tiene colores).
+  let colorsData = null;
+  let hasColors = false;
+  let currentColor = null;
+
+  // S35: memoria de color por producto. Map en memoria (no persiste
+  // al recargar). Cuando el usuario navega con flechas entre productos
+  // y vuelve, se mantiene el último color que estaba viendo. Si no
+  // hay memoria, se usa el defaultColor del meta.json.
+  const lastColorByProduct = new Map();
+
+  // S35: expuesto para que el handler de los dots (en el bloque
+  // AUTO-SLIDE) pueda recordar el color elegido por producto.
+  window.__krakoaSetCardColor = (productId, colorSlug) => {
+    if (!productId || !colorSlug) return;
+    lastColorByProduct.set(productId, colorSlug);
+  };
+
+  // S35: actualiza la tarjeta (imágenes + dot activo) cuando cambia
+  // el color, sea desde el dot de la tarjeta o desde el modal.
+  // Mantiene la coherencia visual entre ambos.
+  function updateCardColorVisual(productId, colorSlug, colorData) {
+    if (!productId || !colorData) return;
+    const card = document.querySelector(
+      `.product-card[data-id="${productId}"]`
+    );
+    if (!card) return;
+
+    // Imagen base (modelo).
+    const baseImg = card.querySelector(".product-image-base");
+    if (baseImg) {
+      baseImg.src = `${BASE_PATH}${colorData.modelo}`;
+      baseImg.srcset = `${BASE_PATH}${colorData.modelo400} 400w, ${BASE_PATH}${colorData.modelo600} 600w, ${BASE_PATH}${colorData.modelo} 1000w`;
+    }
+
+    // Imagen hover (remera). Si ya está cargada, la actualizamos
+    // también (para que el auto-slide no muestre el color viejo).
+    const hoverImg = card.querySelector(".product-image-hover");
+    if (hoverImg) {
+      hoverImg.dataset.src = `${BASE_PATH}${colorData.remera}`;
+      hoverImg.dataset.src400 = `${BASE_PATH}${colorData.remera400}`;
+      hoverImg.dataset.src600 = `${BASE_PATH}${colorData.remera600}`;
+      if (hoverImg.src) {
+        const isDesktopNow = window.matchMedia(
+          "(min-width: 901px)"
+        ).matches;
+        const dpr = window.devicePixelRatio || 1;
+        let newSrc;
+        if (isDesktopNow) {
+          newSrc = hoverImg.dataset.src;
+        } else if (dpr >= 3) {
+          newSrc = hoverImg.dataset.src600 || hoverImg.dataset.src;
+        } else {
+          newSrc = hoverImg.dataset.src400 || hoverImg.dataset.src;
+        }
+        hoverImg.src = newSrc;
+      }
+    }
+
+    // Dot activo.
+    const dots = card.querySelectorAll(".product-color-dot");
+    dots.forEach((d) => {
+      d.classList.toggle("active", d.dataset.color === colorSlug);
+    });
+  }
+
+  window.__krakoaUpdateCardColor = updateCardColorVisual;
+
+  function resolveColorForProduct(product, data) {
+    if (!data) return null;
+    const productId = product.dataset.id || "";
+    const remembered = lastColorByProduct.get(productId);
+    if (remembered && data[remembered]) return remembered;
+    const defaultColor = product.dataset.defaultColor || "";
+    if (defaultColor && data[defaultColor]) return defaultColor;
+    return Object.keys(data).sort((a, b) => a.localeCompare(b, "es"))[0];
+  }
+
+  // Construye el array `currentImages` a partir de los datos de un
+  // color. `colorData` es el objeto { modelo, modelo400, ..., extras }
+  // del color actual.
+  function buildImagesForColor(colorData) {
+    const modelo = `${BASE_PATH}${colorData.modelo}`;
+    const modelo400 = `${BASE_PATH}${colorData.modelo400}`;
+    const remera = `${BASE_PATH}${colorData.remera}`;
+    const remera400 = `${BASE_PATH}${colorData.remera400}`;
+
+    const extras = (colorData.extras || []).map((extra) => ({
+      src: `${BASE_PATH}${extra.src}`,
+      label: extra.label,
+    }));
+
+    return [
+      { src: modelo, thumbSrc: modelo400, label: "Modelo" },
+      { src: remera, thumbSrc: remera400, label: "Remera" },
+      ...extras,
+      { src: `${BASE_PATH}/talles/oversize.webp`, label: "Talles Oversize" },
+      { src: `${BASE_PATH}/talles/regular.webp`, label: "Talles Regular" },
+    ];
+  }
+
+  // Pinta (o esconde) el selector de color y ajusta la numeración
+  // de los pasos (Corte/Talle se corren a 2/3 si hay colores).
+  function renderColors() {
+    if (!modalColorField) return;
+
+    if (!hasColors) {
+      modalColorField.style.display = "none";
+      if (modalFitStep) modalFitStep.textContent = "1.";
+      if (modalSizeStep) modalSizeStep.textContent = "2.";
+      return;
+    }
+
+    modalColorField.style.display = "";
+    if (modalFitStep) modalFitStep.textContent = "2.";
+    if (modalSizeStep) modalSizeStep.textContent = "3.";
+
+    if (modalColorName) {
+      const color = colorsData && colorsData[currentColor];
+      modalColorName.textContent = color ? color.name : "";
+    }
+
+    if (modalColors) {
+      modalColors.innerHTML = "";
+      Object.keys(colorsData).forEach((slug) => {
+        const color = colorsData[slug];
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "modal-color";
+        btn.dataset.color = slug;
+        btn.title = color.name;
+        btn.setAttribute("aria-label", color.name);
+        btn.style.setProperty("--color-hex", color.hex);
+        if (slug === currentColor) btn.classList.add("active");
+        btn.addEventListener("click", () => selectColor(slug));
+        modalColors.appendChild(btn);
+      });
+    }
+  }
+
+  // Cambia el color seleccionado: reconstruye las imágenes, resetea
+  // el slide a la primera foto, y cierra el zoom si estaba abierto.
+  // NO resetea corte/talle/cantidad (no dependen del color).
+  function selectColor(slug) {
+    if (slug === currentColor) return;
+    if (!colorsData || !colorsData[slug]) return;
+
+    // S35: guardamos la etiqueta del slide actual para intentar
+    // mantenernos en la misma foto después del cambio de color.
+    // (Modelo, Remera, extras y tablas de talles tienen labels
+    // estables entre colores.)
+    const currentLabel = currentImages[currentImageIndex]?.label || "";
+
+    currentColor = slug;
+    // S35: recordar el color por producto (para cuando el usuario
+    // vuelva con las flechas).
+    lastColorByProduct.set(currentProductId, slug);
+    renderColors();
+
+    // S35: reflejar el color elegido en el modal sobre la tarjeta,
+    // así si el usuario cierra el modal ve el mismo color y, si lo
+    // vuelve a abrir, se mantiene.
+    if (colorsData && colorsData[slug]) {
+      updateCardColorVisual(currentProductId, slug, colorsData[slug]);
+    }
+
+    currentImages = buildImagesForColor(colorsData[slug]);
+    zoomableIndices = currentImages
+      .map((_, index) =>
+        isZoomableSlide(index, currentImages.length) ? index : -1
+      )
+      .filter((index) => index !== -1);
+
+    // S35: buscar el mismo slide (por label) en la nueva lista. Si
+    // existe (modelo, remera, tabla, o el mismo extra), nos quedamos
+    // ahí. Si no existe (extra que el color nuevo no tiene), caemos
+    // a la primera foto.
+    const sameLabelIndex = currentImages.findIndex(
+      (img) => img.label === currentLabel
+    );
+    currentImageIndex = sameLabelIndex >= 0 ? sameLabelIndex : 0;
+
+    if (imageZoom.getAttribute("aria-hidden") === "false") {
+      closeImageZoomDirect();
+    }
+
+    renderThumbs();
+    renderModalImage();
+  }
+
   const modalProductPrev = document.querySelector("#modal-product-prev");
   const modalProductNext = document.querySelector("#modal-product-next");
   const modalProductPrevMobile = document.querySelector("#modal-product-prev-mobile");
@@ -9034,38 +9492,41 @@ categoryButtons.forEach((button) => {
     const image = product.querySelector(".product-image-base");
     if (!image) return;
 
-    const modelo = image.getAttribute("src");
-    const remera = modelo.replace("/modelo.", "/remera.");
+    // S34: leer colores desde data-colors (JSON serializado por Astro).
+    // Si el producto no tiene colores, colorsData queda null y se usa
+    // el flujo legacy (modelo/remera directos).
+    const colorsRaw = product.dataset.colors || "";
+    colorsData = colorsRaw ? JSON.parse(colorsRaw) : null;
+    hasColors = !!colorsData && Object.keys(colorsData).length > 1;
+    currentColor = hasColors ? resolveColorForProduct(product, colorsData) : null;
 
-    // S33: thumbs a 400w para las miniaturas del modal.
-    // Los thumbnails miden ~56×72px CSS; a 400w sobra resolución
-    // incluso en retina. El src (1000w) se sigue usando para la
-    // imagen grande del carrusel. Si por algún motivo no hay 400w
-    // (path vacío), renderThumbs cae al src original.
-    const modelo400 = product.dataset.modelo400 || "";
-    const remera400 = product.dataset.remera400 || "";
+    if (hasColors) {
+      currentImages = buildImagesForColor(colorsData[currentColor]);
+    } else {
+      const modelo = image.getAttribute("src");
+      const remera = modelo.replace("/modelo.", "/remera.");
 
-    // Fotos extra: vienen del JSON generado por el script.
-    // Cada extra tiene { src, label }. Si no hay, el array queda vacío.
-    const extras = product.dataset.extras
-      ? JSON.parse(product.dataset.extras)
-      : [];
+      // S33: thumbs a 400w para las miniaturas del modal.
+      const modelo400 = product.dataset.modelo400 || "";
+      const remera400 = product.dataset.remera400 || "";
 
-    currentImages = [
-      { src: modelo, thumbSrc: modelo400, label: "Modelo" },
-      { src: remera, thumbSrc: remera400, label: "Remera" },
-      ...extras.map((extra) => ({
-        src: `${base}${extra.src}`,
-        label: extra.label,
-      })),
-      { src: `${base}/talles/oversize.webp`, label: "Talles Oversize" },
-      { src: `${base}/talles/regular.webp`, label: "Talles Regular" },
-    ];
+      const extras = product.dataset.extras
+        ? JSON.parse(product.dataset.extras)
+        : [];
+
+      currentImages = [
+        { src: modelo, thumbSrc: modelo400, label: "Modelo" },
+        { src: remera, thumbSrc: remera400, label: "Remera" },
+        ...extras.map((extra) => ({
+          src: `${base}${extra.src}`,
+          label: extra.label,
+        })),
+        { src: `${base}/talles/oversize.webp`, label: "Talles Oversize" },
+        { src: `${base}/talles/regular.webp`, label: "Talles Regular" },
+      ];
+    }
 
     // Precargamos todas las imágenes del producto en paralelo.
-    // Con esto, cuando el usuario hace fast-forward (o navega rápido
-    // con las flechas), las imágenes intermedias ya están en cache
-    // y el efecto se ve fluido, especialmente en mobile.
     currentImages.forEach((image) => {
       const preload = new Image();
       preload.src = image.src;
@@ -9078,8 +9539,6 @@ categoryButtons.forEach((button) => {
     lastUnitPrice = null;
     lastRenderedPrice = null;
 
-    // Recalculamos los índices zoomeables para este producto
-    // (depende de cuántos slides tenga: 4 sin extras, 5 con 1 extra, etc.)
     zoomableIndices = currentImages
       .map((_, index) => (isZoomableSlide(index, currentImages.length) ? index : -1))
       .filter((index) => index !== -1);
@@ -9099,6 +9558,7 @@ categoryButtons.forEach((button) => {
 
     renderThumbs();
     renderModalImage();
+    renderColors();
     renderFits();
     renderSizes();
     updateSizeCm();
@@ -9375,32 +9835,38 @@ categoryButtons.forEach((button) => {
     const image = product.querySelector(".product-image-base");
     if (!image) return;
 
-    const modelo = image.getAttribute("src");
-    const remera = modelo.replace("/modelo.", "/remera.");
+    // S34: leer colores (igual que en openModal).
+    const colorsRaw = product.dataset.colors || "";
+    colorsData = colorsRaw ? JSON.parse(colorsRaw) : null;
+    hasColors = !!colorsData && Object.keys(colorsData).length > 1;
+    currentColor = hasColors ? resolveColorForProduct(product, colorsData) : null;
 
-    // S33: thumbs a 400w (igual que en openModal).
-    const modelo400 = product.dataset.modelo400 || "";
-    const remera400 = product.dataset.remera400 || "";
+    if (hasColors) {
+      currentImages = buildImagesForColor(colorsData[currentColor]);
+    } else {
+      const modelo = image.getAttribute("src");
+      const remera = modelo.replace("/modelo.", "/remera.");
 
-    const extras = product.dataset.extras
-      ? JSON.parse(product.dataset.extras)
-      : [];
+      const modelo400 = product.dataset.modelo400 || "";
+      const remera400 = product.dataset.remera400 || "";
 
-    currentImages = [
-      { src: modelo, thumbSrc: modelo400, label: "Modelo" },
-      { src: remera, thumbSrc: remera400, label: "Remera" },
-      ...extras.map((extra) => ({
-        src: `${base}${extra.src}`,
-        label: extra.label,
-      })),
-      { src: `${base}/talles/oversize.webp`, label: "Talles Oversize" },
-      { src: `${base}/talles/regular.webp`, label: "Talles Regular" },
-    ];
+      const extras = product.dataset.extras
+        ? JSON.parse(product.dataset.extras)
+        : [];
+
+      currentImages = [
+        { src: modelo, thumbSrc: modelo400, label: "Modelo" },
+        { src: remera, thumbSrc: remera400, label: "Remera" },
+        ...extras.map((extra) => ({
+          src: `${base}${extra.src}`,
+          label: extra.label,
+        })),
+        { src: `${base}/talles/oversize.webp`, label: "Talles Oversize" },
+        { src: `${base}/talles/regular.webp`, label: "Talles Regular" },
+      ];
+    }
 
     // Precargamos todas las imágenes del producto en paralelo.
-    // Con esto, cuando el usuario hace fast-forward (o navega rápido
-    // con las flechas), las imágenes intermedias ya están en cache
-    // y el efecto se ve fluido, especialmente en mobile.
     currentImages.forEach((image) => {
       const preload = new Image();
       preload.src = image.src;
@@ -9431,6 +9897,7 @@ categoryButtons.forEach((button) => {
 
     renderThumbs();
     renderModalImage();
+    renderColors();
     renderFits();
     renderSizes();
     updateSizeCm();
@@ -10058,15 +10525,28 @@ categoryButtons.forEach((button) => {
 
 
   function addToCart(product) {
-    const { name, image, fit, size, quantity, color } = product;
-    const key = `${name}__${fit}__${size}`;
+    const { name, image, fit, size, quantity, color, colorName } = product;
+    // S34: el color entra en la key. Productos sin colores usan
+    // "unico" para mantener compatibilidad con ítems viejos del
+    // localStorage (que no tenían color y se comportaban como únicos).
+    const colorKey = color || "unico";
+    const key = `${name}__${fit}__${size}__${colorKey}`;
 
     const existing = cartItems.find((item) => item.key === key);
 
     if (existing) {
       existing.quantity += quantity;
     } else {
-      cartItems.push({ key, name, image, fit, size, quantity, color });
+      cartItems.push({
+        key,
+        name,
+        image,
+        fit,
+        size,
+        quantity,
+        color: colorKey,
+        colorName: colorName || "",
+      });
     }
 
     saveCart();
@@ -10208,6 +10688,10 @@ categoryButtons.forEach((button) => {
     const itemsHtml = cartItems
       .map((item) => {
         const lineTotal = item.quantity * unitPrice;
+        const colorLabel =
+          item.color && item.color !== "unico" && item.colorName
+            ? `<span>${item.colorName}</span><span>·</span>`
+            : "";
         return `
         <div class="cart-item">
           <img
@@ -10230,6 +10714,7 @@ categoryButtons.forEach((button) => {
               </button>
             </div>
             <div class="cart-item-meta">
+              ${colorLabel}
               <span>${item.fit}</span>
               <span>·</span>
               <span>Talle <strong>${item.size}</strong></span>
@@ -10310,6 +10795,9 @@ categoryButtons.forEach((button) => {
     cartItems.forEach((item, index) => {
       const lineTotal = item.quantity * unitPrice;
       text += `${index + 1}. *Remera ${item.name}*\n`;
+      if (item.color && item.color !== "unico" && item.colorName) {
+        text += `   - Color: *${item.colorName}*\n`;
+      }
       text += `   - Corte: *${item.fit}*\n`;
       text += `   - Talle: *${item.size}*\n`;
       text += `   - Cantidad: *${item.quantity}*\n`;
@@ -10443,7 +10931,14 @@ categoryButtons.forEach((button) => {
 
   modalAdd.addEventListener("click", () => {
     const imageSrc = currentImages[0]?.src || "";
-    const color = modal.style.getPropertyValue("--category-color") || "#ffffff";
+
+    // S34: color seleccionado (slug + nombre para mostrar en el
+    // carrito y en el mensaje de WhatsApp).
+    const colorSlug = currentColor || "unico";
+    const colorName =
+      currentColor && colorsData && colorsData[currentColor]
+        ? colorsData[currentColor].name
+        : "";
 
     addToCart({
       name: currentProductName,
@@ -10451,7 +10946,8 @@ categoryButtons.forEach((button) => {
       fit: selectedFit,
       size: selectedSize,
       quantity: currentQuantity,
-      color,
+      color: colorSlug,
+      colorName: colorName,
     });
 
     modalAdd.classList.add("is-added");

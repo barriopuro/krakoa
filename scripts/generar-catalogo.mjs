@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import readline from "node:readline/promises";
 import sharp from "sharp";
 
 const root = process.cwd();
@@ -270,6 +271,225 @@ function findExtraImages(directory) {
   return extras;
 }
 
+// -------------------------
+// S34: COLORES
+// -------------------------
+
+// Mapeo de slug de color a nombre visible. Si un color no está acá,
+// se capitaliza el slug ("rojo-oscuro" → "Rojo Oscuro").
+const COLOR_NAMES = {
+  negro: "Negro",
+  blanco: "Blanco",
+  rojo: "Rojo",
+  azul: "Azul",
+  verde: "Verde",
+  gris: "Gris",
+  beige: "Beige",
+  amarillo: "Amarillo",
+  rosa: "Rosa",
+  violeta: "Violeta",
+  naranja: "Naranja",
+  marron: "Marrón",
+  bordo: "Bordó",
+};
+
+// Hex para el círculo del selector en el modal. Si un color no está
+// acá, se usa un gris neutro (no rompe nada, solo se ve genérico).
+const COLOR_HEX = {
+  negro: "#0a0a0a",
+  blanco: "#f5f5f5",
+  rojo: "#e53935",
+  azul: "#2f80ed",
+  verde: "#27ae60",
+  gris: "#888888",
+  beige: "#d4c5a9",
+  amarillo: "#f2c94c",
+  rosa: "#e84393",
+  violeta: "#9b59b6",
+  naranja: "#f2994a",
+  marron: "#8b5a3c",
+  bordo: "#8b1e3f",
+};
+
+function getColorName(slug) {
+  if (COLOR_NAMES[slug]) return COLOR_NAMES[slug];
+  return slug
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
+function getColorHex(slug) {
+  return COLOR_HEX[slug] || "#888888";
+}
+
+// Normaliza un color a slug: minúsculas, sin acentos, espacios a
+// guiones. Se usa para el campo `defaultColor` del meta.json (por si
+// el usuario escribe "Negro" o "rojo oscuro").
+function normalizarColorSlug(texto) {
+  return (texto || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9\-]/g, "")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+// Lee catalogo/<cat>/<modelo>/meta.json si existe.
+// Devuelve el objeto parseado o null. Si el JSON está roto, advierte
+// y devuelve null (no rompe el build).
+function readMetaJson(directory) {
+  const metaPath = path.join(directory, "meta.json");
+  if (!fs.existsSync(metaPath)) return null;
+  try {
+    const raw = fs.readFileSync(metaPath, "utf8");
+    return JSON.parse(raw);
+  } catch (error) {
+    console.warn(
+      `ADVERTENCIA: meta.json inválido en ${directory}: ${error.message}`
+    );
+    return null;
+  }
+}
+
+// S34: fase interactiva de defaults.
+// Recorre catalogo/ buscando productos con colores (subcarpetas) que
+// no tengan meta.json. Por cada uno, pregunta cuál es el color default
+// y crea el archivo. Si no hay ninguno pendiente, no hace nada.
+//
+// Si process.stdin no es TTY (ej: el script corre en CI, o desde un
+// entorno sin consola interactiva), no pregunta y devuelve sin hacer
+// nada. En ese caso, el loop de productos cae al fallback alfabético
+// (ver más abajo).
+async function askDefaults() {
+  if (!process.stdin.isTTY) return;
+
+  const pending = [];
+
+  const catFolders = fs
+    .readdirSync(catalogoDir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory());
+
+  for (const catFolder of catFolders) {
+    const catDir = path.join(catalogoDir, catFolder.name);
+    const prodFolders = fs
+      .readdirSync(catDir, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory());
+
+    for (const prodFolder of prodFolders) {
+      const prodDir = path.join(catDir, prodFolder.name);
+      const metaPath = path.join(prodDir, "meta.json");
+
+      if (fs.existsSync(metaPath)) continue;
+
+      const subdirs = fs
+        .readdirSync(prodDir, { withFileTypes: true })
+        .filter(
+          (entry) =>
+            entry.isDirectory() &&
+            !entry.name.startsWith("_") &&
+            !entry.name.startsWith(".")
+        )
+        .map((entry) => entry.name)
+        .sort((a, b) => a.localeCompare(b, "es"));
+
+      // Solo cuenta como "producto con colores" si tiene subcarpetas
+      // Y NO tiene modelo/remera directos (si tiene ambos, es legacy
+      // con subcarpetas sueltas, y el loop lo advierte igual).
+      const hasDirect =
+        !!findImage(prodDir, "modelo") && !!findImage(prodDir, "remera");
+
+      if (subdirs.length > 0 && !hasDirect) {
+        if (subdirs.length === 1) {
+          // S36: un solo color. No tiene sentido preguntar cuál es
+          // el default. Creamos el meta.json automáticamente con
+          // ese único color (si no existe ya).
+          const metaPath2 = path.join(prodDir, "meta.json");
+          if (!fs.existsSync(metaPath2)) {
+            fs.writeFileSync(
+              metaPath2,
+              JSON.stringify({ defaultColor: subdirs[0] }, null, 2) + "\n",
+              "utf8"
+            );
+            console.log(
+              `Meta creado (color único): ${path.relative(root, metaPath2)} ` +
+              `(defaultColor=${subdirs[0]})`
+            );
+          }
+        } else {
+          // S36: 2+ colores. Preguntamos cuál es el default.
+          pending.push({
+            catFolder: catFolder.name,
+            prodFolder: prodFolder.name,
+            prodDir,
+            colors: subdirs,
+          });
+        }
+      }
+    }
+  }
+
+  if (pending.length === 0) return;
+
+  console.log("");
+  console.log(
+    `Se detectaron ${pending.length} producto(s) nuevo(s) con colores ` +
+    `sin meta.json.`
+  );
+  console.log("");
+
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  try {
+    for (const item of pending) {
+      console.log(
+        `Producto: ${item.catFolder}/${item.prodFolder}`
+      );
+      item.colors.forEach((slug, index) => {
+        console.log(`  ${index + 1}. ${getColorName(slug)} (${slug})`);
+      });
+
+      let elegido = null;
+      while (elegido === null) {
+        const answer = await rl.question(
+          `¿Cuál es el color default? (1-${item.colors.length}, ` +
+          `Enter = ${item.colors[0]}): `
+        );
+
+        if (answer.trim() === "") {
+          elegido = item.colors[0];
+          break;
+        }
+
+        const idx = parseInt(answer.trim(), 10);
+        if (idx >= 1 && idx <= item.colors.length) {
+          elegido = item.colors[idx - 1];
+        } else {
+          console.log(
+            `  Respuesta inválida. Elegí un número entre 1 y ${item.colors.length}.`
+          );
+        }
+      }
+
+      const metaPath = path.join(item.prodDir, "meta.json");
+      fs.writeFileSync(
+        metaPath,
+        JSON.stringify({ defaultColor: elegido }, null, 2) + "\n",
+        "utf8"
+      );
+      console.log(`  → meta.json creado: defaultColor=${elegido}`);
+      console.log("");
+    }
+  } finally {
+    rl.close();
+  }
+}
+
 if (!fs.existsSync(catalogoDir)) {
   console.error("ERROR: No existe la carpeta catalogo.");
   process.exit(1);
@@ -443,6 +663,11 @@ async function processCatalogoImages() {
 
 await processCatalogoImages();
 
+// S34: fase interactiva de defaults. Se hace antes del resto del
+// procesamiento para que las preguntas queden agrupadas al principio
+// y no se mezclen con el log de talles, logos y productos.
+await askDefaults();
+
 const tallesDir = path.join(root, "talles");
 const publicTallesDir = path.join(root, "public", "talles");
 
@@ -554,8 +779,126 @@ categories.push({
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");
 
-    const modelo = findImage(productDirectory, "modelo");
-    const remera = findImage(productDirectory, "remera");
+    // S34: detectar estructura.
+    //   - Subcarpetas (negro/, blanco/, etc.) → producto con colores.
+    //   - modelo.jpg y remera.jpg directos  → producto legacy (sin colores).
+    // Las subcarpetas que empiezan con "_" o "." se ignoran (para
+    // carpetas de trabajo tipo _raw/ o _old/).
+    const subdirs = fs
+      .readdirSync(productDirectory, { withFileTypes: true })
+      .filter(
+        (entry) =>
+          entry.isDirectory() &&
+          !entry.name.startsWith("_") &&
+          !entry.name.startsWith(".")
+      )
+      .map((entry) => entry.name)
+      .sort((a, b) => a.localeCompare(b, "es"));
+
+    const modeloDirecto = findImage(productDirectory, "modelo");
+    const remeraDirecto = findImage(productDirectory, "remera");
+    const hasDirectImages = !!(modeloDirecto && remeraDirecto);
+
+    // Caso borde: tiene subcarpetas Y archivos directos. Preferimos
+    // legacy y advertimos (para no mezclar estructuras en un mismo
+    // producto).
+    if (subdirs.length > 0 && hasDirectImages) {
+      console.warn(
+        `ADVERTENCIA: "${productName}" tiene subcarpetas Y archivos ` +
+        `directos. Se trata como legacy (sin colores). Las subcarpetas ` +
+        `se ignoran: ${subdirs.join(", ")}`
+      );
+    }
+
+    const hasColors = subdirs.length > 0 && !hasDirectImages;
+
+    if (hasColors) {
+      // ── Producto con colores ──
+      const colorsObj = {};
+      let defaultColor = null;
+
+      // Leer meta.json (opcional) para defaultColor.
+      const meta = readMetaJson(productDirectory);
+      if (meta && meta.defaultColor) {
+        defaultColor = normalizarColorSlug(meta.defaultColor);
+      }
+
+      for (const colorSlug of subdirs) {
+        const colorDir = path.join(productDirectory, colorSlug);
+        const modelo = findImage(colorDir, "modelo");
+        const remera = findImage(colorDir, "remera");
+
+        if (!modelo || !remera) {
+          console.warn(
+            `ADVERTENCIA: color "${colorSlug}" de "${productName}" ` +
+            `no tiene todas las imágenes. Se omite.`
+          );
+          continue;
+        }
+
+        const extras = findExtraImages(colorDir);
+        const modeloClean = modelo.replace(/\.[^.]+$/, "");
+        const remeraClean = remera.replace(/\.[^.]+$/, "");
+        const basePath = `/catalogo/${categoryId}/${cleanName}/${colorSlug}`;
+
+        colorsObj[colorSlug] = {
+          name: getColorName(colorSlug),
+          hex: getColorHex(colorSlug),
+          modelo: `${basePath}/${modeloClean}.webp`,
+          modelo400: `${basePath}/${modeloClean}-400.webp`,
+          modelo600: `${basePath}/${modeloClean}-600.webp`,
+          remera: `${basePath}/${remeraClean}.webp`,
+          remera400: `${basePath}/${remeraClean}-400.webp`,
+          remera600: `${basePath}/${remeraClean}-600.webp`,
+          ogImage: `${basePath}/${remeraClean}-og.jpg`,
+          extras: extras.map((extra) => ({
+            src: `${basePath}/${extra.file.replace(/\.[^.]+$/, ".webp")}`,
+            label: extra.label,
+          })),
+        };
+      }
+
+      const colorSlugs = Object.keys(colorsObj);
+      if (colorSlugs.length === 0) {
+        console.warn(
+          `ADVERTENCIA: "${productName}" no tiene ningún color válido. Se omite.`
+        );
+        continue;
+      }
+
+      // Si defaultColor no existe (o no se especificó), usamos el
+      // primero alfabético.
+      if (!defaultColor || !colorsObj[defaultColor]) {
+        defaultColor = colorSlugs.sort((a, b) => a.localeCompare(b, "es"))[0];
+      }
+
+      const defaultData = colorsObj[defaultColor];
+
+      products.push({
+        id: productId,
+        name: productName,
+        tags,
+        category: categoryId,
+        categoryName: config?.name ?? formatName(categoryId),
+        colors: colorsObj,
+        defaultColor,
+        // Espejo del default en los campos top-level, para no romper
+        // el código existente (tarjeta, hero, auto-slide, OG, sitemap).
+        modelo: defaultData.modelo,
+        modelo400: defaultData.modelo400,
+        modelo600: defaultData.modelo600,
+        remera: defaultData.remera,
+        remera400: defaultData.remera400,
+        remera600: defaultData.remera600,
+        ogImage: defaultData.ogImage,
+        extras: defaultData.extras,
+      });
+      continue;
+    }
+
+    // ── Producto legacy (sin colores) ──
+    const modelo = modeloDirecto;
+    const remera = remeraDirecto;
 
     if (!modelo || !remera) {
       console.warn(
@@ -593,6 +936,8 @@ categories.push({
       tags,
       category: categoryId,
       categoryName: config?.name ?? formatName(categoryId),
+      colors: null,
+      defaultColor: null,
       modelo: `/catalogo/${categoryId}/${cleanName}/${modeloClean}.webp`,
       modelo400: `/catalogo/${categoryId}/${cleanName}/${modeloClean}-400.webp`,
       modelo600: `/catalogo/${categoryId}/${cleanName}/${modeloClean}-600.webp`,
