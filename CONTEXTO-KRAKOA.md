@@ -1,6 +1,8 @@
 CONTEXTO — Proyecto KRAKOA Web
 Archivo de contexto para abrir chat nuevo con IA.
-Versión: Compresión S24 (2026).
+Versión: Compresión S36 (2026).
+
+Índice: §0 actualizar · §1 proyecto · §2 estructura · §3 mapa del sitio · §4 sistemas transversales · §5 reglas técnicas · §6 convenciones IA · §7 decisiones descartadas · §8 ideas futuras · §9 pendientes · §10 protocolo chat nuevo · §11 historial · §12 flujo de modelo nuevo.
 
 Cómo actualizarlo: ver §0. Cada sesión nueva se agrega como un bloque al final del §11. No hace falta tocar el resto.
 
@@ -11,9 +13,9 @@ Parte A (siempre): entrada de historial de la sesión.
 
 Parte B (opcional): cambios al cuerpo del archivo, en formato "Buscá esto / Reemplazá por". Solo si la sesión cambió algo estructural (nueva deuda, deuda cerrada, decisión tomada, cambio de stack, etc.).
 
-Cada 10-15 sesiones: reescritura completa del archivo (compresión del historial viejo + reorganización). La IA te guía.
+Cada 10-15 sesiones: reescritura completa del archivo (compresión del historial viejo + reorganización). La IA te guía. Última recompresión: S36 (esta). Anterior: S25.
 
-Regla de oro: si dudás, no toques §1–§10. Agregá todo al historial del §11 y listo. El cuerpo se mantiene estable.
+Regla de oro: si dudás, no toques §1–§10 ni §12. Agregá todo al historial del §11 y listo. El cuerpo se mantiene estable.
 
 §1 — El proyecto
 Qué es: sitio web de catálogo de remeras de la marca KRAKOA.
@@ -45,17 +47,30 @@ text
 ├── CONTEXTO-KRAKOA.md
 ├── .github/workflows/deploy.yml
 │
-├── catalogo/<cat>/<modelo>/    ← JPG originales
+├── catalogo/<cat>/<modelo>/    ← JPG originales (producto legacy, 1 color)
 │   ├── modelo.jpg
 │   ├── remera.jpg
 │   └── extra-*.jpg (opcional)
+│
+├── catalogo/<cat>/<modelo>/    ← JPG originales (producto con colores, S34)
+│   ├── meta.json               ← opcional: { "defaultColor": "negro" }
+│   ├── negro/
+│   │   ├── modelo.jpg
+│   │   ├── remera.jpg
+│   │   └── extra-*.jpg (opcional)
+│   └── blanco/
+│       ├── modelo.jpg
+│       └── remera.jpg
 │
 ├── talles/{oversize,regular}.jpg
 ├── promo/{config.json,*.jpg}
 │
 ├── public/
 │   ├── catalogo/<cat>/<modelo>/*.webp   (generado incremental, S32)
-│   ├── catalogo/<cat>/<modelo>/*-og.jpg (generado, S32)
+│   │   (3 variantes por modelo y remera: 1000w, -600.webp, -400.webp.
+│   │    Los extra-*.webp son solo 1000w. Los OG son .jpg aparte.)
+│   ├── catalogo/<cat>/<modelo>/*-og.jpg (generado, S32 — 1200×630 JPG)
+│   │   (misma estructura con subcarpetas de color si el producto tiene colores)
 │   ├── talles/*.webp                    (generado)
 │   ├── promo/*.webp                     (generado)
 │   ├── fonts/krakoafont.ttf
@@ -83,6 +98,11 @@ node scripts\generar-catalogo.mjs → catálogo + sitemap + imágenes
   nuevo. Caveat: si cambiás calidad/dimensiones en optimizeImage
   o generateOgImage, hay que borrar public/catalogo/ a mano una
   vez y volver a correr.)
+
+  (S34: si hay productos con 2+ colores sin meta.json, el script
+  pregunta el color default al principio, agrupado. Si hay productos
+  con 1 solo color, crea el meta.json automáticamente. Si process.stdin
+  no es TTY, no pregunta y cae al fallback alfabético.)
 
 npm run build
 
@@ -131,7 +151,7 @@ Header con glitch ocasional (borde + placeholder + × + lupa) al abrir/cerrar en
 Hero
 Fondo con imágenes del catálogo, rotación ~5.5s. Primera estática con fetchpriority="high" (LCP); las otras 5 por JS. Opacidad 0.32. Zoom + paneo lento.
 
-Full-width vía left: 50%; width: 100vw; transform: translateX(-50%). Sin border-radius.
+Full-width vía left: 50%; width: calc(100vw - var(--sbw, 0px)); transform: translateX(-50%). Sin border-radius.
 
 ::after con scanlines + vignette + degradado vertical.
 
@@ -153,15 +173,25 @@ Glitch de texto + borde.
 
 Toggle: click en activo lo desactiva.
 
+Efecto "ventana" (S29): el texto de los botones es Arial 900, 21px desktop / 15.5px mobile, line-height 1, letter-spacing -0.135em. Las palabras se salen del recuadro y se recortan por overflow: hidden del botón. El ancho del recuadro lo fija un ::before invisible con `font: inherit` del botón original. Cero cambios de layout. Aplica igual en barra fija y compacta.
+
+Glitch al hover/click (S29): al hover (solo `hover: hover and pointer: fine`, y solo si NO está activo) y al click/tap cuando queda .active. El glitch aleatorio cada 3-7s sigue funcionando. El chequeo de .glitching evita solapamientos.
+
 Grilla full-width (100vw + translateX(-50%)).
 
 Tinte de fondo por categoría: dos capas (#catalogTintA/B) con clip-path. Slide derecha→izquierda al cambiar categoría (0.55s).
 
 Marquesina diagonal del tinte (S31): el nombre de la categoría repetido ("ANIME ANIME ANIME...") en diagonal a -45°, varios renglones con tamaños alternados (60-110px), direcciones alternadas (pares a la izquierda, impares a la derecha), velocidad 80s por loop. Vive dentro del tinte, se hereda el barrido entre categorías del `clip-path` del padre (se va con la capa vieja, entra con la nueva). Opacidad del texto 0.05 (muy sutil, no compite con las tarjetas). Se genera desde JS con `renderTintMarquee(layer, categoryName)`. Tamaños en `sizes = [95, 75, 110, 60, 85, 105, 70, 90]`. Delay aleatorio negativo por renglón para que no se muevan sincronizados. Pausa al scrollear, off-viewport, y con overlays abiertos (body classes).
 
+Bloque "sin resultados" (#no-results, S25): hermano de #products (no adentro), aparece cuando el filtro deja la grilla vacía. Título + subtítulo ("Revisá la ortografía o navegá por nuestro catálogo.") + botón "Ver todo el catálogo" que limpia búsqueda y categoría, sube al inicio con smooth. filterProducts() togglea hidden según toShowSet.size > 0. Usa el mismo truco full-width que #products para centrar.
+
 Tarjetas:
 
 Dos <img>: base (modelo) y hover (remera).
+
+Base usa srcset (S31): 400w/600w/1000w + sizes="(max-width: 900px) 50vw, (max-width: 1400px) 33vw, 25vw". src="modelo.webp" (1000w) como fallback. El JS del modal, hero, zoom, auto-slide NO se toca: siguen usando 1000w.
+
+Badge de colores (S35, badge fuera del botón en S36): si el producto tiene 2+ colores, aparece un `<span class="product-colors-badge">` arriba a la derecha de la tarjeta (fuera del `<button class="product-button">`, hermano del botón, hijo directo del `<article>`). Fondo con `color-mix` del color de la categoría. Dots de 16px desktop / 18px mobile, hasta 4, con `+N` si hay más. Dots clickeables (cambian las imágenes de la tarjeta sin abrir el modal) y con `title`. El fondo del badge NO abre el modal.
 
 Hover (desktop ≥901px) y auto-slide (mobile + desktop): misma animación. La remera entra desde la derecha (translateX(100%) → 0), se sostiene, y sale hacia la derecha (0 → translateX(100%)). Sin scale. 0.32s ease. Modelo es el estado base. La animación vive 100% en JS (no en CSS). Ver §4 "Auto-slide + hover slide".
 
@@ -184,7 +214,7 @@ S30: el h2 hace glitch de entrada al viewport (una sola vez, ~450ms). Un título
 Footer
 Tres columnas centradas (logo vertical + texto + links).
 
-Partículas blancas subiendo (22, por JS).
+Partículas blancas subiendo (22 desktop / 10 mobile, por JS desde S31).
 
 Copyright ("© 2026 KRAKOA powered by BARRIOPURO").
 
@@ -243,7 +273,7 @@ Cobro: transferencia (alias/CBU) o link de MP (secundario). NO integrar MP en la
 Carrito
 Persistencia: localStorage, clave krakoa_cart.
 
-Estructura: { key, name, image, fit, size, quantity, color }. key = ${name}__${fit}__${size}. Si se agrega color, incluir en key (rompe compatibilidad, aceptable).
+Estructura: { key, name, image, fit, size, quantity, color }. key = ${name}__${fit}__${size}__${colorKey} (S34). Productos sin colores usan "unico". Items viejos (sin color) se manejan con item.color ?? "unico".
 
 Funciones: saveCart, getTotalCount, updateCartBadge, addToCart, removeFromCart, changeQuantity, clearCart, renderCartDrawer(animate), buildWhatsAppOrderMessage.
 
@@ -275,9 +305,14 @@ Desktop: 2 columnas (1.15fr / 1fr). Izq: galería. Der: header (categoría + tí
 
 Mobile (<800px): una columna. .modal-grid es el único scroller.
 
-Body de arriba a abajo: corte → talle (+alto × ancho cm) → cantidad → precio.
+Body de arriba a abajo (con colores): color → corte → talle (+alto × ancho cm) → cantidad → precio.
+Body sin colores: corte → talle → cantidad → precio (la numeración de pasos se ajusta dinámicamente: con colores, Corte=2 y Talle=3; sin colores, Corte=1 y Talle=2).
+
+Selector de color (S34): círculos de 32px (28px mobile), con `title` (tooltip nativo) y `aria-label`. Sin nombre visible al lado. El nombre del color seleccionado se muestra en el label del paso ("1. Color: Negro"). Borde con el color de la categoría cuando `.active`. Borde interno sutil para que negro/blanco se lean.
 
 Galería: dos <img> apiladas (#modal-image-a / #modal-image-b) para transición direccional. Slides: modelo, remera, extras, y siempre las 2 tablas de talles. Al abrir el modal (openModal y loadProductIntoModal) se precargan TODAS las imágenes del producto con new Image() en paralelo, para que las flechas rápidas y el cambio de producto se sientan fluidos.
+
+Thumbs a 400w (S33): `openModal` y `loadProductIntoModal` agregan `thumbSrc: modelo400` / `thumbSrc: remera400` a los dos primeros items de `currentImages`. Extras y tablas de talles no tienen `thumbSrc` (fallback al `src`). `renderThumbs()` usa `image.thumbSrc || image.src`.
 
 Transición: renderModalImage(direction, cleanupDelay = 340). "next" / "prev" únicamente (el modo "fade" se eliminó en S27). La imagen entra desde el costado con translateX(±100%) y la vieja sale hacia el opuesto, sin scale. 0.32s + cubic-bezier(0.22, 1, 0.36, 1). renderToken cancela cleanups huérfanos si el usuario clickea rápido. Thumbnails y "Ver tabla de talles" saltan DIRECTO con renderModalImage (sin recorrido por slides intermedios; el fast-forward se probó en S27 y se descartó).
 
@@ -299,7 +334,7 @@ Teclado: Shift + ← / → producto. ← / → imagen.
 
 Apertura/cierre (CRT): Power On/Off. Apertura scaleY(0.005) scaleX(0.5) → 1 con overshoot (0.55s), flicker + scanlines. Cierre inverso (0.35s). .is-closing se agrega al cerrar y se limpia a 380ms con modalCloseTimer.
 
-Scroll lock: lockScroll() compensa ancho de barra con padding-right.
+Scroll lock: lockBodyScroll() compensa ancho de barra con padding-right. Ver §5 "scrollbar-gutter".
 
 Link compartido: #slug vía openProductFromHash + truco de historial.
 
@@ -321,6 +356,30 @@ Cerrar: click fuera (pointerdown + pointerup), ×, Escape, back.
 Navegación: flechas a los lados, swipe mobile, teclado ← → desktop. Índice propio (zoomImageIndex).
 
 Bug fix crítico: flechas del zoom usan pointerdown + stopPropagation (sin esto, pointerup del overlay cerraba el zoom).
+
+Sistema de colores de tela (S34-S36)
+Productos con 2+ colores. Los de 1 solo color se tratan como legacy.
+
+Estructura: `catalogo/<cat>/<modelo>/<color>/{modelo.jpg,remera.jpg}`. `meta.json` opcional con `{ "defaultColor": "negro" }`. Si no existe, `generar-catalogo.mjs` lo crea automáticamente (con el único color si hay 1, o preguntando al principio del build si hay 2+).
+
+JSON por producto:
+  - `colors: { negro: { name, hex, modelo, modelo400, modelo600, remera, ..., ogImage, extras }, blanco: {...} } | null`.
+  - `defaultColor: "negro" | null`.
+  - Campos top-level (`modelo`, `remera`, `ogImage`, `extras`) = espejo del default. Todo el código legacy sigue funcionando sin tocarse.
+
+Script 3 (`3 Finalizar_Mockups_KRAKOA.jsx`):
+  - Pregunta el color (ventana con botones + "Otro..."). Normaliza a slug.
+  - Subcarpeta por color en local (`carpetaOriginal/<color>/`) y en `catalogo/<cat>/<modelo>/<color>/`.
+  - "Ya existe" se verifica sobre la carpeta del color (no la del modelo).
+
+Web:
+  - `hasColors = !!colorsData && Object.keys(colorsData).length > 1` (¡> 1, no > 0!).
+  - `currentColor` se resuelve con `resolveColorForProduct`: memoria por producto (Map en memoria, no persiste al recargar) → defaultColor → alfabético.
+  - `buildImagesForColor(colorData)`: arma `currentImages` desde los paths del color.
+  - `selectColor(slug)`: cambia color, mantiene slide actual (por label), cierra zoom, actualiza tarjeta (imágenes + dot activo), recuerda color por producto.
+  - Carrito: `key = ${name}__${fit}__${size}__${colorKey}`. Productos sin colores usan `"unico"`. Items viejos (sin `color`) se manejan con `item.color ?? "unico"`.
+  - WhatsApp: línea `- Color: *${colorName}*` solo si hay color != "unico".
+  - Tarjeta: badge con dots clickeables, fondo con color de categoría, `pointer-events` capturado. El badge vive FUERA del `<button>` (S36, para evitar el rebote del `:active`).
 
 Colores de categoría
 Al abrir modal, se lee --category-color del .product-overlay de la tarjeta (NO de .product-category) y se setea en .modal-content. Se aplica a:
@@ -349,6 +408,8 @@ En header. #search + .search-toggle (lupa, mobile). Filtra por product.dataset.n
 .search-bar envuelta en :global() (Astro no asignaba el data-astro-cid).
 
 En mobile, × cierra, limpia input, restaura catálogo.
+
+Búsqueda desde la barra compacta (S25): al escribir, filterProducts() reordena el DOM y el scroll-anchoring nativo dejaba al usuario pegado a la última sección. Solución: scroll explícito al inicio de la grilla dentro del listener de input del buscador compacto (con behavior: "auto" porque el debounce reinicia la animación).
 
 Promo (popup)
 Carpeta promo/ con config.json + imágenes.
@@ -406,7 +467,7 @@ Modal: título. Al abrir (200ms delay, 400ms) y cada 15-20s (300ms).
 
 Glitch del logo del header: cada 15-30s, 420ms.
 
-Glitch de la lupa del header (S29): al volver del modo compacto, la lupa del header (mobile) hace glitch junto con logo y carrito. Antes solo animaba en desktop, donde el `.search-toggle` está `display: none` (animaba algo invisible). El cuadro de búsqueda del header (desktop) también hace glitch, usando `searchFieldGlitch` + `searchShake` + `searchPlaceholderGlitch` (NO `logoGlitch`, porque este último tiene `scale: -1 1` que refleja el texto del input).
+Glitch de la lupa del header (S29): al volver del modo compacto, la lupa del header (mobile) hace glitch junto con logo y carrito. El cuadro de búsqueda del header (desktop) también hace glitch, usando `searchFieldGlitch` + `searchShake` + `searchPlaceholderGlitch` (NO `logoGlitch`, porque este último tiene `scale: -1 1` que refleja el texto del input).
 
 Glitch al hover/click de categorías (S29): cada categoría hace glitch cuando se eleva.
   - Hover (solo `hover: hover and pointer: fine`): glitch al `mouseenter`, solo si NO está activo.
@@ -510,6 +571,8 @@ Hover (desktop ≥901px):
 - Hover durante "out": rebota y vuelve a entrar.
 - Hover durante "in": no interrumpe.
 
+Hover con srcset (S31): `.product-image-hover` tiene `data-src` (1000w), `data-src-400` y `data-src-600`. `pickHoverSrc(hover)` elige la variante según `isDesktop` y `devicePixelRatio`: desktop → 1000w; mobile DPR ≥3 → 600w; mobile DPR <3 → 400w. `triggerSlide()` usa `pickHoverSrc()` en la precarga. Ahorra ~550KB por sesión mobile.
+
 Estado por tarjeta (_state.phase): "idle" | "in" | "holding" | "out". Es lo que permite que hover y auto-slide compartan la animación sin pisarse.
 
 Template: .product-image-hover usa data-src (no src). El JS decide cuándo setear src.
@@ -517,10 +580,13 @@ CSS: se eliminó el display: none de mobile y el :has(). Toda la animación vive
 
 Diferencia con el modal: el modal es un carrusel real (bidireccional: next = derecha→izquierda, prev = izquierda→derecha). Las tarjetas son unidireccionales (siempre entran desde derecha y salen hacia derecha). Pendiente S27: unificar el slide del modal al estilo de las tarjetas.
 
+Preload de las primeras 3 tarjetas (S33)
+Bloque `<link rel="preload" as="image" imagesrcset={...} imagesizes={...}>` para `catalogo.products.slice(1, 4)` (el 0 ya está precargado como hero). Usa `imagesrcset` con las 3 variantes + `imagesizes` que matchea el `sizes` del `<img>`. Mejora el LCP del catálogo, no reduce peso.
+
 Barra compacta (Desktop + Mobile)
 La barra de categorías (.categories) entra en modo compacto (.compact) cuando el header sale de vista por arriba (IntersectionObserver sobre .site-header).
 
-Desktop (≥701px): flex row. Logo horizontal (120px) a la izquierda, lupa (42px, fondo blanco, ícono oscuro), botones en el centro, carrito (42px) a la derecha. Altura fija: 95px.
+Desktop (≥701px): flex row. Logo horizontal (120px) a la izquierda, lupa (42px, fondo blanco, ícono oscuro), botones en el centro, carrito (42px) a la derecha. Altura fija: 89px.
 
 Mobile (≤700px): grid 3 columnas × 2 filas:
   - Col 1: isotipo (28px), centrado verticalmente en ambas filas.
@@ -545,6 +611,14 @@ Padding horizontal del compacto desktop (S29):
   - .categories.compact .categories-buttons { padding-left: 56px; padding-right: 84px }. Antes era 0 70px (simétrico).
   - El padding asimétrico compensa que el brand (120px) sea más ancho que toggle+cart (42+8+42 = 92px), lo que corre los botones 14px a la derecha respecto al centro del viewport. Al volver al estático, el padding simétrico 0 70px los recentra, generando un saltito de 14px.
   - Fórmula: padding-left = 70 - (brand - toggle - gap - cart)/2; padding-right = 70 + (...). Si cambian los anchos, recalcular.
+
+Tuning mobile (S31)
+- Partículas del footer: 10 en mobile, 22 en desktop (`matchMedia` en el JS). Se eliminó `will-change` de `.footer-particle` (22 capas GPU permanentes era overkill).
+- Clarity diferido: el snippet ya no corre en el `<head>` al arranque. Se carga con `["scroll", "click", "touchstart", "keydown", "pointerdown"]` con `{ once: true }` o a los 5s como fallback. El usuario que rebota en <1s no se trackea (pérdida aceptable).
+- Blur del carrito y menú mobile: `blur(4px)` → `blur(2px)` + opacidad 0.75 → 0.88 en `@media (max-width: 700px)`.
+- `.scroll-progress`: pasa de animar `width` (layout + paint) a `transform: scaleX()` (compositor-only). Esto afecta a TODO el scroll del sitio, no solo al catálogo.
+- Blur de la barra sticky de categorías en mobile: `blur(6px)` → `blur(3px)` + opacidad 0.82 → 0.88.
+- Grano del body (`feTurbulence` tileado) off en mobile (`@media (max-width: 700px)` con `display: none`). A 0.045 de opacidad era imperceptible en mobile y costaba una capa full-viewport.
 
 §5 — Reglas técnicas críticas
 :global() en Astro
@@ -630,6 +704,12 @@ Un copy-paste mal encadenado puede dejar dos aperturas de la misma etiqueta supe
 `og:image` / `twitter:image` deben ser URLs absolutas (lección S31)
 Los scrapers de redes (WhatsApp, Facebook, Twitter, LinkedIn) **NO resuelven rutas relativas** en `og:image` / `twitter:image`. Si ven `content="/krakoa/og-image.jpg"`, la ignoran y no muestran preview. Solución: usar `SITE_ORIGIN + BASE_PATH + "/ruta.jpg"` (constantes del frontmatter), que resuelven a `https://barriopuro.github.io/krakoa/ruta.jpg`. Aplica también a `og:url` (que debe ser absoluta) y a `twitter:image`. Nunca `content={"/ruta.jpg"}`.
 
+`:active` del navegador NO se puede prevenir (lección S36)
+`preventDefault()` en `mousedown` no evita que el `:active` del `<button>` padre se dispare al tocar un hijo. El `:active` se activa a nivel navegador y burbujea a los ancestros. La única forma confiable de que un elemento clickeable NO dispare el `:active` del botón contenedor es **sacarlo del botón** (moverlo a un hermano con `position: absolute` respecto a un ancestro `position: relative`). Pasó con el badge de colores en S36.
+
+`> 1` vs `> 0` para "tiene colores" (lección S36)
+Un producto con 1 solo color (subcarpeta `negro/` sola) NO debe mostrar selector ni badge: se comporta como legacy. `hasColors = Object.keys(colorsData).length > 1` (no `> 0`). `askDefaults` tampoco pregunta por productos de 1 color (crea el `meta.json` automáticamente). Aplica a `openModal`, `loadProductIntoModal`, `askDefaults` y al template de Astro del badge.
+
 `scrollbar-gutter: stable` NO es la solución al scroll-shift de overlays (lección S29)
 Va en `<html>`, no en `<body>`. Y aunque funcione, no cubre elementos con `width: 100vw` (100vw es viewport completo, no afecta el padding del body). Para layouts full-width que no deben cambiar de ancho al abrir overlays, la solución es:
   1. CSS variable `--sbw` (scrollbar width) seteada por JS al cargar y al resize.
@@ -695,19 +775,28 @@ Lupa con seguimiento del mouse (Zara/Nike)	Requiere imágenes en alta resolució
 Botón "Modelo / Remera" en tarjeta	Resuelto con hover de segunda imagen.
 Vista rápida (mini-modal) en tarjeta	Descartado.
 Contador global de modelos ("7 categorías · 99 diseños")	Se desistió. Hay badge por categoría.
-Selector de color de tela	Idea futura (§8).
+Selector de color de tela	Implementado en S34-S36 (ya no aplica como idea futura).
 Cálculo de envío en la web	Idea futura (§8). Por ahora "a coordinar".
 Productos relacionados en el modal	Casi descartado. Retomable si surge.
 Lazy loading del catálogo (cargar de a 20-30 tarjetas)	La web ya carga bien tras S19. Cargar en tandas rompe el buscador (filtra sobre todo el DOM).
 Feedback táctil (vibración + micro-glitch)	Se decidió no sumar vibración. El :active da feedback suficiente.
 | Bottom Sheet para el modal en mobile | Descartado definitivamente en S24. |
 | Parallax del hero (Fase 3) | Descartado en S30. El hero ya tiene zoom + paneo lento en las imágenes rotativas; sumar parallax scrolleado se sentía cargado y "de más". |
+| Fast-forward del carrusel del modal (S27) | Se probó. El recorrido por intermedios es más denso que útil ("quiero ver la última foto, no pasear por las del medio"). En mobile se veía mal (imágenes sin cargar + duración corta se leía como bug). Los thumbs y "Ver tabla de talles" saltan DIRECTO. |
+| Hero a 400w/600w (S33) | Riesgo visual: en desktop ancho, el hero se estira y la variante chica se nota. |
+| Extraer JS/CSS a archivos externos (S33) | Postergado: complejo, toca `define:vars`. |
+| AVIF en hero/modal (S33) | Postergado: complejidad vs beneficio bajo. |
+| Quick wins S32: botón "Preguntar por modelo", presets de cantidad, OG del home (S33) | Los 3 descartados por el usuario. |
+
 §8 — Ideas futuras (vivas, sin implementar)
 
-🔴 Próximos (S34+, prioridad alta):
+🔴 Próximos (S37+, prioridad alta):
 - **Wishlist / favoritos.** Corazón en cada tarjeta + ícono con contador en el header + drawer (patrón del carrito). Guarda en `localStorage` (`krakoa_wishlist`). Integración con el modal (corazón junto a "Compartir"). Detalle de features a definir en sesión aparte (antes de codear).
 - **Badges "NUEVO" / "DESTACADO".** Campo opcional en la carpeta del producto (convención `_(nuevo)` / `_(destacado)`, o un `meta.json`). El script lo lee y pone badge en la tarjeta. Los "destacados" pueden ir primero en el orden aleatorio.
 - **WhatsApp Business + catálogo.** Prerequisito: número nuevo para KRAKOA (§9). Cargar 10-20 productos a mano alcanza para arrancar. El precio puede no mostrarse en Argentina (verificar).
+
+🟢 Selector de color de tela — RESUELTO en S34-S36
+Implementado: script 3 con selector de color, `generar-catalogo.mjs` con detección de subcarpetas, `meta.json` automático, selector en el modal (círculos con tooltip), memoria de color por producto, badge con dots clickeables en la tarjeta, carrito con color en la key y en el mensaje de WhatsApp.
 
 🟡 Features web (sin fecha):
 - **Página "Gracias por tu pedido".** `/gracias/` con mensaje + código de descuento + link a IG.
@@ -731,7 +820,6 @@ Feedback táctil (vibración + micro-glitch)	Se decidió no sumar vibración. El
 - **QR en la etiqueta de las remeras.** Apunta a `krakoa.netlify.app`. Costo: imprimir etiquetas.
 
 Otros (heredados):
-- **Selector de color de tela.** Demovido: el usuario no tiene modelos con variantes todavía. Plan completo (subcarpetas por color, `colors: { negro: {...}, blanco: {...} }`, selector arriba del corte, `key` del carrito incluye color, `COLOR_NAMES`).
 - **Google Shopping feed.** Requiere política de envíos concreta (hoy es "a coordinar"). Postergado.
 - **`content-visibility: auto` en las tarjetas.** Implementado en S32 (era un pendiente).
 - **Mover generación de imágenes + build a GitHub Actions.** Descartado en S32.
@@ -743,7 +831,7 @@ Descartados (no re-proponer): ver §7.
 🔴 Prerequisito (bloquea WhatsApp):
 - **Conseguir número para KRAKOA** (eSIM prepaga Movistar, sin chip físico). Camino definido: app Mi Movistar → línea nueva prepaga con eSIM → recarga inicial. Bloquea WhatsApp Business + catálogo.
 
-🔴 Próximos (S34+):
+🔴 Próximos (S37+):
 - **Wishlist / favoritos** (feature web chica, 1 sesión).
 - **Badges "NUEVO" / "DESTACADO"** (feature web chica, media sesión).
 - **WhatsApp Business + catálogo** (después del número).
@@ -760,13 +848,22 @@ Descartados (no re-proponer): ver §7.
 - Fast-forward del carrusel del modal (probado en S27, descartado).
 - Parallax del hero (descartado en S30).
 - **Quick wins S32** (botón "Preguntar por modelo", presets de cantidad, OG del home): los 3 descartados por el usuario en S33.
-- Selector de color: demovido hasta que haya modelos con variantes de color.
+- Hero a 400w/600w, extraer JS/CSS, AVIF (S33).
+- Selector de color: implementado en S34-S36, ya no aplica.
 
 🟢 Resueltos (no volver a proponer):
 - Página OG por producto (S32).
 - Generación de imágenes incremental (S32).
 - Thumbs del modal a 400w (S33).
 - Preload de las primeras 3 tarjetas (S33).
+- srcset WebP 400/600/1000 en tarjetas (S31).
+- Hover del auto-slide con srcset (S31).
+- og:image / twitter:image a URLs absolutas (S31).
+- Selector de color de tela (S34-S36).
+- Badge de colores en la tarjeta (S35-S36).
+- Memoria de color por producto (S35).
+- Preservación de slide al cambiar color (S35).
+- Manejo de productos de 1 solo color como legacy (S36).
 - Barra compacta (S25).
 - Auto-slide en tarjetas (S26).
 - Auto-slide adaptativo + slide del carrusel del modal (S27).
@@ -775,11 +872,16 @@ Descartados (no re-proponer): ver §7.
 - _redirects (Netlify) → index.html con meta OG + refresh (S23).
 - 404 custom (S31).
 - Sugerencia de tiers en carrito (S31).
-- Fix de og:image a URLs absolutas (S31).
+- Fix de scroll-shift (--sbw + scrollLockCount, S29).
+- KrakoaFont en footer/copyright/Calidad (S29).
+- Marquesina diagonal del tinte (S31).
+- Pausa global con overlays abiertos (S31).
+- Tuning mobile (S31): partículas 10/22, Clarity diferido, blur reducido, scroll-progress scaleX, grano off.
 - `content-visibility: auto` en tarjetas (S32).
+- Efectos en Cómo Comprar / Calidad / Footer (S30).
 
 🟣 Otros:
-- Performance de backdrop-filter en mobile de gama muy baja: hoy blur(6px). No se reprodujo problema.
+- Performance de backdrop-filter en mobile de gama muy baja: ya reducido a blur(3px) en S31. No se reprodujo problema.
 - **Generación incremental del catálogo (S32) — caveat:** si se cambia la lógica de `optimizeImage` o `generateOgImage` (calidad, dimensiones, formato), el incremental NO lo detecta. Hay que borrar `public/catalogo/` a mano una vez y volver a correr el script (~40-50s por la paralelización).
 
 Nada urgente. Web estable.
@@ -806,522 +908,97 @@ Las sesiones se agregan al final. Cada una es un bloque. Las viejas están compr
 
 S1–S15 (comprimidas)
 S1: Base del proyecto. Limpieza y des-hardcodeo.
-
 S2: Fix del workflow de deploy a GitHub Pages.
-
 S3: Carrito con localStorage + modal nuevo.
-
 S4: Secciones "Cómo Comprar" y "Calidad y Materiales".
-
 S5: Header desktop/mobile + menú drawer + primer fix del botón atrás.
-
 S6: Hero con imágenes rotando + marquesina + footer completo.
-
 S7: Loader inicial + fix del back-to-top.
-
 S8: Catálogo variado (round-robin) + barra de categorías + migración de URL.
-
 S9: Tinte dinámico por categoría + fix del remote (-web).
-
 S10: Tinte con clip-path y dos capas + link "Compartir" con #hash + animación de modal.
-
 S11: Optimización (fetchPriority, og:image dimensions, debounce filter).
-
 S12: Zoom de imagen + refactor del historyLock a historyStack (pila).
-
 S13: Aleatorización del catálogo client-side + zoom navegable.
-
 S14: Tags de búsqueda + fotos extra + Microsoft Clarity + promo + flechas de producto + título/categoría en imagen + grilla full-width + menú sticky desktop.
-
 S15: Buscador al header + hover con segunda imagen (desktop) + click en zoom cierra.
 
-S16 — Precios, carrito con totales, hero con glitch + typewriter
-Sistema de precios con tiers. Bloque de precio en modal. Carrito con totales y banner de cambio de tier. Mensaje de WhatsApp con desglose. Hero con glitch + typewriter + cursor. Flechas de producto cuadradas con borde de color. Overlay de tarjeta animado en hover.
+S16–S24 (comprimidas)
+S16: Precios por tiers, carrito con totales, hero con glitch + typewriter + cursor. Flechas de producto cuadradas con borde de color.
+S17: Glitch extendido (10 keyframes, flips, RGB split). KrakoaFont en el hero. Badge con conteo. historyStack con objetos { kind, state }. Drawers con transición de cierre.
+S19: Performance (WebP 75, resize 1000px, LCP 12.3s → 3.8s, peso 41MB → 22.5MB). Loader con DOMContentLoaded. Hero LCP estático. JSON-LD consolidado en @graph. Glitches unificados. URL/título dinámicos. Botón "Volver arriba". (Nota: S18 se salteó por error.)
+S20: Fix hover de tarjetas (sin scale). Promo CRT. URL corta Netlify (krakoa.netlify.app). JSON-LD inline con @graph.
+S21: Cotizador offline (cotizador.html, externo al repo). Roadmap priorizado.
+S22: Modal CRT Power On/Off con scanlines. Cambio de producto: RGB split + ruido teal + viñeta (solo .modal-image-area). Columna de info limpia.
+S23: Netlify con meta OG + refresh. Promo CRT. Zoom con rueda (1x-4x, pan, click cierra en 1x). Barra combinada. Header con glitch real.
+S24: Barra mobile estabilizada (contain + translateZ). Espaciado flex-wrap con category-break. Lupa compacta desktop (resuelta en S25). Auto-slide reglas definidas. Bottom Sheet descartado.
 
-S17 — Glitch extendido, KrakoaFont, badges, navegación deshacible
-Glitch del menú de categorías. Hero con glitch mejorado (10 keyframes, flips, RGB split dinámico). Hero con KrakoaFont (Payback) + KRA amarilla. Badge con conteo de modelos. Buscador con glitch. historyStack refactorizado a objetos { kind, state } con "category" deshacible. Drawers con transición de cierre. Secciones centradas (FAQ, Calidad, footer). Flecha de Instagram en footer.
-
-S19 — Performance, unificación de glitches, loader
-(Nota: S18 se salteó por error, no hay hueco funcional.)
-
-WebP a 75, resize máx 1000px (mitad de peso). Loader con DOMContentLoaded + timeout 1500ms. MIN_TIME 300ms. Hero LCP: primera imagen estática con fetchpriority="high". JSON-LD consolidado en 1 <script> con @graph (antes 117). Timers pausados vía IntersectionObserver. Scroll con requestAnimationFrame + { passive: true }. will-change quitado de imágenes del catálogo. Glitches unificados con técnica del hero. URL/título dinámicos. Botón "Volver arriba" con anillo SVG. Filtro con fade-in escalonado.
-
-Métricas finales (Fast 4G, Lighthouse Mobile): Performance 79 (antes 60-70), LCP 3.8s (antes 12.3s), Peso total 22.5 MB (antes 41 MB), DOMContentLoaded 2.07s (antes 3.2s).
-
-S20 — Fix CSS, efectos en Promo, URL corta
-Hover de tarjetas: eliminados will-change y scale() (causaban shift). Crossfade puro. Scanner de Vite: sacados SCHEMA_PRICES/SCHEMA_ORG del frontmatter (rolldown fallaba). JSON-LD inline en <head> con @graph. Popup Promo: flicker de encendido + pulso neón + scanlines. URL corta krakoa.netlify.app con _redirects (bio IG usa URL de GitHub).
-
-S21 — Cotizador offline y definición de Roadmap
-Cotizador de costos/venta en cotizador.html (externo al repo): pliegos DTF con Guillotine Best-Area-Fit, márgenes de borde y entre estampas, gráfico SVG, precios sugeridos. Charla extensa sobre mejoras a futuro. Roadmap priorizado (Fase 0 a Fase 6). Ver §8.
-
-S22 — Modal CRT + switch glitch + limpieza del carrusel
-Animación de apertura/cierre del modal reemplazada por CRT Power On/Off con scanlines (desktop y mobile). .is-closing con modalCloseTimer (380ms). Cambio de producto ahora RGB split suave + ruido teal + viñeta solo sobre .modal-image-area:
-
-RGB split en .modal-grid (drop-shadows magenta/cian, steps(7), 0.24s).
-
-Ruido teal en .modal-image-area::before (SVG feTurbulence + feColorMatrix con R=0.03, G=0.12, B=0.10; grano baseFrequency=0.25, tile 500x500). z-index 1.
-
-Viñeta W2A en .modal-image-area::after (radial gradient). z-index 2.
-
-Flechas y overlay en z-index 3/4.
-
-Columna de info limpia (sin ruido ni viñeta).
-
-Eliminado overlay "Modelo" / "1/4" del carrusel.
-
-Bug fix: había un bloque CSS remanente de un demo viejo (switchStaticNoise, ruido fino) que se sumaba encima del teal y causaba flash blanco. Eliminado.
-
-Lección: feTurbulence genera píxeles blancos puros que se leen como "flash". Solución: feColorMatrix para teñir.
-
-S23 — Netlify, Promo CRT, Zoom con rueda, Barra Combinada
-Descartado Lazy Loading (Fase 0) y Feedback táctil (F2-b). Netlify: index.html con meta OG + meta refresh + window.location.replace. Promo con animación CRT igual al modal. Zoom con rueda (1x-4x, anclado al cursor) + pan cuando >1x + click cierra solo en 1x. Barra combinada (Header + Categorías): desktop absorbe logo/lupa/carrito con position: absolute a los costados (left/right: 5vw), botones con padding: 0 70px. Mobile: grid de 4 columnas falló (sombras largas, temblor por reflow). Header con glitch real (logoGlitch) en vez de slide+fade. Lupa mobile no se anima al volver.
-
-S24 — Barra mobile estabilizada, Lupa compacta, Auto-slide definido
-Temblor mobile resuelto: iconos del modo compacto aislados con contain: layout style paint + transform: translateZ(0).
-
-Espaciado mobile: grid → flex-wrap. category-break invisible después del 4to botón (4 arriba, 3 abajo). margin-bottom: 6px en primeros 4, pisando gap general.
-
-Lupa compacta (Desktop): altura resuelta quitando :global(), forzando top: 0; bottom: 0; margin: auto + width/height: 42px; padding: 0; flex center dentro de @media (min-width: 701px). Quedan detalles finos de alineación del SVG (pendiente).
-
-Bottom Sheet: descartado definitivamente.
-
-Auto-slide en tarjetas mobile: reglas definidas (ver §9). Implementación próxima sesión.
-
-Roadmap (referencia)
-Fases acordadas en S21. Fase 0 (lazy) y F2-b (feedback táctil) descartadas en S23. Bottom Sheet descartado en S24.
-
-Fase 1: (parcial, ver S24) Rediseño modal mobile → descartado. Quitar "1/4" → hecho en S22. Swipe cambiar producto → pendiente.
-
-Fase 2: Auto-rotación de imágenes → próxima (reglas en §9).
-
-Fase 3: Parallax hero + fade+glitch en tarjetas (parallax/glitch full solo desktop; mobile solo fade limpio).
-
-Fase 4: Sugerencia de tiers en carrito, buscador "sin resultados" con sinónimos, 404 custom.
-
-Fase 5: Productos relacionados (casi descartado).
-
-Fase 6: Selector de color (subcarpetas), Wishlist.
-
-
-Parte A (Historial)
 S25 — Barra compacta definitiva, búsqueda sin scroll, "sin resultados"
-Recompresión del contexto: se reescribió el archivo entero. Pasó de ~500 líneas a ~330. Historial viejo (S1–S15) comprimido a una línea cada uno. Se unificaron las "Partes B" de S21–S24 en el cuerpo. Roadmap de S21 al final como referencia.
+Recompresión del contexto (primera reescritura completa: de ~500 a ~330 líneas). Barra compacta resuelta eliminando `position: absolute + translateY(-50%)` de los 3 iconos; el centrado lo hace `align-items: center` del padre. Búsqueda desde la compacta: scroll explícito al inicio de la grilla (el scroll-anchoring nativo dejaba pegado a Preguntas Frecuentes). Bloque `#no-results` (hermano de #products) con botón "Ver todo el catálogo". Lección: centrar con absolute + translateY es frágil; usar flexbox.
 
-Barra compacta — solución definitiva: los 3 problemas de alineación (logo/lupa/carrito desalineados de los botones, panel de búsqueda descolgado, carrito hundiéndose durante el glitch) se debían a que se estaba mezclando position: absolute + transform: translateY(-50%) para centrar, y luego se intentaba compensar con top/bottom + translateY(5px). El glitch pisaba el translateY, y el contain de S24 pisaba todo con transform: translateZ(0). Se resolvió eliminando el position: absolute de los 3 iconos y dejando que el align-items: center del padre .categories haga el centrado. Se limpió el transform: translateZ(0) del bloque contain. El centrado ya no depende de ningún translateY, así que el glitch no puede hundir nada.
-
-Búsqueda desde la barra compacta: al escribir, filterProducts() reordena el DOM y el scroll-anchoring nativo dejaba al usuario pegado a la última sección (Preguntas Frecuentes). Se agregó scroll explícito al inicio de la grilla dentro del listener de input del buscador compacto (con behavior: "auto" porque el debounce reinicia la animación).
-
-Bloque "sin resultados": nuevo bloque #no-results (hermano de #products, no adentro) que aparece cuando el filtro deja la grilla vacía. Título + subtítulo ("Revisá la ortografía o navegá por nuestro catálogo.") + botón "Ver todo el catálogo" que limpia búsqueda y categoría, sube al inicio con smooth. filterProducts() togglea hidden según toShowSet.size > 0. El bloque usa el mismo truco full-width que #products (left: 50%; width: 100vw; transform: translateX(-50%)) para que el centro coincida con el centro de las tarjetas.
-
-Lección técnica: centrar con position: absolute + translateY(-50%) es frágil — cualquier transform que aplique otra regla o animación lo rompe. Para barras con hijos de distinto alto, usar flexbox (align-items: center) y dejar que el layout haga el centrado.
-
-Parte A — Historial de sesión
 S26 — Auto-slide + hover slide unificado en tarjetas
-Qué se hizo: rotación automática aleatoria de las tarjetas del catálogo entre las dos imágenes existentes (modelo ↔ remera), en mobile y desktop, con precarga condicional. Además se unificó el hover de desktop con la misma animación.
-
-Sistema del auto-slide:
-
-Global, no por tarjeta. Un solo timer cada 2-10s (random) elige 1-2 tarjetas visibles al azar y las anima.
-
-Solo tarjetas al 75% visibles (threshold 0.75 del IntersectionObserver). Si el modal tapa todo, ninguna rota; si deja algunas visibles al 75%, siguen.
-
-Cooldown de 6 turnos por tarjeta: una que ya rotó no vuelve a ser candidata hasta que pasen 6 disparos globales (~30-60s según el ritmo). Si todas las visibles están en cooldown, se resetean los lastTurn para que vuelvan a ser candidatas.
-
-No contiguas: cuando se eligen 2, no pueden ser adyacentes ni en la misma fila (a distancia de un gap) ni en la misma columna. Se verifica con getBoundingClientRect().
-
-Hold 3-5s (random): la remera entra, se sostiene, y sale. Modelo es el estado base al que siempre vuelve.
-
-Dirección única: la remera entra desde la derecha (translateX(100%) → 0) y sale hacia la derecha (0 → translateX(100%)). Sin scale. 0.32s con ease. La base (modelo) nunca se mueve.
-
-Precarga condicional: en mobile la remera se descarga solo cuando le toca rotar (new Image() + onload + recién ahí src = data-src). En desktop se descarga al 10% visible (equivale a lazy).
-
-Pausas: document.hidden, filtro/búsqueda en curso (.is-revealing), y cualquier overlay abierto (.modal.open, .cart-drawer.open, .mobile-menu.open, .image-zoom.open, .promo-modal.open).
-
-Hover unificado (desktop ≥901px):
-
-Misma animación que el auto-slide: la remera entra desde la derecha, se sostiene, y sale hacia la derecha.
-
-Hover durante "holding": se cancela el holdTimer, la remera queda visible hasta que el mouse salga.
-
-Hover durante "out" (la remera se está yendo): rebota y vuelve a entrar.
-
-Hover durante "in": no interrumpe, deja terminar la entrada.
-
-Se eliminó el :has() y la transición base del CSS de las imágenes. La animación vive 100% en JS. Esto resuelve el caso "hover antes de que la remera esté cargada" sin CSS.
-
-Cambios al template:
-
-.product-image-hover: src → data-src (con data-src={...} en el render de Astro). El JS decide cuándo setear src.
-
-Se eliminó el @media (max-width: 900px) { .product-image-hover { display: none; } }. En mobile la remera ya no está oculta por CSS: la maneja el JS.
-
-Lecciones técnicas:
-
-El display: none en mobile ahorraba ~10 MB de descargas. Con el auto-slide, la remera se baja igual, pero la precarga condicional evita bajarla si nunca rota.
-
-El :has() en CSS era necesario para que el hover no mostrara una imagen vacía antes de que cargara. Se resolvió moviendo todo al JS: la animación no arranca hasta que la imagen está cargada.
-
-La máquina de estados por tarjeta (_state.phase: idle / in / holding / out) es lo que permite que hover y auto-slide compartan la misma animación sin pisarse.
-
-Cómo se probó: verificado en mobile (DevTools + real) y desktop. Rotaciones de a 1-2, no contiguas, cooldown funcionando, hover con rebote al entrar durante "out", hover cierra el holdTimer si estaba en "holding", pausas por overlay/hidden/filtro funcionando. Regresión ok: click abre modal, modal muestra la remera en galería, swipe mobile sigue funcionando.
-
-⏭️ Próxima sesión: S27 — Slide del carrusel del modal
-Objetivo: unificar el slide del carrusel del modal de producto con el estilo del auto-slide de las tarjetas.
-
-Decisiones ya tomadas (respuestas del usuario):
-
-Dirección: mantener la bidireccionalidad del carrusel (next: la nueva entra por derecha y la vieja sale por izquierda; prev: al revés). Es un carrusel real, no la tarjeta.
-
-Scale: sacar el scale(0.98) actual. Solo translateX + opacity.
-
-Timing: mantener el cubic-bezier(0.22, 1, 0.36, 1) del modal (más "premium" para imagen grande). El auto-slide de la tarjeta usa ease porque la tarjeta es chica, pero en el modal se siente mejor el bezier.
-
-"Ver tabla de talles" y thumbnails: en lugar de saltar directo con fade, hacer un "fast-forward": recorrer todos los slides intermedios con animación direccional corta, en lugar de un fade.
-
-Preguntas pendientes para S27 (a resolver con el usuario antes de escribir):
-
-Sobre el slide del carrusel (cambios 1-3):
-
-Confirmar que los valores actuales de animación del modal (translateX(±30px) + scale(0.98) + 0.32s + bezier) pasan a translateX(±100%) + sin scale + 0.32s + bezier.
-
-Confirmar que el will-change de las dos capas del modal (modal-image-a / modal-image-b) se mantiene o se ajusta.
-
-Sobre el fast-forward (cambio 4):
-
-Duración por paso intermedio: ¿cuánto dura cada transición intermedia? Recomiendo 120-150ms (más rápido que el paso normal, para que se sienta "rápido" y no un recorrido manual).
-
-Duración total: ¿fija (ej. 300ms totales sin importar cuántos pasos) o variable (120ms × cantidad de pasos)? Recomiendo variable: es más simple y se siente natural.
-
-Cancelación: ¿el fast-forward se puede interrumpir tocando una flecha o un thumbnail mientras corre? Recomiendo sí: cancelar el recorrido y saltar directo al destino tocado.
-
-Tabla destino: cuando "Ver tabla de talles" llega al slide final, ¿la tabla entra con el mismo slide direccional que las fotos, o con un fade suave (porque es una tabla, no una foto)? Recomiendo fade suave para diferenciar.
-
-Tabla de talles destino: "Ver tabla de talles" salta a la tabla del corte actual (Oversize: length - 2; Regular: length - 1). En el fast-forward, ¿pasa también por la otra tabla si está en el camino? Ejemplo: si estoy en modelo (índice 0) y pido Oversize (índice 3), paso por 1, 2, 3. No paso por 4 (Regular), que está después. Pero si pido Regular (índice 4) estando en 0, paso por 1, 2, 3, 4. ¿Está bien? Recomiendo sí, es coherente con "pila real".
-
-Detalles técnicos para S27:
-
-El renderModalImage(direction) actual solo maneja un paso. Para el fast-forward, se necesita una función nueva (o extender la actual) que reciba un array de índices intermedios y los anime en cadena. O bien, un loop for que llame a renderModalImage("next") con un await sleep(stepDuration) entre cada uno.
-
-Hay un timer de cleanup de 340ms después de cada transición (setTimeout(cleanup, 340) dentro de renderModalImage). Con fast-forward, hay que asegurarse de que no se solapen ni se cancelen entre pasos. Posible solución: guardar un ID de la operación actual y chequear antes de cada cleanup.
-
-El listener de swipe (modalImageWrapper touchstart/touchend) y el de click (para zoom) deben seguir funcionando igual durante y después del fast-forward.
-
-Otros pendientes que siguen abiertos (no bloquean S27):
-
-Roadmap Fase 3-6 (parallax hero, fade+glitch tarjetas, sugerencia de tiers en carrito, buscador con sinónimos, 404 custom, productos relacionados, selector de color, wishlist). Nada urgente.
-
-Performance de backdrop-filter en mobile de gama muy baja: hoy blur(6px). No se reprodujo problema hasta ahora.
-
+Rotación automática aleatoria de tarjetas entre modelo ↔ remera, en mobile y desktop, con precarga condicional. Un solo timer global elige 1-2 tarjetas visibles al azar. Cooldown por tarjeta, no contiguas, hold 3-5s, dirección única (entra y sale por la derecha). Hover de desktop unificado con la misma animación. Se eliminó el `:has()` y el `display: none` de mobile: la animación vive 100% en JS. Máquina de estados por tarjeta: idle / in / holding / out.
 
 S27 — Slide del modal sin scale, fast-forward descartado, auto-slide adaptativo
-Tres temas, uno de ellos con ida y vuelta.
+Carrusel del modal: translateX(±100%) sin scale, sin fade. Fast-forward (recorrido por intermedios) probado y DESCARTADO (se veía como bug en mobile). Thumbs y "Ver tabla de talles" saltan directo. Auto-slide con delay adaptativo (countActiveSlides()) y cooldown dinámico (min(6, max(2, visibleCards.size * 2))). Precarga de imágenes al abrir modal.
 
-Slide del carrusel del modal (pendiente de S26). Se unificó al estilo de las tarjetas: la imagen entra desde el costado con translateX(±100%) y la vieja sale hacia el opuesto, sin scale, sin fade. Mantiene 0.32s + cubic-bezier(0.22, 1, 0.36, 1) (el bezier "premium" que ya tenía). Se eliminó el modo "fade" (enter-fade / leave-fade) del CSS y del JS: ya no se usa. renderModalImage ahora recibe (direction, cleanupDelay = 340) y usa renderToken para descartar cleanups huérfanos cuando el usuario clickea rápido. El will-change de las dos capas se mantiene.
-
-Fast-forward (recorrido por slides intermedios). Se implementó primero para "Ver tabla de talles" (que tenía el bug de saltar por todos los slides con fade, sin importar la distancia) y después para thumbnails. Funcionó técnicamente pero el usuario lo descartó tras probarlo:
-- El recorrido por intermedios resulta más denso que útil: "quiero ver la última foto, no pasear por las del medio".
-- En mobile se veía mal (imágenes sin cargar + duración muy corta se leían como bug).
-- La curva ease-in-out (amp 0.6) ayudó pero no rescató la idea.
-Decisión final: thumbnails y "Ver tabla de talles" saltan DIRECTO con renderModalImage (un solo slide direccional), sin recorrido. La función fastForwardToSlide se eliminó por completo, junto con ffToken, la clase .is-fastforwarding y la variable CSS --ff-step-duration. No re-proponer.
-
-Queda como mejora independiente: precarga de imágenes al abrir el modal (openModal y loadProductIntoModal recorren currentImages con new Image() en paralelo). Útil para flechas rápidas y para el cambio de producto.
-
-Auto-slide del catálogo (S26 dejó un hueco). El timer global disparaba cada 2-10s, pero con hold de 3-5s por tarjeta eso dejaba ventanas de hasta 10s sin ninguna animación en pantalla. Dos ajustes:
-- Delay adaptativo en scheduleNextSlide: si countActiveSlides() === 0 (ninguna tarjeta en fase "in" o "holding"), delay 300-800ms para que arranque rápido. Si ya hay alguna activa, delay 1.5-5s para que se superpongan sin amontonarse.
-- Cooldown dinámico en triggerRandomSlides: effectiveCooldown = min(6, max(2, visibleCards.size * 2)). Con pocas tarjetas visibles (viewport angosto), el cooldown baja a 2 para que roten más seguido. Con muchas, se mantiene en 6.
-Nueva función countActiveSlides() recorre visibleCards y cuenta las que están en "in" o "holding".
-
-Lección técnica: un timer "cada X segundos" no garantiza actividad continua si cada acción dura menos que X. Hace falta que el scheduler mire el estado actual (¿hay algo animándose?) y ajuste el próximo delay en función de eso. Es el patrón "scheduler reactivo" en vez de "scheduler fijo".
-
-Cómo se probó: verificado en desktop y mobile. Rotaciones frecuentes sin rachas muertas de 8-10s, no más de 2-3 tarjetas activas al mismo tiempo, hover pausa la tarjeta apuntada sin frenar las otras, overlays abiertos pausan todo, cambio de categoría no dispara durante .is-revealing. Carrusel del modal: slide direccional sin scale, thumbnails y "Ver tabla de talles" saltan directo, sin recorrido.
-
-⏭️ Próxima sesión: S28 — correcciones sobre otros temas de la página (a definir con el usuario: ajustes de CSS/HTML de secciones existentes, detalles finos, mantenimiento).
-
-
-S28 — Barra compacta mobile: grid 3×2 + lupa, logo clickeable, fix badge, categorías renombradas
-Recompresión: no (se mantiene la compresión de S25).
-
-Barra compacta mobile: las categorías volvían a 3 filas al entrar en modo compacto (el logo y el carrito robaban ancho). Se resolvió con:
-- Renombrar categorías: "Cine y Series" → "Cine y TV", "Videojuegos" → "VideoGames" (libera ~30px). Los ids NO cambiaron.
-- Gap horizontal de .categories-buttons unificado a 4px (antes 8px en fija, 4px en compacta) — el cambio de gap al scrollear se notaba.
-- Padding lateral de .categories-buttons en compacto: 10px → 4px.
-- Gap del .categories.compact: 6px → 4px → 2px.
-Total liberado: ~55-60px. Los 4 botones de la primera fila entran en 320px.
-
-Fix del badge del carrito recortado: el `contain: paint` del .categories-compact-cart recortaba el badge (top: -6px; right: -6px). Se sacó `paint` solo del carrito (queda `contain: layout style`). Logo y lupa mantienen `paint`.
-
-Logo compacto clickeable: el .categories-compact-brand pasó de `<div aria-hidden="true">` a `<button>` con listener de click que scrollea al top (mismo comportamiento que el botón "volver arriba"). Al subir, el header vuelve a la vista y la barra sale del modo compacto sola.
-
-Lupa de vuelta en mobile: se reintentó la lupa en el compacto mobile (descartada en S23/S24 por falta de ancho). Esta vez la lupa se apila DEBAJO del carrito, en una tercera columna del grid:
-- Mobile: .categories.compact pasa a grid 3 columnas × 2 filas (areas: "brand buttons cart" / "brand buttons search"). Col 1: isotipo (centrado vertical). Col 2: botones (4+3) o panel de búsqueda. Col 3: carrito (arriba) + lupa (abajo).
-- Desktop: sin cambios estructurales (sigue flex row), pero la lupa ahora comparte aspecto con mobile (fondo blanco, ícono oscuro).
-
-Toggle lupa ↔ X: el .categories-compact-search-toggle tiene 2 SVGs (lupa + X). CSS alterna según .search-open. En mobile, al abrir el panel la lupa se transforma en X en el mismo lugar (reemplaza, no se oculta). El × interno del panel (#search-compact-close) se oculta en search-open. Cierre limpia input y restaura catálogo (handleCloseCompactSearch, usada por toggle-X, × de desktop y Escape).
-
-Bug crítico de rolldown: al correr `npm run dev`, el scanner de Vite 7 fallaba con `PARSE_ERROR: Unexpected token` en `virtual-module:.../index.astro`. Causa: había un `<script>` literal dentro de un comentario CSS (el bloque "Auto-slide + hover slide" decía "(ver bloque AUTO-SLIDE + HOVER en el <script>)"). El scanner busca la subcadena `<script` en cualquier parte del archivo, incluso en comentarios, y trata de parsear lo que sigue como JS. Solución: cambiar `<script>` por "el bloque JS del final del archivo" en el comentario. Va a §5 como lección.
-
-Alturas del compacto: la barra cambiaba de alto al abrir/cerrar la búsqueda. Primer intento (min-height 89px desktop / 102px mobile) no alcanzó. Segundo intento (min-height 95px / 105px) tampoco: el input tiene `height: 100%` y con min-height el padre no le da altura, así que colapsaba. Solución definitiva: `height` fija (no min-height) en el panel (51px desktop) y en la barra (95px desktop). Mobile queda con `min-height: 105px` que ya funcionaba (el grid mantiene la altura aunque el panel sea más bajo).
-
-Lecciones técnicas:
-1. `<script>` literal en comentarios CSS rompe rolldown. Nunca ponerlo; referirse como "el bloque JS".
-2. `min-height` no sirve si el layout depende del hijo más alto y el estado cambia. Usar `height` fija + align-items: center. Y si un hijo tiene `height: 100%`, el padre necesita height fija.
-3. El scanner de rolldown puede fallar "silenciosamente" en sesiones anteriores (cacheado) y explotar al invalidar el cache. Si aparece un PARSE_ERROR raro, buscar `<script` en comentarios.
-
-Cómo se probó: verificado en mobile (DevTools 375px, 320px) y desktop. 2 filas (4+3) en compacto, gap de 2px entre logo/bloque y bloque/carrito, badge sin recorte, logo clickeable (scroll al top), lupa apilada debajo del carrito, toggle lupa↔X, panel de búsqueda estable en altura, Escape cierra + limpia, error de rolldown resuelto.
-
-⏭️ Próxima sesión: S29 — a definir.
+S28 — Barra compacta mobile grid 3×2 + lupa, logo clickeable, categorías renombradas
+Renombrar "Cine y Series" → "Cine y TV", "Videojuegos" → "VideoGames" (libera ancho; ids internos NO cambian). Gap de .categories-buttons unificado a 4px. Fix del badge del carrito recortado (contain: paint → layout style). Logo compacto clickeable (`<button>` con scroll top). Lupa en compacto mobile: grid 3 columnas × 2 filas (carrito arriba, lupa abajo). Bug crítico de rolldown: `<script>` literal en comentarios rompe el parser (Vite 7). Alturas: `height` fija (no `min-height`) cuando el layout depende del hijo más alto.
 
 S29 — Glitch de lupa, efecto "ventana" en categorías, fix del scroll-shift
-Recompresión: no (se mantiene la compresión de S25).
-
-Sesión de detalles finos + un bug de layout arrastrado desde hacía rato.
-
-**1. Lupa del header hace glitch al volver del compacto (mobile).**
-La regla `.site-header.header-animating .search-toggle` estaba dentro de un `@media (min-width: 701px)`, así que en desktop animaba algo que está `display: none` (el `.search-toggle` está oculto en desktop) y en mobile NO se aplicaba. Se sacó el media query y se agregó `.search-toggle` al selector global. Ahora la lupa del header (mobile) hace glitch al volver, igual que logo y carrito.
-
-**2. Cuadro de búsqueda del header hace glitch al volver (desktop).**
-El input `#search` no participaba del glitch al volver del compacto. Aplicarle `logoGlitch` directo NO sirve porque ese keyframe hace `clip-path` + `scale: -1 1` (flips) y el texto del input se refleja y se corta raro. Se reusó el glitch existente del buscador:
-- `.site-header.header-animating #search` → `searchFieldGlitch` + `searchShake` (borde magenta/cian + shake, sin flips).
-- `.site-header.header-animating #search::placeholder` → `searchPlaceholderGlitch` (RGB split en el placeholder).
-Se siente de la misma familia que el glitch del logo/carrito, sin romper el layout.
-
-**3. Toggle del compacto ahora sí se ve el glitch (contain: paint recortaba el drop-shadow).**
-En S28 el carrito perdió `contain: paint` porque recortaba el badge. El toggle del compacto seguía con `contain: layout style paint`, y el `paint` recortaba el `drop-shadow` del glitch (el halo de color se perdía). Fix: `.categories-compact-search-toggle` ahora tiene `contain: layout style` (sin `paint`). El brand mantiene `paint` porque es una imagen con alpha y no tiene el problema.
-
-**4. Saltito de la barra al pasar de compacta a estática (desktop).**
-Dos causas, dos fixes:
-- **Vertical (3px)**: la altura fija del compacto era `95px` pero el modo normal mide `89px` (padding 26+12 + contenido 51 = 89). El content-box quedaba en 57px con 95px, y `align-items: center` centraba los botones con 3px de aire arriba y abajo, 3px más abajo que en el estático. Fix: `height: 89px` en el compacto desktop.
-- **Horizontal (~14px)**: en compacto, el brand (120px) es más ancho que toggle+cart (42+8+42 = 92px), lo que corre los botones 14px a la derecha respecto al centro del viewport. El `.categories-buttons` del compacto ahora tiene padding asimétrico `56px 84px` (antes `0 70px`). Fórmula: `padding-left = 70 - (brand - toggle - gap - cart)/2`, `padding-right = 70 + (...)`. Si cambian los anchos, recalcular.
-
-**5. Efecto "ventana" en los botones de categoría (tipografía grande).**
-Las palabras de los botones ahora se ven Arial 900, grandes, comprimidas, y se salen del recuadro como una "ventana" (el `overflow: hidden` del botón las recorta). Cero cambios de layout:
-- `.cat-text`, `.cat-glitch-a`, `.cat-glitch-b` reciben `font-family: Arial`, `font-weight: 900`, `font-size: 21px` desktop / `15.5px` mobile, `line-height: 1`, `letter-spacing: -0.135em`.
-- El `::before` invisible (que fija el ancho del botón con `font: inherit` del `.category-button` original) NO se toca. Los recuadros miden exactamente lo mismo.
-- El badge del conteo (`.category-count`) tampoco se toca (sigue en Arial, mismo lugar).
-- Aplica igual en barra fija y flotante (es el mismo elemento).
-
-**6. Glitch al elevarse una categoría (hover y click).**
-Refactor: `triggerGlitchOnButton(btn)` aplica el glitch a un botón específico. `triggerGlitch()` (el aleatorio) ahora la llama. Nuevos listeners:
-- **Hover** (solo `hover: hover and pointer: fine`): glitch al `mouseenter` del botón, SOLO si NO está activo (si ya está elevado, no se eleva de nuevo).
-- **Click/tap**: después de que el filtro aplique, si el botón quedó `.active` (elevado), glitch. Listener en `btn` y en `wrap`. Usa `requestAnimationFrame` por si el orden de los listeners cambia en el futuro.
-- El chequeo de `.glitching` evita solapar dos glitches en el mismo botón (si el aleatorio ya lo está animando, el hover/click no lo reinicia).
-
-**7. Fix del scroll-shift al abrir carrito / menú mobile (bug grande arrastrado).**
-Al abrir carrito, la página se corría ~15px a la derecha. Causa doble:
-- **Orden mal**: en `openCartDrawer`, `cart-open` (que dispara `overflow: hidden`) se aplicaba ANTES de `lockBodyScroll`. Cuando `lockBodyScroll` corría, `getScrollbarWidth()` devolvía `0` (scrollbar ya oculta) → `padding-right` nunca se aplicaba.
-- **`100vw` ignora padding**: los bloques con `width: 100vw` (hero, products, no-results, catalog-tint) no se benefician del `padding-right` del body. Al perder la scrollbar, `100vw` crece y esos bloques se ensanchan.
-
-Solución robusta:
-- **CSS variable `--sbw`** (scrollbar width) en `<html>`, seteada por JS al cargar y al resize.
-- **Bloques full-width** usan `width: calc(100vw - var(--sbw, 0px))` en vez de `100vw`.
-- **`lockBodyScroll` ANTES de aplicar `overflow: hidden`** (carrito y menú mobile). Así `getScrollbarWidth()` devuelve un valor > 0 y el padding se aplica correctamente.
-- **Counter en `scrollLockCount`**: si el carrito se abre encima del modal (que ya bloqueó), el padding no se suma dos veces. Al cerrar el carrito, el padding NO se quita (el modal sigue necesitando). Al cerrar el modal, se quita.
-- **`scrollbar-gutter: stable`** se probó primero y NO funciona: hay que ponerlo en `<html>`, no en `<body>`. Y aunque funcione, no cubre los `width: 100vw`. Descartado.
-
-**8. KrakoaFont en más lugares (KRA amarillo + KOA blanco).**
-La marca "KRAKOA" ahora usa `<span class="brand-inline"><span class="hero-kra">KRA</span>KOA</span>` en TODOS los lugares donde aparece como texto visible:
-- Sección Calidad (`.quality-sub`): tenía `hero-kra` pero le faltaba `brand-inline`.
-- Footer párrafo (`.footer-col--text p`): mismo caso.
-- Footer copyright (`.footer-bottom`): no tenía tratamiento. La CONTEXTO §4 decía que NO usar KrakoaFont ahí (a 11px no se leen los cortes), pero se aplicó igual y se ve bien.
-
-`.brand-inline` recibió `color: #fff` para que "KOA" sea SIEMPRE blanco, sin importar el color del bloque contenedor (quality-sub gris, footer #888, footer-bottom #555). La "KRA" mantiene su amarillo porque `.hero-kra` (hijo) tiene su propio color, y el color del hijo gana sobre el heredado del padre.
-
-Los otros lugares ya estaban bien: hero h1 (maneja el typewriter), "Cómo Comprar en KRAKOA", logos (imágenes), title/meta/JSON-LD/alt/aria (no son texto visible). El handle `@krakoa.sw` de Instagram NO se tocó (es un handle, no la marca).
-
-**Lecciones técnicas:**
-1. `contain: paint` recorta `drop-shadow` de `filter`. Si el glitch usa `drop-shadow` para el RGB split, `paint` lo mata. Mismo caso que el badge del carrito en S28. Solución: `contain: layout style` (sin `paint`).
-2. En un `<input>`, NO aplicar `logoGlitch` (tiene `scale: -1 1` que refleja el texto). Usar `searchFieldGlitch` + `searchShake` + `searchPlaceholderGlitch` (solo borde, placeholder y posición).
-3. Si el layout depende del hijo más alto y el estado cambia (compacto vs estático), la altura del compacto DEBE coincidir con la del normal. `align-items: center` es sensible a diferencias de content-box. Usar `height` fija que coincida, no `min-height`.
-4. `scrollbar-gutter: stable` va en `<html>`, no en `<body>`. Y no cubre elementos con `width: 100vw` (100vw es viewport completo, no afecta padding). Para scroll-shift en layouts full-width, la solución es CSS variable `--sbw` + `calc(100vw - var(--sbw))`.
-5. `lockBodyScroll` debe llamarse ANTES de aplicar `overflow: hidden`. Si se llama después, `getScrollbarWidth()` devuelve 0 y el padding nunca se aplica.
-6. Counter en `scrollLockCount` previene conflictos entre overlays apilados (carrito sobre modal, menú sobre modal, etc.).
-7. Para tipografía "efecto ventana" (texto más grande que el recuadro, recortado): `::before` invisible fija el ancho (con `font: inherit`), texto visible se agranda con `font-size` y se escapa con `overflow: hidden` del padre. Cero cambios de layout.
-8. `.brand-inline { color: #fff }` hace que "KOA" sea siempre blanco. El hijo `.hero-kra` mantiene su amarillo porque el color del hijo gana sobre el heredado.
-
-Cómo se probó: verificado en desktop (ventana ancha con scrollbar visible) y mobile (DevTools 375px + real). Lupa del header hace glitch al volver en ambos. Cuadro de búsqueda hace glitch al volver (desktop). Toggle del compacto muestra el drop-shadow completo. Saltito de la barra compacta desktop eliminado (vertical 3px y horizontal 14px). Categorías con efecto "ventana" sin cambios de layout. Glitch al hover/click de categorías funciona en ambos. Carrito y menú mobile abren sin scroll-shift. Modal + carrito apilados sin conflictos de padding. KrakoaFont se ve en Calidad, footer párrafo y footer copyright, con KRA amarillo + KOA blanco en los tres. Regresión ok: hero typewriter, "Cómo Comprar", logos, todo sin cambios.
-
-⏭️ Próxima sesión: S30 — a definir.
-
-S30 — Efectos en secciones pre-glitch (Cómo Comprar, Calidad, Footer) + aclaraciones de roadmap
-Recompresión: no (se mantiene la compresión de S25).
-
-Sesión corta, un solo tema: las secciones "Cómo Comprar", "Calidad" y "Footer" quedaron de la era pre-glitch (solo fade+slide, sin efectos). Se propusieron 6 ideas, el usuario aprobó todas y se implementaron en una sola tanda.
-
-Cómo Comprar:
-- Glitch de entrada del h2 al viewport (una sola vez, ~450ms, delay 250ms tras el fade+slide). Reusa modalTitleGlitch. Vive en el observer existente de section-observe, con querySelector("h2") del section target. Si el section no tiene h2 (footer), no pasa nada.
-- Glitch al abrir/cerrar cada pregunta del FAQ (320ms). El CSS solo anima el <span> interno (.faq-question.glitching > span), el chevron SVG rota normal sin glitch.
-- CTA "Hablar por WhatsApp" del FAQ: glow pulsante, reusa whatsappGlowPulse (la misma animación del botón del carrito). Pausa al hover.
-
-Calidad:
-- Glitch de entrada del h2 al viewport (mismo patrón que Cómo Comprar).
-- Glitch ocasional de los títulos de pilar (uno al azar cada 20-30s, 400ms). Solo si #calidad está en viewport cuando toca el turno; si no, se salta ese turno (no acumula). Función isCalidadVisible() con getBoundingClientRect.
-- Hover en el pilar: el ícono hace flicker corto (~0.35s) + drop-shadow con currentColor (el color del ícono, que ya estaba definido por .quality-icon--green/amber/sky/indigo svg). Fade-out del drop-shadow al sacar el mouse.
-
-Footer:
-- Scanlines horizontales ultra sutiles de fondo (.site-footer::before, z-index 0, rgba(255,255,255,0.02) en el repeating-linear-gradient). Mismo patrón que el hero pero blanco y más tenue.
-- Logo vertical del footer con glitch ocasional (25-40s, 420ms, solo si el footer está en viewport). Reusa logoGlitch (el del logo horizontal del header).
-- El copyright NO lleva glitch.
-
-Decisiones de intensidad (a criterio de la IA, aprobadas por el usuario):
-- Frecuencia: nivel "categorías", no nivel hero. Los h2 glitchean UNA vez al entrar (no cada Xs). Los pilares y el logo del footer tienen su timer ocasional (20-40s).
-- Copyright del footer SIN glitch: a 11px con letter-spacing 0.08em, los cortes de clip-path no se leen. Se evaluó y se descartó.
-- Reveal por letra del h2 (estilo hero) DESCARTADO: pisaría el glitch de entrada. Es uno u otro, y el glitch unifica mejor con el resto del sitio.
-
-Correcciones al contexto (aclaradas por el usuario en S30):
-- "Alineación fina del SVG de la lupa del compacto mobile" (anotada como pendiente en S24): YA RESUELTA en una sesión posterior. Se quitó de §9.
-- "Swipe para cambiar de producto en el modal mobile": se mantiene en roadmap, sin fecha.
-- "Parallax hero": DESCARTADO definitivamente (§7).
-- "404 custom", "sugerencia de tiers en carrito" y "selector de color": próximos, prioridad alta (§8). El selector de color pasa a ser urgente por pedidos del cliente (muchos cambios de color en remeras).
-
-Lección técnica: no hubo bug ni lección nueva. Todos los efectos reusan keyframes existentes (modalTitleGlitch, logoGlitch, whatsappGlowPulse) salvo iconFlicker (nuevo). El glitch de entrada del h2 se engancha en el observer de section-observe que ya existía (no hace falta un observer nuevo).
-
-Cómo se probó: verificado en desktop y mobile. Glitch de entrada del h2 en ambas secciones, glitch al abrir/cerrar preguntas del FAQ (chevron sin glitch), glow pulsante del CTA WhatsApp (pausa al hover), glitch aleatorio de pilares (uno al azar cada 20-30s, solo con la sección visible), hover de pilares con flicker + drop-shadow del color, scanlines del footer visibles cerca de las partículas, glitch ocasional del logo del footer. Todo respeta prefers-reduced-motion: reduce.
-
-⏭️ Próxima sesión: S31 — 404 custom, sugerencia de tiers en carrito o selector de color (a definir con el usuario en orden).
-
-S31 — 404 custom, sugerencia de tiers, marquesina diagonal, optimización de performance mobile, srcset WebP, fix de og:image
-Recompresión: no (se mantiene la compresión de S25).
-
-Sesión larga. Arrancó con el 404 y terminó con una auditoría de performance mobile completa.
-
-**1. 404 custom (`src/pages/404.astro`).**
-Página independiente con KrakoaFont + glitch ocasional del "404" cada 4-8s (reusa técnica del hero, 10 keyframes). "404" en Arial 900 (Payback no tiene numerales), "KRAKOA" abajo en KrakoaFont (KRA amarillo + KOA blanco). Botones "Volver al catálogo" (amarillo KRA) e "@krakoa.sw". `<meta name="robots" content="noindex, follow" />`. Sin tocar nada más del sitio: Astro detecta `404.astro` y lo publica como `dist/404.html` automáticamente. No requiere cambios en el `.bat`, `astro.config.mjs`, ni el workflow.
-
-**2. Sugerencia de tiers en carrito.**
-Nueva función `updateCartTierBanner()` que muestra "Agregá N más y todas salen a $X c/u" cuando el pedido está a ≤3 unidades del próximo tier. Reusa el `#cart-tier-banner` existente pero con estilo `banner-hint` (amarillo KRA #ffd655) para diferenciarse del verde/rojo temporal de cambio de tier. **Regla de turnos**: si hay un banner temporal en curso (`cartTierBannerTimer` activo), la sugerencia no hace nada. Al vencer los 4s del banner temporal, `updateCartTierBanner()` recupera el turno. Llamada al final de `renderCartDrawer()`.
-
-**3. Marquesina diagonal en el tinte del catálogo.**
-El tinte de categoría (`#catalogTintA/B`) ahora tiene el nombre de la categoría repetido en diagonal a -45°, varios renglones con tamaños alternados (60-110px), direcciones alternadas (pares van a la izquierda, impares a la derecha), velocidad 80s por loop. Vive dentro del `::before` del tinte (el `::before` mantiene la opacidad 0.16 del fondo, el texto tiene la suya propia a 0.05 para sentirse "de fondo"). Se genera desde JS con `renderTintMarquee(layer, categoryName)`, que calcula `rowCount` desde la diagonal del catálogo (sin cap). El barrido entre categorías se hereda del `clip-path` del padre (funciona como una cinta que se va y entra). Tamaños en el array `sizes = [95, 75, 110, 60, 85, 105, 70, 90]`. Delay aleatorio negativo por renglón (0-80s) para que no se muevan todos sincronizados.
-
-**4. Tanda A — Pausa global de efectos con overlays abiertos.**
-Nuevo helper `isAnyOverlayOpen()` que devuelve true si hay algún overlay abierto (modal, cart, mobile-menu, image-zoom, promo, incluye estados `is-closing`). Los schedulers de efectos consultan esto antes de disparar:
-- Rotación del hero (heroRotationInterval): skip si hay overlay.
-- Glitch del título del hero.
-- Typewriter del hero.
-- Glitch del logo del header (+ pausa off-viewport con IntersectionObserver).
-- Glitch de categorías (+ pausa off-viewport con IntersectionObserver).
-- Glitch de pilares de Calidad.
-- Glitch del logo del footer.
-- Marquee top (keywords): pausa por CSS con `body.modal-open/cart-open/menu-open/zoom-open/promo-open` + pausa off-viewport con IntersectionObserver + inline style.
-- Marquee del tinte: pausa con `body.tint-paused` (scroll + off-viewport) y las mismas clases de overlays.
-
-Se agregaron clases `body.zoom-open` y `body.promo-open` que faltaban (openImageZoom/closeImageZoomDirect y openPromoModal/closePromoModalDirect).
-
-**5. Tanda B — Tuning mobile.**
-- `will-change` eliminado de `.footer-particle` (22 capas GPU "reservadas" permanentes era overkill).
-- Partículas del footer: 10 en mobile, 22 en desktop (`matchMedia` en el JS).
-- Clarity diferido: el snippet ya no corre en el `<head>` al arranque. Se carga con `["scroll", "click", "touchstart", "keydown", "pointerdown"]` con `{ once: true }` o a los 5s como fallback. El usuario que rebota en <1s no se trackea (pérdida aceptable).
-- Blur del carrito y menú mobile: `blur(4px)` → `blur(2px)` + opacidad 0.75 → 0.88 en `@media (max-width: 700px)`.
-- `.scroll-progress`: pasa de animar `width` (layout + paint) a `transform: scaleX()` (compositor-only). Esto afecta a TODO el scroll del sitio, no solo al catálogo.
-- Blur de la barra sticky de categorías en mobile: `blur(6px)` → `blur(3px)` + opacidad 0.82 → 0.88.
-- Grano del body (`feTurbulence` tileado) off en mobile (`@media (max-width: 700px)` con `display: none`). A 0.045 de opacidad era imperceptible en mobile y costaba una capa full-viewport.
-
-**6. Tanda C.1 — srcset WebP 400w/600w/1000w en las tarjetas.**
-`generar-catalogo.mjs` ahora genera **3 variantes** por modelo y remera: `modelo.webp` (1000w, la que ya existía), `modelo-600.webp`, `modelo-400.webp`. Solo para modelo y remera (los `extra-*.webp` siguen siendo 1000w única versión, porque solo se ven en el modal).
-- `<img class="product-image-base">` en `index.astro` usa `srcset="...400w, ...600w, ...1000w"` + `sizes="(max-width: 900px) 50vw, (max-width: 1400px) 33vw, 25vw"`. `src="modelo.webp"` (1000w) como fallback.
-- `generar-catalogo.mjs` agregó `modelo400`, `modelo600`, `remera400`, `remera600` al JSON (además de `modelo` y `remera`).
-- `optimizeImage(sourcePath, destinationPath, maxWidth = 1000)` ahora acepta `maxWidth` para generar las 3 variantes.
-- **El JS del modal, hero, zoom, auto-slide NO se toca**: siguen usando `src` (1000w). El `srcset` es solo para las tarjetas del catálogo.
-
-**7. Hover del auto-slide con srcset.**
-`<img class="product-image-hover">` ahora tiene `data-src` (1000w), `data-src-400` y `data-src-600`. Nueva función `pickHoverSrc(hover)` elige la variante según `isDesktop` y `devicePixelRatio`: desktop → 1000w; mobile DPR ≥3 → 600w; mobile DPR <3 → 400w. `triggerSlide()` usa `pickHoverSrc()` en la precarga. Ahorra ~550KB por sesión mobile.
-
-**8. Fix de og:image a URLs absolutas.**
-Los `og:image` / `og:url` / `twitter:image` del `index.astro` estaban con `${base}/ruta.jpg` → ruta relativa `/krakoa/ruta.jpg`. Los scrapers de redes (WhatsApp, Facebook, Twitter, LinkedIn) **NO resuelven relativas** y no muestran preview. Ahora usan `SITE_ORIGIN + BASE_PATH + "/og-image.jpg"` (constantes del frontmatter), que resuelven a `https://barriopuro.github.io/krakoa/og-image.jpg`. Se agregaron `og:url`, `og:image:secure_url`, `og:image:type`, `og:image:alt`, `twitter:image`, `twitter:image:alt`.
-
-**Bugs del parser resueltos (para lecciones):**
-- **`<` en expresiones Astro**: `fetchpriority={index < 6 ? "auto" : "low"}` rompió el parser con `Expected '>' but found '<'`. Solución: invertir a `fetchpriority={index >= 6 ? "low" : "auto"}`. El `<` en atributos Astro se confunde con inicio de etiqueta.
-- **Restos de copy-paste al reemplazar bloques multilínea**: al hacer la Tanda C.1, quedaron dos `<img class="product-image-hover">` superpuestos y un bloque huérfano de atributos al final. El error `Expected '>' but found '<'` apuntaba a la línea 493 (segundo `<img`), no donde estaba el resto huérfano. Se detectó buscando `<img` duplicados en el editor. **Verificar siempre que no queden restos al reemplazar bloques grandes.**
-
-**Sistema de pausa global (resumen de la arquitectura):**
-- Helper: `isAnyOverlayOpen()` (devuelve true si hay modal, cart, menu, zoom o promo abiertos, incluye `is-closing`).
-- Pausa por CSS: `.marquee-track`, `.catalog-tint .tint-marquee-row span` con `body.modal-open/cart-open/menu-open/zoom-open/promo-open` y `body.tint-paused` (scroll + off-viewport del catálogo).
-- Pausa por JS: cada scheduler (hero glitch, typewriter, rotación, glitch logo, glitch categorías, glitch pilares, glitch logo footer, marquee top) consulta `isAnyOverlayOpen()` + visibilidad (IntersectionObserver donde aplica).
-- Pausa por overlap apilado: si el carrito se abre encima del modal, el scroll-lock usa `scrollLockCount` (contador) para no liberar el padding dos veces.
-
-**Cómo se probó:** verificado en desktop y mobile. 404 funciona en URLs rotas. Sugerencia de tiers aparece/desaparece correctamente al cambiar cantidad, alterna con el banner temporal. Marquesina diagonal visible en todas las categorías, cubre toda la altura, dirección alternada, pausa al scrollear y con overlays. Todas las animaciones se pausan con overlay abierto. Scroll mucho más fluido en mobile después de scaleX en scroll-progress, blur reducido y grano off. srcset: Network muestra 400w (DPR 2) o 600w (DPR 3) en mobile, 1000w en desktop; el modal sigue bajando 1000w. og:image: miniatura aparece en WhatsApp con `?v=2` (el caché de WhatsApp ignora URLs viejas).
-
-
-S32 — OG por producto (página puente), generación incremental de imágenes
-Recompresión: no (se mantiene la compresión de S25).
-
-Sesión en dos tandas: primero se implementó la preview de redes por producto (la deuda más vieja de §8), después se optimizó el tiempo del `.bat` que venía creciendo desde S31.
-
-**1. OG por producto — Opción 1 (página puente + redirect).**
-Se evaluaron 3 opciones para que al compartir un link de un producto por WhatsApp/Facebook/etc. se vea la foto de la remera en la preview:
-- Opción 1 (elegida): página puente `/producto/slug/` con meta tags OG correctos + redirect a `/#slug`. El usuario cae en el modal abierto como siempre.
-- Opción 2 (descartada): página real por producto, MPA. Requería extraer el modal a componente reusable, reescribir el historyStack, mover header/carrito a layout, etc. ~7-10 sesiones y riesgo de regresión alto. Descartada por desproporcionada.
-- Opción 3 (descartada): no hacer nada. Los links compartidos siguen mostrando el logo genérico.
-
-Implementación (5 cambios):
-- `generar-catalogo.mjs`: nueva función `generateOgImage(sourcePath, destinationPath)` que arma un JPG 1200×630 con fondo `#0b0b0b` y la remera centrada (520px de alto, 55px de aire arriba/abajo). Se genera SOLO para `remera` (flat lay), no para `modelo` ni extras. Formato JPG (no WebP) por compatibilidad con scrapers viejos (WhatsApp).
-- `generar-catalogo.mjs`: campo `ogImage` agregado a cada producto del JSON, apuntando a `-og.jpg`.
-- `src/pages/producto/[slug].astro` (nuevo): página puente con `getStaticPaths`, meta tags OG/Twitter completos (`og:type=product`, `og:image` absoluta, `og:image:width/height` 1200/630), `<meta name="robots" content="noindex, follow" />` (evita contenido duplicado), `<meta http-equiv="refresh">` como fallback, `<script is:inline>window.location.replace()</script>` como redirect principal, `<noscript>` con link. Usa `replace()` para no dejar la página puente en el historial.
-- `index.astro`: constantes `SITE_ORIGIN` (`window.location.origin`) y `BASE_PATH` (base sin trailing slash) al inicio del `<script>`.
-- `index.astro`: botón "Compartir" del modal ahora arma `${SITE_ORIGIN}${BASE_PATH}/producto/${currentProductId}/` en vez de `.../#slug`.
-
-Convivencia de URLs: `/producto/slug/` es la "URL de compartir" (la que usa el botón Compartir y la que ven los scrapers); `/#slug` es la que muestra el navegador mientras se navega. Caso borde aceptado: si el usuario copia la barra de direcciones a mano, copia `/#slug` (sigue mostrando el logo genérico). Los links viejos que ya circularon también siguen mostrando el logo (caché de WhatsApp, no se puede forzar).
-
-**2. Optimización del `.bat` (generación incremental + paralelización).**
-El `.bat` venía creciendo desde S31: de ~40s a ~120-150s, porque el script procesaba ~693 imágenes (antes ~200) y las regeneraba TODAS desde cero en cada corrida (`fs.rmSync(publicCatalogoDir)` al inicio).
-
-Solución en `generar-catalogo.mjs` (2 cambios):
-- **Incremental:** se eliminó el `rmSync` inicial. Nueva función `shouldRegenerate(sourcePath, destinationPath)` que compara `mtimeMs` de source vs output. Si el output es más nuevo (o el source no cambió), se skipea. **Cleanup automático al final:** se recorre `public/catalogo/` y se borran los archivos huérfanos (de productos renombrados o eliminados), comparando contra un `Set` de paths esperados. Esto resuelve el caso "renombrar un modelo" sin acumular basura.
-- **Paralelización:** `processCatalogoImages` ahora arma un array de tareas (`{ kind, src, dst }`), filtra las que ya están al día, y procesa las pendientes con `runWithConcurrency(pending, 6, worker)` (6 imágenes en paralelo, `sharp` usa el thread pool de libuv internamente).
-
-Resultados medidos:
-| Escenario | Antes | Después |
-|---|---|---|
-| Correr sin tocar nada | ~120s | ~5-10s |
-| Agregar 1 producto (7 imágenes) | ~120s | ~10-15s |
-| Regenerar todo (borraste `public/catalogo/`) | ~120s | ~40-50s |
-
-**Caveat documentado:** si se cambia la lógica de `optimizeImage` o `generateOgImage` (calidad, dimensiones, formato), el incremental NO lo detecta (el mtime del output sigue siendo más nuevo que el del source). Hay que borrar `public/catalogo/` a mano una vez y volver a correr el script. La paralelización hace que esa regeneración total tarde ~40-50s en vez de ~120s.
-
-**Descartado esta sesión:**
-- **Google Shopping feed.** Técnicamente viable (generar un XML en `generar-catalogo.mjs` y subirlo a Google Merchant Center), pero los requisitos de Google (políticas de envío/devoluciones visibles en el sitio, coherencia feed/landing) chocan con el "envío a coordinar" actual. Requiere que el cliente defina una política concreta antes de encararlo. Postergado sin fecha.
-- **`content-visibility: auto` en las tarjetas del catálogo.** Mejora de performance de renderizado (~50% menos trabajo de layout/paint en listas largas). Cambio de 1 minuto (1 regla CSS + `contain-intrinsic-size`). Interesaba pero se postergó.
-- **Mover la generación de imágenes y el build a GitHub Actions (CI).** El `.bat` pasaría de ~25-45s a ~5-10s (solo push). Requería sacar `public/catalogo/`, `public/talles/`, `public/promo/`, `src/data/*.json` y `dist/` del repo (agregarlos a `.gitignore`) y agregar `node scripts/generar-catalogo.mjs` al workflow. Se descartó por complejidad percibida; el incremental ya deja el `.bat` en un tiempo aceptable.
-
-**Lección técnica:** un script que "borra todo y regenera" es simple pero escala mal. La dupla incremental (comparar mtime) + cleanup de huérfanos (comparar contra un Set de paths esperados) es más código pero se vuelve O(cambios) en vez de O(total). Y la paralelización con límite (6 concurrentes, no "todo a la vez") es la forma correcta de usar `sharp` en lote sin saturar la máquina.
-
-Cómo se probó: preview de OG verificada en WhatsApp con un link de prueba (miniatura de la remera, no el logo). Redirect de `/producto/slug/` a `/#slug` funcionando (el modal se abre). Botón "Compartir" del modal copia la URL nueva. Regresión ok: home, modal, carrito, zoom, historyStack, todo sin cambios. Para el `.bat`: correr sin tocar nada (0 generadas, ~5-10s), agregar producto (7 generadas, ~10-15s), renombrar (7 generadas + 7 huérfanas eliminadas), borrar producto (huérfanas eliminadas, producto desaparece de la web).
-
-⏭️ Próxima sesión: S33 — a definir. Candidatos en orden de urgencia: selector de color de tela (urgente, pedido del cliente), quick wins varios (botón "Preguntar por modelo", presets de cantidad, OG del home), swipe entre productos en modal mobile. Google Shopping, `content-visibility` y CI quedan como "evaluar a futuro".
-
-
-S33 — Optimización de thumbs del modal + preload del catálogo + planificación de la próxima tanda
-
-Recompresión: no (se mantiene la compresión de S25).
-
-Sesión en dos partes. Primero dos optimizaciones de performance chicas, de cero impacto visual (pedidas explícitamente por el usuario). Después planificación extensa de la próxima tanda.
-
-**1. Thumbs del modal a 400w.**
-Los thumbnails del carrusel (`.modal-thumb`, ~56×72px CSS) bajaban la imagen a 1000w. Ahora usan la variante 400w (generada por el script desde S32). El `src` (1000w) se sigue usando para la imagen grande del carrusel, el hero, el zoom y el auto-slide.
-
-Cambios:
-- `<article class="product-card">` recibe `data-modelo-400` y `data-remera-400` con paths ya resueltos (`${base}/${product.modelo400}`).
-- `openModal()` y `loadProductIntoModal()`: agregan `thumbSrc: modelo400` / `thumbSrc: remera400` a los dos primeros items de `currentImages`. Extras y tablas de talles no tienen `thumbSrc` (fallback al `src`).
-- `renderThumbs()`: usa `image.thumbSrc || image.src` para el `<img>` del thumb.
-- Ahorro: ~1-1.5 MB por sesión si el usuario abre varios modales. Cero impacto visual.
-
-**2. Preload de las primeras 3 tarjetas del catálogo.**
-- Bloque `<link rel="preload" as="image" imagesrcset={...} imagesizes={...}>` para `catalogo.products.slice(1, 4)` (productos 1, 2 y 3; el 0 ya estaba precargado como hero).
-- Usa `imagesrcset` con las 3 variantes (400/600/1000w) + `imagesizes` que matchea el `sizes` del `<img>` de la tarjeta. El navegador elige la variante correcta.
-- Mejora el LCP del catálogo. No reduce peso.
-
-**3. Planificación de la próxima tanda.**
-Se consolidó la lista de tareas en §8 y §9 (actualizados). Novedades respecto a S32:
-- **Selector de color:** demovido. El usuario no tiene modelos con variantes todavía.
-- **Quick wins S32** (botón "Preguntar por modelo", presets de cantidad, OG del home): descartados por el usuario.
-- **Nuevas features web:** Wishlist, Badges "NUEVO"/"DESTACADO", Página "Gracias por tu pedido", "Vistos recientemente".
-- **Canales de venta:** WhatsApp Business + catálogo, Instagram Shopping, Mercado Libre.
-- **Difusión:** UGC (ya en curso), contenido educativo IG, TikTok, micro-influencers.
-- **Prerequisito:** número nuevo para KRAKOA (eSIM prepaga Movistar, sin chip físico) para pasar a WhatsApp Business sin mezclar el número personal.
-
-**Lección técnica:** el patrón "thumb 400w + src 1000w" es el mismo que ya se usa en las tarjetas (`modelo400`/`modelo600` en el srcset). Mantiene una sola fuente de verdad (las variantes las genera el script) y solo cambia qué variante consume cada parte de la UI. Cero deuda nueva.
-
-Cómo se probó: verificado en desktop y mobile. DevTools → Network filtrando `-400.webp` muestra los thumbs del modal a 400w. Las imágenes grandes (modal, hero, zoom) siguen bajando 1000w. El preload del catálogo aparece en Network antes que el resto de las imágenes lazy. Regresión ok: modal, carrusel, zoom, carrito, compartir, todo sin cambios.
-
-
-<!-- Próxima sesión: pegar acá abajo el bloque nuevo. -->
+Lupa del header hace glitch al volver del compacto en mobile (se sacó el media query mal puesto). Input de búsqueda del header hace glitch al volver con `searchFieldGlitch` + `searchShake` + `searchPlaceholderGlitch` (NO `logoGlitch`, tiene scale: -1 1 que refleja el texto). Toggle del compacto sin `contain: paint` (recortaba el drop-shadow). Saltito de la barra al pasar de compacta a estática: vertical 3px (height 89px en compacto) y horizontal 14px (padding asimétrico 56/84px). Efecto "ventana" en botones de categoría (Arial 900, letter-spacing negativo, overflow hidden; `::before` invisible fija el ancho). Glitch al hover/click de categorías. Fix del scroll-shift: `--sbw` + `calc(100vw - var(--sbw))` + `lockBodyScroll` ANTES de `overflow: hidden` + `scrollLockCount`. `scrollbar-gutter: stable` descartado. KrakoaFont en Calidad, footer párrafo y footer copyright (`.brand-inline { color: #fff }`).
+
+S30 — Efectos en secciones pre-glitch
+Glitch de entrada del h2 en Cómo Comprar y Calidad (una vez al viewport). Glitch al abrir/cerrar cada pregunta del FAQ. Glow pulsante del CTA WhatsApp. Glitch aleatorio de pilares (20-30s). Hover de pilar: flicker + drop-shadow del color. Footer: scanlines ultra sutiles + glitch del logo vertical (25-40s). Copyright sin glitch (a 11px no se lee). Aclaraciones: parallax descartado definitivamente, alineación lupa S24 resuelta, selector de color pasa a urgente.
+
+S31 — 404 custom, sugerencia de tiers, marquesina diagonal, tuning mobile, srcset, og:image absolutas
+404 custom (`src/pages/404.astro`, Arial 900 + KrakoaFont, glitch ocasional). Sugerencia de tiers en carrito (`updateCartTierBanner`, reusa `#cart-tier-banner`, banner-hint amarillo, regla de turnos). Marquesina diagonal del tinte (nombre repetido a -45°, tamaños alternados, direcciones alternadas, 80s loop). Pausa global de efectos con overlays abiertos (`isAnyOverlayOpen()`, clases `body.zoom-open`/`body.promo-open` nuevas). Tuning mobile (partículas 10/22, Clarity diferido, blur reducido, scroll-progress scaleX, grano off). srcset WebP 400/600/1000 en tarjetas (`optimizeImage` acepta maxWidth). Hover del auto-slide con srcset (pickHoverSrc por DPR). Fix de og:image a URLs absolutas (SITE_ORIGIN + BASE_PATH). Bugs del parser: `<` en atributos Astro rompe el build; verificar restos de copy-paste al reemplazar bloques multilínea.
+
+S32 — OG por producto (página puente) + generación incremental
+Página puente `/producto/slug/` con meta OG correctos + redirect a `/#slug` (Opción 1, las otras 2 descartadas). `generateOgImage` (1200×630 JPG, remera centrada). Campo `ogImage` en el JSON. Botón "Compartir" del modal usa esta URL. `.bat`: incremental (comparar mtime source/output) + cleanup de huérfanos + paralelización (6 concurrentes). Antes ~120s → ahora ~5-10s sin tocar, ~10-15s por producto. Caveat: cambiar optimizeImage/generateOgImage requiere borrar `public/catalogo/` a mano una vez.
+
+S33 — Thumbs 400w + preload de las primeras 3 tarjetas + quick wins descartados
+Thumbs del modal a 400w (`thumbSrc` en `currentImages`). Preload de las primeras 3 tarjetas del catálogo (`imagesrcset` + `imagesizes`). Quick wins S32 (botón "Preguntar por modelo", presets de cantidad, OG del home) descartados por el usuario. Hero a 400/600, extraer JS/CSS y AVIF postergados.
+
+S34 — Selector de color de tela (base)
+Feature más pedida. Estructura: `catalogo/<cat>/<modelo>/<color>/` con `meta.json` opcional (`{ "defaultColor": "negro" }`, se crea automático si hay 1 color o pregunta agrupado si hay 2+). Script 3 con selector de color (ventana + "Otro..."). `generar-catalogo.mjs`: `getColorName`, `getColorHex`, `normalizarColorSlug`, `readMetaJson`, `askDefaults`. JSON por producto: `colors: { negro: {...}, blanco: {...} }`, `defaultColor`, campos top-level espejo del default. Web: `colorsData`, `hasColors`, `currentColor`, `buildImagesForColor`, `selectColor`. Carrito con color en la key. WhatsApp con línea `- Color: *Negro*`. También se documenta §12 (flujo de trabajo de modelo nuevo).
+
+S35 — Memoria de color por producto + preservar slide + badge "X colores"
+Memoria por producto (`lastColorByProduct = new Map()`, no persiste al recargar). Al cambiar color, preserva slide actual por label. Badge con dots de colores en la tarjeta (2+ colores, hasta 4 + `+N`), clickeables (cambian las imágenes de la tarjeta sin abrir el modal). Fondo con `color-mix` del color de la categoría. `window.__krakoaSetCardColor` / `window.__krakoaUpdateCardColor`.
+
+S36 — Badge fuera del `<button>` + fix del rebote + productos de 1 solo color legacy
+Badge de colores movido FUERA del `<button>` (hermano del botón, hijo directo del `<article>`) para evitar el `:active` del padre (no prevenible con preventDefault). Dots más grandes (16px desktop / 18px mobile), padding del badge reducido, sin scale en hover. Productos con 1 solo color se tratan como legacy: `hasColors = Object.keys(colorsData).length > 1` (no `> 0`). `askDefaults` crea el `meta.json` automáticamente para 1 color. Lección: el `:active` del navegador no se puede prevenir, hay que sacar el hijo del botón.
+
+S37 — Recompresión del contexto (S36)
+Reescritura completa del archivo (segunda compresión). Pasó de ~1200 líneas a ~500. Historial S16-S24 comprimido a un párrafo cada uno. S25-S36 comprimidos a 3-6 líneas cada uno. Índice agregado al encabezado (§0-§12). §12 integrado al índice. Eliminados: "Roadmap de referencia" obsoleto de S24, separadores "Parte A" sueltos, S33 duplicado. Cambios estructurales de S25-S36 unificados al cuerpo (§2, §3, §4, §5, §7, §8, §9). Versión del archivo: Compresión S36.
+
+§12 — Flujo de trabajo de un modelo nuevo
+Documentado en S34 tras una confusión inicial. Este es el flujo real que usa el usuario para producir un modelo.
+
+1. Edición de la ilustración (Photoshop)
+   - Abrir ilustración (Pinterest, internet, etc.).
+   - Editar, borrar, resaltar, combinar capas.
+   - Correr script 1 y 2: dimensiones, renombrar capa, efecto semitono.
+     Generan un JPG (con fondo del color de tela que elige el usuario) + un PNG (para imprimir el DTF).
+   - Los scripts preguntan el color de tela.
+
+2. Mockups (Google Flow)
+   - Subir el JPG a Google Flow.
+   - Pedir mockup de remera sobre mesa de madera, con el diseño.
+   - Pedir mockup con modelo luciéndola.
+   - Si hay más de un color, repetir el paso con los JPG de cada color.
+
+3. Ensamblado + exportación (Photoshop + script 3)
+   - Abrir "_molde post instagram.psd" (con grupo CATEGORIAS + "Capa 1" que sirve de imán).
+   - Arrastrar los mockups (mesa + modelo) al PSD.
+   - Correr "3 Finalizar_Mockups_KRAKOA.jsx":
+     - Pregunta modelo, categoría, nombre de carpeta, color (lista + "Otro..."), carpeta original del color.
+     - Exporta remera.jpg y modelo.jpg (con logo aplicado) a `carpetaOriginal/<color>/`.
+     - Copia las tablas de talles.
+     - Crea `catalogo/<cat>/<modelo>/<color>/` y copia los mockups.
+
+4. Publicar
+   - Correr ACTUALIZAR WEB.bat.
+   - Si es un producto nuevo con 2+ colores sin meta.json, el script pregunta el color default (agrupado al principio).
+   - Si es un producto nuevo con 1 solo color, el meta.json se crea automáticamente con ese color.
+   - El .bat hace el resto (imágenes, build, commit, push).
