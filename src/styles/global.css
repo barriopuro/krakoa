@@ -82,11 +82,32 @@
      continuo (mismo lenguaje visual que las categorías), en vez
      de subrayado + cambio de color. */
   .desktop-nav   /* S39: el glitch se aplica al <span> interno (no al <a>), para que
-     el clip-path no rompa el hit-testing del link. El <a> queda
-     clickeable en toda su área.
+     el clip-path no rompa el hit-testing del link.
      inline-block es necesario porque transform no aplica a inline. */
+  .desktop-nav a {
+    position: relative;
+  }
+
+  /* Escudo invisible: cubre un área MÁS GRANDE que el <a> (inset
+     negativo) para capturar los clicks aunque el texto glitcheado
+     se haya desplazado por el translate del keyframe. Es transparente,
+     no cambia el diseño. z-index: 1 lo pone por encima del span
+     glitcheado (que queda en z-index: 0). El click cae acá, y como
+     el ::before es hijo del <a>, burbujea y navega. */
+  .desktop-nav a::before {
+    content: "";
+    position: absolute;
+    inset: -8px -6px;
+    z-index: 1;
+    /* Sin fondo: solo captura clicks. */
+    pointer-events: auto;
+  }
+
   .desktop-nav a span {
     display: inline-block;
+    position: relative;
+    z-index: 0;
+    pointer-events: none;
   }
 
   .desktop-nav a:hover span {
