@@ -78,37 +78,16 @@
     padding: 6px 2px;
   }
 
+  /* S39: el hover de los links del header ahora es un glitch
+     continuo (mismo lenguaje visual que las categorías), en vez
+     de subrayado + cambio de color. */
   .desktop-nav a:hover {
-    color: #fff;
+    animation: headerGlitchSlice 0.8s steps(9, end) infinite,
+               headerGlitchColor 0.8s steps(5, end) infinite;
   }
 
-  /* Subrayado animado en los links del header.
-     El ::after es un pseudo-elemento dentro de un <header> (fuera de <main>),
-     así que va con  según las reglas del proyecto.
-     Se dibuja de izquierda a derecha (transform-origin: left) al hover,
-     y se retrae al revés al sacar el mouse. Curva "out-expo" para un
-     cierre suave. */
-  .desktop-nav a {
-    position: relative;
-  }
-
-  .desktop-nav a::after {
-    content: "";
-    position: absolute;
-    bottom: 2px;
-    left: 2px;
-    right: 2px;
-    height: 1px;
-    background: #fff;
-    transform: scaleX(0);
-    transform-origin: left center;
-    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
-    pointer-events: none;
-  }
-
-  .desktop-nav a:hover::after {
-    transform: scaleX(1);
-  }
+  /* S39: el subrayado animado se eliminó. El feedback del hover
+     ahora es el glitch (ver .desktop-nav a:hover). */
 
   /* Acciones del header */
   .header-actions {
@@ -130,7 +109,7 @@
     text-decoration: none;
     font-size: 12.5px;
     font-weight: 600;
-    transition: border-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+    transition: border-color 0.2s ease, color 0.2s ease;
   }
 
   .instagram-btn svg {
@@ -141,9 +120,8 @@
   }
 
   .instagram-btn:hover {
-    border-color: #3a3a3a;
-    color: #fff;
-    transform: translateY(-1px);
+    animation: headerGlitchSlice 0.8s steps(9, end) infinite,
+               headerGlitchColor 0.8s steps(5, end) infinite;
   }
 
   .cart-button {
@@ -158,12 +136,12 @@
     color: #111;
     border: 0;
     cursor: pointer;
-    transition: background 0.2s ease, transform 0.15s ease;
+    transition: background 0.2s ease;
   }
 
   .cart-button:hover {
-    background: #e5e5e5;
-    transform: translateY(-1px);
+    animation: headerGlitchSlice 0.8s steps(9, end) infinite,
+               headerGlitchColor 0.8s steps(5, end) infinite;
   }
 
   .cart-button svg {
@@ -209,9 +187,8 @@
   }
 
   .menu-toggle:hover {
-    background: #1a1a1a;
-    border-color: #3a3a3a;
-    color: #fff;
+    animation: headerGlitchSlice 0.8s steps(9, end) infinite,
+               headerGlitchColor 0.8s steps(5, end) infinite;
   }
 
   .menu-toggle svg {
@@ -641,6 +618,48 @@ h1.glitching .hero-glitch-b {
     100% { opacity: 1; }
   }
 
+  /* S39: glitch continuo para el header. Reemplaza el hover de los
+     links nav, IG, carrito, menú y lupa. Mismo lenguaje visual que
+     el glitch de las categorías (clip-path en tiras + RGB split),
+     pero en loop mientras dura el hover.
+     - headerGlitchSlice: corta el elemento en tiras horizontales
+       (clip-path) y las desplaza/invierte (transform).
+     - headerGlitchColor: RGB split vía drop-shadow (magenta + cian).
+     El carrito no tiene texto, así que el glitch es del botón entero
+     (borde + ícono + badge). Los links nav glitchean el texto. */
+  @keyframes headerGlitchSlice {
+    0%   { clip-path: inset(0 0 0 0);         transform: translate(0, 0); }
+    12%  { clip-path: inset(10% 0 80% 0);     transform: translate(-3px, 0); }
+    24%  { clip-path: inset(60% 0 10% 0);     transform: translate(3px, 0); }
+    36%  { clip-path: inset(30% 55% 55% 10%); transform: translate(-2px, 0); }
+    48%  { clip-path: inset(80% 0 5% 0);      transform: translate(4px, 0); }
+    60%  { clip-path: inset(20% 30% 60% 25%); transform: translate(-3px, 0) scaleY(-1); }
+    72%  { clip-path: inset(45% 0 40% 0);     transform: translate(2px, 0); }
+    84%  { clip-path: inset(70% 45% 15% 0);   transform: translate(-3px, 0); }
+    96%  { clip-path: inset(0 0 0 0);         transform: translate(1px, 0); }
+    100% { clip-path: inset(0 0 0 0);         transform: translate(0, 0); }
+  }
+
+  @keyframes headerGlitchColor {
+    0%   { filter: drop-shadow(2px 0 #ff0055) drop-shadow(-2px 0 #00fff0); }
+    15%  { filter: drop-shadow(-2px 0 #ff0055) drop-shadow(2px 0 #00fff0); }
+    30%  { filter: drop-shadow(1px 0 #ff0055) drop-shadow(-1px 0 #00fff0); }
+    50%  { filter: drop-shadow(-2px 0 #ff0055) drop-shadow(2px 0 #00fff0); }
+    70%  { filter: drop-shadow(2px 0 #ff0055) drop-shadow(-2px 0 #00fff0); }
+    85%  { filter: drop-shadow(0 0 #ff0055) drop-shadow(0 0 #00fff0); }
+    100% { filter: drop-shadow(2px 0 #ff0055) drop-shadow(-2px 0 #00fff0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .desktop-nav a:hover,
+    .instagram-btn:hover,
+    .cart-button:hover,
+    .menu-toggle:hover,
+    .search-toggle:hover {
+      animation: none;
+    }
+  }
+
   /* (glitchBaseShift no se usa, se eliminó por limpieza.) */
 
   /* Cursor tipo terminal: el punto final del título titila.
@@ -898,9 +917,8 @@ h1.glitching .hero-glitch-b {
   }
 
   .search-toggle:hover {
-    background: #1a1a1a;
-    border-color: #3a3a3a;
-    color: #fff;
+    animation: headerGlitchSlice 0.8s steps(9, end) infinite,
+               headerGlitchColor 0.8s steps(5, end) infinite;
   }
 
   .search-toggle svg {
