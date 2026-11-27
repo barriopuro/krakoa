@@ -634,6 +634,22 @@ h1.glitching .hero-glitch-b {
     100% { opacity: 1; }
   }
 
+  /* S39: el glitch usa clip-path + transform, que afectan al
+     hit-testing. Los clicks en las zonas "recortadas" no llegan
+     al <a>/<button> padre, y el usuario tiene que "acertarle" a
+     una tira sin recortar. Solución: pointer-events: none en los
+     elementos glitcheados (que son solo visuales). Así el click
+     siempre va al contenedor clickeable, en toda su área. */
+  .desktop-nav a span,
+  .instagram-btn svg,
+  .instagram-btn .instagram-label,
+  .cart-button svg,
+  .cart-button .cart-count,
+  .menu-toggle svg,
+  .search-toggle svg {
+    pointer-events: none;
+  }
+
   /* S39: glitch continuo para el header. Reemplaza el hover de los
      links nav, IG, carrito, menú y lupa. Mismo lenguaje visual que
      el glitch de las categorías (clip-path en tiras + RGB split),
