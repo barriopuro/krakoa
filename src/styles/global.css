@@ -81,7 +81,18 @@
   /* S39: el hover de los links del header ahora es un glitch
      continuo (mismo lenguaje visual que las categorías), en vez
      de subrayado + cambio de color. */
-  .desktop-nav a:hover {
+  .desktop-nav   /* S39: el glitch se aplica al <span> interno (no al <a>), para que
+     el clip-path no rompa el hit-testing del link. El <a> queda
+     clickeable en toda su área.
+     inline-block es necesario porque transform no aplica a inline. */
+  .desktop-nav a span {
+    display: inline-block;
+  }
+
+  .desktop-nav a:hover span {
+    animation: headerGlitchSlice 0.8s steps(9, end) infinite,
+               headerGlitchColor 0.8s steps(5, end) infinite;
+  }a:hover {
     animation: headerGlitchSlice 0.8s steps(9, end) infinite,
                headerGlitchColor 0.8s steps(5, end) infinite;
   }
@@ -119,7 +130,9 @@
     flex-shrink: 0;
   }
 
-  .instagram-btn:hover {
+  /* S39: glitch a los hijos (ícono + label), no al <a>. */
+  .instagram-btn:hover svg,
+  .instagram-btn:hover .instagram-label {
     animation: headerGlitchSlice 0.8s steps(9, end) infinite,
                headerGlitchColor 0.8s steps(5, end) infinite;
   }
@@ -139,7 +152,9 @@
     transition: background 0.2s ease;
   }
 
-  .cart-button:hover {
+  /* S39: glitch al ícono y al badge, no al <button>. */
+  .cart-button:hover svg,
+  .cart-button:hover .cart-count {
     animation: headerGlitchSlice 0.8s steps(9, end) infinite,
                headerGlitchColor 0.8s steps(5, end) infinite;
   }
@@ -186,7 +201,8 @@
     transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
   }
 
-  .menu-toggle:hover {
+  /* S39: glitch al ícono, no al <button>. */
+  .menu-toggle:hover svg {
     animation: headerGlitchSlice 0.8s steps(9, end) infinite,
                headerGlitchColor 0.8s steps(5, end) infinite;
   }
@@ -651,11 +667,13 @@ h1.glitching .hero-glitch-b {
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .desktop-nav a:hover,
-    .instagram-btn:hover,
-    .cart-button:hover,
-    .menu-toggle:hover,
-    .search-toggle:hover {
+    .desktop-nav a:hover span,
+    .instagram-btn:hover svg,
+    .instagram-btn:hover .instagram-label,
+    .cart-button:hover svg,
+    .cart-button:hover .cart-count,
+    .menu-toggle:hover svg,
+    .search-toggle:hover svg {
       animation: none;
     }
   }
@@ -916,7 +934,8 @@ h1.glitching .hero-glitch-b {
     transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
   }
 
-  .search-toggle:hover {
+  /* S39: glitch al ícono, no al <button>. */
+  .search-toggle:hover svg {
     animation: headerGlitchSlice 0.8s steps(9, end) infinite,
                headerGlitchColor 0.8s steps(5, end) infinite;
   }
