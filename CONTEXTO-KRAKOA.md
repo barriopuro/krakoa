@@ -1,6 +1,6 @@
 CONTEXTO — Proyecto KRAKOA Web
 Archivo de contexto para abrir chat nuevo con IA.
-Versión: Compresión S36 (2026).
+Versión: Compresión S36 + S38 (2026).
 
 Índice: §0 actualizar · §1 proyecto · §2 estructura · §3 mapa del sitio · §4 sistemas transversales · §5 reglas técnicas · §6 convenciones IA · §7 decisiones descartadas · §8 ideas futuras · §9 pendientes · §10 protocolo chat nuevo · §11 historial · §12 flujo de modelo nuevo.
 
@@ -84,11 +84,13 @@ text
 └── src/
     ├── data/catalogo.json               (generado)
     ├── data/promo.json                  (generado)
+    ├── styles/
+    │   └── global.css                   ← TODO el CSS de la web (S38)
     └── pages/
-        ├── index.astro                  ← TODA la web
+        ├── index.astro                  ← HTML + JS de la web (sin CSS desde S38)
         ├── 404.astro                    ← página 404 custom (S31)
         └── producto/[slug].astro        ← página puente OG (S32)
-Sin componentes separados ni layouts. Todo vive en index.astro.
+Sin componentes separados ni layouts. HTML + JS viven en index.astro. El CSS vive aparte, en src/styles/global.css (S38), importado con `import "../styles/global.css";` en el frontmatter.
 
 Script de publicación (ACTUALIZAR WEB.bat):
 
@@ -642,6 +644,8 @@ Regla: cuando un selector combina un elemento estático con uno creado por JS (o
 
 css
 :global(.category-button.glitching) :global(.cat-glitch-a) { ... }
+
+⚠️ S38 — IMPORTANTE: `:global()` solo se procesa dentro de `<style>` de un `.astro`. En un archivo `.css` externo importado con `import "...css"`, `:global()` NO se procesa: el navegador lo ignora y el selector deja de matchear. En `.css`, TODOS los selectores son globales por defecto. NUNCA usar `:global()` dentro de `src/styles/global.css`.
 NO llevan :global(): elementos estáticos dentro de <main> cuyas clases NO toca el JS (ej: .cart-price-summary, .cart-subtotal-line, .cart-shipping-line).
 
 ${base} en <style>
@@ -784,7 +788,8 @@ Feedback táctil (vibración + micro-glitch)	Se decidió no sumar vibración. El
 | Parallax del hero (Fase 3) | Descartado en S30. El hero ya tiene zoom + paneo lento en las imágenes rotativas; sumar parallax scrolleado se sentía cargado y "de más". |
 | Fast-forward del carrusel del modal (S27) | Se probó. El recorrido por intermedios es más denso que útil ("quiero ver la última foto, no pasear por las del medio"). En mobile se veía mal (imágenes sin cargar + duración corta se leía como bug). Los thumbs y "Ver tabla de talles" saltan DIRECTO. |
 | Hero a 400w/600w (S33) | Riesgo visual: en desktop ancho, el hero se estira y la variante chica se nota. |
-| Extraer JS/CSS a archivos externos (S33) | Postergado: complejo, toca `define:vars`. |
+| Extraer CSS a archivo externo | HECHO en S38. Ver §2 y §11 S38. |
+| Extraer JS a archivo externo | Pendiente para sesión dedicada (Fase B). Complejidad: `define:vars={{ base, PROMO_DATA: promo }}`. |
 | AVIF en hero/modal (S33) | Postergado: complejidad vs beneficio bajo. |
 | Quick wins S32: botón "Preguntar por modelo", presets de cantidad, OG del home (S33) | Los 3 descartados por el usuario. |
 
@@ -837,6 +842,7 @@ Descartados (no re-proponer): ver §7.
 - **WhatsApp Business + catálogo** (después del número).
 
 🟡 Sin fecha:
+- **Fase B — Extraer JS** de `index.astro` a `src/scripts/main.js`. Complejidad conocida: `define:vars={{ base, PROMO_DATA: promo }}`. Plan tentativo: un `<script is:inline>` chico que setea `window.__KRAKOA = { base, promo }`, después el script externo lo lee. Validar `catalogo.products` (aparece 7 veces en el script grande — verificar si es lectura de JSON o de data attributes del DOM).
 - Página "Gracias por tu pedido"
 - "Vistos recientemente" (definir "dónde" antes de codear)
 - Swipe para cambiar de producto en el modal mobile
@@ -971,6 +977,15 @@ Badge de colores movido FUERA del `<button>` (hermano del botón, hijo directo d
 
 S37 — Recompresión del contexto (S36)
 Reescritura completa del archivo (segunda compresión). Pasó de ~1200 líneas a ~500. Historial S16-S24 comprimido a un párrafo cada uno. S25-S36 comprimidos a 3-6 líneas cada uno. Índice agregado al encabezado (§0-§12). §12 integrado al índice. Eliminados: "Roadmap de referencia" obsoleto de S24, separadores "Parte A" sueltos, S33 duplicado. Cambios estructurales de S25-S36 unificados al cuerpo (§2, §3, §4, §5, §7, §8, §9). Versión del archivo: Compresión S36.
+
+S38 — Extracción del CSS a archivo externo (Fase A de la separación)
+El archivo `index.astro` había crecido a 11.998 líneas (S33-S36 lo duplicaron) y ya no entraba en una lectura completa del chat. Se separó el CSS a `src/styles/global.css` (5.616 líneas) con un script Node (`SEPARAR-CSS.mjs`, ya borrado). Validaciones previas: el `<style>` grande no tenía `${base}` ni `define:vars`, así que era movible. `index.astro` quedó en 6.381 líneas. Backup del `.astro` y del `.css` se conservaron hasta verificar en producción, después se borraron.
+Bug crítico en el primer intento: el CSS extraído usaba `:global()` en ~271 lugares. **` :global()` NO se procesa en archivos `.css` externos** (solo dentro de `<style>` de Astro). Resultado: casi todo el sitio sin estilos. Fix: script `FIX-GLOBAL-CSS.mjs` (ya borrado) que peló todos los `:global(...)` dejando el contenido (`:global(.foo)` → `.foo`). En `.css` todo es global por defecto.
+Se agregó `*.BACKUP` al `.gitignore` para que futuros backups no se commiteen por accidente.
+Lección: **` :global()` solo aplica dentro de `<style>` de `.astro`**. En un `.css` importado, NUNCA usar `:global()`. Esta regla nueva reemplaza/complementa la regla histórica de §5 que decía "ante la duda, :global()" — eso sigue siendo válido DENTRO de `.astro`, pero no en `.css`.
+Pendiente para sesión futura: **Fase B — extraer el JS** de `index.astro` a `src/scripts/main.js`. Complejidad conocida: el `<script>` grande usa `define:vars={{ base, PROMO_DATA: promo }}`, así que hay que resolver cómo pasar `base` y `PROMO_DATA` al script externo (probablemente un `<script is:inline>` chico que setea `window.__KRAKOA = { base, promo }`, o similar).
+
+
 
 §12 — Flujo de trabajo de un modelo nuevo
 Documentado en S34 tras una confusión inicial. Este es el flujo real que usa el usuario para producir un modelo.

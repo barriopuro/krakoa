@@ -2372,23 +2372,117 @@ const marqueeText = [
         const colorData = colorsData[colorSlug];
         if (!colorData) return;
 
-        // Actualizar imágenes + dot activo.
-        if (typeof window.__krakoaUpdateCardColor === "function") {
-          window.__krakoaUpdateCardColor(
-            card.dataset.id,
-            colorSlug,
-            colorData
-          );
-        }
-
-        // Si el hover (remera) está visible, resetearlo para que
-        // no quede el color viejo hasta el próximo ciclo.
+        // S39: transición de color con el mismo barrido que el
+        // auto-slide / hover. La imagen NUEVA entra desde la derecha
+        // (translateX(100%) → 0) en una capa temporal, cubriendo a la
+        // vieja. Cuando termina, swapeamos el src real y quitamos la
+        // capa. Se hace para el modelo (siempre) y para la remera
+        // (solo si estaba visible).
         const state = card._state;
-        if (state && (state.phase === "in" || state.phase === "holding")) {
-          slideOut(card);
+        const wasHoverVisible =
+          state && (state.phase === "in" || state.phase === "holding");
+
+        const newModelSrc = `${BASE_PATH}${colorData.modelo}`;
+        const newModelSrcset = `${BASE_PATH}${colorData.modelo400} 400w, ${BASE_PATH}${colorData.modelo600} 600w, ${BASE_PATH}${colorData.modelo} 1000w`;
+        const newHoverSrc = `${BASE_PATH}${colorData.remera}`;
+        const newHoverSrc400 = `${BASE_PATH}${colorData.remera400}`;
+        const newHoverSrc600 = `${BASE_PATH}${colorData.remera600}`;
+
+        function pickHoverSrcForCard() {
+          const isDesktopNow = window.matchMedia("(min-width: 901px)").matches;
+          const dpr = window.devicePixelRatio || 1;
+          if (isDesktopNow) return newHoverSrc;
+          if (dpr >= 3) return newHoverSrc600 || newHoverSrc;
+          return newHoverSrc400 || newHoverSrc;
         }
 
-        // Recordar el color para el modal.
+        // 1. Modelo: capa con el NUEVO entrando desde la derecha.
+        const baseImg = card.querySelector(".product-image-base");
+        const imageContainer = baseImg ? baseImg.parentElement : null;
+        if (baseImg && imageContainer) {
+          const tempLayer = document.createElement("img");
+          tempLayer.className = "product-color-temp";
+          tempLayer.src = newModelSrc;
+          tempLayer.alt = "";
+          tempLayer.setAttribute("aria-hidden", "true");
+          tempLayer.style.position = "absolute";
+          tempLayer.style.inset = "0";
+          tempLayer.style.width = "100%";
+          tempLayer.style.height = "100%";
+          tempLayer.style.objectFit = "cover";
+          tempLayer.style.objectPosition = "50% 50%";
+          tempLayer.style.zIndex = "1";
+          tempLayer.style.pointerEvents = "none";
+          tempLayer.style.transition =
+            "transform 320ms ease, opacity 320ms ease";
+          tempLayer.style.transform = "translateX(100%)";
+          tempLayer.style.opacity = "0";
+          imageContainer.appendChild(tempLayer);
+          imageContainer.getBoundingClientRect(); // reflow
+          tempLayer.style.transform = "translateX(0)";
+          tempLayer.style.opacity = "1";
+
+          setTimeout(() => {
+            baseImg.src = newModelSrc;
+            baseImg.srcset = newModelSrcset;
+            tempLayer.remove();
+          }, 340);
+        }
+
+        // 2. Dot activo YA (no esperar a la animación).
+        const dots = card.querySelectorAll(".product-color-dot");
+        dots.forEach((d) => {
+          d.classList.toggle("active", d.dataset.color === colorSlug);
+        });
+
+        // 3. Remera (hover).
+        const hoverImg = card.querySelector(".product-image-hover");
+        if (hoverImg) {
+          if (wasHoverVisible && imageContainer) {
+            // Capa con la remera NUEVA entrando desde la derecha,
+            // encima de la vieja (que sigue en su lugar debajo).
+            const hoverLayer = document.createElement("img");
+            hoverLayer.className = "product-color-temp-hover";
+            hoverLayer.src = newHoverSrc;
+            hoverLayer.alt = "";
+            hoverLayer.setAttribute("aria-hidden", "true");
+            hoverLayer.style.position = "absolute";
+            hoverLayer.style.inset = "0";
+            hoverLayer.style.width = "100%";
+            hoverLayer.style.height = "100%";
+            hoverLayer.style.objectFit = "cover";
+            hoverLayer.style.objectPosition = "50% 50%";
+            hoverLayer.style.zIndex = "2";
+            hoverLayer.style.pointerEvents = "none";
+            hoverLayer.style.transition =
+              "transform 320ms ease, opacity 320ms ease";
+            hoverLayer.style.transform = "translateX(100%)";
+            hoverLayer.style.opacity = "0";
+            imageContainer.appendChild(hoverLayer);
+            imageContainer.getBoundingClientRect(); // reflow
+            hoverLayer.style.transform = "translateX(0)";
+            hoverLayer.style.opacity = "1";
+
+            setTimeout(() => {
+              hoverImg.dataset.src = newHoverSrc;
+              hoverImg.dataset.src400 = newHoverSrc400;
+              hoverImg.dataset.src600 = newHoverSrc600;
+              hoverImg.src = pickHoverSrcForCard();
+              hoverLayer.remove();
+            }, 340);
+          } else {
+            // La remera no estaba visible: solo actualizamos el src
+            // para el próximo auto-slide / hover. No hay animación.
+            hoverImg.dataset.src = newHoverSrc;
+            hoverImg.dataset.src400 = newHoverSrc400;
+            hoverImg.dataset.src600 = newHoverSrc600;
+            if (hoverImg.src) {
+              hoverImg.src = pickHoverSrcForCard();
+            }
+          }
+        }
+
+        // 4. Recordar el color para el modal.
         if (typeof window.__krakoaSetCardColor === "function") {
           window.__krakoaSetCardColor(card.dataset.id, colorSlug);
         }
